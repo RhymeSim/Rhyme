@@ -1,5 +1,6 @@
 program rhyme
   use date_time
+  use PatchBasedAMR
 
   implicit none
 

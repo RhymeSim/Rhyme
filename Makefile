@@ -3,6 +3,8 @@ SHELL := /bin/bash
 MAJOR := 0
 MINOR := 0
 
+PKGS := PatchBasedAMR
+
 # Preprocessing definitions
 NSPECIES := 3
 HYDRO := exact # if you wish to run without hydro, comment out this line
@@ -28,8 +30,12 @@ ifdef HYDRO
 endif
 
 FFLAGS := -Wall -cpp -dM -ffree-line-length-none $(DEFINES)
-INCLUDE := -I $(INCLUDEDIR)
-LIB :=  -lz -lm -L $(LIBDIR) -lamr
+
+INCLUDES := -I $(INCLUDEDIR)
+INCLUDES += $(foreach lib, $(PKGS), -I $(LIBDIR)/$(lib)/$(INCLUDEDIR))
+
+LIBS :=  -lz -lm -L $(LIBDIR) -lamr
+LIBS += $(foreach lib, $(PKGS), -L $(LIBDIR)/$(lib)/$(LIBDIR) -l$(lib))
 
 GLOBAL_OBJS := $(OBJDIR)/date_time.o
 
@@ -38,15 +44,22 @@ OBJS = $(GLOBAL_OBJS) $(OBJDIR)/main.o
 VPATH := $(SRCDIR)
 
 .PHONY: default
-default: $(BINDIR)/$(EXEC)
+default: | $(PKGS) $(BINDIR)/$(EXEC)
 
 
 $(BINDIR)/$(EXEC): $(OBJS)
-	$(FC) $(FFLAGS) $(OPENMP) $(LIB) $(INCLUDE) $(OBJS) -o $@
+	$(FC) $(FFLAGS) $(OPENMP) $(LIBS) $(INCLUDES) $(OBJS) -o $@
+
+
+.PHONY: $(PKGS)
+$(PKGS):
+	@for lib in $(PKGS); do \
+		make libstatic -C $(LIBDIR)/$$lib; \
+	done;
 
 
 $(OBJDIR)/%.o: %.f90
-	$(FC) -c $(FFLAGS) $(LIB) $(OPENMP) $(INCLUDE) -o $@ $< -J $(INCLUDEDIR)
+	$(FC) -c $(FFLAGS) $(LIBS) $(OPENMP) $(INCLUDES) -o $@ $< -J $(INCLUDEDIR)
 
 
 .PHONY: watch
@@ -64,3 +77,6 @@ clean:
 	$(RM) $(OBJDIR)/*.o
 	$(RM) $(LIBDIR)/*.a
 	$(RM) $(INCLUDEDIR)/*.mod
+	@for lib in $(PKGS); do \
+		make clean -C $(LIBDIR)/$$lib; \
+	done;

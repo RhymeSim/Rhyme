@@ -1,0 +1,3 @@
+[submodule "lib/PatchBasedAMR"]
+	path = lib/PatchBasedAMR
+	url = git@gitlab.com:rhyme-org/PatchBasedAMR.git
