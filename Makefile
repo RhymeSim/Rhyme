@@ -31,7 +31,7 @@ FFLAGS := -Wall -cpp -dM -ffree-line-length-none $(DEFINES)
 INCLUDE := -I $(INCLUDEDIR)
 LIB :=  -lz -lm -L $(LIBDIR) -lamr
 
-GLOBAL_OBJS :=
+GLOBAL_OBJS := $(OBJDIR)/date_time.o
 
 OBJS = $(GLOBAL_OBJS) $(OBJDIR)/main.o
 

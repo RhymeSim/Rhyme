@@ -1,7 +1,10 @@
 program rhyme
+  use date_time
+
   implicit none
 
   ! Initialize date and time
+  call init_date_time
 
   ! Reading parameter file and converting to code units
 
