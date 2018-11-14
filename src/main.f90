@@ -1,11 +1,10 @@
 program rhyme
-  use date_time
-  use PatchBasedAMR
+  use nombre
 
   implicit none
 
   ! Initialize date and time
-  call init_date_time
+  ! call init_date_time
 
   ! Reading parameter file and converting to code units
 
