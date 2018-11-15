@@ -1,5 +1,6 @@
 program rhyme
   use nombre
+  use chemistry
 
   implicit none
 
