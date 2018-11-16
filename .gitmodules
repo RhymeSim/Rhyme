@@ -1,6 +1,0 @@
-[submodule "src/nombre"]
-	path = src/nombre
-	url = git@gitlab.com:rhyme-org/nombre.git
-[submodule "src/chemistry"]
-	path = src/chemistry
-	url = git@gitlab.com:rhyme-org/chemistry.git
