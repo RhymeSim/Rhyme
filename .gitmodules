@@ -1,0 +1,3 @@
+[submodule "src/rhyme_nombre"]
+	path = src/rhyme_nombre
+	url = git@gitlab.com:rhyme-org/rhyme_nombre.git

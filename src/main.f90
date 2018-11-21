@@ -1,13 +1,19 @@
 program rhyme
-  use nombre
-  use chemistry
+  use date_time_module
+  use param_parser_module
+
 
   implicit none
+
+
+  character(len=1024) :: executable_name, param_file
 
   ! Initialize date and time
   ! call init_date_time
 
   ! Reading parameter file and converting to code units
+  call get_command_argument (0, executable_name)
+  call get_command_argument (1, param_file)
 
   ! Initialize cosmological variables (if COSMO is set)
 

@@ -1,20 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(rhyme)
-enable_language(Fortran)
-add_compile_options(-Wall -Wextra -std=f2008)
-
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+project (rhyme)
+enable_language (Fortran)
+add_compile_options (-Wall -Wextra -std=f2008)
 
 
-if(NOT TARGET nombre)
-  add_subdirectory(src/nombre)
-endif()
-add_subdirectory(src/chemistry)
+set (deps rhyme_nombre)
+
+foreach (dep ${deps})
+  if(NOT TARGET ${dep})
+    add_subdirectory (src/${dep})
+  endif()
+endforeach(dep)
 
 
-add_executable(rhyme src/main.f90)
-target_link_libraries(rhyme nombre)
-target_link_libraries(rhyme chemistry)
+set (CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
 
-install(TARGETS rhyme EXPORT rhyme-targets DESTINATION bin)
+
+file (GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90)
+
+add_executable (rhyme src/main.f90 ${internal_modules})
+target_link_libraries (rhyme ${deps})
+
+
+# add_subdirectory (tests)
+# enable_testing ()

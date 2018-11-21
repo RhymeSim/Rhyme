@@ -1,10 +1,10 @@
-module date_time
+module date_time_module
 
   implicit none
 
   real, dimension(1) :: start_time, final_time
   character(len=256) :: date, time, zone
-  integer*4 :: st_in(8)
+  integer :: st_in(8)
 
   integer, parameter :: main_time = 1
 
@@ -16,4 +16,4 @@ contains
     call date_and_time(date, time, zone, st_in)
   end subroutine init_date_time
 
-end module date_time
+end module date_time_module
