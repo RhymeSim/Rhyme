@@ -1,4 +1,7 @@
 program rhyme
+  use rhyme_nombre
+  use rhyme_samr
+  use rhyme_samr_boundary_condition
   use date_time_module
   use param_parser_module
 

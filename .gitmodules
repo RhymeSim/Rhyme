@@ -1,3 +1,9 @@
 [submodule "src/rhyme_nombre"]
 	path = src/rhyme_nombre
 	url = git@gitlab.com:rhyme-org/rhyme_nombre.git
+[submodule "src/rhyme_samr"]
+	path = src/rhyme_samr
+	url = git@gitlab.com:rhyme-org/rhyme_samr.git
+[submodule "src/rhyme_samr_boundary_condition"]
+	path = src/rhyme_samr_boundary_condition
+	url = git@gitlab.com:rhyme-org/rhyme_samr_boundary_condition.git
