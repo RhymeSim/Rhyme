@@ -6,6 +6,9 @@ program rhyme
   use param_parser_module
 
 
+  type (samr_t) :: amr
+
+
   implicit none
 
 
@@ -17,6 +20,8 @@ program rhyme
   ! Reading parameter file and converting to code units
   call get_command_argument (0, executable_name)
   call get_command_argument (1, param_file)
+
+  call parse_params ( param_file, amr )
 
   ! Initialize cosmological variables (if COSMO is set)
 
