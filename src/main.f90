@@ -2,14 +2,14 @@ program rhyme
   use rhyme_nombre
   use rhyme_samr
   use rhyme_samr_boundary_condition
+  use rhyme_param_parser
   use date_time_module
-  use param_parser_module
-
-
-  type (samr_t) :: amr
 
 
   implicit none
+
+
+  type (samr_t) :: amr
 
 
   character(len=1024) :: executable_name, param_file
@@ -21,7 +21,7 @@ program rhyme
   call get_command_argument (0, executable_name)
   call get_command_argument (1, param_file)
 
-  call parse_params ( param_file, amr )
+  if ( parse_params ( param_file, amr ) ) stop
 
   ! Initialize cosmological variables (if COSMO is set)
 
