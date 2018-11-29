@@ -10,6 +10,9 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   if ( failed ) return
 
   failed = &
-  any ( samr%base_grid .ne. [ 32, 32, 1 ] )
+  any ( samr%base_grid .ne. [ 32, 32, 1 ] ) &
+  .or. any ( samr%ghost_cells .ne. [ 2, 2, 0 ] ) &
+  .or. samr%nlevels .ne. 1 &
+  .or. samr%nboxes .ne. 1
 
 end function rhyme_param_parser_parse_param_test

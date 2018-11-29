@@ -1,2 +1,4 @@
 # Structured AMR
 base_grid = 32 32 1
+nlevels = 1
+nboxes = 1
