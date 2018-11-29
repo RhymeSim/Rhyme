@@ -9,7 +9,8 @@ program rhyme
   implicit none
 
 
-  type (samr_t) :: amr
+  type ( samr_t ) :: amr
+  type ( samr_boundary_condition_t ) :: bc
 
 
   character(len=1024) :: executable_name, param_file
@@ -21,7 +22,7 @@ program rhyme
   call get_command_argument (0, executable_name)
   call get_command_argument (1, param_file)
 
-  if ( parse_params ( param_file, amr ) ) stop
+  if ( parse_params ( param_file, amr, bc ) ) stop
 
   ! Initialize cosmological variables (if COSMO is set)
 

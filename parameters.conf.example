@@ -2,3 +2,11 @@
 base_grid = 32 32 1
 nlevels = 1
 nboxes = 1
+
+# Boundary conditions
+left_bc = 1
+right_bc = 2
+bottom_bc = 3
+top_bc = 1
+back_bc = 2
+front_bc = 3
