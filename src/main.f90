@@ -15,13 +15,13 @@ program rhyme
   type ( chemistry_t ) :: chemi
 
 
-  character(len=1024) :: executable_name, param_file
+  character(len=1024) :: exe_filename, param_file
 
   ! Initialize date and time
   ! call init_date_time
 
   ! Reading parameter file and converting to code units
-  call get_command_argument (0, executable_name)
+  call get_command_argument (0, exe_filename)
   call get_command_argument (1, param_file)
 
   if ( parse_params ( param_file, amr, bc, chemi ) ) stop
