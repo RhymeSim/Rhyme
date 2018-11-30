@@ -1,6 +1,7 @@
 module rhyme_param_parser
   use rhyme_samr
   use rhyme_samr_boundary_condition
+  use rhyme_chemistry
 
   implicit none
 
@@ -14,12 +15,13 @@ module rhyme_param_parser
 
 contains
 
-  logical function parse_params ( param_file, amr, bc ) result ( passed )
+  logical function parse_params ( param_file, amr, bc, chemi ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
-    type (samr_t) :: amr
-    type (samr_boundary_condition_t) :: bc
+    type ( samr_t ) :: amr
+    type ( samr_boundary_condition_t ) :: bc
+    type ( chemistry_t ) :: chemi
 
     integer :: i, ios
     character(len=1024) :: key, op
@@ -73,6 +75,8 @@ contains
       return
     end if
 
+    ! Initialize Chemistry
+    call chemi%init
 
     passed = .true.
 

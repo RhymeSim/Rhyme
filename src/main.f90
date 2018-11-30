@@ -2,6 +2,7 @@ program rhyme
   use rhyme_nombre
   use rhyme_samr
   use rhyme_samr_boundary_condition
+  use rhyme_chemistry
   use rhyme_param_parser
   use date_time_module
 
@@ -11,6 +12,7 @@ program rhyme
 
   type ( samr_t ) :: amr
   type ( samr_boundary_condition_t ) :: bc
+  type ( chemistry_t ) :: chemi
 
 
   character(len=1024) :: executable_name, param_file
@@ -22,7 +24,7 @@ program rhyme
   call get_command_argument (0, executable_name)
   call get_command_argument (1, param_file)
 
-  if ( parse_params ( param_file, amr, bc ) ) stop
+  if ( parse_params ( param_file, amr, bc, chemi ) ) stop
 
   ! Initialize cosmological variables (if COSMO is set)
 

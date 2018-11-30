@@ -5,10 +5,11 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
+  type ( chemistry_t ) :: chemi
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  failed = .not. parse_params ( param_file, samr, bc )
+  failed = .not. parse_params ( param_file, samr, bc, chemi )
   if ( failed ) return
 
   ! SAMR tests
@@ -28,5 +29,10 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. bc%types(bc_id%top) .ne. 1 &
   .or. bc%types(bc_id%back) .ne. 2 &
   .or. bc%types(bc_id%front) .ne. 3
+
+  if ( failed ) return
+
+  ! Chemistry
+  failed = .not. chemi%initialized
 
 end function rhyme_param_parser_parse_param_test
