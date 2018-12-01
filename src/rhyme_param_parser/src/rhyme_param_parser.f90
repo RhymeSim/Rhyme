@@ -49,33 +49,15 @@ contains
 
     close (1)
 
-    ! Initializing SAMR
-    call set_samr_ghost_cells
-    call samr%init
-
-    ! Initializing boundary conditions
-    call bc%init ( samr )
-
-    ! Initialize Chemistry
-    call chemi%init
+    do i = 1, 3
+      if ( samr%base_grid(i) .gt. 1 ) then
+        samr%ghost_cells(i) = 2
+      else
+        samr%ghost_cells(i) = 0
+      end if
+    end do
 
     passed = .true.
-
-  contains
-
-    subroutine set_samr_ghost_cells ()
-      implicit none
-
-      do i = 1, 3
-        if ( samr%base_grid(i) .gt. 1 ) then
-          samr%ghost_cells(i) = 2
-        else
-          samr%ghost_cells(i) = 0
-        end if
-      end do
-
-    end subroutine set_samr_ghost_cells
-
   end function parse_params
 
 end module rhyme_param_parser

@@ -10,7 +10,7 @@ program rhyme
   implicit none
 
 
-  type ( samr_t ) :: amr
+  type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
   type ( chemistry_t ) :: chemi
 
@@ -24,7 +24,17 @@ program rhyme
   call get_command_argument (0, exe_filename)
   call get_command_argument (1, param_file)
 
-  if ( parse_params ( param_file, amr, bc, chemi ) ) stop
+  if ( parse_params ( param_file, samr, bc, chemi ) ) stop
+
+  ! Initializing SAMR
+  call samr%init
+
+  ! Initializing boundary conditions
+  call bc%init ( samr )
+
+  ! Initialize Chemistry
+  call chemi%init
+
 
   ! Initialize cosmological variables (if COSMO is set)
 
