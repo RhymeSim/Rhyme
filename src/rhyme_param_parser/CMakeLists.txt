@@ -5,7 +5,7 @@ enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
 
-set ( deps rhyme_samr rhyme_samr_boundary_condition rhyme_chemistry )
+set ( deps rhyme_samr rhyme_samr_boundary_condition rhyme_chemistry rhyme_ideal_gas )
 
 foreach ( dep ${deps} )
   if( NOT TARGET ${dep} )

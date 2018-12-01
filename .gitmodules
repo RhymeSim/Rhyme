@@ -10,3 +10,6 @@
 [submodule "src/rhyme_chemistry"]
 	path = src/rhyme_chemistry
 	url = git@gitlab.com:rhyme-org/rhyme_chemistry.git
+[submodule "src/rhyme_ideal_gas"]
+	path = src/rhyme_ideal_gas
+	url = git@gitlab.com:rhyme-org/rhyme_ideal_gas.git

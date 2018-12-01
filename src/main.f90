@@ -3,6 +3,7 @@ program rhyme
   use rhyme_samr
   use rhyme_samr_boundary_condition
   use rhyme_chemistry
+  use rhyme_ideal_gas
   use rhyme_param_parser
   use date_time_module
 
@@ -13,6 +14,7 @@ program rhyme
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
   type ( chemistry_t ) :: chemi
+  type ( ideal_gas_t ) :: ig
 
 
   character(len=1024) :: exe_filename, param_file
@@ -24,7 +26,7 @@ program rhyme
   call get_command_argument (0, exe_filename)
   call get_command_argument (1, param_file)
 
-  if ( parse_params ( param_file, samr, bc, chemi ) ) stop
+  if ( parse_params ( param_file, samr, bc, chemi, ig ) ) stop
 
   ! Initializing SAMR
   call samr%init
@@ -34,6 +36,9 @@ program rhyme
 
   ! Initialize Chemistry
   call chemi%init
+
+  ! Initialize ideal gas
+  call ig%init ( chemi )
 
 
   ! Initialize cosmological variables (if COSMO is set)

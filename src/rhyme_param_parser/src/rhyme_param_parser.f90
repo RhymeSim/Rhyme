@@ -2,18 +2,20 @@ module rhyme_param_parser
   use rhyme_samr
   use rhyme_samr_boundary_condition
   use rhyme_chemistry
+  use rhyme_ideal_gas
 
   implicit none
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, chemi ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, chemi, ig ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
     type ( samr_t ) :: samr
     type ( samr_boundary_condition_t ) :: bc
     type ( chemistry_t ) :: chemi
+    type ( ideal_gas_t ) :: ig
 
     integer :: i, ios
     character(len=1024) :: key, op
@@ -44,6 +46,9 @@ contains
       case ( "top_bc" ); read (1, *) key, op, bc%types(bc_id%top)
       case ( "back_bc" ); read (1, *) key, op, bc%types(bc_id%back)
       case ( "front_bc" ); read (1, *) key, op, bc%types(bc_id%front)
+
+        ! Ideal gas
+      case ( "ideal_gas_type" ); read (1, *) key, op, ig%type
       end select
     end do
 

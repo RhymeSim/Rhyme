@@ -10,3 +10,6 @@ bottom_bc = 3
 top_bc = 1
 back_bc = 2
 front_bc = 3
+
+# Ideal gas
+ideal_gas_type = 1
