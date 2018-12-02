@@ -13,3 +13,6 @@
 [submodule "src/rhyme_ideal_gas"]
 	path = src/rhyme_ideal_gas
 	url = git@gitlab.com:rhyme-org/rhyme_ideal_gas.git
+[submodule "src/rhyme_iterative_riemann_solver"]
+	path = src/rhyme_iterative_riemann_solver
+	url = git@gitlab.com:rhyme-org/rhyme_iterative_riemann_solver.git
