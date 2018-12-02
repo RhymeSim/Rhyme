@@ -16,3 +16,6 @@
 [submodule "src/rhyme_iterative_riemann_solver"]
 	path = src/rhyme_iterative_riemann_solver
 	url = git@gitlab.com:rhyme-org/rhyme_iterative_riemann_solver.git
+[submodule "src/rhyme_hydro_base"]
+	path = src/rhyme_hydro_base
+	url = git@gitlab.com:rhyme-org/rhyme_hydro_base.git
