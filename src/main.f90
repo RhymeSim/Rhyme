@@ -16,6 +16,7 @@ program rhyme
   type ( samr_boundary_condition_t ) :: bc
   type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
+  type ( iterative_riemann_solver_config_t ) :: irs_config
 
 
   character(len=1024) :: exe_filename, param_file
@@ -27,7 +28,7 @@ program rhyme
   call get_command_argument (0, exe_filename)
   call get_command_argument (1, param_file)
 
-  if ( parse_params ( param_file, samr, bc, chemi, ig ) ) stop
+  if ( parse_params ( param_file, samr, bc, chemi, ig, irs_config ) ) stop
 
   ! Initializing SAMR
   call samr%init

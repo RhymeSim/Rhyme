@@ -3,12 +3,13 @@ module rhyme_param_parser
   use rhyme_samr_boundary_condition
   use rhyme_chemistry
   use rhyme_ideal_gas
+  use rhyme_iterative_riemann_solver
 
   implicit none
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, chemi, ig ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, chemi, ig, irs_config ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
@@ -16,6 +17,7 @@ contains
     type ( samr_boundary_condition_t ) :: bc
     type ( chemistry_t ) :: chemi
     type ( ideal_gas_t ) :: ig
+    type ( iterative_riemann_solver_config_t ) :: irs_config
 
     integer :: i, ios
     character(len=1024) :: key, op
@@ -34,12 +36,12 @@ contains
 
       select case ( adjustl(trim(key)) )
 
-        ! AMR params
+        ! Structured AMR
       case ( "base_grid" ); read (1, *) key, op, samr%base_grid(1:3)
       case ( "nlevels" ); read (1, *) key, op, samr%nlevels
       case ( "nboxes" ); read (1, *) key, op, samr%nboxes
 
-        ! Boundary condition params
+        ! Boundary Condition
       case ( "left_bc" ); read (1, *) key, op, bc%types(bc_id%left)
       case ( "right_bc" ); read (1, *) key, op, bc%types(bc_id%right)
       case ( "bottom_bc" ); read (1, *) key, op, bc%types(bc_id%bottom)
@@ -47,8 +49,13 @@ contains
       case ( "back_bc" ); read (1, *) key, op, bc%types(bc_id%back)
       case ( "front_bc" ); read (1, *) key, op, bc%types(bc_id%front)
 
-        ! Ideal gas
+        ! Ideal Gas
       case ( "ideal_gas_type" ); read (1, *) key, op, ig%type
+
+        ! Iterative Riemann Solver
+      case ( "pressure_floor" ); read (1, *) key, op, irs_config%pressure_floor
+      case ( "tolerance" ); read (1, *) key, op, irs_config%tolerance
+      case ( "n_iteration" ); read (1, *) key, op, irs_config%n_iteration
       end select
     end do
 
