@@ -14,9 +14,11 @@ program rhyme
 
 
   type workspace_t
-    type ( hydro_conserved_t ), allocatable :: UL(:), UR(:), UBo(:), UT(:), UBa(:), UF(:)
-    type ( hydro_flux_t ), allocatable :: FL(:), FR(:), FBo(:), FT(:), FBa(:), FF(:)
-    type ( hydro_conserved_t ), allocatable :: dUx(:), dUy(:), dUz(:)
+    type ( hydro_conserved_t ), allocatable :: UL(:,:,:), UR(:,:,:)
+    type ( hydro_conserved_t ), allocatable :: Ux(:,:,:)
+    type ( hydro_flux_t ), allocatable :: Fx(:,:,:)
+    type ( hydro_conserved_t ), allocatable :: phix(:,:,:)
+    type ( rp_star_region_t ) :: star
   end type workspace_t
 
 
@@ -28,7 +30,9 @@ program rhyme
 
   type ( workspace_t ) :: ws
 
-  integer :: i1, i2, i3
+  integer :: i, step = 1
+  character(len=128) :: output_name
+  real(kind=8) :: t, dt
 
 
   character(len=1024) :: exe_filename, param_file
@@ -40,7 +44,7 @@ program rhyme
   call get_command_argument ( 1, param_file )
 
   ! Reading parameter file and converting it to the code units
-  if ( parse_params ( param_file, samr, bc, chemi, ig, irs_config ) ) stop
+  if ( .not. parse_params ( param_file, samr, bc, chemi, ig, irs_config ) ) stop
 
   ! Initializing SAMR
   call samr%init
@@ -54,33 +58,87 @@ program rhyme
   ! Initializing Ideal Gas
   call ig%init ( chemi )
 
-  ! Initializing the Workspace
-  allocate ( &
-  ws%UL ( samr%base_grid ( hyid%x ) ), &
-  ws%UR ( samr%base_grid ( hyid%x ) ), &
-  ws%UBo ( samr%base_grid ( hyid%y ) ), &
-  ws%UT ( samr%base_grid ( hyid%y ) ), &
-  ws%UBa ( samr%base_grid ( hyid%z ) ), &
-  ws%UF ( samr%base_grid ( hyid%z ) ), &
-  ws%FL ( samr%base_grid ( hyid%x ) ), &
-  ws%FR ( samr%base_grid ( hyid%x ) ), &
-  ws%FBo ( samr%base_grid ( hyid%y ) ), &
-  ws%FT ( samr%base_grid ( hyid%y ) ), &
-  ws%FBa ( samr%base_grid ( hyid%z ) ), &
-  ws%FF ( samr%base_grid ( hyid%z ) ), &
-  ws%dUx ( samr%base_grid ( hyid%x ) ), &
-  ws%dUy ( samr%base_grid ( hyid%y ) ), &
-  ws%dUz ( samr%base_grid ( hyid%z ) ) &
-  )
 
-  do i3 = 1, samr%base_grid(3)
-    do i2 = 1, samr%base_grid(2)
-      do i1 = 1, samr%base_grid(1)
-
-      end do
-    end do
+  ! IC
+  do i = 1, samr%base_grid(1)
+    if ( i < samr%base_grid(1) / 2 ) then
+      samr%boxes(1)%hydro( i,1,1 )%u = [1.d0, 0.d0, 0.d0, 0.d0, 1.d0]
+    else
+      samr%boxes(1)%hydro( i,1,1 )%u = [.125d0, 0.d0, 0.d0, 0.d0, .1d0]
+    end if
   end do
 
+
+  ! Initializing the Workspace
+  allocate ( &
+  ws%UL ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%UR ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%phix ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%Ux ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%Fx ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ) &
+  )
+
+  dt = 0.00001
+  t = dt
+
+  do while ( t < 5d0 )
+    write (*, '(I0.7,F15.9,A)') step, t, " 5.0"
+
+    if ( .not. bc%set ( samr ) ) then
+      print *, "Error in BC, t: ", t
+      stop
+    end if
+
+    do i = 0, samr%base_grid(1) + 1
+      call ig%half_step_extrapolation ( &
+      samr%boxes(1)%hydro(i-1, 1, 1), &
+      samr%boxes(1)%hydro(i, 1, 1), &
+      samr%boxes(1)%hydro(i+1, 1, 1), &
+      hyid%x, samr%levels(1)%dx(1), dt, &
+      ws%UL(i, 1, 1), ws%UR(i, 1, 1) &
+      )
+
+      ws%UL%u(hyid%rho) = max ( ws%UL%u(hyid%rho), epsilon(0.d0) )
+      ws%UR%u(hyid%rho) = max ( ws%UR%u(hyid%rho), epsilon(0.d0) )
+    end do
+
+    do i = 0, samr%base_grid(1)
+      call iterative_riemann_solver ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), &
+      hyid%x, irs_config, ws%star )
+
+      call irs_sampling ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), ws%star, hyid%x, &
+      0.d0, dt, ws%Ux(i, 1, 1) )
+
+      call ig%flux_at ( ws%Ux( i, 1, 1 ), hyid%x, ws%Fx( i, 1, 1 ) )
+    end do
+
+
+    do i = 1, samr%base_grid(1)
+      samr%boxes(1)%hydro(i,1,1)%u = samr%boxes(1)%hydro(i,1,1)%u &
+      + dt / samr%levels(1)%dx(1) * ( ws%Fx( i-1,1,1 )%f - ws%Fx( i,1,1 )%f )
+    end do
+
+
+    if ( mod(step, 100) .eq. 0 ) then
+      write(output_name,'("output/",i0.7,".txt")') step
+
+      open ( unit=10, file=output_name, action='write', form='formatted')
+
+      do i = 1, samr%base_grid(1)
+        write (10, '(F25.12," ",F25.12," ",F25.12," ",F25.12," ",F25.12)') &
+        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho), &
+        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho_u), &
+        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho_v), &
+        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho_w), &
+        ig%p(samr%boxes(1)%hydro(i,1,1))
+      end do
+
+      close(10)
+    end if
+
+    t = t + dt
+    step = step + 1
+  end do
 
   ! Initialize cosmological variables (if COSMO is set)
 
