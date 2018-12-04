@@ -1,6 +1,7 @@
 module rhyme_param_parser
   use rhyme_samr
   use rhyme_samr_boundary_condition
+  use rhyme_cfl
   use rhyme_chemistry
   use rhyme_ideal_gas
   use rhyme_iterative_riemann_solver
@@ -9,12 +10,13 @@ module rhyme_param_parser
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, chemi, ig, irs_config ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, cfl, chemi, ig, irs_config ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
     type ( samr_t ) :: samr
     type ( samr_boundary_condition_t ) :: bc
+    type ( cfl_t ) :: cfl
     type ( chemistry_t ) :: chemi
     type ( ideal_gas_t ) :: ig
     type ( iterative_riemann_solver_config_t ) :: irs_config
@@ -48,6 +50,9 @@ contains
       case ( "top_bc" ); read (1, *) key, op, bc%types(bc_id%top)
       case ( "back_bc" ); read (1, *) key, op, bc%types(bc_id%back)
       case ( "front_bc" ); read (1, *) key, op, bc%types(bc_id%front)
+
+        !CFL
+      case ( "courant_number" ); read (1, *) key, op, cfl%courant_number
 
         ! Ideal Gas
       case ( "ideal_gas_type" ); read (1, *) key, op, ig%type
