@@ -66,6 +66,11 @@ program rhyme
     else
       samr%boxes(1)%hydro( i,1,1 )%u = [.125d0, 0.d0, 0.d0, 0.d0, .1d0]
     end if
+
+    samr%boxes(1)%hydro( samr%base_grid(1) / 2-2,1,1 )%u = [.825d0, 0.d0, 0.d0, 0.d0, .82d0]
+    samr%boxes(1)%hydro( samr%base_grid(1) / 2-1,1,1 )%u = [.65d0, 0.d0, 0.d0, 0.d0, .64d0]
+    samr%boxes(1)%hydro( samr%base_grid(1) / 2-0,1,1 )%u = [.475d0, 0.d0, 0.d0, 0.d0, .46d0]
+    samr%boxes(1)%hydro( samr%base_grid(1) / 2+1,1,1 )%u = [.3d0, 0.d0, 0.d0, 0.d0, .28d0]
   end do
 
 
@@ -119,7 +124,7 @@ program rhyme
     end do
 
 
-    if ( mod(step, 100) .eq. 0 ) then
+    if ( mod(step, 500) .eq. 0 ) then
       write(output_name,'("output/",i0.7,".txt")') step
 
       open ( unit=10, file=output_name, action='write', form='formatted')
