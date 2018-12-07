@@ -6,6 +6,7 @@ program rhyme
   use rhyme_cfl
   use rhyme_chemistry
   use rhyme_ideal_gas
+  use rhyme_slope_limiter
   use rhyme_iterative_riemann_solver
   use rhyme_param_parser
   use date_time_module
@@ -15,19 +16,12 @@ program rhyme
 
 
   type workspace_t
-  !   type ( hydro_conserved_t ), allocatable :: UL(:,:,:), UR(:,:,:)
-  !   type ( hydro_conserved_t ), allocatable :: Ux(:,:,:)
+    type ( hydro_conserved_t ), allocatable :: UL(:,:,:), UR(:,:,:)
+    type ( hydro_conserved_t ), allocatable :: Ux(:,:,:)
     type ( hydro_flux_t ), allocatable :: Fx(:,:,:)
-  !   type ( hydro_conserved_t ), allocatable :: phix(:,:,:)
-  !   type ( rp_star_region_t ) :: star
+    type ( hydro_conserved_t ) :: phi
+    type ( rp_star_region_t ) :: star
   end type workspace_t
-
-  type ( hydro_conserved_t ) :: UL, UR, dummy
-  type ( hydro_conserved_t ) :: Uedge
-  ! type ( hydro_flux_t ) :: FL, FR
-  type ( hydro_conserved_t ) :: phix
-  type ( rp_star_region_t ) :: star
-
 
 
   type ( samr_t ) :: samr
@@ -36,6 +30,7 @@ program rhyme
   type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
   type ( iterative_riemann_solver_config_t ) :: irs_config
+  type ( slope_limiter_t ) :: sl
 
   type ( workspace_t ) :: ws
 
@@ -75,31 +70,27 @@ program rhyme
     else
       samr%boxes(1)%hydro( i,1,1 )%u = [.125d0, 0.d0, 0.d0, 0.d0, .1d0]
     end if
-
-    samr%boxes(1)%hydro( samr%base_grid(1) / 2-2,1,1 )%u = [.825d0, 0.d0, 0.d0, 0.d0, .82d0]
-    samr%boxes(1)%hydro( samr%base_grid(1) / 2-1,1,1 )%u = [.65d0, 0.d0, 0.d0, 0.d0, .64d0]
-    samr%boxes(1)%hydro( samr%base_grid(1) / 2-0,1,1 )%u = [.475d0, 0.d0, 0.d0, 0.d0, .46d0]
-    samr%boxes(1)%hydro( samr%base_grid(1) / 2+1,1,1 )%u = [.3d0, 0.d0, 0.d0, 0.d0, .28d0]
   end do
+  
+  samr%boxes(1)%hydro( samr%base_grid(1) / 2-2,1,1 )%u = [.825d0, 0.d0, 0.d0, 0.d0, .82d0]
+  samr%boxes(1)%hydro( samr%base_grid(1) / 2-1,1,1 )%u = [.65d0, 0.d0, 0.d0, 0.d0, .64d0]
+  samr%boxes(1)%hydro( samr%base_grid(1) / 2-0,1,1 )%u = [.475d0, 0.d0, 0.d0, 0.d0, .46d0]
+  samr%boxes(1)%hydro( samr%base_grid(1) / 2+1,1,1 )%u = [.3d0, 0.d0, 0.d0, 0.d0, .28d0]
 
 
   ! Initializing the Workspace
-  ! allocate ( &
-  ! ws%UL ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ! ws%UR ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ! ws%phix ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ! ws%Ux ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ! ws%Fx ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ) &
-  ! )
-
   allocate ( &
+  ws%UL ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%UR ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
+  ws%Ux ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
   ws%Fx ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ) &
   )
 
-  dt = cfl%dt ( ig, samr )
+  ! dt = cfl%dt ( ig, samr )
+  dt = 0.0001
   t = dt
 
-  do while ( t < 5d0 )
+  do while ( t < 1d0 )
     write (*, '(I0.7,F15.9,A)') step, t, " 5.0"
 
     if ( .not. bc%set ( samr ) ) then
@@ -107,52 +98,32 @@ program rhyme
       stop
     end if
 
-    do i = 0, samr%base_grid(1)
-      call ig%half_step_extrapolation ( &
+
+    do i = 0, samr%base_grid(1) + 1
+
+      call sl%minmod ( cfl, ig, &
       samr%boxes(1)%hydro(i-1, 1, 1), &
       samr%boxes(1)%hydro(i  , 1, 1), &
       samr%boxes(1)%hydro(i+1, 1, 1), &
-      hyid%x, samr%levels(0)%dx(1), dt, dummy, UL)
+      samr%boxes(1)%hydro(i+2, 1, 1), &
+      ws%phi )
 
       call ig%half_step_extrapolation ( &
-      samr%boxes(1)%hydro(i  , 1, 1), &
-      samr%boxes(1)%hydro(i+1, 1, 1), &
-      samr%boxes(1)%hydro(i+2, 1, 1), &
-      hyid%x, samr%levels(0)%dx(1), dt, UR, dummy)
+      samr%boxes(1)%hydro(i,1,1), ws%phi, hyid%x, samr%levels(0)%dx(1), dt, ws%UL(i,1,1), ws%UR(i,1,1))
 
-      call iterative_riemann_solver ( ig, UL, UR, hyid%x, irs_config, star )
-
-      call irs_sampling ( ig, UL, UR, star, hyid%x, 0.d0, dt, Uedge )
-
-      call ig%flux_at ( Uedge, hyid%x, ws%Fx( i, 1, 1 ) )
-      print *, Uedge
-      print *, ws%Fx(i,1,1)
-      print *, ""
+      ws%UL%u(hyid%rho) = max ( ws%UL%u(hyid%rho), epsilon(0.d0) )
+      ws%UR%u(hyid%rho) = max ( ws%UR%u(hyid%rho), epsilon(0.d0) )
     end do
 
+    do i = 0, samr%base_grid(1)
+      call iterative_riemann_solver ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), &
+      hyid%x, irs_config, ws%star )
 
-    ! do i = 0, samr%base_grid(1) + 1
-    !   call ig%half_step_extrapolation ( &
-    !   samr%boxes(1)%hydro(i-1, 1, 1), &
-    !   samr%boxes(1)%hydro(i, 1, 1), &
-    !   samr%boxes(1)%hydro(i+1, 1, 1), &
-    !   hyid%x, samr%levels(0)%dx(1), dt, &
-    !   ws%UL(i, 1, 1), ws%UR(i, 1, 1) &
-    !   )
-    !
-    !   ws%UL%u(hyid%rho) = max ( ws%UL%u(hyid%rho), epsilon(0.d0) )
-    !   ws%UR%u(hyid%rho) = max ( ws%UR%u(hyid%rho), epsilon(0.d0) )
-    ! end do
-    !
-    ! do i = 0, samr%base_grid(1)
-    !   call iterative_riemann_solver ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), &
-    !   hyid%x, irs_config, ws%star )
-    !
-    !   call irs_sampling ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), ws%star, hyid%x, &
-    !   0.d0, dt, ws%Ux(i, 1, 1) )
-    !
-    !   call ig%flux_at ( ws%Ux( i, 1, 1 ), hyid%x, ws%Fx( i, 1, 1 ) )
-    ! end do
+      call irs_sampling ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), ws%star, hyid%x, &
+      0.d0, dt, ws%Ux(i, 1, 1) )
+
+      call ig%flux_at ( ws%Ux( i, 1, 1 ), hyid%x, ws%Fx( i, 1, 1 ) )
+    end do
 
 
     do i = 1, samr%base_grid(1)
@@ -179,7 +150,7 @@ program rhyme
     end if
 
 
-    dt = cfl%dt ( ig, samr )
+    ! dt = cfl%dt ( ig, samr )
     t = t + dt
 
     step = step + 1

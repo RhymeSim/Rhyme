@@ -26,12 +26,12 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   ! Boundary Condition
   failed = &
-  bc%types(bc_id%left) .ne. 1 &
-  .or. bc%types(bc_id%right) .ne. 2 &
-  .or. bc%types(bc_id%bottom) .ne. 3 &
-  .or. bc%types(bc_id%top) .ne. 1 &
-  .or. bc%types(bc_id%back) .ne. 2 &
-  .or. bc%types(bc_id%front) .ne. 3
+  bc%types(bcid%left) .ne. 1 &
+  .or. bc%types(bcid%right) .ne. 2 &
+  .or. bc%types(bcid%bottom) .ne. 3 &
+  .or. bc%types(bcid%top) .ne. 1 &
+  .or. bc%types(bcid%back) .ne. 2 &
+  .or. bc%types(bcid%front) .ne. 3
 
   if ( failed ) return
 

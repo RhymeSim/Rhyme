@@ -44,12 +44,12 @@ contains
       case ( "nboxes" ); read (1, *) key, op, samr%nboxes
 
         ! Boundary Condition
-      case ( "left_bc" ); read (1, *) key, op, bc%types(bc_id%left)
-      case ( "right_bc" ); read (1, *) key, op, bc%types(bc_id%right)
-      case ( "bottom_bc" ); read (1, *) key, op, bc%types(bc_id%bottom)
-      case ( "top_bc" ); read (1, *) key, op, bc%types(bc_id%top)
-      case ( "back_bc" ); read (1, *) key, op, bc%types(bc_id%back)
-      case ( "front_bc" ); read (1, *) key, op, bc%types(bc_id%front)
+      case ( "left_bc" ); read (1, *) key, op, bc%types(bcid%left)
+      case ( "right_bc" ); read (1, *) key, op, bc%types(bcid%right)
+      case ( "bottom_bc" ); read (1, *) key, op, bc%types(bcid%bottom)
+      case ( "top_bc" ); read (1, *) key, op, bc%types(bcid%top)
+      case ( "back_bc" ); read (1, *) key, op, bc%types(bcid%back)
+      case ( "front_bc" ); read (1, *) key, op, bc%types(bcid%front)
 
         !CFL
       case ( "courant_number" ); read (1, *) key, op, cfl%courant_number

@@ -22,3 +22,6 @@
 [submodule "src/rhyme_cfl"]
 	path = src/rhyme_cfl
 	url = git@gitlab.com:rhyme-org/rhyme_cfl.git
+[submodule "src/rhyme_slope_limiter"]
+	path = src/rhyme_slope_limiter
+	url = git@gitlab.com:rhyme-org/rhyme_slope_limiter.git
