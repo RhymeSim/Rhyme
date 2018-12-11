@@ -5,7 +5,7 @@ enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
 
-set ( deps rhyme_nombre rhyme_hydro_base rhyme_samr rhyme_samr_boundary_condition rhyme_cfl rhyme_param_parser rhyme_chemistry rhyme_ideal_gas rhyme_slope_limiter rhyme_iterative_riemann_solver )
+set ( deps rhyme_nombre rhyme_hydro_base rhyme_samr rhyme_samr_boundary_condition rhyme_cfl rhyme_param_parser rhyme_chemistry rhyme_ideal_gas rhyme_initial_condition rhyme_slope_limiter rhyme_iterative_riemann_solver )
 
 foreach ( dep ${deps} )
   if( NOT TARGET ${dep} )
@@ -23,5 +23,5 @@ add_executable ( rhyme src/main.f90 ${internal_modules} )
 target_link_libraries ( rhyme ${deps} )
 
 
-# add_subdirectory ( tests )
-# enable_testing ()
+add_subdirectory ( tests )
+enable_testing ()

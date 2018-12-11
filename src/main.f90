@@ -6,6 +6,7 @@ program rhyme
   use rhyme_cfl
   use rhyme_chemistry
   use rhyme_ideal_gas
+  use rhyme_initial_condition
   use rhyme_slope_limiter
   use rhyme_iterative_riemann_solver
   use rhyme_param_parser

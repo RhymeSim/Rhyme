@@ -25,3 +25,6 @@
 [submodule "src/rhyme_slope_limiter"]
 	path = src/rhyme_slope_limiter
 	url = git@gitlab.com:rhyme-org/rhyme_slope_limiter.git
+[submodule "src/rhyme_initial_condition"]
+	path = src/rhyme_initial_condition
+	url = git@gitlab.com:rhyme-org/rhyme_initial_condition.git
