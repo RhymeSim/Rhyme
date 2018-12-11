@@ -2,27 +2,28 @@ module rhyme_param_parser
   use rhyme_samr
   use rhyme_samr_boundary_condition
   use rhyme_cfl
-  use rhyme_chemistry
   use rhyme_ideal_gas
+  use rhyme_initial_condition
   use rhyme_iterative_riemann_solver
 
   implicit none
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, cfl, chemi, ig, irs_config ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
     type ( samr_t ) :: samr
     type ( samr_boundary_condition_t ) :: bc
     type ( cfl_t ) :: cfl
-    type ( chemistry_t ) :: chemi
     type ( ideal_gas_t ) :: ig
+    type ( initial_condition_t ) :: ic
     type ( iterative_riemann_solver_config_t ) :: irs_config
 
     integer :: i, ios
-    character(len=1024) :: key, op
+    character(len=1024) :: key, op, str
+    type ( ic_shape_t ), pointer :: shape
 
 
     open (1, file=param_file, action='read', form="formatted")
@@ -57,10 +58,41 @@ contains
         ! Ideal Gas
       case ( "ideal_gas_type" ); read (1, *) key, op, ig%type
 
+        ! Initial Condition
+      case ( "background" ); read (1, *) key, op, ic%background%w(hyid%rho:hyid%p)
+      case ( "shape" )
+        read (1, *) key, op, str
+
+        if ( trim(str) .eq. "rect" ) then
+          backspace (1)
+          shape => ic%new_shape ( icid%rect )
+          read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
+        else if ( trim(str) .eq. "circle" ) then
+          backspace (1)
+          shape => ic%new_shape ( icid%circle )
+          read (1, *) key, op, str, shape%x0(1:3), shape%r
+        end if
+      case ( "shape_trans" ); read (1, *) key, op, shape%trans%type, shape%trans%width_px
+      case ( "shape_fill" );
+        read (1, *) key, op, shape%fill%type
+        backspace (1)
+
+        if ( shape%fill%type .eq. icid%uniform ) then
+          read (1, *) key, op, shape%fill%type, shape%fill%states(1)%w(hyid%rho:hyid%p)
+        else
+          read (1, *) key, op, shape%fill%type, shape%fill%states(1)%w(hyid%rho:hyid%p), &
+          shape%fill%states(2)%w(hyid%rho:hyid%p)
+        end if
+
         ! Iterative Riemann Solver
       case ( "pressure_floor" ); read (1, *) key, op, irs_config%pressure_floor
       case ( "tolerance" ); read (1, *) key, op, irs_config%tolerance
       case ( "n_iteration" ); read (1, *) key, op, irs_config%n_iteration
+
+        ! Unknown option
+      case default
+        print *, "**", trim(key), "**", " is not an option!"
+        read (1, *)
       end select
     end do
 

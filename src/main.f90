@@ -16,6 +16,16 @@ program rhyme
   implicit none
 
 
+  type ( samr_t ) :: samr
+  type ( samr_boundary_condition_t ) :: bc
+  type ( cfl_t ) :: cfl
+  type ( chemistry_t ) :: chemi
+  type ( ideal_gas_t ) :: ig
+  type ( initial_condition_t ) :: ic
+  type ( iterative_riemann_solver_config_t ) :: irs_config
+  type ( slope_limiter_t ) :: sl
+
+
   type workspace_t
     type ( hydro_conserved_t ), allocatable :: UL(:,:,:), UR(:,:,:)
     type ( hydro_conserved_t ), allocatable :: Ux(:,:,:)
@@ -25,13 +35,6 @@ program rhyme
   end type workspace_t
 
 
-  type ( samr_t ) :: samr
-  type ( samr_boundary_condition_t ) :: bc
-  type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemi
-  type ( ideal_gas_t ) :: ig
-  type ( iterative_riemann_solver_config_t ) :: irs_config
-  type ( slope_limiter_t ) :: sl
 
   type ( workspace_t ) :: ws
   type ( hydro_primitive_t ) :: st_left_prim, st_right_prim
@@ -51,7 +54,7 @@ program rhyme
   call get_command_argument ( 1, param_file )
 
   ! Reading parameter file and converting it to the code units
-  if ( .not. parse_params ( param_file, samr, bc, cfl, chemi, ig, irs_config ) ) stop
+  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config ) ) stop
 
   ! Initializing SAMR
   call samr%init
