@@ -6,7 +6,6 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
   type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
   type ( iterative_riemann_solver_config_t ) :: irs_config

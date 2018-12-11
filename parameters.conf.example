@@ -12,7 +12,7 @@ back_bc = 2
 front_bc = 3
 
 # Ideal Gas
-ideal_gas_type = 1
+ideal_gas_type = monatomic
 
 # Iterative Riemann Solver
 pressure_floor = 1.d-10
@@ -25,8 +25,8 @@ courant_number = .81d0
 # Initial Condition
 background = .125d0 0.d0 0.d0 0.d0 .1d0
 shape = rect 1 1 1 64 128 0
-shape_trans = 1 0.d0
-shape_fill = 0 1.d0 0.d0 0.d0 0.d0 1.d0
+shape_trans = linear 0.d0
+shape_fill = uniform 1.d0 0.d0 0.d0 0.d0 1.d0
 shape = circle 3.d0 4.d0 5.d0 2.34d0
-shape_trans = 2 3.d0
-shape_fill = -2 1.d0 0.d0 0.d0 0.d0 1.d0 2.d0 3.d0 4.d0 5.d0 6.d0
+shape_trans = cubic 3.d0
+shape_fill = grad_y 1.d0 0.d0 0.d0 0.d0 1.d0 2.d0 3.d0 4.d0 5.d0 6.d0

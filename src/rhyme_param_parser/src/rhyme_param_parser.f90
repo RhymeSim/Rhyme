@@ -56,7 +56,16 @@ contains
       case ( "courant_number" ); read (1, *) key, op, cfl%courant_number
 
         ! Ideal Gas
-      case ( "ideal_gas_type" ); read (1, *) key, op, ig%type
+      case ( "ideal_gas_type" );
+         read (1, *) key, op, str
+
+        if ( trim(str) .eq. "monatomic" ) then
+          ig%type = igid%monatomic
+        else if ( trim(str) .eq. "diatomic" ) then
+          ig%type = igid%diatomic
+        else if ( trim(str) .eq. "polyatomic" ) then
+          ig%type = igid%polyatomic
+        end if
 
         ! Initial Condition
       case ( "background" ); read (1, *) key, op, ic%background%w(hyid%rho:hyid%p)
@@ -72,16 +81,35 @@ contains
           shape => ic%new_shape ( icid%circle )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
         end if
-      case ( "shape_trans" ); read (1, *) key, op, shape%trans%type, shape%trans%width_px
+      case ( "shape_trans" );
+        read (1, *) key, op, str, shape%trans%width_px
+
+        if ( trim(str) .eq. "linear" ) then
+          shape%trans%type = icid%linear
+        else if ( trim(str) .eq. "cubic" ) then
+          shape%trans%type = icid%cubic
+        end if
+
       case ( "shape_fill" );
-        read (1, *) key, op, shape%fill%type
+        read (1, *) key, op, str
         backspace (1)
 
-        if ( shape%fill%type .eq. icid%uniform ) then
-          read (1, *) key, op, shape%fill%type, shape%fill%states(1)%w(hyid%rho:hyid%p)
+        if ( trim(str) .eq. "uniform" ) then
+          read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p)
+          shape%fill%type = icid%uniform
         else
-          read (1, *) key, op, shape%fill%type, shape%fill%states(1)%w(hyid%rho:hyid%p), &
+          read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p), &
           shape%fill%states(2)%w(hyid%rho:hyid%p)
+
+          if ( trim(str) .eq. "grad_x" ) then
+            shape%fill%type = icid%grad_x
+          else if ( trim(str) .eq. "grad_y" ) then
+            shape%fill%type = icid%grad_y
+          else if ( trim(str) .eq. "grad_z" ) then
+            shape%fill%type = icid%grad_z
+          else if ( trim(str) .eq. "grad_r" ) then
+            shape%fill%type = icid%grad_r
+          end if
         end if
 
         ! Iterative Riemann Solver
