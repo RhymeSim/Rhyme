@@ -62,31 +62,12 @@ program rhyme
   ! Initializing Boundary Conditions
   call bc%init ( samr )
 
-  ! Initializing Chemistry
-  call chemi%init
-
   ! Initializing Ideal Gas
+  call chemi%init
   call ig%init ( chemi )
 
-  st_left_prim%w = [1.d0, 0.d0, 0.d0, 0.d0, 1.d0]
-  st_right_prim%w = [.125d0, 0.d0, 0.d0, 0.d0, .1d0]
-
-  call ig%prim_to_cons ( st_left_prim, st_left_cons )
-  call ig%prim_to_cons ( st_right_prim, st_right_cons )
-
-  ! IC
-  do i = 1, samr%base_grid(1)
-    if ( i < samr%base_grid(1) / 2 ) then
-      samr%boxes(1)%hydro( i,1,1 )%u = st_left_cons%u
-    else
-      samr%boxes(1)%hydro( i,1,1 )%u = st_right_cons%u
-    end if
-  end do
-
-  ! samr%boxes(1)%hydro( samr%base_grid(1) / 2-2,1,1 )%u = [.825d0, 0.d0, 0.d0, 0.d0, .82d0]
-  ! samr%boxes(1)%hydro( samr%base_grid(1) / 2-1,1,1 )%u = [.65d0, 0.d0, 0.d0, 0.d0, .64d0]
-  ! samr%boxes(1)%hydro( samr%base_grid(1) / 2-0,1,1 )%u = [.475d0, 0.d0, 0.d0, 0.d0, .46d0]
-  ! samr%boxes(1)%hydro( samr%base_grid(1) / 2+1,1,1 )%u = [.3d0, 0.d0, 0.d0, 0.d0, .28d0]
+  ! Apply Initial Condition
+  call ic%apply ( ig, samr, bc )
 
 
   ! Initializing the Workspace
