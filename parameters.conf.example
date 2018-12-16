@@ -19,6 +19,10 @@ pressure_floor = 1.d-10
 tolerance = 1.d-6
 n_iteration = 100
 
+# Slope Limiter
+limiter = van_leer
+limiter_omega = 1.23d0
+
 # CFL
 courant_number = .81d0
 

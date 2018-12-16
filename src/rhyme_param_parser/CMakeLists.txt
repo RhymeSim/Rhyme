@@ -5,7 +5,7 @@ enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
 
-set ( deps rhyme_samr rhyme_samr_boundary_condition rhyme_cfl rhyme_ideal_gas rhyme_initial_condition rhyme_iterative_riemann_solver )
+set ( deps rhyme_samr rhyme_samr_boundary_condition rhyme_cfl rhyme_ideal_gas rhyme_initial_condition rhyme_iterative_riemann_solver rhyme_slope_limiter )
 
 foreach ( dep ${deps} )
   if( NOT TARGET ${dep} )

@@ -5,12 +5,13 @@ module rhyme_param_parser
   use rhyme_ideal_gas
   use rhyme_initial_condition
   use rhyme_iterative_riemann_solver
+  use rhyme_slope_limiter
 
   implicit none
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
@@ -20,6 +21,7 @@ contains
     type ( ideal_gas_t ) :: ig
     type ( initial_condition_t ) :: ic
     type ( iterative_riemann_solver_config_t ) :: irs_config
+    type ( slope_limiter_t ) :: sl
 
     integer :: i, ios
     character(len=1024) :: key, op, str
@@ -116,6 +118,23 @@ contains
       case ( "pressure_floor" ); read (1, *) key, op, irs_config%pressure_floor
       case ( "tolerance" ); read (1, *) key, op, irs_config%tolerance
       case ( "n_iteration" ); read (1, *) key, op, irs_config%n_iteration
+
+        ! Slope limiter
+      case ( "limiter" )
+        read (1, *) key, op, str
+
+        if ( trim(str) .eq. "van_leer") then
+          sl%type = slid%van_Leer
+        else if ( trim(str) .eq. "minmod") then
+          sl%type = slid%minmod
+        else if ( trim(str) .eq. "van_albada") then
+          sl%type = slid%van_albada
+        else if ( trim(str) .eq. "superbee") then
+          sl%type = slid%superbee
+        end if
+
+      case ( "limiter_omega" ); read (1, *) key, op, sl%w
+
 
         ! Unknown option
       case default

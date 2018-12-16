@@ -54,7 +54,7 @@ program rhyme
   call get_command_argument ( 1, param_file )
 
   ! Reading parameter file and converting it to the code units
-  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config ) ) stop
+  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl ) ) stop
 
   ! Initializing SAMR
   call samr%init
