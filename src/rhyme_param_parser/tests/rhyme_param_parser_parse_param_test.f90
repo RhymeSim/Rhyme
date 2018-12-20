@@ -20,8 +20,8 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   failed = &
   any ( samr%base_grid .ne. [ 128, 128, 1 ] ) &
   .or. any ( samr%ghost_cells .ne. [ 2, 2, 0 ] ) &
-  .or. samr%nlevels .ne. 1 &
-  .or. samr%nboxes .ne. 1
+  .or. samr%nlevels .ne. 3 &
+  .or. any ( samr%tot_nboxes .ne. [ 10, 100, 1000 ] )
 
   if ( failed ) return
 

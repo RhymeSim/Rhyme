@@ -34,11 +34,7 @@ program rhyme
     type ( rp_star_region_t ) :: star
   end type workspace_t
 
-
-
   type ( workspace_t ) :: ws
-  type ( hydro_primitive_t ) :: st_left_prim, st_right_prim
-  type ( hydro_conserved_t ) :: st_left_cons, st_right_cons
 
   integer :: i, step = 1
   character(len=128) :: output_name
@@ -69,13 +65,30 @@ program rhyme
   ! Apply Initial Condition
   call ic%apply ( ig, samr, bc )
 
+  print *, samr%tot_nboxes
 
   ! Initializing the Workspace
   allocate ( &
-  ws%UL ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ws%UR ( 0:samr%base_grid ( hyid%x )+1, samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ws%Ux ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ), &
-  ws%Fx ( 0:samr%base_grid ( hyid%x ), samr%base_grid ( hyid%y ), samr%base_grid ( hyid%z ) ) &
+    ws%UL ( &
+      0:samr%levels(0)%boxes(1)%dims ( hyid%x )+1, &
+      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
+    ), &
+    ws%UR ( &
+      0:samr%levels(0)%boxes(1)%dims ( hyid%x )+1, &
+      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
+    ), &
+    ws%Ux ( &
+      0:samr%levels(0)%boxes(1)%dims ( hyid%x ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
+    ), &
+    ws%Fx ( &
+      0:samr%levels(0)%boxes(1)%dims ( hyid%x ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
+      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
+    ) &
   )
 
   dt = cfl%dt ( ig, samr )
@@ -91,23 +104,23 @@ program rhyme
     end if
 
 
-    do i = 0, samr%base_grid(1) + 1
+    do i = 0, samr%levels(0)%boxes(1)%dims(1) + 1
 
-      call sl%minmod ( cfl, ig, &
-      samr%boxes(1)%hydro(i-1, 1, 1), &
-      samr%boxes(1)%hydro(i  , 1, 1), &
-      samr%boxes(1)%hydro(i+1, 1, 1), &
-      samr%boxes(1)%hydro(i+2, 1, 1), &
+      call sl%run ( cfl, ig, &
+      samr%levels(0)%boxes(1)%hydro(i-1, 1, 1), &
+      samr%levels(0)%boxes(1)%hydro(i  , 1, 1), &
+      samr%levels(0)%boxes(1)%hydro(i+1, 1, 1), &
+      samr%levels(0)%boxes(1)%hydro(i+2, 1, 1), &
       ws%phi )
 
       call ig%half_step_extrapolation ( &
-      samr%boxes(1)%hydro(i,1,1), ws%phi, hyid%x, samr%levels(0)%dx(1), dt, ws%UL(i,1,1), ws%UR(i,1,1))
+      samr%levels(0)%boxes(1)%hydro(i,1,1), ws%phi, hyid%x, samr%levels(0)%dx(1), dt, ws%UL(i,1,1), ws%UR(i,1,1))
 
       ws%UL%u(hyid%rho) = max ( ws%UL%u(hyid%rho), epsilon(0.d0) )
       ws%UR%u(hyid%rho) = max ( ws%UR%u(hyid%rho), epsilon(0.d0) )
     end do
 
-    do i = 0, samr%base_grid(1)
+    do i = 0, samr%levels(0)%boxes(1)%dims(1)
       call iterative_riemann_solver ( ig, ws%UR(i, 1, 1), ws%UL(i+1, 1, 1), &
       hyid%x, irs_config, ws%star )
 
@@ -118,8 +131,8 @@ program rhyme
     end do
 
 
-    do i = 1, samr%base_grid(1)
-      samr%boxes(1)%hydro(i,1,1)%u = samr%boxes(1)%hydro(i,1,1)%u &
+    do i = 1, samr%levels(0)%boxes(1)%dims(1)
+      samr%levels(0)%boxes(1)%hydro(i,1,1)%u = samr%levels(0)%boxes(1)%hydro(i,1,1)%u &
       + dt / samr%levels(0)%dx(1) * ( ws%Fx( i-1,1,1 )%f - ws%Fx( i,1,1 )%f )
     end do
 
@@ -129,13 +142,13 @@ program rhyme
 
       open ( unit=10, file=output_name, action='write', form='formatted')
 
-      do i = 1, samr%base_grid(1)
+      do i = 1, samr%levels(0)%boxes(1)%dims(1)
         write (10, '(F25.12," ",F25.12," ",F25.12," ",F25.12," ",F25.12)') &
-        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho), &
-        samr%boxes(1)%hydro(i,1,1)%u(hyid%rho_u) / samr%boxes(1)%hydro(i,1,1)%u(hyid%rho), &
-        ig%p ( samr%boxes(1)%hydro(i,1,1) ), &
-        ig%e_int_sp(samr%boxes(1)%hydro(i,1,1)), &
-        samr%boxes(1)%hydro(i,1,1)%u(hyid%e_tot)
+        samr%levels(0)%boxes(1)%hydro(i,1,1)%u(hyid%rho), &
+        samr%levels(0)%boxes(1)%hydro(i,1,1)%u(hyid%rho_u) / samr%levels(0)%boxes(1)%hydro(i,1,1)%u(hyid%rho), &
+        ig%p ( samr%levels(0)%boxes(1)%hydro(i,1,1) ), &
+        ig%e_int_sp(samr%levels(0)%boxes(1)%hydro(i,1,1)), &
+        samr%levels(0)%boxes(1)%hydro(i,1,1)%u(hyid%e_tot)
       end do
 
       close(10)
