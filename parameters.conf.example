@@ -1,7 +1,7 @@
 # Structured AMR
 base_grid = 128 128 1
 nlevels = 3
-nboxes = 10 100 1000
+nboxes = 1 10 100
 
 # Boundary Conditions
 left_bc = 1

@@ -65,8 +65,6 @@ program rhyme
   ! Apply Initial Condition
   call ic%apply ( ig, samr, bc )
 
-  print *, samr%tot_nboxes
-
   ! Initializing the Workspace
   allocate ( &
     ws%UL ( &
@@ -93,7 +91,6 @@ program rhyme
 
   dt = cfl%dt ( ig, samr )
   t = 0.d0
-  print *, dt
 
   do while ( t < .2d0 )
     write (*, '(I0.7,F15.9,A)') step, t, " / .2"

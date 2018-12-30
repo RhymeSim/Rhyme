@@ -45,18 +45,10 @@ contains
       case ( "base_grid" ); read (1, *) key, op, samr%base_grid(1:3)
       case ( "nlevels" )
         read (1, *) key, op, samr%nlevels
-        if ( samr%nlevels < 0 ) then
-          samr%nlevels = 0
-          allocate ( samr%tot_nboxes(0:samr%nlevels) )
-        else
-          allocate ( samr%tot_nboxes(0:samr%nlevels) )
-        end if
-        samr%tot_nboxes(0) = 1
+        allocate ( samr%tot_nboxes(0:samr%nlevels) )
 
       case ( "nboxes" )
-        if ( samr%nlevels > 0 ) then
-          read (1, *) key, op, samr%tot_nboxes(1:samr%nlevels)
-        end if
+        read (1, *) key, op, samr%tot_nboxes(0:samr%nlevels-1)
 
         ! Boundary Condition
       case ( "left_bc" ); read (1, *) key, op, bc%types(bcid%left)
