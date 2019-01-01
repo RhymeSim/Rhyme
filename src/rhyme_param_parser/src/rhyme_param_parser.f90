@@ -43,12 +43,8 @@ contains
 
         ! Structured AMR
       case ( "base_grid" ); read (1, *) key, op, samr%base_grid(1:3)
-      case ( "nlevels" )
-        read (1, *) key, op, samr%nlevels
-        allocate ( samr%tot_nboxes(0:samr%nlevels) )
-
-      case ( "nboxes" )
-        read (1, *) key, op, samr%tot_nboxes(0:samr%nlevels-1)
+      case ( "nlevels" ); read (1, *) key, op, samr%nlevels
+      case ( "nboxes" ); read (1, *) key, op, samr%tot_nboxes(0:samr%nlevels-1)
 
         ! Boundary Condition
       case ( "left_bc" ); read (1, *) key, op, bc%types(bcid%left)

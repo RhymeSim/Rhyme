@@ -100,6 +100,7 @@ program rhyme
       stop
     end if
 
+  print *, samr%levels(0)%boxes(1)%hydro(-1:130,:,:)%u(1)
 
     do i = 0, samr%levels(0)%boxes(1)%dims(1) + 1
 
@@ -107,7 +108,6 @@ program rhyme
       samr%levels(0)%boxes(1)%hydro(i-1, 1, 1), &
       samr%levels(0)%boxes(1)%hydro(i  , 1, 1), &
       samr%levels(0)%boxes(1)%hydro(i+1, 1, 1), &
-      samr%levels(0)%boxes(1)%hydro(i+2, 1, 1), &
       ws%phi )
 
       call ig%half_step_extrapolation ( &

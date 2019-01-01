@@ -21,7 +21,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   any ( samr%base_grid .ne. [ 128, 128, 1 ] ) &
   .or. any ( samr%ghost_cells .ne. [ 2, 2, 0 ] ) &
   .or. samr%nlevels .ne. 3 &
-  .or. any ( samr%tot_nboxes .ne. [ 1, 10, 100 ] )
+  .or. any ( samr%tot_nboxes(0:samr%nlevels-1) .ne. [ 1, 10, 100 ] )
 
   if ( failed ) return
 
@@ -46,7 +46,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   any ( abs ( ic%background%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
   .or. ic%shapes%type .ne. icid%rect &
   .or. any ( ic%shapes%xl .ne. 1 ) &
-  .or. any ( ic%shapes%length .ne. [ 64, 128, 0 ] ) &
+  .or. any ( ic%shapes%length .ne. [ 64, 128, 1 ] ) &
   .or. ic%shapes%trans%type .ne. icid%linear &
   .or. abs ( ic%shapes%trans%width_px - 0.d0 ) > epsilon(0.d0) &
   .or. ic%shapes%fill%type .ne. icid%uniform &
