@@ -100,8 +100,6 @@ program rhyme
       stop
     end if
 
-  print *, samr%levels(0)%boxes(1)%hydro(-1:130,:,:)%u(1)
-
     do i = 0, samr%levels(0)%boxes(1)%dims(1) + 1
 
       call sl%run ( cfl, ig, &
