@@ -5,7 +5,11 @@ enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
 
-set ( CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/include )
+set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
+set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
+
+
+set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
@@ -14,19 +18,19 @@ set ( deps
   rhyme_samr
   rhyme_samr_boundary_condition
   rhyme_cfl
-  rhyme_param_parser
   rhyme_chemistry
   rhyme_ideal_gas
   rhyme_initial_condition
   rhyme_slope_limiter
   rhyme_iterative_riemann_solver
+  rhyme_param_parser
 )
 
 foreach ( dep ${deps} )
-  if( NOT TARGET ${dep} )
-    add_subdirectory ( src/${dep} )
-  endif()
-endforeach(dep)
+  if ( NOT TARGET ${dep} )
+    add_subdirectory ( src/${dep} ${CMAKE_BINARY_DIR}/${dep} )
+  endif ()
+endforeach ( dep )
 
 
 file ( GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90 )

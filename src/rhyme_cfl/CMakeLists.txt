@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_param_parser )
+project ( rhyme_cfl )
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
@@ -12,25 +12,22 @@ set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
+
 set ( deps
   rhyme_samr
-  rhyme_samr_boundary_condition
-  rhyme_cfl
   rhyme_ideal_gas
-  rhyme_initial_condition
-  rhyme_iterative_riemann_solver
-  rhyme_slope_limiter
 )
 
 foreach ( dep ${deps} )
-  if( NOT TARGET ${dep} )
+  if ( NOT TARGET ${dep} )
     add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_param_parser.f90 )
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_cfl.f90 )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
+
 
 add_subdirectory ( tests )
 enable_testing ()
