@@ -1,7 +1,7 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_ideal_gas )
-enable_language ( Fortran )
+project ( rhyme_chombo )
+enable_language ( C Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
 
@@ -12,11 +12,9 @@ set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
+
 set ( deps
-  rhyme_thermo_base
-  rhyme_hydro_base
-  rhyme_nombre
-  rhyme_chemistry
+  rhyme_samr
 )
 
 foreach ( dep ${deps} )
@@ -26,8 +24,12 @@ foreach ( dep ${deps} )
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_ideal_gas.f90 )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
+
+find_package ( HDF5 REQUIRED COMPONENTS Fortran )
+
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_chombo.f90 )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} ${HDF5_Fortran_LIBRARIES} )
+target_include_directories( ${PROJECT_NAME} PRIVATE ${HDF5_Fortran_INCLUDE_DIRS} )
 
 
 add_subdirectory ( tests )
