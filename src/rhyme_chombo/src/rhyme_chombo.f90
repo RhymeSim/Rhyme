@@ -1,5 +1,6 @@
 module rhyme_chombo
   use hdf5
+  use rhyme_samr
 
   implicit none
 
@@ -19,6 +20,7 @@ module rhyme_chombo
   contains
     procedure :: setup => rhyme_chombo_setup
     procedure :: add_attr => rhyme_chombo_add_attribute
+    procedure :: add_array_attr => rhyme_chombo_add_array_attribute
     procedure :: close => rhyme_chombo_close
   end type rhyme_chombo_t
 
@@ -110,6 +112,40 @@ contains
   end subroutine rhyme_chombo_add_attribute
 
 
+  subroutine rhyme_chombo_add_array_attribute ( this, where, key, ndims, len, value )
+    implicit none
+
+    class ( rhyme_chombo_t ), intent(inout) :: this
+    character(len=*), intent(in) :: where, key
+    integer, intent(in) :: ndims
+    integer, dimension(ndims), intent(in) :: len
+    class (*), dimension(ndims) :: value
+
+    integer ( hid_t ) :: group_id, space_id, attr_id
+    integer :: hdferr
+
+    call h5gopen_f ( this%fid, trim(where), group_id, hdferr )
+
+    call h5screate_simple_f ( ndims, int(len, kind=hsize_t), space_id, hdferr )
+
+    select type ( val => value )
+    type is ( integer )
+      call h5acreate_f ( group_id, trim(key), H5T_NATIVE_INTEGER, space_id, attr_id, hdferr )
+      call h5awrite_f ( attr_id, H5T_NATIVE_INTEGER, val, int(len, kind=hsize_t), hdferr )
+
+    type is ( real ( kind=4 ) )
+      call h5acreate_f ( group_id, trim(key), H5T_NATIVE_REAL, space_id, attr_id, hdferr )
+      call h5awrite_f ( attr_id, H5T_NATIVE_REAL, val, int(len, kind=hsize_t), hdferr )
+
+    type is ( real ( kind=8 ) )
+      call h5acreate_f ( group_id, trim(key), H5T_NATIVE_DOUBLE, space_id, attr_id, hdferr )
+      call h5awrite_f ( attr_id, H5T_NATIVE_DOUBLE, val, int(len, kind=hsize_t), hdferr )
+
+    end select
+
+  end subroutine rhyme_chombo_add_array_attribute
+
+
   subroutine rhyme_chombo_close ( this )
     implicit none
 
@@ -122,10 +158,8 @@ contains
     call h5fclose_f ( this%fid, hdferr )
     ! TODO: check hdferr
 
-
     this%fid = chid%unset
 
     this%initialized = .false.
   end subroutine rhyme_chombo_close
-
 end module rhyme_chombo
