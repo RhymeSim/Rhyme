@@ -26,27 +26,21 @@ module rhyme_chombo
 
 contains
 
-  subroutine rhyme_chombo_setup ( this, filename, l )
+  subroutine rhyme_chombo_setup ( this, filename, samr )
     implicit none
 
     class ( rhyme_chombo_t ), intent(inout) :: this
     character(len=*), intent(in) :: filename
-    integer, optional :: l
+    type ( samr_t ), intent(in) :: samr
 
-    integer :: i, hdferr, nlevels
+    integer :: i, hdferr, n_dims
     character(len=32) :: level_name
-    integer(hid_t) :: level_gid
+    integer(hid_t) :: group_id
 
     if ( this%initialized ) return
 
-    if ( present ( l ) ) then
-      nlevels = l
-    else
-      nlevels = 1
-    end if
-
     this%filename = trim ( filename )
-    this%num_levels = nlevels
+    this%num_levels = samr%nlevels
 
     call h5open_f ( hdferr )
     ! TODO: check hdferr
@@ -54,12 +48,18 @@ contains
     call h5fcreate_f ( trim(filename), H5F_ACC_TRUNC_F, this%fid, hdferr )
     ! TODO: check hdferr
 
-    do i = 0, nlevels - 1
+    do i = 0, samr%nlevels - 1
       write ( level_name, '(A6,I1)') "level_", i
-      call h5gcreate_f ( this%fid, trim(level_name), level_gid, hdferr )
+      call h5gcreate_f ( this%fid, trim(level_name), group_id, hdferr )
     end do
 
     this%initialized = .true.
+
+    n_dims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
+    print *, samr%base_grid
+
+    call h5gcreate_f ( this%fid, "/chombo_global", group_id, hdferr )
+    call this%add_attr ( "/chombo_global", "SpaceDim", n_dims )
   end subroutine rhyme_chombo_setup
 
 

@@ -1,5 +1,5 @@
 logical function rhyme_chombo_add_array_attr_test () result ( failed )
-  use rhyme_chombo
+  use rhyme_chombo_factory
 
   implicit none
 
@@ -22,7 +22,7 @@ logical function rhyme_chombo_add_array_attr_test () result ( failed )
   real ( kind = 4 ) :: attr_r(len) = 0.e0
   real ( kind = 8 ) :: attr_r8(len) = 0.d0
 
-  call ch%setup ( testfile )
+  call ch%setup ( testfile, samr )
   call ch%add_array_attr ( "/", "array_i", 1, [5], array_i )
   call ch%add_array_attr ( "/", "array_r", 1, [5], array_r )
   call ch%add_array_attr ( "/", "array_r8", 1, [5], array_r8 )

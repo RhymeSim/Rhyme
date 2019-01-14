@@ -1,5 +1,5 @@
 logical function rhyme_chombo_add_attr_test () result ( failed )
-  use rhyme_chombo
+  use rhyme_chombo_factory
 
   implicit none
 
@@ -17,7 +17,7 @@ logical function rhyme_chombo_add_attr_test () result ( failed )
 
   character(len=256), parameter :: testfile = "./test_chombo_file_add_attr.h5"
 
-  call ch%setup ( testfile )
+  call ch%setup ( testfile, samr )
   call ch%add_attr ( "/", "int", 1 )
   call ch%add_attr ( "/", "real", 2.34e0 )
   call ch%add_attr ( "/", "real8", 3.45d0 )
