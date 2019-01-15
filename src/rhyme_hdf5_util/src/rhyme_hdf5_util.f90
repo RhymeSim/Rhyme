@@ -15,9 +15,12 @@ module rhyme_hdf5_util
     logical :: initialized = .false.
   contains
     procedure :: create => rhyme_hdf5_util_create
+    procedure :: create_group => rhyme_hdf5_util_create_group
     procedure :: add_group_attr => rhyme_hdf5_util_add_group_attribute
     procedure :: add_group_1d_array_attr => rhyme_hdf5_util_add_group_1d_array_attribute
     procedure :: add_group_comp_1d_array_attr => rhyme_hdf5_util_add_group_compound_1d_array_attribute
+    procedure :: open => rhyme_hdf5_util_open
+    procedure :: read_group_attr => rhyme_hdf5_util_read_group_attribute
     procedure :: close => rhyme_hdf5_util_close
   end type rhyme_hdf5_util_t
 
@@ -40,6 +43,21 @@ contains
     this%filename = trim ( filename )
     this%initialized = .true.
   end subroutine rhyme_hdf5_util_create
+
+
+  subroutine rhyme_hdf5_util_create_group ( this, where, group_id )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent (in) :: this
+    character ( len=* ), intent (in) :: where
+    integer ( hid_t ), intent (out) :: group_id
+
+    integer :: hdferr
+
+    if ( .not. this%initialized ) return
+
+    call h5gcreate_f ( this%fid, trim(where), group_id, hdferr )
+  end subroutine rhyme_hdf5_util_create_group
 
 
   subroutine rhyme_hdf5_util_add_group_attribute ( this, where, key, value )
@@ -204,6 +222,63 @@ contains
   end subroutine rhyme_hdf5_util_add_group_compound_1d_array_attribute
 
 
+  subroutine rhyme_hdf5_util_open ( this, path )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent (inout) :: this
+    character ( len=* ), intent (in) :: path
+
+    integer :: hdferr
+
+
+    if ( this%initialized ) return
+
+    call h5open_f ( hdferr )
+    call h5fopen_f ( trim (path), H5F_ACC_RDWR_F, this%fid, hdferr )
+
+    this%filename = trim ( path )
+    this%initialized = .true.
+  end subroutine rhyme_hdf5_util_open
+
+
+  subroutine rhyme_hdf5_util_read_group_attribute ( this, where, key, value )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent ( in ) :: this
+    class (*), intent ( in ) :: where
+    character (len=*), intent( in ) :: key
+    class(*), intent ( out ) :: value
+
+    integer ( hid_t ) :: group_id, attr_id, dtype
+    integer ( hsize_t ) :: dims(1) = 1
+    integer :: hdferr
+
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gopen_f ( this%fid, trim (w), group_id, hdferr )
+    type is ( integer ( hid_t ) )
+      group_id = w
+    end select
+
+    call h5aopen_f ( group_id, trim (key), attr_id, hdferr )
+
+    select type ( val => value )
+    type is ( integer )
+      call h5aread_f ( attr_id, H5T_NATIVE_INTEGER, val, dims, hdferr )
+    type is ( real (kind=4) )
+      call h5aread_f ( attr_id, H5T_NATIVE_REAL, val, dims, hdferr )
+    type is ( real (kind=8) )
+      call h5aread_f ( attr_id, H5T_NATIVE_DOUBLE, val, dims, hdferr )
+    type is ( character (*) )
+      call h5tcopy_f ( H5T_NATIVE_CHARACTER, dtype, hdferr )
+      call h5tset_size_f ( dtype, int ( len_trim (val), kind=size_t ), hdferr )
+      call h5aread_f ( attr_id, dtype, val, dims, hdferr )
+    end select
+
+    call h5aclose_f ( attr_id, hdferr )
+  end subroutine rhyme_hdf5_util_read_group_attribute
+
 
   subroutine rhyme_hdf5_util_close ( this )
     implicit none
@@ -211,6 +286,9 @@ contains
     class ( rhyme_hdf5_util_t ), intent (inout) :: this
 
     integer :: hdferr
+
+
+    if ( .not. this%initialized ) return
 
     call h5fclose_f ( this%fid, hdferr )
 
