@@ -3,9 +3,10 @@ logical function rhyme_chombo_test () result ( failed )
 
   implicit none
 
-  type ( rhyme_chombo_t ) :: chombo
+  type ( rhyme_chombo_t ) :: ch
 
   failed = &
-  chid%unset .ne. -1 &
-  .or. chombo%initialized
+  ch%num_levels .ne. 0 &
+  .or. ch%num_components .ne. 0 &
+  .or. ch%initialized .eqv. .true.
 end function rhyme_chombo_test

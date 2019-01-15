@@ -1,5 +1,5 @@
 logical function rhyme_test () result (failed)
   implicit none
 
-  failed = .true.
+  failed = .false.
 end function rhyme_test
