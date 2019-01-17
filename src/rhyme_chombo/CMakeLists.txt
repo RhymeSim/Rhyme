@@ -14,7 +14,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
-  rhyme_hdf5_util
   rhyme_samr
 )
 
@@ -24,9 +23,11 @@ foreach ( dep ${deps} )
   endif ()
 endforeach ( dep )
 
+add_subdirectory ( src/rhyme_hdf5_util )
+
 
 add_library ( ${PROJECT_NAME} STATIC src/rhyme_chombo.f90 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} rhyme_hdf5_util )
 
 
 add_subdirectory ( tests )

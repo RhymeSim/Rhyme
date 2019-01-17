@@ -20,8 +20,9 @@ module rhyme_muscl_hancock
   type muscl_hancock_t
     type ( cfl_t ) :: cfl
     type ( ideal_gas_t ) :: ig
-    type ( slope_limiter_t ) : sl
+    type ( slope_limiter_t ) :: sl
     integer :: type = mhid%memory_intensive
+    logical :: initialized
   contains
     procedure :: init => rhyme_muscl_hancock_init
     procedure :: setup_workspace => rhyme_muscl_hancock_setup_workspace
@@ -29,9 +30,9 @@ module rhyme_muscl_hancock
 
 
   type mh_workspace_box_t
-    type ( hydro_conserved_t ), allocatable :: U_sl ( :, :, :, 3 )
-    type ( hydro_conserved_t ), allocatable :: U_side ( :, :, :, 6 )
-    type ( hydro_flux_t ), allocatable :: F_dir ( :, :, :, 3 )
+    type ( hydro_conserved_t ), allocatable :: U_sl ( :, :, :, : )
+    type ( hydro_conserved_t ), allocatable :: U_side ( :, :, :, : )
+    type ( hydro_flux_t ), allocatable :: F_dir ( :, :, :, : )
     type ( hydro_conserved_t ) :: phi
     type ( rp_star_region_t ) :: star
   end type mh_workspace_box_t
@@ -62,7 +63,7 @@ contains
   subroutine rhyme_muscl_hancock_setup_workspace ( this, samr )
     implicit none
 
-    class ( muscl_hancock_t ), intent ( in ) :: this
+    class ( muscl_hancock_t ), intent ( inout ) :: this
     type ( samr_t ), intent ( in ) :: samr
 
     if ( this%initialized ) return
@@ -100,9 +101,9 @@ contains
             endif
           end do
 
-          allocate ( mhws%levels(l)%boxes(b)%U_sl ( d(1:1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2) ) )
-          allocate ( mhws%levels(l)%boxes(b)%U_side ( d(1:1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2) ) )
-          allocate ( mhws%levels(l)%boxes(b)%F_dir ( d(1:1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2) ) )
+          allocate ( mhws%levels(l)%boxes(b)%U_sl ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
+          allocate ( mhws%levels(l)%boxes(b)%U_side ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 6 ) )
+          allocate ( mhws%levels(l)%boxes(b)%F_dir ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
 
           mhws%levels(l)%nboxes = mhws%levels(l)%nboxes + 1
         end do
