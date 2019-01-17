@@ -1,10 +1,10 @@
-logical function rhyme_chombo_write_test () result ( failed )
+logical function rhyme_chombo_write_samr_test () result ( failed )
   use rhyme_chombo_factory
 
   implicit none
 
   ! Constants
-  character ( len=1024 ), parameter :: testfile = "./test_chombo_write.h5"
+  character ( len=1024 ), parameter :: testfile = "./test_chombo_write_samr.h5"
 
   ! rhyme_chombo variables
   type ( rhyme_chombo_t ) :: ch
@@ -14,7 +14,7 @@ logical function rhyme_chombo_write_test () result ( failed )
 
 
   call rhyme_chombo_factory_init
-  call ch%write ( testfile, samr )
+  call ch%write_samr ( testfile, samr )
 
   failed = .not. ch%initialized &
   .or. any ( ch%level_ids(0:samr%nlevels-1) .eq. chid%unset ) &
@@ -26,4 +26,4 @@ logical function rhyme_chombo_write_test () result ( failed )
   failed = ndims .ne. ndims_read
 
   call ch%close
-end function rhyme_chombo_write_test
+end function rhyme_chombo_write_samr_test
