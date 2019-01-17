@@ -9,6 +9,7 @@ program rhyme
   use rhyme_initial_condition
   use rhyme_slope_limiter
   use rhyme_iterative_riemann_solver
+  use rhyme_muslc_hancock
   use rhyme_param_parser
   use date_time_module
 
@@ -22,35 +23,23 @@ program rhyme
   type ( initial_condition_t ) :: ic
   type ( iterative_riemann_solver_config_t ) :: irs_config
   type ( slope_limiter_t ) :: sl
+  type ( muscl_hancock_t ) :: mh
 
-
-  type workspace_t
-    type ( hydro_conserved_t ), allocatable :: UL(:,:,:), UR(:,:,:)
-    type ( hydro_conserved_t ), allocatable :: Ux(:,:,:)
-    type ( hydro_flux_t ), allocatable :: Fx(:,:,:)
-    type ( hydro_conserved_t ) :: phi
-    type ( rp_star_region_t ) :: star
-  end type workspace_t
-
-  type ( workspace_t ) :: ws
-
-  integer :: i, step = 1
+  integer :: i, l, b, step = 1
   character(len=128) :: output_name
   real(kind=8) :: t, dt
 
-
   character(len=1024) :: exe_filename, param_file
 
-  ! Initialize date and time
-  ! call init_date_time
 
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
 
-  ! Reading parameter file and converting it to the code units
+
+  ! Reading parameter file and converting it to code units
   if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl ) ) stop
 
-  ! Initializing SAMR
+  ! Initializing Structured AMR
   call samr%init
 
   ! Initializing Boundary Conditions
@@ -60,35 +49,27 @@ program rhyme
   call chemi%init
   call ig%init ( chemi )
 
-  ! Apply Initial Condition
+  ! Initializing MUSCL-Hancock
+  call mh%init ( cfl, ig, sl, samr )
+
+  ! Applying Initial Condition
   call ic%apply ( ig, samr, bc )
 
-  ! Initializing the Workspace
-  allocate ( &
-    ws%UL ( &
-      0:samr%levels(0)%boxes(1)%dims ( hyid%x )+1, &
-      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
-    ), &
-    ws%UR ( &
-      0:samr%levels(0)%boxes(1)%dims ( hyid%x )+1, &
-      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
-    ), &
-    ws%Ux ( &
-      0:samr%levels(0)%boxes(1)%dims ( hyid%x ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
-    ), &
-    ws%Fx ( &
-      0:samr%levels(0)%boxes(1)%dims ( hyid%x ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%y ), &
-      samr%levels(0)%boxes(1)%dims ( hyid%z ) &
-    ) &
-  )
 
   dt = cfl%dt ( ig, samr )
-  t = 0.d0
+
+  do while ( samr%levels(0)%t < param%final_time )
+    mh%setup_workspace ( samr )
+
+    do l = samr%nlevels - 1, 0, -1
+      do b = 1, samr%levels(l)%nboxes
+        bc%set ( samr%levels(l)%boxes(b), samr%ghost_cells )
+        mh%solve ( samr%levels(l)%boxes(b) )
+      end do
+    end do
+
+    samr%level(0)%iteration = samr%level(0)%iteration + 1
+  end do
 
   do while ( t < .2d0 )
     write (*, '(I0.7,F15.9,A)') step, t, " / .2"

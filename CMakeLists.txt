@@ -24,6 +24,7 @@ set ( deps
   rhyme_slope_limiter
   rhyme_iterative_riemann_solver
   rhyme_param_parser
+  rhyme_muscl_hancock
   rhyme_chombo
 )
 

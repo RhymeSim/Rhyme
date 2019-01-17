@@ -13,6 +13,13 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
+  rhyme_hydro_base
+  rhyme_riemann_problem
+  rhyme_samr
+  rhyme_cfl
+  rhyme_ideal_gas
+  rhyme_slope_limiter
+  rhyme_iterative_riemann_solver
 )
 
 foreach ( dep ${deps} )
