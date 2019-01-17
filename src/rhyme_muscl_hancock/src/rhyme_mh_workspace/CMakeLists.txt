@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_muscl_hancock )
+project ( rhyme_mh_workspace )
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
@@ -13,23 +13,20 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
-  rhyme_cfl
-  rhyme_ideal_gas
-  rhyme_slope_limiter
-  rhyme_iterative_riemann_solver
+  rhyme_hydro_base
+  rhyme_riemann_problem
+  rhyme_samr
 )
 
 foreach ( dep ${deps} )
   if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
+    add_subdirectory ( ../../../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
 
-add_subdirectory ( src/rhyme_mh_workspace )
 
-
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_muscl_hancock.f90 )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} rhyme_mh_workspace )
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_mh_workspace.f90 )
+target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
 
 
 add_subdirectory ( tests )
