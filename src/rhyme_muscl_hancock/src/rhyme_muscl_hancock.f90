@@ -18,6 +18,7 @@ module rhyme_muscl_hancock
     type ( cfl_t ) :: cfl
     type ( ideal_gas_t ) :: ig
     type ( slope_limiter_t ) :: sl
+    type ( mh_workspace_t ) :: ws
     logical :: initialized
   contains
   end type muscl_hancock_t

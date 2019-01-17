@@ -2,6 +2,7 @@ module rhyme_mh_workspace
   use rhyme_hydro_base
   use rhyme_riemann_problem
   use rhyme_samr
+
   implicit none
 
   type rhyme_mh_workspace_indices_t
@@ -25,26 +26,14 @@ module rhyme_mh_workspace
 
   type mh_workspace_t
     integer :: nlevels, type = wsid%memory_intensive
-    logical :: initialized
+    logical :: initialized = .false.
     type ( mh_workspace_level_t ) :: levels(0:23)
   contains
-    procedure :: init => rhyme_mh_workspace_init
-    procedure :: setup_workspace => rhyme_mh_workspace_setup_workspace
+    procedure :: setup => rhyme_mh_workspace_setup
   end type mh_workspace_t
-
-  type ( mh_workspace_t ), save :: mhws
-
 contains
 
-  subroutine rhyme_mh_workspace_init ( this )
-    implicit none
-
-    class ( mh_workspace_t ), intent ( in ) :: this
-
-  end subroutine rhyme_mh_workspace_init
-
-
-  subroutine rhyme_mh_workspace_setup_workspace ( this, samr )
+  subroutine rhyme_mh_workspace_setup ( this, samr )
     implicit none
 
     class ( mh_workspace_t ), intent ( inout ) :: this
@@ -67,13 +56,13 @@ contains
 
       integer :: i, l, b, d(3,2)
 
-      mhws%nlevels = samr%nlevels
+      this%nlevels = samr%nlevels
 
       do l = 0, samr%nlevels - 1
-        allocate ( mhws%levels(l)%boxes ( samr%levels(l)%tot_nboxes ) )
+        allocate ( this%levels(l)%boxes ( samr%levels(l)%tot_nboxes ) )
 
-        mhws%levels(l)%tot_nboxes = samr%levels(l)%tot_nboxes
-        mhws%levels(l)%nboxes = 0
+        this%levels(l)%tot_nboxes = samr%levels(l)%tot_nboxes
+        this%levels(l)%nboxes = 0
 
         do b = 1, samr%levels(l)%nboxes
 
@@ -86,11 +75,11 @@ contains
             endif
           end do
 
-          allocate ( mhws%levels(l)%boxes(b)%U_sl ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
-          allocate ( mhws%levels(l)%boxes(b)%U_side ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 6 ) )
-          allocate ( mhws%levels(l)%boxes(b)%F_dir ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
+          allocate ( this%levels(l)%boxes(b)%U_sl ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
+          allocate ( this%levels(l)%boxes(b)%U_side ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 6 ) )
+          allocate ( this%levels(l)%boxes(b)%F_dir ( d(1,1):d(1,2), d(2,1):d(2,2), d(3,1):d(3,2), 3 ) )
 
-          mhws%levels(l)%nboxes = mhws%levels(l)%nboxes + 1
+          this%levels(l)%nboxes = this%levels(l)%nboxes + 1
         end do
       end do
     end subroutine setup_memory_intensive_workspace
@@ -102,5 +91,5 @@ contains
       print *, "Not implemented yet!"
       stop
     end subroutine setup_cpu_intensive_workspace
-  end subroutine rhyme_mh_workspace_setup_workspace
+  end subroutine rhyme_mh_workspace_setup
 end module rhyme_mh_workspace
