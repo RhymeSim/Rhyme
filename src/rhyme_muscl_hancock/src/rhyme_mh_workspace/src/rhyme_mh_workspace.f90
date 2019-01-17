@@ -30,6 +30,7 @@ module rhyme_mh_workspace
     type ( mh_workspace_level_t ) :: levels(0:23)
   contains
     procedure :: setup => rhyme_mh_workspace_setup
+    ! TODO: Add update procedure to update the workspace after adding/deleting boxes
   end type mh_workspace_t
 contains
 

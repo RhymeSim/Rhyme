@@ -21,7 +21,17 @@ module rhyme_muscl_hancock
     type ( mh_workspace_t ) :: ws
     logical :: initialized
   contains
+    procedure :: init => rhyme_muscl_hancock_init
   end type muscl_hancock_t
 
 contains
+
+  subroutine rhyme_muscl_hancock_init ( this, samr )
+    implicit none
+
+    class ( muscl_hancock_t ), intent ( inout ) :: this
+    type ( samr_t ), intent ( in ) :: samr
+
+    call this%ws%setup ( samr )
+  end subroutine rhyme_muscl_hancock_init
 end module rhyme_muscl_hancock

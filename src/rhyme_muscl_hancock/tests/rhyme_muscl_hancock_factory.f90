@@ -1,10 +1,9 @@
-module rhyme_mh_workspace_factory
-  use rhyme_mh_workspace
+module rhyme_muscl_hancock_factory
+  use rhyme_muscl_hancock
   use rhyme_samr
 
   implicit none
 
-  logical :: initialized = .false.
   integer, parameter :: xdim = 16
   integer, parameter :: ydim = 8
   integer, parameter :: zdim = 1
@@ -20,12 +19,10 @@ module rhyme_mh_workspace_factory
 
 contains
 
-  subroutine rhyme_mh_workspace_factory_init ()
+  subroutine rhyme_muscl_hancock_factory_init ()
     implicit none
 
     integer :: i, j, k
-
-    if ( initialized ) return
 
     tot_nboxes(0) = 1
     tot_nboxes(1) = 10
@@ -41,7 +38,5 @@ contains
         end do
       end do
     end do
-
-    initialized = .true.
-  end subroutine rhyme_mh_workspace_factory_init
-end module rhyme_mh_workspace_factory
+  end subroutine rhyme_muscl_hancock_factory_init
+end module rhyme_muscl_hancock_factory
