@@ -7,7 +7,13 @@ logical function rhyme_muscl_hancock_test () result ( failed )
 
 
   call rhyme_muscl_hancock_factory_init
+
+  failed = mh%initialized
+  if ( failed ) return
+
   call mh%init ( samr )
 
-  failed = .not. mh%ws%initialized
+  failed = &
+  .not. mh%ws%initialized &
+  .or. .not. mh%initialized
 end function rhyme_muscl_hancock_test
