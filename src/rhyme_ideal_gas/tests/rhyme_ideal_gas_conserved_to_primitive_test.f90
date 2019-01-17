@@ -5,8 +5,7 @@ logical function rhyme_ideal_gas_conserved_to_primitive_test () result (failed)
 
   type ( hydro_primitive_t ) :: prim_calc
 
-  call chemi%init
-  call ig%init_with (chemi, gas_type)
+  call ig%init_with ( gas_type )
 
   call ig%cons_to_prim ( cons, prim_calc )
 

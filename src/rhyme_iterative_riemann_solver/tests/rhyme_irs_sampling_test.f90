@@ -4,7 +4,6 @@ logical function rhyme_irs_sampling_test () result (failed)
   implicit none
 
   type ( ideal_gas_t ) :: ig
-  type ( chemistry_t ) :: chemi
   type ( hydro_conserved_t ) :: L, R, U
   type ( iterative_riemann_solver_config_t ) :: irs_config
   type ( rp_star_region_t ) :: star
@@ -13,9 +12,7 @@ logical function rhyme_irs_sampling_test () result (failed)
   logical :: passed
   real(kind=8) :: x, rho_, v, p, e_int
 
-  call chemi%init
-
-  call ig%init_with (chemi, igid%diatomic)
+  call ig%init_with ( igid%diatomic )
 
   call irs_Sod_test (L, R, star)
   call iterative_riemann_solver (ig, L, R, hyid%x, irs_config, star)

@@ -5,7 +5,6 @@ module rhyme_slope_limiter_factory
 
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ), save :: ig
-  type ( chemistry_t ), save :: chemi
 
   type ( hydro_conserved_t ) :: UL, UM, UR
 

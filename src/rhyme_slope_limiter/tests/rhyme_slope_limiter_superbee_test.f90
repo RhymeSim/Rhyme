@@ -6,8 +6,7 @@ logical function rhyme_slope_limiter_superbee_test () result (failed)
   type ( slope_limiter_t ) :: sl
   type ( hydro_conserved_t ) :: Delta
 
-  call chemi%init
-  call ig%init_with ( chemi, igid%diatomic )
+  call ig%init_with ( igid%diatomic )
 
   UL%u = cons%u
   UR%u = cons%u

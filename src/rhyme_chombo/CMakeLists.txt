@@ -23,11 +23,20 @@ foreach ( dep ${deps} )
   endif ()
 endforeach ( dep )
 
-add_subdirectory ( src/rhyme_hdf5_util )
+
+set ( internal_deps
+  rhyme_hdf5_util
+)
+
+foreach ( i_dep ${internal_deps} )
+  if ( NOT TARGET ${i_dep} )
+    add_subdirectory ( src/${i_dep} )
+  endif ()
+endforeach ( i_dep )
 
 
 add_library ( ${PROJECT_NAME} STATIC src/rhyme_chombo.f90 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} rhyme_hdf5_util )
+target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} ${internal_deps} )
 
 
 add_subdirectory ( tests )

@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_thermo_base )
+project ( rhyme_chemistry )
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
@@ -18,13 +18,13 @@ set ( deps
 
 foreach ( dep ${deps} )
   if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
+    add_subdirectory ( ../../../${dep} ${CMAKE_BINARY_DIR}/${deps} )
   endif ()
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_thermo_base.f90 )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_chemistry.f90 )
+target_link_libraries ( ${PROJECT_NAME} ${deps} )
 
 
 add_subdirectory ( tests )

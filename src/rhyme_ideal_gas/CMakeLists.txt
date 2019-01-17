@@ -13,10 +13,8 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
-  rhyme_thermo_base
   rhyme_hydro_base
   rhyme_nombre
-  rhyme_chemistry
 )
 
 foreach ( dep ${deps} )
@@ -26,8 +24,20 @@ foreach ( dep ${deps} )
 endforeach ( dep )
 
 
+set ( internal_deps
+  rhyme_chemistry
+  rhyme_thermo_base
+)
+
+foreach ( i_dep ${internal_deps} )
+  if ( NOT TARGET ${i_dep} )
+    add_subdirectory ( src/${i_dep} )
+  endif ()
+endforeach ( i_dep )
+
+
 add_library ( ${PROJECT_NAME} STATIC src/rhyme_ideal_gas.f90 )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
+target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} ${internal_deps} )
 
 
 add_subdirectory ( tests )

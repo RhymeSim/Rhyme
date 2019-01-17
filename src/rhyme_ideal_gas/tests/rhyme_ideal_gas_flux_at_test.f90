@@ -5,8 +5,7 @@ logical function rhyme_ideal_gas_flux_at_test () result (failed)
 
   type(hydro_flux_t) :: f
 
-  call chemi%init
-  call ig%init_with (chemi, gas_type)
+  call ig%init_with ( gas_type )
 
   call ig%flux_at (cons, hyid%y, f)
 

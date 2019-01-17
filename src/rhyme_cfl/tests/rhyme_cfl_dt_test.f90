@@ -13,14 +13,12 @@ logical function rhyme_cfl_dt_test () result (failed)
 
 
   type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
 
   integer :: tot_nboxes(0:23)
 
-  call chemi%init
-  call ig%init_with ( chemi, igid%diatomic )
+  call ig%init_with ( igid%diatomic )
 
   tot_nboxes(0) = 1
 

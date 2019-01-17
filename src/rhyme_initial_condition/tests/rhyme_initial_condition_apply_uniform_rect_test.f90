@@ -23,13 +23,11 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
   type ( ic_shape_t ), pointer :: shape
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
-  type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
 
   integer :: i, j, k
 
-  call chemi%init
-  call ig%init_with ( chemi, igid%diatomic )
+  call ig%init_with ( igid%diatomic )
 
   tot_nboxes(0) = 1
 

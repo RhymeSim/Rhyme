@@ -18,7 +18,6 @@ program rhyme
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc
   type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemi
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
   type ( iterative_riemann_solver_config_t ) :: irs_config
@@ -45,8 +44,7 @@ program rhyme
   call bc%init ( samr )
 
   ! Initializing Ideal Gas
-  call chemi%init
-  call ig%init ( chemi )
+  call ig%init
 
   ! Initializing MUSCL-Hancock
   ! call mh%init ( cfl, ig, sl, samr )

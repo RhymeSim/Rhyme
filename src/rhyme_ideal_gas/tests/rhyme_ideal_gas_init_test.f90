@@ -15,10 +15,8 @@ logical function rhyme_ideal_gas_init_test () result (failed)
 
   if ( failed ) return
 
-  call chemi%init
-
   ig_mon%type = igid%monatomic
-  call ig_mon%init (chemi)
+  call ig_mon%init
 
   failed = .not. ig_mon%initialized
 
@@ -37,7 +35,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
 
 
   ig_di%type = igid%diatomic
-  call ig_di%init (chemi)
+  call ig_di%init
 
   failed = &
   abs ( ig_di%Cv%v - 5.d0 / 2.d0 * 8.314d0 ) > epsilon(0.d0) &
@@ -50,7 +48,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
 
 
   ig_poly%type = igid%polyatomic
-  call ig_poly%init (chemi)
+  call ig_poly%init
 
   failed = &
   abs ( ig_poly%Cv%v - 3.d0 * 8.314d0 ) > epsilon(0.d0) &

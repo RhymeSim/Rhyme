@@ -22,6 +22,8 @@ module rhyme_ideal_gas
     integer :: beta
     real(kind=8) :: kB_per_amu ! kB / 1 amu
     logical :: initialized = .false.
+    type ( chemistry_t ) :: chemi
+    type ( thermo_base_t ) :: thermo
   contains
     procedure :: init => init_ideal_gas
     procedure :: init_with => init_ideal_gas_with
@@ -41,39 +43,34 @@ module rhyme_ideal_gas
 
 contains
 
-  subroutine init_ideal_gas_with (this, chemi, gastype)
+  subroutine init_ideal_gas_with ( this, gastype )
     implicit none
 
-    class(ideal_gas_t) :: this
-    type ( chemistry_t ) :: chemi
+    class ( ideal_gas_t ), intent ( inout ) :: this
     integer :: gastype
 
 
     if ( this%initialized ) return
-    if ( .not. chemi%initialized ) return
-
-    call init_thermo_base_module
 
     this%type = gastype
 
-    call init_ideal_gas ( this, chemi )
+    call init_ideal_gas ( this )
   end subroutine init_ideal_gas_with
 
 
-  subroutine init_ideal_gas (this, chemi)
+  subroutine init_ideal_gas ( this )
     implicit none
 
     class(ideal_gas_t) :: this
-    type ( chemistry_t ) :: chemi
 
 
     if ( this%initialized ) return
-    if ( .not. chemi%initialized ) return
 
-    call init_thermo_base_module
+    call this%chemi%init
+    call this%thermo%init
 
     this%R = nombre_t(8.314d0, kg * (m / s)**2 / mol / Kel)
-    this%kB_per_amu = kB%v / chemi%amu%one%v
+    this%kB_per_amu = this%thermo%kB%v / this%chemi%amu%one%v
 
     if ( this%type .eq. igid%monatomic ) then
       this%Cv = 3.d0 / 2.d0 * this%R

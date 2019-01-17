@@ -1,11 +1,9 @@
 logical function rhyme_irs_nonlinear_waves_test () result (failed)
   use rhyme_iterative_riemann_solver
-  use rhyme_chemistry
 
   implicit none
 
   type ( ideal_gas_t ) :: ig
-  type ( chemistry_t ) :: chemi
   type ( iterative_riemann_solver_config_t ) :: irs_config
   real(kind=8) :: f, fprime, prev_f, prev_fprime
   real(kind=8) :: rho = 1.23d3, p, p_star = 3.45d2
@@ -15,10 +13,9 @@ logical function rhyme_irs_nonlinear_waves_test () result (failed)
 
   failed = .false.
 
-  call chemi%init
 
-  call ig%init_with (chemi, igid%monatomic)
-  call random_seed()
+  call ig%init_with ( igid%monatomic )
+  call random_seed
 
   call irs_nonlinear_waves(ig, rho, p, p_star, prev_f, prev_fprime)
 

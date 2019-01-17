@@ -24,16 +24,13 @@ contains
     logical :: failed
 
     type ( hydro_conserved_t ) :: L, R
-    type ( chemistry_t ) :: chemi
     type ( iterative_riemann_solver_config_t ) :: irs_config
     type ( rp_star_region_t ) :: expected_star, star
     real(kind=8) :: ex_p, ex_u, ex_left_rho, ex_right_rho
     real(kind=8) :: star_left_rho, star_right_rho
     logical :: failed_p, failed_v, failed_lshock, failed_rshock, failed_lrho, failed_rrho
 
-    call chemi%init
-
-    call ig%init_with (chemi, igid%diatomic)
+    call ig%init_with ( igid%diatomic )
 
     call func (L, R, expected_star)
     ex_p = expected_star%p

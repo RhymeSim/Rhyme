@@ -4,7 +4,6 @@ module rhyme_ideal_gas_factory
   implicit none
 
   type ( ideal_gas_t ), save :: ig
-  type ( chemistry_t ), save :: chemi
 
   integer, parameter :: gas_type = 1 ! igid%monatomic
 

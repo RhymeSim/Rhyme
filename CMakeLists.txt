@@ -18,7 +18,6 @@ set ( deps
   rhyme_samr
   rhyme_samr_boundary_condition
   rhyme_cfl
-  rhyme_chemistry
   rhyme_ideal_gas
   rhyme_initial_condition
   rhyme_slope_limiter

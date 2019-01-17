@@ -5,8 +5,7 @@ logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed
 
   real(kind=8) :: e_int_sp
 
-  call chemi%init
-  call ig%init_with (chemi, gas_type)
+  call ig%init_with ( gas_type )
 
   e_int_sp = p / rho / (gamma - 1)
 

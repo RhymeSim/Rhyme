@@ -6,8 +6,7 @@ logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
   type (hydro_conserved_t) :: new_cons, Delta, L, R
   real(kind=8) :: dt, dx
 
-  call chemi%init
-  call ig%init_with (chemi, gas_type)
+  call ig%init_with ( gas_type )
 
   new_cons%u = cons%u
   Delta%u = [0.d0, 0.d0, 0.d0, 0.d0, 0.d0]

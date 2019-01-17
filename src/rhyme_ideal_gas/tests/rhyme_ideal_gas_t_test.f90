@@ -5,8 +5,7 @@ logical function rhyme_ideal_gas_t_test () result (failed)
 
   real(kind=8) :: maw ! mean atomic weight
 
-  call chemi%init
-  call ig%init_with (chemi, gas_type)
+  call ig%init_with ( gas_type )
 
   maw = 2.34d1
 
