@@ -1,9 +1,7 @@
 module rhyme_samr
   use rhyme_hydro_base
 
-
   implicit none
-
 
   type samr_indices_t
     integer :: ghost = -1
@@ -23,7 +21,7 @@ module rhyme_samr
   type refine_lev_t
     real(kind=8) :: refine_factor
     real(kind=8) :: t, dt, dx(3)
-    integer :: nboxes, tot_nboxes
+    integer :: nboxes, tot_nboxes, iteration
     type ( samr_box_t ), allocatable :: boxes(:)
   end type refine_lev_t
 

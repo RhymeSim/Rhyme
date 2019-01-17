@@ -47,12 +47,24 @@ contains
       case ( "nboxes" ); read (1, *) key, op, samr%tot_nboxes(0:samr%nlevels-1)
 
         ! Boundary Condition
-      case ( "left_bc" ); read (1, *) key, op, bc%types(bcid%left)
-      case ( "right_bc" ); read (1, *) key, op, bc%types(bcid%right)
-      case ( "bottom_bc" ); read (1, *) key, op, bc%types(bcid%bottom)
-      case ( "top_bc" ); read (1, *) key, op, bc%types(bcid%top)
-      case ( "back_bc" ); read (1, *) key, op, bc%types(bcid%back)
-      case ( "front_bc" ); read (1, *) key, op, bc%types(bcid%front)
+      case ( "left_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%left) = select_boundary ( str )
+      case ( "right_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%right) = select_boundary ( str )
+      case ( "bottom_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%bottom) = select_boundary ( str )
+      case ( "top_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%top) = select_boundary ( str )
+      case ( "back_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%back) = select_boundary ( str )
+      case ( "front_bc" )
+        read (1, *) key, op, str
+        bc%types(bcid%front) = select_boundary ( str )
 
         !CFL
       case ( "courant_number" ); read (1, *) key, op, cfl%courant_number
@@ -154,6 +166,20 @@ contains
     end do
 
     passed = .true.
+
+  contains
+
+    integer function select_boundary ( str ) result ( bc )
+      implicit none
+
+      character(len=1024) :: str
+
+      select case ( trim(str) )
+      case ( "reflective" ); bc = bcid%reflective
+      case ( "outflow" ); bc = bcid%outflow
+      case ( "periodic" ); bc = bcid%periodic
+      end select
+    end function select_boundary
   end function parse_params
 
 end module rhyme_param_parser

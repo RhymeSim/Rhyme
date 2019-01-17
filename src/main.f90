@@ -12,9 +12,7 @@ program rhyme
   use rhyme_param_parser
   use date_time_module
 
-
   implicit none
-
 
   type ( samr_t ) :: samr
   type ( samr_boundary_condition_t ) :: bc

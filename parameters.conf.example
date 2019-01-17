@@ -4,12 +4,12 @@ nlevels = 3
 nboxes = 1 10 100
 
 # Boundary Conditions
-left_bc = 1
-right_bc = 2
-bottom_bc = 3
-top_bc = 1
-back_bc = 2
-front_bc = 3
+left_bc = reflective
+right_bc = outflow
+bottom_bc = periodic
+top_bc = reflective
+back_bc = outflow
+front_bc = periodic
 
 # Ideal Gas
 ideal_gas_type = monatomic
