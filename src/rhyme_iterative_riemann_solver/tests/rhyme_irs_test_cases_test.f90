@@ -55,19 +55,19 @@ contains
     end if
 
 
-    failed_p = abs(star%p - ex_p) > epsilon(0.e0)
+    failed_p = abs ( ( star%p - ex_p ) ) > epsilon(0.e0)
 
     if ( failed_p ) then
       print *, test_name // " star region pressure"
-      print *, "  - accuracy: ", abs(star%p - ex_p), "  - expected: ", epsilon(0.e0)
+      print *, "  - accuracy: ", abs ( ( star%p - ex_p ) / ex_p ), "  - expected: ", epsilon(0.e0)
     end if
 
 
-    failed_v = abs(star%u - ex_u) > epsilon(0.e0)
+    failed_v = abs ( ( star%u - ex_u ) / ex_u ) > epsilon(0.e0)
 
     if ( failed_v ) then
       print *, test_name // " star region velocity"
-      print *, "  - accuracy: ", abs(star%u - ex_u), "  - expected: ", epsilon(0.e0)
+      print *, "  - accuracy: ", abs ( ( star%u - ex_u ) / ex_u ), "  - expected: ", epsilon(0.e0)
     end if
 
 
@@ -75,11 +75,11 @@ contains
     if ( failed_lshock ) print *, test_name // " left shock test has failed"
 
 
-    failed_lrho = abs(star_left_rho - ex_left_rho) > epsilon(0.e0)
+    failed_lrho = abs ( ( star_left_rho - ex_left_rho ) / ex_left_rho ) > epsilon(0.e0)
 
     if ( failed_lrho ) then
       print *, test_name // " left wave density"
-      print *, "  - accuracy: ", abs(star_left_rho - ex_left_rho) &
+      print *, "  - accuracy: ", abs ( ( star_left_rho - ex_left_rho ) / ex_left_rho ) &
       , "  - expected: ", epsilon(0.e0)
     end if
 
@@ -88,11 +88,11 @@ contains
     if ( failed_rshock ) print *, test_name // " right shock test has failed"
 
 
-    failed_rrho = abs(star_right_rho - ex_right_rho) > epsilon(0.e0)
+    failed_rrho = abs ( ( star_right_rho - ex_right_rho ) / ex_right_rho ) > epsilon(0.e0)
 
     if ( failed_rrho ) then
       print *, test_name //" right wave density"
-      print *, "  - accuracy: ", abs(star_right_rho - ex_right_rho) &
+      print *, "  - accuracy: ", abs ( ( star_right_rho - ex_right_rho ) / ex_right_rho ) &
       , "  - expected: ", epsilon(0.e0)
     end if
 

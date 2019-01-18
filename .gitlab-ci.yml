@@ -1,0 +1,7 @@
+before_script:
+  - apt-get update -qq && apt-get install -y -qq gfortran cmake
+  - mkdir -p build
+
+cmake:
+  script:
+    - cd build && cmake .. && make && ctest --timeout 1 --output-on-failure

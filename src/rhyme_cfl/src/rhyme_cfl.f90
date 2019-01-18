@@ -26,7 +26,7 @@ contains
 
     max_cs = ig%cs ( samr%levels(0)%boxes(1)%hydro(1,1,1) )
 
-    do l = 0, samr%nlevels
+    do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
         call find_max_cs_in_a_box ( samr%levels(l)%boxes(b), max_cs )
       end do
