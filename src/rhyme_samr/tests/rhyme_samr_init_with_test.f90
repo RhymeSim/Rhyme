@@ -5,7 +5,7 @@ logical function rhyme_samr_init_with_test () result (failed)
 
   type ( samr_t ) :: samr
 
-  integer :: tot_nboxes(0:23)
+  integer :: tot_nboxes(0:samrid%max_nlevels)
   integer, parameter :: base_grid(3) = [ 32, 16, 8 ]
   integer, parameter :: nlevels = 4
   integer, parameter :: ghost_cells(3) = [2, 1, 0]
@@ -22,7 +22,6 @@ logical function rhyme_samr_init_with_test () result (failed)
   .or. any ( samr%base_grid .ne. base_grid ) &
   .or. any ( samr%ghost_cells .ne. ghost_cells ) &
   .or. any ( samr%levels(0)%boxes(1)%dims .ne. base_grid ) &
-  .or. .not. allocated ( samr%levels ) &
   .or. .not. allocated ( samr%levels(0)%boxes ) &
   .or. .not. allocated ( samr%levels(0)%boxes(1)%flags ) &
   .or. .not. allocated ( samr%levels(0)%boxes(1)%hydro ) &
@@ -31,6 +30,5 @@ logical function rhyme_samr_init_with_test () result (failed)
   .or. any ( abs ( samr%levels(0)%dx - 1.d0 / base_grid ) > epsilon(0.d0) ) &
   .or. abs (samr%levels(0)%refine_factor - 1.d0) > epsilon(0.d0) &
   .or. size ( samr%levels(0)%boxes(1)%flags ) .ne. product ( base_grid + (2 * ghost_cells) ) &
-  .or. size ( samr%levels(0)%boxes(1)%hydro ) .ne. product ( base_grid + (2 * ghost_cells) ) &
-  .or. size ( samr%levels ) .ne. 4
+  .or. size ( samr%levels(0)%boxes(1)%hydro ) .ne. product ( base_grid + (2 * ghost_cells) )
 end function rhyme_samr_init_with_test

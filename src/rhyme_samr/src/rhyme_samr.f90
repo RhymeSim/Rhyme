@@ -5,6 +5,7 @@ module rhyme_samr
 
   type samr_indices_t
     integer :: ghost = -1
+    integer :: max_nlevels = 23
   end type samr_indices_t
 
   type ( samr_indices_t ), parameter :: samrid = samr_indices_t ()
@@ -27,11 +28,11 @@ module rhyme_samr
 
 
   type samr_t
-    type ( refine_lev_t ), allocatable :: levels(:)
+    type ( refine_lev_t ) :: levels(0:samrid%max_nlevels)
     integer :: nlevels
     integer :: base_grid(3)
     integer :: ghost_cells(3)
-    integer :: tot_nboxes (0:23)
+    integer :: tot_nboxes (0:samrid%max_nlevels)
     logical :: initialized = .false.
   contains
     procedure :: init_with => init_samr_with
@@ -49,14 +50,14 @@ contains
     implicit none
 
     class ( samr_t ), intent(inout) :: this
-    integer, intent(in) :: tot_nboxes(0:23)
+    integer, intent(in) :: tot_nboxes(0:samrid%max_nlevels)
     integer, intent(in) :: dims(3), nlevels, ghost_cells(3)
 
 
     if ( this%initialized ) return
 
     this%nlevels = nlevels
-    this%tot_nboxes(0:23) = tot_nboxes(0:23)
+    this%tot_nboxes(0:samrid%max_nlevels) = tot_nboxes(0:samrid%max_nlevels)
     this%tot_nboxes(nlevels:) = 0
     this%ghost_cells = ghost_cells
     this%base_grid = dims
@@ -72,8 +73,6 @@ contains
     integer :: i
 
     if ( this%initialized ) return
-
-    allocate ( this%levels(0:this%nlevels-1) )
 
     this%tot_nboxes ( this%nlevels: ) = 0
 

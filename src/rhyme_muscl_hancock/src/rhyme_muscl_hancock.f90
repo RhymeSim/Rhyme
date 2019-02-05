@@ -35,7 +35,7 @@ contains
 
     if ( this%initialized ) return
 
-    call this%ws%setup ( samr )
+    call this%ws%init ( samr )
 
     this%initialized = .true.
   end subroutine rhyme_muscl_hancock_init

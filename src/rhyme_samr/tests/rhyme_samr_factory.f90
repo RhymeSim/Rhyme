@@ -4,7 +4,7 @@ module rhyme_samr_factory
   implicit none
 
   logical :: initialized = .false.
-  integer :: tot_nboxes(0:23) = 0
+  integer :: tot_nboxes(0:samrid%max_nlevels) = 0
   integer, parameter :: xdim = 16
   integer, parameter :: ydim = 8
   integer, parameter :: zdim = 4
