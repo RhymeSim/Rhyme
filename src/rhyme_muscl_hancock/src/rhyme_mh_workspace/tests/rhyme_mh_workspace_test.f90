@@ -7,10 +7,9 @@ logical function rhyme_mh_workspace_test () result ( failed )
 
 
   failed = &
-  wsid%sl .ne. 1 &
-  .or. wsid%lsides .ne. 2 &
-  .or. wsid%rsides .ne. 3 &
-  .or. wsid%fluxes .ne. 4 &
+  wsid%lsides .ne. 1 &
+  .or. wsid%rsides .ne. 2 &
+  .or. wsid%rfluxes .ne. 3 &
   .or. wsid%memory_intensive .ne. 10 &
   .or. wsid%cpu_intensive .ne. 11
 

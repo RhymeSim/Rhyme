@@ -27,7 +27,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
 
       failed = &
       .not. allocated ( ws%levels(l)%boxes(b)%u ) &
-      .or. size ( ws%levels(l)%boxes(b)%u ) .ne. product ( dims ) * 3 * 4 &
+      .or. size ( ws%levels(l)%boxes(b)%u ) .ne. product ( dims ) * 3 * wsid%nindices &
       .or. any ( lb .ne. lbws(:3) ) &
       .or. any ( ub .ne. ubws(:3) )
     end do

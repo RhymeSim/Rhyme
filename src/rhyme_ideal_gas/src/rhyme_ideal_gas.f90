@@ -264,5 +264,9 @@ contains
 
     L%u = L%u + .5d0 * dt / dx * dF%f
     R%u = R%u + .5d0 * dt / dx * dF%f
+
+    ! Avoiding absolute vacuum
+    L%u(hyid%rho) = max ( L%u(hyid%rho), epsilon(0.d0) )
+    R%u(hyid%rho) = max ( R%u(hyid%rho), epsilon(0.d0) )
   end subroutine ig_half_step_extrapolation
 end module rhyme_ideal_gas

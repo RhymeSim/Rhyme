@@ -6,7 +6,8 @@ module rhyme_mh_workspace
   implicit none
 
   type rhyme_mh_workspace_indices_t
-    integer :: sl = 1, lsides = 2, rsides = 3, fluxes = 4 ! box ws indices
+    integer :: nindices = 3
+    integer :: lsides = 1, rsides = 2, rfluxes = 3
     integer :: memory_intensive = 10, cpu_intensive = 11
   end type rhyme_mh_workspace_indices_t
 
@@ -15,8 +16,6 @@ module rhyme_mh_workspace
 
   type mh_workspace_box_t
     type ( hydro_conserved_t ), allocatable :: U( :, :, :, :, : ) ! i, j, k, dir, type
-    type ( hydro_conserved_t ) :: phi
-    type ( rp_star_region_t ) :: star
   end type mh_workspace_box_t
 
 
@@ -92,13 +91,13 @@ contains
 
         if ( stat == 0 ) then
           allocate ( this%levels(l)%boxes(b)%U ( &
-            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, 4 &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, wsid%nindices &
           ))
         end if
       end if
     else
       allocate ( this%levels(l)%boxes(b)%U ( &
-        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, 4 &
+        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, wsid%nindices &
       ))
     end if
   end subroutine rhyme_mh_workspace_check

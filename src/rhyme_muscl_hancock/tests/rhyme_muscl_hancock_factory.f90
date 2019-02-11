@@ -22,13 +22,15 @@ module rhyme_muscl_hancock_factory
   ]
 
   real ( kind=8 ), parameter :: mh_factory_courant_number = 0.23
-
   integer, parameter :: mh_factory_gastype = igid%monatomic
-
   integer, parameter :: mh_factory_sltype = slid%minmod
+  integer, parameter :: mh_factory_n_iteration = 100
+  real ( kind=8 ), parameter :: mh_factory_tolerance = 1.d-6
+  real ( kind=8 ), parameter :: mh_factory_pressure_floor = 1.d-10
 
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
+  type ( iterative_riemann_solver_config_t ) :: irs_config
   type ( slope_limiter_t ) :: sl
   type ( samr_t ) :: samr
 
@@ -91,6 +93,11 @@ contains
 
     ! Initializing Slope Limiter
     sl%type = mh_factory_sltype
+
+    ! Initializing Iterative Riemann Solver Configs
+    irs_config%n_iteration = mh_factory_n_iteration
+    irs_config%tolerance = mh_factory_tolerance
+    irs_config%pressure_floor = mh_factory_pressure_floor
 
     mh_factory_initialized = .true.
   end subroutine rhyme_muscl_hancock_factory_init
