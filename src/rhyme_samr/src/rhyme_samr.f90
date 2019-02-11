@@ -14,17 +14,17 @@ module rhyme_samr
   type samr_box_t
     integer :: dims(3)
     real(kind=8) :: left_edge(3), right_edge(3)
-    type ( hydro_conserved_t ), allocatable :: hydro (:, :, :)
     integer, allocatable :: flags (:, :, :)
+    type ( hydro_conserved_t ), allocatable :: hydro (:, :, :)
   end type samr_box_t
 
 
-  type refine_lev_t
+  type samr_level_t
     real(kind=8) :: refine_factor
     real(kind=8) :: t, dt, dx(3)
     integer :: nboxes, max_nboxes, iteration
     type ( samr_box_t ), allocatable :: boxes(:)
-  end type refine_lev_t
+  end type samr_level_t
 
 
   type samr_t
@@ -33,12 +33,17 @@ module rhyme_samr
     integer :: base_grid(3)
     integer :: ghost_cells(3)
     integer :: max_nboxes (0:samrid%max_nlevels)
-    type ( refine_lev_t ) :: levels(0:samrid%max_nlevels)
+    type ( samr_level_t ) :: levels(0:samrid%max_nlevels)
   contains
     procedure :: init_with => init_samr_with
     procedure :: init => init_samr
     procedure :: init_box => rhyme_samr_init_box
   end type samr_t
+
+
+  integer, parameter :: init_nboxes(0:samrid%max_nlevels) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
 
 contains
 
@@ -71,42 +76,47 @@ contains
     implicit none
 
     class ( samr_t ), intent(inout) :: this
-    integer :: nboxes ( 0:samrid%max_nlevels ) = 0
-    integer :: l, b, i, j, k, lb(3), ub(3)
-    real ( kind=8 ) :: ref_factor ( 0:samrid%max_nlevels ) = 2.d0
+    integer :: l, b, lb(3), ub(3)
+    real ( kind=8 ) :: ref_factor ( 0:samrid%max_nlevels )
 
     if ( this%initialized ) return
 
-    nboxes(0) = 1
+    ref_factor = 2.d0
     this%max_nboxes ( this%nlevels: ) = 0
 
 
     do l = 0, this%nlevels - 1
-      this.levels(l)%dx = merge ( &
+      this%levels(l)%nboxes = init_nboxes(l)
+      this%levels(l)%refine_factor = ref_factor(l)
+      this%levels(l)%max_nboxes = this%max_nboxes(l)
+
+      this%levels(l)%dx = merge ( &
         1.d0 / real( this%base_grid, kind=8 ) / ref_factor(l)**l, &
-        this%base_grid .ne. 1
+        1.d0, &
+        this%base_grid .ne. 1 &
       )
-      this%ref_factor = ref_factor(l)
-      this%levels(l)%max_nboxes = max_nboxes(l)
-      this%levels(l)%nboxes = nboxes(l)
-      allocate ( this%levels(l)boxes ( max_nboxes(l) ) )
+
+      allocate ( this%levels(l)%boxes( this%max_nboxes(l) ) )
+
+      if ( l == 0 ) then ! Initializing the first level
+        do b = 1, 1 ! Initializing the only box of the first level
+          this%levels(l)%boxes(b)%dims(:) = this%base_grid(:)
+          this%levels(l)%boxes(b)%left_edge = 0.d0
+          this%levels(l)%boxes(b)%right_edge = 1.d0
+
+          lb = - this%ghost_cells + 1
+          ub = this%base_grid + this%ghost_cells
+
+          allocate ( this%levels(l)%boxes(b)%hydro ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
+          ))
+
+          allocate ( this%levels(l)%boxes(b)%flags ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
+          ))
+        end do
+      end if
     end do
-
-    ! Initialize the zeroth level
-    this%levels(0)%boxes(1)%dims(:) = this%base_grid(:)
-    this%levels(0)%boxes(1)%left_edge = 0.d0
-    this%levels(0)%boxes(1)%right_edge = 1.d0
-
-    lb = - this%ghost_cells
-    ub = this%base_grid + this%ghost_cells
-
-    allocate ( this%levels(0)%boxes(1)%hydro (
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3)
-    ))
-
-    allocate ( this%levels(0)%boxes(1)%flags (
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3)
-    ))
 
     this%initialized = .true.
   end subroutine init_samr
@@ -124,21 +134,18 @@ contains
     integer, intent ( in ) :: l, b, dims(3)
     real ( kind=8 ), intent ( in ) :: ledges(3), redges(3)
 
-    integer :: lb(3), ub(3), stat
+    integer :: lb(3), ub(3)
 
-    lb = - this%ghost_cells
+    lb = - this%ghost_cells + 1
     ub = dims + this%ghost_cells
+
+    allocate ( this%levels(l)%boxes(b)%flags ( &
+      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
+    ) )
 
     allocate ( this%levels(l)%boxes(b)%hydro ( &
       lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-    ), stat=stat )
-
-    ! Stupid fix for `attempting to allocate already allocated array' error!
-    if ( stat == 0 ) then
-      allocate ( this%levels(l)%boxes(b)%flags ( &
-        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-      ) )
-    end if
+    ) )
 
     this%levels(l)%nboxes = this%levels(l)%nboxes + 1
 

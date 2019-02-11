@@ -15,33 +15,21 @@ logical function rhyme_samr_init_box_test () result ( failed )
 
   call rhyme_samr_factory_init
 
-  nboxes_before = samr%levels(l)%nboxes
 
+  nboxes_before = samr%levels(l)%nboxes
   failed = nboxes_before .ne. 0
   if ( failed ) return
 
-  b = nboxes(l)
+  b = max_nboxes(l)
   call samr%init_box ( l, b, dims, ledges, redges )
 
   failed = &
   .not. allocated ( samr%levels(l)%boxes(b)%hydro ) &
-  .or. any ( lbound(samr%levels(l)%boxes(b)%hydro) .ne. - ghost_cells ) &
+  .or. any ( lbound(samr%levels(l)%boxes(b)%hydro) .ne. - ghost_cells + 1 ) &
   .or. any ( ubound(samr%levels(l)%boxes(b)%hydro) .ne. dims + ghost_cells ) &
   .or. .not. allocated ( samr%levels(l)%boxes(b)%flags ) &
-  .or. any ( lbound(samr%levels(l)%boxes(b)%flags) .ne. - ghost_cells ) &
+  .or. any ( lbound(samr%levels(l)%boxes(b)%flags) .ne. - ghost_cells + 1 ) &
   .or. any ( ubound(samr%levels(l)%boxes(b)%flags) .ne. dims + ghost_cells ) &
   .or. samr%levels(l)%nboxes .ne. nboxes_before + 1
-
-  print *, &
-  .not. allocated ( samr%levels(l)%boxes(b)%hydro ) &
-  , any ( lbound(samr%levels(l)%boxes(b)%hydro) .ne. - ghost_cells ) &
-  , any ( ubound(samr%levels(l)%boxes(b)%hydro) .ne. dims + ghost_cells ) &
-  , .not. allocated ( samr%levels(l)%boxes(b)%flags ) &
-  , any ( lbound(samr%levels(l)%boxes(b)%flags) .ne. - ghost_cells ) &
-  , any ( ubound(samr%levels(l)%boxes(b)%flags) .ne. dims + ghost_cells ) &
-  , samr%levels(l)%nboxes .ne. nboxes_before + 1
-
-  print *, lbound(samr%levels(l)%boxes(b)%hydro), - ghost_cells
-  print *, ubound(samr%levels(l)%boxes(b)%hydro), dims + ghost_cells
 
 end function rhyme_samr_init_box_test
