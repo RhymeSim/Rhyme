@@ -2,7 +2,7 @@ program rhyme
   use rhyme_nombre
   use rhyme_hydro_base
   use rhyme_samr
-  use rhyme_samr_boundary_condition
+  use rhyme_samr_bc
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_initial_condition
@@ -15,7 +15,7 @@ program rhyme
   implicit none
 
   type ( samr_t ) :: samr
-  type ( samr_boundary_condition_t ) :: bc
+  type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
@@ -56,7 +56,6 @@ program rhyme
   step = 0
 
   do while ( samr%levels(0)%t < 0.2d0 )
-    ! mh%setup_workspace ( samr )
 
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes

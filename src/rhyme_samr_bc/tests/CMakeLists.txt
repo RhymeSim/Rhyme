@@ -1,4 +1,4 @@
-project ( rhyme_samr_boundary_condition_tests )
+project ( rhyme_samr_bc_tests )
 
 enable_language ( C Fortran )
 enable_testing ()
@@ -21,7 +21,7 @@ create_test_sourcelist ( _ main.c ${test_libs} )
 
 add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} )
 add_executable ( ${PROJECT_NAME} main.c )
-target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_samr_boundary_condition )
+target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_samr_bc )
 
 
 set ( idx 0 )

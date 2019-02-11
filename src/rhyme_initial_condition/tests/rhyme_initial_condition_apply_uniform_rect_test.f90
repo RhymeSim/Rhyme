@@ -22,7 +22,7 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
   type ( initial_condition_t ) :: ic
   type ( ic_shape_t ), pointer :: shape
   type ( samr_t ) :: samr
-  type ( samr_boundary_condition_t ) :: bc
+  type ( samr_bc_t ) :: bc
   type ( ideal_gas_t ) :: ig
 
   integer :: i, j, k

@@ -1,6 +1,6 @@
 module rhyme_initial_condition
   use rhyme_samr
-  use rhyme_samr_boundary_condition
+  use rhyme_samr_bc
   use rhyme_hydro_base
   use rhyme_ideal_gas
 
@@ -84,7 +84,7 @@ contains
     class ( initial_condition_t ), intent(in) :: this
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(inout) :: samr
-    type ( samr_boundary_condition_t ), intent(inout) :: bc
+    type ( samr_bc_t ), intent(inout) :: bc
 
     integer :: i, j, k
     type ( hydro_conserved_t ) :: bg, h(2)

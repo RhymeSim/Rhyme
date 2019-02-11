@@ -4,7 +4,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   implicit none
 
   type ( samr_t ) :: samr
-  type ( samr_boundary_condition_t ) :: bc
+  type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
@@ -21,7 +21,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   any ( samr%base_grid .ne. [ 128, 128, 1 ] ) &
   .or. any ( samr%ghost_cells .ne. [ 2, 2, 0 ] ) &
   .or. samr%nlevels .ne. 3 &
-  .or. any ( samr%tot_nboxes(0:samr%nlevels-1) .ne. [ 1, 10, 100 ] )
+  .or. any ( samr%max_nboxes(0:samr%nlevels-1) .ne. [ 1, 10, 100 ] )
 
   if ( failed ) return
 

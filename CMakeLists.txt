@@ -16,7 +16,7 @@ set ( deps
   rhyme_nombre
   rhyme_hydro_base
   rhyme_samr
-  rhyme_samr_boundary_condition
+  rhyme_samr_bc
   rhyme_cfl
   rhyme_ideal_gas
   rhyme_initial_condition

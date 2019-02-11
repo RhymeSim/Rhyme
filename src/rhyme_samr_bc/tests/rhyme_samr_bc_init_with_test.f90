@@ -1,10 +1,10 @@
-logical function rhyme_samr_boundary_condition_init_with_test () result (failed)
-  use rhyme_samr_boundary_condition
+logical function rhyme_samr_bc_init_with_test () result (failed)
+  use rhyme_samr_bc
 
   implicit none
 
   type(samr_t) :: samr
-  type(samr_boundary_condition_t) :: bc
+  type(samr_bc_t) :: bc
 
   integer, parameter :: base_grid(3) = [ 32, 16, 8 ]
   integer, parameter :: nlevels = 3
@@ -39,4 +39,4 @@ logical function rhyme_samr_boundary_condition_init_with_test () result (failed)
   .or. samr%levels(0)%boxes(1)%flags(1, -ghost_cells(2) + 1, 1) .ne. samrid%ghost &
   .or. samr%levels(0)%boxes(1)%flags(1, samr%levels(0)%boxes(1)%dims(2) + ghost_cells(2), 1) .ne. samrid%ghost &
   .or. samr%levels(0)%boxes(1)%flags(1, samr%levels(0)%boxes(1)%dims(2), 1) .eq. samrid%ghost
-end function rhyme_samr_boundary_condition_init_with_test
+end function rhyme_samr_bc_init_with_test

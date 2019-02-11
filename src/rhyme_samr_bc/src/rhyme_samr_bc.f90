@@ -1,4 +1,4 @@
-module rhyme_samr_boundary_condition
+module rhyme_samr_bc
   use rhyme_samr
 
   implicit none
@@ -13,22 +13,22 @@ module rhyme_samr_boundary_condition
   type (samr_bc_indices_t), parameter :: bcid = samr_bc_indices_t ()
 
 
-  type samr_boundary_condition_t
+  type samr_bc_t
     integer :: types(6) = bcid%reflective
     logical :: initialized
   contains
-    procedure :: init_with => init_samr_boundary_condition_with
-    procedure :: init => init_samr_boundary_condition
-    procedure :: set => set_samr_boundary_condition
-  end type samr_boundary_condition_t
+    procedure :: init_with => init_samr_bc_with
+    procedure :: init => init_samr_bc
+    procedure :: set => set_samr_bc
+  end type samr_bc_t
 
 contains
 
   ! @param[in] bc_types Boundary conditions types (left, right, bottom, top, back, front)
-  subroutine init_samr_boundary_condition_with ( this, samr, bc_types )
+  subroutine init_samr_bc_with ( this, samr, bc_types )
     implicit none
 
-    class (samr_boundary_condition_t), intent(inout) :: this
+    class (samr_bc_t), intent(inout) :: this
     type (samr_t), intent(inout) :: samr
     integer, intent(in) :: bc_types(6)
 
@@ -36,16 +36,16 @@ contains
 
     this%types = bc_types
 
-    call init_samr_boundary_condition ( this, samr )
+    call init_samr_bc ( this, samr )
 
-  end subroutine init_samr_boundary_condition_with
+  end subroutine init_samr_bc_with
 
   ! Initializing boundary condition object
   ! @param[in] samr Initialized structred AMR object
-  subroutine init_samr_boundary_condition ( this, samr )
+  subroutine init_samr_bc ( this, samr )
     implicit none
 
-    class (samr_boundary_condition_t), intent(inout) :: this
+    class (samr_bc_t), intent(inout) :: this
     type (samr_t), intent(inout) :: samr
 
     integer :: i, j, k
@@ -68,13 +68,13 @@ contains
     end do
 
     this%initialized = .true.
-  end subroutine init_samr_boundary_condition
+  end subroutine init_samr_bc
 
 
-  logical function set_samr_boundary_condition (this, samr) result (succ)
+  logical function set_samr_bc (this, samr) result (succ)
     implicit none
 
-    class (samr_boundary_condition_t), intent(in) :: this
+    class (samr_bc_t), intent(in) :: this
     type (samr_t), intent(inout) :: samr
 
 
@@ -276,5 +276,5 @@ contains
 
     end subroutine set_front_bc
 
-  end function set_samr_boundary_condition
-end module rhyme_samr_boundary_condition
+  end function set_samr_bc
+end module rhyme_samr_bc

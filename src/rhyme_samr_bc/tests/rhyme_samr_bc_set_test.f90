@@ -1,12 +1,12 @@
-logical function rhyme_samr_boundary_condition_set_test () result (failed)
-  use rhyme_samr_boundary_condition_factory
+logical function rhyme_samr_bc_set_test () result (failed)
+  use rhyme_samr_bc_factory
 
   implicit none
 
   integer :: v, xd = xdim, yd = ydim, zd = zdim
   type(samr_box_t) :: b1
 
-  call rhyme_samr_boundary_condition_factory_init
+  call rhyme_samr_bc_factory_init
 
   ! Set reflective boundaries
   bc%types = bcid%reflective
@@ -150,4 +150,4 @@ logical function rhyme_samr_boundary_condition_set_test () result (failed)
     any ( abs ( b1%hydro(:,:,zd+1)%u(v) - b1%hydro(:,:,1)%u(v) ) > epsilon(0.d0) )
     if ( failed ) return
   end do
-end function rhyme_samr_boundary_condition_set_test
+end function rhyme_samr_bc_set_test

@@ -1,6 +1,6 @@
-module rhyme_samr_boundary_condition_factory
+module rhyme_samr_bc_factory
   use rhyme_samr
-  use rhyme_samr_boundary_condition
+  use rhyme_samr_bc
 
   implicit none
 
@@ -18,7 +18,7 @@ module rhyme_samr_boundary_condition_factory
   integer :: tot_nboxes(0:23)
   type(samr_t) :: samr
 
-  type(samr_boundary_condition_t) :: bc
+  type(samr_bc_t) :: bc
 
   integer :: bc_types(6) = [ &
     bcid%reflective, &
@@ -30,7 +30,7 @@ module rhyme_samr_boundary_condition_factory
 
 contains
 
-  subroutine rhyme_samr_boundary_condition_factory_init ()
+  subroutine rhyme_samr_bc_factory_init ()
     implicit none
 
     integer :: i, j, k
@@ -54,5 +54,5 @@ contains
 
     call bc%init_with ( samr, bc_types )
 
-  end subroutine rhyme_samr_boundary_condition_factory_init
-end module rhyme_samr_boundary_condition_factory
+  end subroutine rhyme_samr_bc_factory_init
+end module rhyme_samr_bc_factory

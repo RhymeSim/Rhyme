@@ -1,5 +1,5 @@
-logical function rhyme_samr_boundary_condition_indices_test () result (failed)
-  use rhyme_samr_boundary_condition
+logical function rhyme_samr_bc_indices_test () result (failed)
+  use rhyme_samr_bc
 
   implicit none
 
@@ -14,4 +14,4 @@ logical function rhyme_samr_boundary_condition_indices_test () result (failed)
   .or. bcid%back .ne. 5 &
   .or. bcid%front .ne. 6
 
-end function rhyme_samr_boundary_condition_indices_test
+end function rhyme_samr_bc_indices_test

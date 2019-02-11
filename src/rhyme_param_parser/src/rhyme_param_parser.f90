@@ -1,6 +1,6 @@
 module rhyme_param_parser
   use rhyme_samr
-  use rhyme_samr_boundary_condition
+  use rhyme_samr_bc
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_initial_condition
@@ -16,7 +16,7 @@ contains
 
     character (len=1024), intent(in) :: param_file
     type ( samr_t ) :: samr
-    type ( samr_boundary_condition_t ) :: bc
+    type ( samr_bc_t ) :: bc
     type ( cfl_t ) :: cfl
     type ( ideal_gas_t ) :: ig
     type ( initial_condition_t ) :: ic
@@ -44,7 +44,7 @@ contains
         ! Structured AMR
       case ( "base_grid" ); read (1, *) key, op, samr%base_grid(1:3)
       case ( "nlevels" ); read (1, *) key, op, samr%nlevels
-      case ( "nboxes" ); read (1, *) key, op, samr%tot_nboxes(0:samr%nlevels-1)
+      case ( "nboxes" ); read (1, *) key, op, samr%max_nboxes(0:samr%nlevels-1)
 
         ! Boundary Condition
       case ( "left_bc" )
