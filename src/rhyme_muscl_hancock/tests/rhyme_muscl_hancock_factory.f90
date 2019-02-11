@@ -1,6 +1,9 @@
 module rhyme_muscl_hancock_factory
   use rhyme_muscl_hancock
   use rhyme_samr
+  use rhyme_cfl
+  use rhyme_ideal_gas
+  use rhyme_slope_limiter
 
   implicit none
 
@@ -9,16 +12,25 @@ module rhyme_muscl_hancock_factory
 
   integer, parameter :: nlevels = 4
   integer, parameter :: base_grid(3) = [ 16, 8, 1 ]
-  integer, parameter :: ghost_cells(3) = [ 2, 1, 0 ]
+  integer, parameter :: ghost_cells(3) = [ 2, 2, 0 ]
 
   integer, parameter :: mh_factory_max_nboxes ( 0:samrid%max_nlevels ) = [ &
-  1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+    1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
   integer, parameter :: mh_factory_init_nboxes ( 0:samrid%max_nlevels ) = [ &
-  1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+    1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  type(samr_t) :: samr
+  real ( kind=8 ), parameter :: mh_factory_courant_number = 0.23
+
+  integer, parameter :: mh_factory_gastype = igid%monatomic
+
+  integer, parameter :: mh_factory_sltype = slid%minmod
+
+  type ( cfl_t ) :: cfl
+  type ( ideal_gas_t ) :: ig
+  type ( slope_limiter_t ) :: sl
+  type ( samr_t ) :: samr
 
 contains
 
@@ -31,6 +43,7 @@ contains
 
     if ( mh_factory_initialized ) return
 
+    ! Initializing SAMR
     call samr%init_with ( base_grid, nlevels, mh_factory_max_nboxes, ghost_cells )
 
     do l = 0, samr%nlevels
@@ -70,8 +83,16 @@ contains
       end do
     end do
 
-    mh_factory_initialized = .true.
+    ! Initializing CFL
+    cfl%courant_number = mh_factory_courant_number
 
+    ! Initializing Ideal Gas
+    call ig%init_with ( mh_factory_gastype )
+
+    ! Initializing Slope Limiter
+    sl%type = mh_factory_sltype
+
+    mh_factory_initialized = .true.
   end subroutine rhyme_muscl_hancock_factory_init
 
 end module rhyme_muscl_hancock_factory
