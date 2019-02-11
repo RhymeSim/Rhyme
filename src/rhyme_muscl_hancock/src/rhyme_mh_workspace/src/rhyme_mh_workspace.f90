@@ -21,16 +21,17 @@ module rhyme_mh_workspace
 
 
   type mh_workspace_level_t
-    integer :: tot_nboxes
+    integer :: max_nboxes
     type ( mh_workspace_box_t ), allocatable :: boxes(:)
   end type mh_workspace_level_t
 
 
   type mh_workspace_t
     integer :: nlevels
-    integer :: type = wsid%memory_intensive
     logical :: initialized = .false.
-    type ( mh_workspace_level_t ) :: levels(0:samrid%max_nlevels)
+    integer :: type = wsid%memory_intensive
+    type ( mh_workspace_level_t ) :: levels ( 0:samrid%max_nlevels )
+    type ( samr_t ), pointer :: samr
   contains
     procedure :: init => rhyme_mh_workspace_init
     procedure :: check => rhyme_mh_workspace_check
@@ -38,8 +39,7 @@ module rhyme_mh_workspace
 
 contains
 
-  subroutine rhyme_mh_workspace_init ( this, samr )
-  ! pure subroutine rhyme_mh_workspace_init ( this, samr )
+  pure subroutine rhyme_mh_workspace_init ( this, samr )
     implicit none
 
     class ( mh_workspace_t ), intent ( inout ) :: this
@@ -54,8 +54,8 @@ contains
     if ( this%type .eq. wsid%memory_intensive ) then
 
       do l = 0, samr%nlevels - 1
-        allocate ( this%levels(l)%boxes ( samr%levels(l)%tot_nboxes ) )
-        this%levels(l)%tot_nboxes = samr%levels(l)%tot_nboxes
+        allocate ( this%levels(l)%boxes ( samr%levels(l)%max_nboxes ) )
+        this%levels(l)%max_nboxes = samr%levels(l)%max_nboxes
       end do
 
     else if ( this%type .eq. wsid%cpu_intensive ) then
@@ -66,30 +66,35 @@ contains
   end subroutine rhyme_mh_workspace_init
 
 
-  pure subroutine rhyme_mh_workspace_check ( this, l, b, box )
+  pure subroutine rhyme_mh_workspace_check ( this, l, b, hydro_box )
     implicit none
 
     class ( mh_workspace_t ), intent ( inout ) :: this
     integer, intent ( in ) :: l, b
-    type ( samr_box_t ), intent ( in ) :: box
+    type ( samr_box_t ), intent ( in ) :: hydro_box
 
-    integer :: lb(3), ub(3), wslb(5), wsub(5)
+    integer :: lb(3), ub(3), wslb(5), wsub(5), stat
+
 
     if ( this%type .eq. wsid%cpu_intensive ) return
 
-    lb = lbound ( box%hydro )
-    ub = ubound ( box%hydro )
+
+    lb = lbound ( hydro_box%hydro )
+    ub = ubound ( hydro_box%hydro )
 
     if ( allocated( this%levels(l)%boxes(b)%U ) ) then
-      wslb = lbound(this%levels(l)%boxes(b)%U)
-      wsub = ubound(this%levels(l)%boxes(b)%U)
 
-      if ( any(lb .ne. wslb(1:3)) .or. any(ub .ne. wsub(1:3)) ) then
-        deallocate ( this%levels(l)%boxes(b)%U )
+      wslb = lbound ( this%levels(l)%boxes(b)%U )
+      wsub = ubound ( this%levels(l)%boxes(b)%U )
 
-        allocate ( this%levels(l)%boxes(b)%U ( &
-          lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, 4 &
-        ))
+      if ( any( lb .ne. wslb(:3) ) .or. any( ub .ne. wsub(:3) ) ) then
+        deallocate ( this%levels(l)%boxes(b)%U, stat=stat )
+
+        if ( stat == 0 ) then
+          allocate ( this%levels(l)%boxes(b)%U ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, 4 &
+          ))
+        end if
       end if
     else
       allocate ( this%levels(l)%boxes(b)%U ( &

@@ -12,8 +12,16 @@ logical function rhyme_mh_workspace_init_test () result ( failed )
   ws%type = wsid%memory_intensive
   call ws%init ( samr )
 
+  failed = ws%nlevels .ne. samr%nlevels
+  if ( failed ) return
+
   do l = 0, ws%nlevels - 1
-    failed = ws%levels(l)%tot_nboxes .ne. samr%levels(l)%tot_nboxes
+    failed = &
+    .not. ws%initialized &
+    .or. ws%levels(l)%max_nboxes .ne. samr%levels(l)%max_nboxes &
+    .or. .not. allocated ( ws%levels(l)%boxes ) &
+    .or. size ( ws%levels(l)%boxes ) .ne. samr%levels(l)%max_nboxes
+
     if ( failed ) return
   end do
 end function rhyme_mh_workspace_init_test
