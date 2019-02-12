@@ -35,8 +35,8 @@ module rhyme_samr
     integer :: max_nboxes (0:samrid%max_nlevels)
     type ( samr_level_t ) :: levels(0:samrid%max_nlevels)
   contains
-    procedure :: init_with => init_samr_with
-    procedure :: init => init_samr
+    procedure :: init_with => rhyme_samr_init_with
+    procedure :: init => rhyme_samr_init
     procedure :: init_box => rhyme_samr_init_box
   end type samr_t
 
@@ -52,7 +52,7 @@ contains
   !> @param[in] n_levels Number of refinement levels (not including the zeroth level)
   !> @param[in] max_nboxes Maximum number of boxes
   !> @param[in] ghost_cells Ghost cells (responsible for boundary condition)
-  pure subroutine init_samr_with ( this, base_grid, nlevels, max_nboxes, ghost_cells )
+  pure subroutine rhyme_samr_init_with ( this, base_grid, nlevels, max_nboxes, ghost_cells )
     implicit none
 
     class ( samr_t ), intent(inout) :: this
@@ -67,12 +67,12 @@ contains
     this%ghost_cells(:) = ghost_cells(:)
     this%base_grid(:) = base_grid(:)
 
-    call init_samr ( this )
+    call rhyme_samr_init ( this )
 
-  end subroutine init_samr_with
+  end subroutine rhyme_samr_init_with
 
 
-  pure subroutine init_samr ( this )
+  pure subroutine rhyme_samr_init ( this )
     implicit none
 
     class ( samr_t ), intent(inout) :: this
@@ -119,7 +119,7 @@ contains
     end do
 
     this%initialized = .true.
-  end subroutine init_samr
+  end subroutine rhyme_samr_init
 
 
   subroutine rhyme_samr_init_box ( this, l, b, dims, ledges, redges )

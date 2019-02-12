@@ -3,13 +3,13 @@ logical function rhyme_ideal_gas_specific_kinetic_energy_test () result (failed)
 
   implicit none
 
-  real(kind=8) :: hy_e_kin_sp
+  real(kind=8) :: hy_sp_kin_e
 
   call ig%init_with ( gas_type )
 
-  hy_e_kin_sp = hy_specific_kinetic_energy(cons)
+  hy_sp_kin_e = hy_sp_kinetic_e(cons)
 
   failed = &
   abs ( ig%e_kin_sp(cons) - e_kin_sp ) > epsilon(0.e0) &
-  .or. abs ( ig%e_kin_sp(cons) - hy_e_kin_sp ) > epsilon(0.e0)
+  .or. abs ( ig%e_kin_sp(cons) - hy_sp_kin_e ) > epsilon(0.e0)
 end function rhyme_ideal_gas_specific_kinetic_energy_test

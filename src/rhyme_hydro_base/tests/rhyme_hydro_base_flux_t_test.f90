@@ -1,5 +1,4 @@
-logical function rhyme_hydro_base_hydro_flux_t_test () result (failed)
-  use rhyme_hydro_base
+logical function rhyme_hydro_base_flux_t_test () result (failed)
   use rhyme_hydro_base_factory
 
   implicit none
@@ -12,4 +11,4 @@ logical function rhyme_hydro_base_hydro_flux_t_test () result (failed)
   .or. abs ( flux%f(hyid%rho_w) - rho * u * w ) > epsilon(0.d0) &
   .or. abs ( flux%f(hyid%e_tot) - u * (e_tot + p) ) > epsilon(0.d0)
 
-end function rhyme_hydro_base_hydro_flux_t_test
+end function rhyme_hydro_base_flux_t_test

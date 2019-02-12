@@ -21,7 +21,7 @@ program rhyme
   type ( initial_condition_t ) :: ic
   type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
-  ! type ( muscl_hancock_t ) :: mh
+  type ( muscl_hancock_t ) :: mh
 
   integer :: l, b, step = 1
   real(kind=8) :: t, dt
@@ -46,13 +46,13 @@ program rhyme
   call ig%init
 
   ! Applying Initial Condition
-  call ic%apply ( ig, samr, bc )
+  call ic%apply ( ig, samr )
 
   ! Initializing Iterative Riemann Solver
   call irs%init ( ig )
 
   ! Initializing MUSCL-Hancock
-  ! call mh%init_with ( cfl, ig, irs, sl, samr )
+  call mh%init_with ( cfl, ig, irs, sl, samr )
 
   dt = cfl%dt ( ig, samr )
   step = 0
@@ -62,7 +62,7 @@ program rhyme
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         ! bc%set ( samr%levels(l)%boxes(b), samr%ghost_cells )
-        ! mh%solve ( samr%levels(l)%boxes(b) )
+        call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, dt )
       end do
     end do
 

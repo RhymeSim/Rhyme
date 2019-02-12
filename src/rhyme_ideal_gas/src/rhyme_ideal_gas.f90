@@ -25,25 +25,25 @@ module rhyme_ideal_gas
     type ( chemistry_t ) :: chemi
     type ( thermo_base_t ) :: thermo
   contains
-    procedure :: init => init_ideal_gas
-    procedure :: init_with => init_ideal_gas_with
-    procedure :: T_per_mu => ig_T_per_mu
-    procedure :: T => ig_T
-    procedure :: Cs => ig_sound_speed
-    procedure :: p => ig_pressure
-    procedure :: B => ig_bulk_modulus ! resistant to compression
-    procedure :: e_int_sp => ig_specific_internal_energy
-    procedure :: e_kin_sp => ig_specific_kinetic_energy
-    procedure :: prim_vars_to_cons => ig_primitive_vars_to_conserved
-    procedure :: prim_to_cons => ig_primitive_to_conserved
-    procedure :: cons_to_prim => ig_conserved_to_primitive
-    procedure :: flux_at => ig_flux_at
-    procedure :: half_step_extrapolation => ig_half_step_extrapolation
+    procedure :: init => rhyme_ideal_gas_init
+    procedure :: init_with => rhyme_ideal_gas_init_with
+    procedure :: T_per_mu => rhyme_ideal_gas_T_per_mu
+    procedure :: T => rhyme_ideal_gas_T
+    procedure :: Cs => rhyme_ideal_gas_sound_speed
+    procedure :: p => rhyme_ideal_gas_pressure
+    procedure :: B => rhyme_ideal_gas_bulk_modulus ! resistant to compression
+    procedure :: e_int_sp => rhyme_ideal_gas_pecific_internal_energy
+    procedure :: e_kin_sp => rhyme_ideal_gas_pecific_kinetic_energy
+    procedure :: prim_vars_to_cons => rhyme_ideal_gas_primitive_vars_to_conserved
+    procedure :: prim_to_cons => rhyme_ideal_gas_primitive_to_conserved
+    procedure :: cons_to_prim => rhyme_ideal_gas_conserved_to_primitive
+    procedure :: flux_at => rhyme_ideal_gas_flux_at
+    procedure :: half_step_extrapolation => rhyme_ideal_gas_half_step_extrapolation
   end type ideal_gas_t
 
 contains
 
-  subroutine init_ideal_gas_with ( this, gastype )
+  subroutine rhyme_ideal_gas_init_with ( this, gastype )
     implicit none
 
     class ( ideal_gas_t ), intent ( inout ) :: this
@@ -54,11 +54,11 @@ contains
 
     this%type = gastype
 
-    call init_ideal_gas ( this )
-  end subroutine init_ideal_gas_with
+    call rhyme_ideal_gas_init ( this )
+  end subroutine rhyme_ideal_gas_init_with
 
 
-  subroutine init_ideal_gas ( this )
+  subroutine rhyme_ideal_gas_init ( this )
     implicit none
 
     class(ideal_gas_t) :: this
@@ -89,10 +89,10 @@ contains
     this%gamma = this%Cp%v / this%Cv%v
 
     this%initialized = .true.
-  end subroutine init_ideal_gas
+  end subroutine rhyme_ideal_gas_init
 
 
-  pure function ig_T_per_mu (this, U) result (T_per_mu)
+  pure function rhyme_ideal_gas_T_per_mu (this, U) result (T_per_mu)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -100,11 +100,11 @@ contains
 
     real(kind=8) :: T_per_mu
 
-    T_per_mu = hy_specific_internal_energy(U) * ( this%gamma - 1.d0 ) / this%kB_per_amu
-  end function ig_T_per_mu
+    T_per_mu = hy_sp_internal_e(U) * ( this%gamma - 1.d0 ) / this%kB_per_amu
+  end function rhyme_ideal_gas_T_per_mu
 
 
-  pure function ig_T (this, U, mean_atomic_weight) result (T)
+  pure function rhyme_ideal_gas_T (this, U, mean_atomic_weight) result (T)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -114,10 +114,10 @@ contains
     real(kind=8) :: T
 
     T = this%T_per_mu(U) * mean_atomic_weight
-  end function ig_T
+  end function rhyme_ideal_gas_T
 
 
-  pure function ig_sound_speed (this, U) result (Cs)
+  pure function rhyme_ideal_gas_sound_speed (this, U) result (Cs)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -126,10 +126,10 @@ contains
     real(kind=8) :: Cs
 
     Cs = sqrt(this%gamma * this%kB_per_amu * this%T_per_mu(U))
-  end function ig_sound_speed
+  end function rhyme_ideal_gas_sound_speed
 
 
-  pure function ig_pressure (this, U) result (p)
+  pure function rhyme_ideal_gas_pressure (this, U) result (p)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -138,10 +138,10 @@ contains
     real(kind=8) :: p
 
     p = U%u(hyid%rho) * this%kB_per_amu * this%T_per_mu(U)
-  end function ig_pressure
+  end function rhyme_ideal_gas_pressure
 
 
-  pure function ig_bulk_modulus (this, U) result (B)
+  pure function rhyme_ideal_gas_bulk_modulus (this, U) result (B)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -150,10 +150,10 @@ contains
     real(kind=8) :: B
 
     B = this%gamma * this%p(U)
-  end function ig_bulk_modulus
+  end function rhyme_ideal_gas_bulk_modulus
 
 
-  pure function ig_specific_internal_energy (this, U) result (e_int_sp)
+  pure function rhyme_ideal_gas_pecific_internal_energy (this, U) result (e_int_sp)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -162,10 +162,10 @@ contains
     real(kind=8) :: e_int_sp
 
     e_int_sp = this%kB_per_amu * this%T_per_mu(U) / ( this%gamma - 1.d0 )
-  end function ig_specific_internal_energy
+  end function rhyme_ideal_gas_pecific_internal_energy
 
 
-  pure function ig_specific_kinetic_energy (this, U) result (e_kin_sp)
+  pure function rhyme_ideal_gas_pecific_kinetic_energy (this, U) result (e_kin_sp)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -174,10 +174,10 @@ contains
     real(kind=8) :: e_kin_sp
 
     e_kin_sp = U%u(hyid%e_tot) / U%u(hyid%rho) - this%e_int_sp(U)
-  end function ig_specific_kinetic_energy
+  end function rhyme_ideal_gas_pecific_kinetic_energy
 
 
-  pure subroutine ig_primitive_to_conserved (this, prim, cons)
+  pure subroutine rhyme_ideal_gas_primitive_to_conserved (this, prim, cons)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -193,10 +193,10 @@ contains
     p = max ( prim%w(hyid%p), epsilon(0.d0) )
 
     call this%prim_vars_to_cons(rho, u, v, w, p, cons)
-  end subroutine ig_primitive_to_conserved
+  end subroutine rhyme_ideal_gas_primitive_to_conserved
 
 
-  pure subroutine ig_primitive_vars_to_conserved (this, rho, u, v, w, p, cons)
+  pure subroutine rhyme_ideal_gas_primitive_vars_to_conserved (this, rho, u, v, w, p, cons)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -208,10 +208,10 @@ contains
     cons%u(hyid%rho_v) = cons%u(hyid%rho) * v
     cons%u(hyid%rho_w) = cons%u(hyid%rho) * w
     cons%u(hyid%e_tot) = 0.5d0 * cons%u(hyid%rho) * (u**2 + v**2 + w**2) + p / ( this%gamma - 1.d0 )
-  end subroutine ig_primitive_vars_to_conserved
+  end subroutine rhyme_ideal_gas_primitive_vars_to_conserved
 
 
-  pure subroutine ig_conserved_to_primitive (this, cons, prim)
+  pure subroutine rhyme_ideal_gas_conserved_to_primitive (this, cons, prim)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -223,10 +223,10 @@ contains
     prim%w(hyid%v) = cons%u(hyid%rho_v) / prim%w(hyid%rho)
     prim%w(hyid%w) = cons%u(hyid%rho_w) / prim%w(hyid%rho)
     prim%w(hyid%p) = max ( this%p(cons), epsilon(0.d0) )
-  end subroutine ig_conserved_to_primitive
+  end subroutine rhyme_ideal_gas_conserved_to_primitive
 
 
-  pure subroutine ig_flux_at (this, U, dir, F)
+  pure subroutine rhyme_ideal_gas_flux_at (this, U, dir, F)
     implicit none
 
     class(ideal_gas_t), intent(in) :: this
@@ -240,10 +240,10 @@ contains
     F%f(hyid%vel(dir)) = F%f(hyid%vel(dir)) + this%p(U)
 
     F%f(hyid%e_tot) = U%u(hyid%rho_vel(dir)) / U%u(hyid%rho) * ( U%u(hyid%e_tot) + this%p(U) )
-  end subroutine ig_flux_at
+  end subroutine rhyme_ideal_gas_flux_at
 
 
-  pure subroutine ig_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
+  pure subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
     implicit none
 
     class ( ideal_gas_t ), intent(in) :: this
@@ -268,5 +268,5 @@ contains
     ! Avoiding absolute vacuum
     L%u(hyid%rho) = max ( L%u(hyid%rho), epsilon(0.d0) )
     R%u(hyid%rho) = max ( R%u(hyid%rho), epsilon(0.d0) )
-  end subroutine ig_half_step_extrapolation
+  end subroutine rhyme_ideal_gas_half_step_extrapolation
 end module rhyme_ideal_gas

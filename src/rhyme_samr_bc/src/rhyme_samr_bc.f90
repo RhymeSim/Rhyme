@@ -10,22 +10,22 @@ module rhyme_samr_bc
   end type samr_bc_indices_t
 
 
-  type (samr_bc_indices_t), parameter :: bcid = samr_bc_indices_t ()
+  type ( samr_bc_indices_t ), parameter :: bcid = samr_bc_indices_t ()
 
 
   type samr_bc_t
     integer :: types(6) = bcid%reflective
-    logical :: initialized
+    logical :: initialized = .false.
   contains
-    procedure :: init_with => init_samr_bc_with
-    procedure :: init => init_samr_bc
-    procedure :: set => set_samr_bc
+    procedure :: init_with => rhyme_samr_bc_init_with
+    procedure :: init => rhyme_samr_bc_init
+    procedure :: set => rhyme_samr_bc_set
   end type samr_bc_t
 
 contains
 
   ! @param[in] bc_types Boundary conditions types (left, right, bottom, top, back, front)
-  subroutine init_samr_bc_with ( this, samr, bc_types )
+  subroutine rhyme_samr_bc_init_with ( this, samr, bc_types )
     implicit none
 
     class (samr_bc_t), intent(inout) :: this
@@ -36,13 +36,13 @@ contains
 
     this%types = bc_types
 
-    call init_samr_bc ( this, samr )
+    call rhyme_samr_bc_init ( this, samr )
 
-  end subroutine init_samr_bc_with
+  end subroutine rhyme_samr_bc_init_with
 
   ! Initializing boundary condition object
   ! @param[in] samr Initialized structred AMR object
-  subroutine init_samr_bc ( this, samr )
+  subroutine rhyme_samr_bc_init ( this, samr )
     implicit none
 
     class (samr_bc_t), intent(inout) :: this
@@ -68,10 +68,10 @@ contains
     end do
 
     this%initialized = .true.
-  end subroutine init_samr_bc
+  end subroutine rhyme_samr_bc_init
 
 
-  logical function set_samr_bc (this, samr) result (succ)
+  logical function rhyme_samr_bc_set (this, samr) result (succ)
     implicit none
 
     class (samr_bc_t), intent(in) :: this
@@ -276,5 +276,5 @@ contains
 
     end subroutine set_front_bc
 
-  end function set_samr_bc
+  end function rhyme_samr_bc_set
 end module rhyme_samr_bc

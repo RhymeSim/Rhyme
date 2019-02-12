@@ -13,7 +13,6 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
 
   integer, parameter :: g(3) = [ 8, 10, 10 ]
   integer, parameter :: ghost(3) = [ 0, 0, 0 ]
-  integer, parameter :: bc_types(6) = [1, 1, 1, 1, 1, 1]
   integer, parameter :: xl(3) = [ 4, 6, 8 ]
   integer, parameter :: l(3) = [ 4, 2, 1 ]
 
@@ -22,7 +21,6 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
   type ( initial_condition_t ) :: ic
   type ( ic_shape_t ), pointer :: shape
   type ( samr_t ) :: samr
-  type ( samr_bc_t ) :: bc
   type ( ideal_gas_t ) :: ig
 
   integer :: i, j, k
@@ -32,7 +30,6 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
   tot_nboxes(0) = 1
 
   call samr%init_with ( g, 1, tot_nboxes, ghost )
-  call bc%init_with ( samr, bc_types )
 
   ic%background%w = [ rho, u, v, w, p ]
 
@@ -43,7 +40,7 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
   shape%fill%type = icid%uniform
   shape%fill%states(1)%w = [ delta * rho, u, v, w, p ]
 
-  call ic%apply ( ig, samr, bc )
+  call ic%apply ( ig, samr )
 
 
   do k = xl(3), xl(3) + l(3) - 1

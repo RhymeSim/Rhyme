@@ -137,21 +137,24 @@ contains
       end do
     end do
 
-    do k = 0, box%dims(3)
-      do j = 0, box%dims(2)
-        do i = 0, box%dims(1)
+    do k = max( 0, lbound( box%hydro, 3) ), box%dims(3)
+      do j = max( 0, lbound( box%hydro, 2) ), box%dims(2)
+        do i = max( 0, lbound( box%hydro, 1) ), box%dims(1)
           if ( active_dir(hyid%x) ) call riemann_solver ( &
             this%ws%levels(l)%boxes(b)%UR(i,j,k,hyid%x), &
             this%ws%levels(l)%boxes(b)%UL(i+1,j,k,hyid%x), &
-            hyid%x, this%ws%levels(l)%boxes(b) )
+            hyid%x, &
+            this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%x) )
           if ( active_dir(hyid%y) ) call riemann_solver ( &
             this%ws%levels(l)%boxes(b)%UR(i,j,k,hyid%y), &
             this%ws%levels(l)%boxes(b)%UL(i+1,j,k,hyid%y), &
-            hyid%y, this%ws%levels(l)%boxes(b) )
+            hyid%y, &
+            this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%y) )
           if ( active_dir(hyid%z) ) call riemann_solver ( &
             this%ws%levels(l)%boxes(b)%UL(i,j,k,hyid%z), &
             this%ws%levels(l)%boxes(b)%UR(i+1,j,k,hyid%z), &
-            hyid%z, this%ws%levels(l)%boxes(b) )
+            hyid%z, &
+            this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%z) )
         end do
       end do
     end do
@@ -184,8 +187,8 @@ contains
       integer :: dir, li(3), ri(3), idx(3)
 
       idx = [ i, j, k ]
-      li = merge ( idx - 1, idx, dirs .eq. dir)
-      ri = merge ( idx + 1, idx, dirs .eq. dir)
+      li = merge ( idx - 1, idx, dirs .eq. dir )
+      ri = merge ( idx + 1, idx, dirs .eq. dir )
 
       call this%sl%run ( &
         this%cfl, this%ig, &
@@ -200,16 +203,16 @@ contains
         this%ws%levels(l)%boxes(b)%UR( i, j, k, dir ) )
     end subroutine half_step
 
-    subroutine riemann_solver ( left, right, dir, wsbox )
+    subroutine riemann_solver ( left, right, dir, flux )
       implicit none
 
       type ( hydro_conserved_t ) :: left, right
       integer :: dir
-      type ( mh_workspace_box_t ) :: wsbox
+      type ( hydro_flux_t ) :: flux
 
       call this%irs%solve ( left, right, dir, star )
       call this%irs%sampling ( left, right, star, dir, 0.d0, dt, evolved_state )
-      call this%ig%flux_at ( evolved_state, dir, wsbox%FR(i,j,k,dir) )
+      call this%ig%flux_at ( evolved_state, dir, flux )
     end subroutine riemann_solver
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
 

@@ -14,7 +14,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 set ( deps
   rhyme_samr
-  rhyme_samr_bc
   rhyme_hydro_base
   rhyme_ideal_gas
 )

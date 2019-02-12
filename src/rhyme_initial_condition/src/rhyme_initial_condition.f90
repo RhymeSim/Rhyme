@@ -1,6 +1,5 @@
 module rhyme_initial_condition
   use rhyme_samr
-  use rhyme_samr_bc
   use rhyme_hydro_base
   use rhyme_ideal_gas
 
@@ -43,14 +42,14 @@ module rhyme_initial_condition
     type ( ic_shape_t ), pointer :: shapes => null()
     logical :: initialized
   contains
-    procedure :: new_shape => ic_new_shape
-    procedure :: apply => ic_apply
+    procedure :: new_shape => rhyme_initial_condition_new_shape
+    procedure :: apply => rhyme_initial_condition_apply
   end type initial_condition_t
 
 contains
 
 
-  function ic_new_shape ( this, shape_type ) result ( shape )
+  function rhyme_initial_condition_new_shape ( this, shape_type ) result ( shape )
     implicit none
 
     class ( initial_condition_t ), intent(inout) :: this
@@ -75,16 +74,15 @@ contains
     shape%type = shape_type
     shape%fill%type = icid%unset
     shape%trans%type = icid%unset
-  end function ic_new_shape
+  end function rhyme_initial_condition_new_shape
 
 
-  subroutine ic_apply ( this, ig, samr, bc )
+  subroutine rhyme_initial_condition_apply ( this, ig, samr )
     implicit none
 
     class ( initial_condition_t ), intent(in) :: this
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(inout) :: samr
-    type ( samr_bc_t ), intent(inout) :: bc
 
     integer :: i, j, k
     type ( hydro_conserved_t ) :: bg, h(2)
@@ -122,5 +120,5 @@ contains
 
       shape => shape%next
     end do
-  end subroutine ic_apply
+  end subroutine rhyme_initial_condition_apply
 end module rhyme_initial_condition

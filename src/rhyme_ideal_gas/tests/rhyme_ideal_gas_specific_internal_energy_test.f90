@@ -12,5 +12,5 @@ logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed
   failed = &
   abs ( ig%e_int_sp(cons) - e_int / rho ) > epsilon(0.e0) &
   .or. abs ( ig%e_int_sp(cons) - e_int_sp ) > epsilon(0.e0) &
-  .or. abs ( ig%e_int_sp(cons) - hy_specific_internal_energy(cons) ) > epsilon(0.e0)
+  .or. abs ( ig%e_int_sp(cons) - hy_sp_internal_e(cons) ) > epsilon(0.e0)
 end function rhyme_ideal_gas_specific_internal_energy_test

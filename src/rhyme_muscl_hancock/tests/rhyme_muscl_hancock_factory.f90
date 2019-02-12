@@ -48,7 +48,7 @@ contains
     ! Initializing SAMR
     call samr%init_with ( base_grid, nlevels, mh_factory_max_nboxes, ghost_cells )
 
-    do l = 0, samr%nlevels
+    do l = 0, samr%nlevels - 1
       samr%levels(l)%nboxes = mh_factory_init_nboxes(l)
 
       do b = 1, samr%levels(l)%nboxes

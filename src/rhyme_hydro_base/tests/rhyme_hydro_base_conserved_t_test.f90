@@ -1,5 +1,4 @@
-logical function rhyme_hydro_base_hydro_conserved_t_test () result (failed)
-  use rhyme_hydro_base
+logical function rhyme_hydro_base_conserved_t_test () result (failed)
   use rhyme_hydro_base_factory
 
   implicit none
@@ -26,4 +25,4 @@ logical function rhyme_hydro_base_hydro_conserved_t_test () result (failed)
   .or. abs ( cons%u(hyid%rho_w) - rho * w ) > epsilon(0.d0) &
   .or. abs ( cons%u(hyid%e_tot) - e_tot ) > epsilon(0.d0)
 
-end function rhyme_hydro_base_hydro_conserved_t_test
+end function rhyme_hydro_base_conserved_t_test

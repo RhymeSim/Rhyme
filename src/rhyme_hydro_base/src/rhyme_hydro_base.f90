@@ -20,49 +20,55 @@ module rhyme_hydro_base
 
 
   type hydro_indices_t
-    integer :: rho, u, v, w, p ! primitive variables
-    integer :: rho_u, rho_v, rho_w, e_tot ! conserved variables
-    integer :: x, y, z ! directions
+    integer :: rho = 1, u = 2, v = 3, w = 4, p = 5 ! primitive variables
+    integer :: rho_u = 2, rho_v = 3, rho_w = 4, e_tot = 5 ! conserved variables
+    integer :: x = 1, y = 2, z = 3 ! directions
   contains
-    procedure :: vel => hy_get_directional_velocity_index
-    procedure :: rho_vel => hy_get_directional_velocity_index
+    procedure :: vel => rhyme_hydro_base_get_directional_velocity_index
+    procedure :: rho_vel => rhyme_hydro_base_get_directional_velocity_index
   end type hydro_indices_t
 
+  type ( hydro_indices_t ), parameter :: hyid = hydro_indices_t ()
 
-  type ( hydro_indices_t ) :: hyid = hydro_indices_t ( &
-    1, 2, 3, 4, 5, & ! primitive variables
-    2, 3, 4, 5, & ! conserved variables (excluding rho)
-    1, 2, 3 & ! directions
-  )
+  interface hy_copy
+    procedure rhyme_hydro_base_copy
+  end interface hy_copy
 
-  interface hy_specific_kinetic_energy
-    procedure hy_specific_kinetic_energy_conserved
-    procedure hy_specific_kinetic_energy_primitive
-  end interface
+  interface hy_prim_to_cons
+    procedure rhyme_hydro_base_prim_to_cons
+  end interface hy_prim_to_cons
 
-  interface hy_specific_internal_energy
-    procedure hy_specific_internal_energy_conserved
-  end interface
+  interface hy_sp_kinetic_e
+    procedure rhyme_hydro_base_specific_kinetic_energy_conserved
+  end interface hy_sp_kinetic_e
+
+  interface hy_sp_kinetic_e_prim
+    procedure rhyme_hydro_base_specific_kinetic_energy_primitive
+  end interface hy_sp_kinetic_e_prim
+
+  interface hy_sp_internal_e
+    procedure rhyme_hydro_base_specific_internal_energy_conserved
+  end interface hy_sp_internal_e
 
 contains
 
   !> Copy a given hydro cell into another one
   !> @param[in] source
   !> @param[out] traget
-  subroutine hy_copy (source, target)
+  subroutine rhyme_hydro_base_copy (source, target)
     implicit none
 
     type ( hydro_conserved_t ), intent(in) :: source
     type ( hydro_conserved_t ), intent(out) :: target
 
     target%u = source%u
-  end subroutine hy_copy
+  end subroutine rhyme_hydro_base_copy
 
   !> Converting primitive hydro state to conserved
   !> @param[in] primitive
   !> @param[in] e_int Internal energy
   !> @param[out] conserved
-  pure subroutine hy_prim_to_cons (primitive, e_int, conserved)
+  pure subroutine rhyme_hydro_base_prim_to_cons (primitive, e_int, conserved)
     implicit none
 
     type ( hydro_primitive_t ), intent(in) :: primitive
@@ -75,48 +81,49 @@ contains
     conserved%u(hyid%rho_w) = primitive%w(hyid%rho) * primitive%w(hyid%w)
     conserved%u(hyid%e_tot) = primitive%w(hyid%rho) &
     * 0.5d0 * sum(primitive%w(hyid%u:hyid%w)**2) + e_int
-  end subroutine hy_prim_to_cons
+  end subroutine rhyme_hydro_base_prim_to_cons
 
   !> Specific Kinetic Energy of a given hydro conserved state
   !> @param[in] U a given conserved hydro state
   !> @return e_kin_sp
-  pure function hy_specific_kinetic_energy_conserved (U) result (e_kin_sp)
+  pure function rhyme_hydro_base_specific_kinetic_energy_conserved (U) result (e_kin_sp)
     implicit none
 
     type ( hydro_conserved_t ), intent(in) :: U
     real(kind=8) :: e_kin_sp
 
     e_kin_sp = 0.5d0 * sum(U%u(hyid%rho_u:hyid%rho_w)**2) / U%u(hyid%rho)**2
-  end function hy_specific_kinetic_energy_conserved
+  end function rhyme_hydro_base_specific_kinetic_energy_conserved
 
   !> Specific Kinetic Energy of a given hydro primitive state
   !> @param[in] W a given primitive hydro state
   !> @return e_kin_sp
-  pure function hy_specific_kinetic_energy_primitive (W) result (e_kin_sp)
+  pure function rhyme_hydro_base_specific_kinetic_energy_primitive (W) result (e_kin_sp)
     implicit none
 
     type ( hydro_primitive_t ), intent(in) :: W
     real(kind=8) :: e_kin_sp
 
     e_kin_sp = 0.5d0 * sum(W%w(hyid%u:hyid%w)**2)
-  end function hy_specific_kinetic_energy_primitive
+  end function rhyme_hydro_base_specific_kinetic_energy_primitive
 
 
   !> Specific Internal Energy of a given conserved state
   !> @param[in] U a given conserved hydro state
   !> @return e_int_sp
-  pure function hy_specific_internal_energy_conserved (U) result (e_int_sp)
+  pure function rhyme_hydro_base_specific_internal_energy_conserved (U) result (e_int_sp)
     implicit none
 
     type ( hydro_conserved_t ), intent(in) :: U
     real(kind=8) :: e_int_sp
 
-    e_int_sp = ( U%u(hyid%e_tot) / U%u(hyid%rho) ) - hy_specific_kinetic_energy(U)
-  end function hy_specific_internal_energy_conserved
+    e_int_sp = ( U%u(hyid%e_tot) / U%u(hyid%rho) ) &
+      - rhyme_hydro_base_specific_kinetic_energy_conserved(U)
+  end function rhyme_hydro_base_specific_internal_energy_conserved
 
 
   !> Return the velocity of a given direction
-  pure function hy_get_directional_velocity_index (this, dir) result (v_idx)
+  pure function rhyme_hydro_base_get_directional_velocity_index (this, dir) result (v_idx)
     implicit none
 
     class ( hydro_indices_t ), intent(in) :: this
@@ -124,5 +131,5 @@ contains
     integer :: v_idx
 
     v_idx = this%rho_u + dir - 1
-  end function hy_get_directional_velocity_index
+  end function rhyme_hydro_base_get_directional_velocity_index
 end module rhyme_hydro_base
