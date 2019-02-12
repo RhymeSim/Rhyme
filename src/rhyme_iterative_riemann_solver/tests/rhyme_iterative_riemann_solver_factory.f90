@@ -1,11 +1,34 @@
 module rhyme_iterative_riemann_solver_factory
   use rhyme_iterative_riemann_solver
+  use rhyme_ideal_gas
 
   implicit none
 
-  real(kind=8), save :: irs_gamma = 1.4d0
+  logical :: irs_factory_initialized = .false.
+
+  integer, parameter :: irs_factory_n_iteration = 101
+  integer, parameter :: irs_factory_gastype = igid%diatomic
+
+  real ( kind=8 ), parameter :: irs_factory_pressure_floor = 1.01d-10
+  real ( kind=8 ), parameter :: irs_factory_tolerance = 1.01d-6
+
+  type ( ideal_gas_t ) :: ig
+  type ( iterative_riemann_solver_t ) :: irs
 
 contains
+
+
+  subroutine rhyme_iterative_riemann_solver_factory_init ()
+    implicit none
+
+    if ( irs_factory_initialized ) return
+
+    call ig%init_with ( irs_factory_gastype )
+    call irs%init_with ( ig, irs_factory_n_iteration, irs_factory_tolerance, &
+      irs_factory_pressure_floor )
+
+    irs_factory_initialized = .true.
+  end subroutine rhyme_iterative_riemann_solver_factory_init
 
   !> Sod test (very mild test)
   !! a left rarefacton, a contact discontinuity and a right shock
@@ -22,8 +45,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d0])
     R_prim = hydro_primitive_t([.125d0, 0.d0, 0.d0, 0.d0, .1d0])
 
-    e_int_L = 1.d0 / (irs_gamma - 1.d0)
-    e_int_R = .1d0 / (irs_gamma - 1.d0)
+    e_int_L = 1.d0 / (irs%ig%gamma - 1.d0)
+    e_int_R = .1d0 / (irs%ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -54,8 +77,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, -2.d0, -2.d0, -2.d0, .4d0])
     R_prim = hydro_primitive_t([1.d0, 2.d0, 2.d0, 2.d0, .4d0])
 
-    e_int_L = .4d0 / (irs_gamma - 1.d0)
-    e_int_R = .4d0 / (irs_gamma - 1.d0)
+    e_int_L = .4d0 / (irs%ig%gamma - 1.d0)
+    e_int_R = .4d0 / (irs%ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -84,8 +107,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d3])
     R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
 
-    e_int_L = 1.d3 / (irs_gamma - 1.d0)
-    e_int_R = 1.d-2 / (irs_gamma - 1.d0)
+    e_int_L = 1.d3 / (irs%ig%gamma - 1.d0)
+    e_int_R = 1.d-2 / (irs%ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -113,8 +136,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
     R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d2])
 
-    e_int_L = 1.d-2 / (irs_gamma - 1.d0)
-    e_int_R = 1.d2 / (irs_gamma - 1.d0)
+    e_int_L = 1.d-2 / (irs%ig%gamma - 1.d0)
+    e_int_R = 1.d2 / (irs%ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -143,8 +166,8 @@ contains
     L_prim = hydro_primitive_t([5.99924d0, 19.5975d0, 19.5975d0, 19.5975d0, 460.894d0])
     R_prim = hydro_primitive_t([5.99924d0, -6.19633d0, -6.19633d0, -6.19633d0, 46.0950d0])
 
-    e_int_L = 460.894d0 / (irs_gamma - 1.d0)
-    e_int_R = 46.0950d0 / (irs_gamma - 1.d0)
+    e_int_L = 460.894d0 / (irs%ig%gamma - 1.d0)
+    e_int_R = 46.0950d0 / (irs%ig%gamma - 1.d0)
 
     call hy_prim_to_cons (L_prim, e_int_L, L)
     call hy_prim_to_cons (R_prim, e_int_R, R)

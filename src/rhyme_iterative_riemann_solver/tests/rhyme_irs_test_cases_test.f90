@@ -3,8 +3,9 @@ logical function rhyme_irs_test_cases_test () result (failed)
 
   implicit none
 
-  type ( ideal_gas_t ), save :: ig
   logical :: failed_sod, failed_123, failed_left, failed_right, failed_shocks
+
+  call rhyme_iterative_riemann_solver_factory_init
 
   call irs_test_cases ( irs_Sod_test, "Sod", failed_sod )
   call irs_test_cases ( irs_123_test, "123 test", failed_123 )
@@ -16,7 +17,7 @@ logical function rhyme_irs_test_cases_test () result (failed)
 
 contains
 
-  subroutine irs_test_cases (func, test_name, failed)
+  subroutine irs_test_cases ( func, test_name, failed )
     implicit none
 
     external :: func
@@ -24,19 +25,16 @@ contains
     logical :: failed
 
     type ( hydro_conserved_t ) :: L, R
-    type ( iterative_riemann_solver_config_t ) :: irs_config
     type ( rp_star_region_t ) :: expected_star, star
     real(kind=8) :: ex_p, ex_u, ex_left_rho, ex_right_rho
     real(kind=8) :: star_left_rho, star_right_rho
     logical :: failed_p, failed_v, failed_lshock, failed_rshock, failed_lrho, failed_rrho
 
-    call ig%init_with ( igid%diatomic )
-
     call func (L, R, expected_star)
     ex_p = expected_star%p
     ex_u = expected_star%u
 
-    call iterative_riemann_solver (ig, L, R, hyid%x, irs_config, star)
+    call irs%solve ( L, R, hyid%x, star )
 
     if ( expected_star%left%is_shock ) then
       ex_left_rho = expected_star%left%shock%rho
