@@ -11,7 +11,7 @@ module rhyme_param_parser
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl ) result ( passed )
+  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl ) result ( passed )
     implicit none
 
     character (len=1024), intent(in) :: param_file
@@ -20,7 +20,7 @@ contains
     type ( cfl_t ) :: cfl
     type ( ideal_gas_t ) :: ig
     type ( initial_condition_t ) :: ic
-    type ( iterative_riemann_solver_config_t ) :: irs_config
+    type ( iterative_riemann_solver_t ) :: irs
     type ( slope_limiter_t ) :: sl
 
     integer :: i, ios
@@ -127,9 +127,9 @@ contains
         end if
 
         ! Iterative Riemann Solver
-      case ( "pressure_floor" ); read (1, *) key, op, irs_config%pressure_floor
-      case ( "tolerance" ); read (1, *) key, op, irs_config%tolerance
-      case ( "n_iteration" ); read (1, *) key, op, irs_config%n_iteration
+      case ( "pressure_floor" ); read (1, *) key, op, irs%pressure_floor
+      case ( "tolerance" ); read (1, *) key, op, irs%tolerance
+      case ( "n_iteration" ); read (1, *) key, op, irs%n_iteration
 
         ! Slope limiter
       case ( "limiter" )

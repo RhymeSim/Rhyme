@@ -19,9 +19,9 @@ program rhyme
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
-  type ( iterative_riemann_solver_config_t ) :: irs_config
+  type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
-  type ( muscl_hancock_t ) :: mh
+  ! type ( muscl_hancock_t ) :: mh
 
   integer :: l, b, step = 1
   real(kind=8) :: t, dt
@@ -34,7 +34,7 @@ program rhyme
 
 
   ! Reading parameter file and converting it to code units
-  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl ) ) stop
+  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl ) ) stop
 
   ! Initializing Structured AMR
   call samr%init
@@ -45,12 +45,14 @@ program rhyme
   ! Initializing Ideal Gas
   call ig%init
 
-  ! Initializing MUSCL-Hancock
-  ! call mh%init ( cfl, ig, sl, samr )
-
   ! Applying Initial Condition
   call ic%apply ( ig, samr, bc )
 
+  ! Initializing Iterative Riemann Solver
+  call irs%init ( ig )
+
+  ! Initializing MUSCL-Hancock
+  ! call mh%init_with ( cfl, ig, irs, sl, samr )
 
   dt = cfl%dt ( ig, samr )
   step = 0

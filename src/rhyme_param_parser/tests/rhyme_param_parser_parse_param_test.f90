@@ -8,12 +8,12 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( initial_condition_t ) :: ic
-  type ( iterative_riemann_solver_config_t ) :: irs_config
+  type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  failed = .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs_config, sl )
+  failed = .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl )
   if ( failed ) return
 
   ! Structured AMR
@@ -64,9 +64,9 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   ! Iterative Riemann Solver
   failed = &
-  abs ( irs_config%pressure_floor - 1.d-10 ) > epsilon(0.d0) &
-  .or. abs ( irs_config%tolerance - 1.d-6 ) > epsilon(0.d0) &
-  .or. irs_config%n_iteration .ne. 100
+  abs ( irs%pressure_floor - 1.d-10 ) > epsilon(0.d0) &
+  .or. abs ( irs%tolerance - 1.d-6 ) > epsilon(0.d0) &
+  .or. irs%n_iteration .ne. 100
 
   if ( failed ) return
 

@@ -19,7 +19,7 @@ module rhyme_muscl_hancock
     type ( ideal_gas_t ) :: ig
     type ( slope_limiter_t ) :: sl
     type ( mh_workspace_t ) :: ws
-    type ( iterative_riemann_solver_config_t ) :: irs_config
+    type ( iterative_riemann_solver_t ) :: irs
     logical :: initialized = .false.
   contains
     procedure :: init_with => rhyme_muscl_hancock_init_with
@@ -31,22 +31,28 @@ module rhyme_muscl_hancock
 
 contains
 
-  subroutine rhyme_muscl_hancock_init_with ( this, cfl, ig, irs_config, sl, samr )
+  subroutine rhyme_muscl_hancock_init_with ( this, cfl, ig, irs, sl, samr )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: this
     type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( iterative_riemann_solver_config_t ), intent(in) :: irs_config
+    type ( iterative_riemann_solver_t ), intent(in) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
     type ( samr_t ), intent ( in ) :: samr
 
 
     if ( this%initialized ) return
 
+    if ( .not. ig%initialized .or. .not. irs%initialized ) then
+      ! TODO: Should implement an exception system
+      print *, "Uninitialized arguments have been detected during intializing MH"
+      return
+    end if
+
     this%cfl = cfl
     this%ig = ig
-    this%irs_config = irs_config
+    this%irs = irs
     this%sl = sl
 
 
@@ -201,8 +207,8 @@ contains
       integer :: dir
       type ( mh_workspace_box_t ) :: wsbox
 
-      call iterative_riemann_solver ( this%ig, left, right, dir, this%irs_config, star )
-      call irs_sampling ( this%ig, left, right, star, dir, 0.d0, dt, evolved_state )
+      call this%irs%solve ( left, right, dir, star )
+      call this%irs%sampling ( left, right, star, dir, 0.d0, dt, evolved_state )
       call this%ig%flux_at ( evolved_state, dir, wsbox%FR(i,j,k,dir) )
     end subroutine riemann_solver
   end subroutine rhyme_muscl_hancock_solve_memory_intensive

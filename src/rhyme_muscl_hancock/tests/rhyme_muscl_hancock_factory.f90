@@ -30,7 +30,7 @@ module rhyme_muscl_hancock_factory
 
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
-  type ( iterative_riemann_solver_config_t ) :: irs_config
+  type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( samr_t ) :: samr
 
@@ -91,13 +91,16 @@ contains
     ! Initializing Ideal Gas
     call ig%init_with ( mh_factory_gastype )
 
+    ! Initializing Iteratice Riemann Solver
+    call irs%init ( ig )
+
     ! Initializing Slope Limiter
     sl%type = mh_factory_sltype
 
     ! Initializing Iterative Riemann Solver Configs
-    irs_config%n_iteration = mh_factory_n_iteration
-    irs_config%tolerance = mh_factory_tolerance
-    irs_config%pressure_floor = mh_factory_pressure_floor
+    irs%n_iteration = mh_factory_n_iteration
+    irs%tolerance = mh_factory_tolerance
+    irs%pressure_floor = mh_factory_pressure_floor
 
     mh_factory_initialized = .true.
   end subroutine rhyme_muscl_hancock_factory_init

@@ -12,7 +12,6 @@ logical function rhyme_irs_init_with_test () result ( failed )
   failed = &
   .not. irs%initialized &
   .or. .not. irs_factory_initialized &
-  .or. irs%ig%type .ne. irs_factory_gastype &
   .or. irs%n_iteration .ne. irs_factory_n_iteration &
   .or. abs ( irs%tolerance - irs_factory_tolerance ) > epsilon(0.d0) &
   .or. abs ( irs%pressure_floor - irs_factory_pressure_floor ) > epsilon(0.d0)

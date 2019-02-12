@@ -12,6 +12,7 @@ module rhyme_iterative_riemann_solver
     real(kind=8) :: tolerance = 1.d-6
     type ( ideal_gas_t ) :: ig
   contains
+    procedure :: init => rhyme_iterative_riemann_solver_init
     procedure :: init_with => rhyme_iterative_riemann_solver_init_with
     procedure :: solve => rhyme_iterative_riemann_solver_solve
     procedure :: nonlinear_waves => rhyme_iterative_riemann_solver_nonlinear_waves
@@ -35,8 +36,23 @@ contains
     this%tolerance = tol
     this%pressure_floor = pfloor
 
-    this%initialized = .true.
+    call this%init ( ig )
+
   end subroutine rhyme_iterative_riemann_solver_init_with
+
+
+  subroutine rhyme_iterative_riemann_solver_init ( this, ig )
+    implicit none
+
+    class ( iterative_riemann_solver_t ), intent ( inout ) :: this
+    type ( ideal_gas_t ), intent ( in ) :: ig
+
+
+    if ( this%initialized ) return
+
+    this%ig = ig
+    this%initialized = .true.
+  end subroutine rhyme_iterative_riemann_solver_init
 
   !> calculate star region variables based on Newton-Rhapson iteration method
   !! @param[in] L, R <= Left and right conserved hydro states
