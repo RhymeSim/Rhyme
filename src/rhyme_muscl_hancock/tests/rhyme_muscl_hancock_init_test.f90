@@ -8,12 +8,10 @@ logical function rhyme_muscl_hancock_init_test () result ( failed )
 
   call rhyme_muscl_hancock_factory_init
 
-
   mh%cfl = cfl
   mh%ig = ig
   mh%irs_config = irs_config
   mh%sl = sl
-
 
   call mh%init ( samr )
 

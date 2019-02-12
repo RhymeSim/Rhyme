@@ -79,15 +79,16 @@ contains
   end subroutine rhyme_muscl_hancock_init
 
 
-  subroutine rhyme_muscl_hancock_solve ( this, l, b, box )
+  subroutine rhyme_muscl_hancock_solve ( this, l, b, box, dx, dt )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: this
     integer, intent ( in ) :: l, b
-    type ( samr_box_t ), intent ( in ) :: box
+    type ( samr_box_t ), intent ( inout ) :: box
+    real ( kind=8 ), intent ( in ) :: dx(3), dt
 
     if ( this%ws%type .eq. wsid%memory_intensive ) then
-      call this%solve_memory_intensive ( l, b, box )
+      call this%solve_memory_intensive ( l, b, box, dx, dt )
     else if ( this%ws%type .eq. wsid%cpu_intensive ) then
       call this%solve_cpu_intensive
     else
@@ -102,14 +103,13 @@ contains
 
     class ( muscl_hancock_t ), intent ( inout ) :: this
     integer, intent ( in ) :: l, b
-    type ( samr_box_t ), intent ( in ) :: box
+    type ( samr_box_t ), intent ( inout ) :: box
     real ( kind=8 ), intent ( in ) :: dx(3), dt
 
     integer :: i, j, k, lb(3), ub(3), dirs(3), flux_factor(3)
     logical :: active_dir(3)
 
-    real ( kind=8 ) :: Delta
-    type ( hydro_conserved_t ) :: phi, evolved_state
+    type ( hydro_conserved_t ) :: Delta, evolved_state
     type ( rp_star_region_t ) :: star
 
     call this%ws%check ( l, b, box )
@@ -135,17 +135,17 @@ contains
       do j = 0, box%dims(2)
         do i = 0, box%dims(1)
           if ( active_dir(hyid%x) ) call riemann_solver ( &
-            this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%x,wsid%rsides), &
-            this%ws%levels(l)%boxes(b)%U(i+1,j,k,hyid%x,wsid%lsides), &
-            this%ws%levels(l)%boxes(b) )
+            this%ws%levels(l)%boxes(b)%UR(i,j,k,hyid%x), &
+            this%ws%levels(l)%boxes(b)%UL(i+1,j,k,hyid%x), &
+            hyid%x, this%ws%levels(l)%boxes(b) )
           if ( active_dir(hyid%y) ) call riemann_solver ( &
-            this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%y,wsid%rsides), &
-            this%ws%levels(l)%boxes(b)%U(i+1,j,k,hyid%y,wsid%lsides), &
-            this%ws%levels(l)%boxes(b) )
+            this%ws%levels(l)%boxes(b)%UR(i,j,k,hyid%y), &
+            this%ws%levels(l)%boxes(b)%UL(i+1,j,k,hyid%y), &
+            hyid%y, this%ws%levels(l)%boxes(b) )
           if ( active_dir(hyid%z) ) call riemann_solver ( &
-            this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%z,wsid%rsides), &
-            this%ws%levels(l)%boxes(b)%U(i+1,j,k,hyid%z,wsid%lsides), &
-            this%ws%levels(l)%boxes(b) )
+            this%ws%levels(l)%boxes(b)%UL(i,j,k,hyid%z), &
+            this%ws%levels(l)%boxes(b)%UR(i+1,j,k,hyid%z), &
+            hyid%z, this%ws%levels(l)%boxes(b) )
         end do
       end do
     end do
@@ -155,16 +155,16 @@ contains
         do i = 1, box%dims(1)
           box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( &
             flux_factor(hyid%x) * dt / dx(hyid%x) * ( &
-              this%ws%levels(l)%boxes(b)%U(i-1,j,k,hyid%x,wsid%rfluxes)%u &
-              - this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%x,wsid%rfluxes)%u &
+              this%ws%levels(l)%boxes(b)%FR(i-1,j,k,hyid%x)%f &
+              - this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%x)%f &
             ) + &
             flux_factor(hyid%y) * dt / dx(hyid%y) * ( &
-              this%ws%levels(l)%boxes(b)%U(i,j-1,k,hyid%y,wsid%rfluxes)%u &
-              - this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%y,wsid%rfluxes)%u &
+              this%ws%levels(l)%boxes(b)%FR(i,j-1,k,hyid%y)%f &
+              - this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%y)%f &
             ) + &
             flux_factor(hyid%z) * dt / dx(hyid%z) * ( &
-              this%ws%levels(l)%boxes(b)%U(i,j,k-1,hyid%z,wsid%rfluxes)%u &
-              - this%ws%levels(l)%boxes(b)%U(i,j,k,hyid%z,wsid%rfluxes)%u &
+              this%ws%levels(l)%boxes(b)%FR(i,j,k-1,hyid%z)%f &
+              - this%ws%levels(l)%boxes(b)%FR(i,j,k,hyid%z)%f &
             ) &
           )
         end do
@@ -190,8 +190,8 @@ contains
 
       call this%ig%half_step_extrapolation ( &
         box%hydro(i,j,k), Delta, dir, dx(dir), dt, &
-        this%ws%levels(l)%boxes(b)%U( i, j, k, dir, wsid%lsides ), &
-        this%ws%levels(l)%boxes(b)%U( i, j, k, dir, wsid%rsides ) )
+        this%ws%levels(l)%boxes(b)%UL( i, j, k, dir ), &
+        this%ws%levels(l)%boxes(b)%UR( i, j, k, dir ) )
     end subroutine half_step
 
     subroutine riemann_solver ( left, right, dir, wsbox )
@@ -203,7 +203,7 @@ contains
 
       call iterative_riemann_solver ( this%ig, left, right, dir, this%irs_config, star )
       call irs_sampling ( this%ig, left, right, star, dir, 0.d0, dt, evolved_state )
-      call this%ig%flux_at ( evolved_state, dir, wsbox%U(i,j,k,dir,wsid%rfluxes) )
+      call this%ig%flux_at ( evolved_state, dir, wsbox%FR(i,j,k,dir) )
     end subroutine riemann_solver
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
 

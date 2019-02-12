@@ -6,8 +6,6 @@ module rhyme_mh_workspace
   implicit none
 
   type rhyme_mh_workspace_indices_t
-    integer :: nindices = 3
-    integer :: lsides = 1, rsides = 2, rfluxes = 3
     integer :: memory_intensive = 10, cpu_intensive = 11
   end type rhyme_mh_workspace_indices_t
 
@@ -15,7 +13,9 @@ module rhyme_mh_workspace
 
 
   type mh_workspace_box_t
-    type ( hydro_conserved_t ), allocatable :: U( :, :, :, :, : ) ! i, j, k, dir, type
+    type ( hydro_conserved_t ), allocatable :: UL ( :, :, :, : ) ! i, j, k, dir
+    type ( hydro_conserved_t ), allocatable :: UR ( :, :, :, : ) ! i, j, k, dir
+    type ( hydro_flux_t ), allocatable :: FR ( :, :, :, : ) ! i, j, k, dir
   end type mh_workspace_box_t
 
 
@@ -72,7 +72,7 @@ contains
     integer, intent ( in ) :: l, b
     type ( samr_box_t ), intent ( in ) :: hydro_box
 
-    integer :: lb(3), ub(3), wslb(5), wsub(5), stat
+    integer :: lb(3), ub(3), wslb(4), wsub(4), stat
 
 
     if ( this%type .eq. wsid%cpu_intensive ) return
@@ -81,23 +81,37 @@ contains
     lb = lbound ( hydro_box%hydro )
     ub = ubound ( hydro_box%hydro )
 
-    if ( allocated( this%levels(l)%boxes(b)%U ) ) then
+    if ( allocated( this%levels(l)%boxes(b)%UL ) ) then
 
-      wslb = lbound ( this%levels(l)%boxes(b)%U )
-      wsub = ubound ( this%levels(l)%boxes(b)%U )
+      wslb = lbound ( this%levels(l)%boxes(b)%UL )
+      wsub = ubound ( this%levels(l)%boxes(b)%UL )
 
       if ( any( lb .ne. wslb(:3) ) .or. any( ub .ne. wsub(:3) ) ) then
-        deallocate ( this%levels(l)%boxes(b)%U, stat=stat )
+        deallocate ( this%levels(l)%boxes(b)%UL, stat=stat )
+        deallocate ( this%levels(l)%boxes(b)%UR, stat=stat )
+        deallocate ( this%levels(l)%boxes(b)%FR, stat=stat )
 
         if ( stat == 0 ) then
-          allocate ( this%levels(l)%boxes(b)%U ( &
-            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, wsid%nindices &
+          allocate ( this%levels(l)%boxes(b)%UL ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
+          ))
+          allocate ( this%levels(l)%boxes(b)%UR ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
+          ))
+          allocate ( this%levels(l)%boxes(b)%FR ( &
+            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
           ))
         end if
       end if
     else
-      allocate ( this%levels(l)%boxes(b)%U ( &
-        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3, wsid%nindices &
+      allocate ( this%levels(l)%boxes(b)%UL ( &
+        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
+      ))
+      allocate ( this%levels(l)%boxes(b)%UR ( &
+        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
+      ))
+      allocate ( this%levels(l)%boxes(b)%FR ( &
+        lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), 3 &
       ))
     end if
   end subroutine rhyme_mh_workspace_check
