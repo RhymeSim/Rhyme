@@ -16,10 +16,10 @@ logical function rhyme_hdf5_util_read_group_attr_test () result ( failed )
   character ( len=128 ) :: val_char
 
   call h5%create ( testfile )
-  call h5%add_group_attr ( "/", "int", 1 )
-  call h5%add_group_attr ( "/", "real", 2.34e0 )
-  call h5%add_group_attr ( "/", "real8", 3.45d0 )
-  call h5%add_group_attr ( "/", "char", "Hello world!" )
+  call h5%write_group_attr ( "/", "int", 1 )
+  call h5%write_group_attr ( "/", "real", 2.34e0 )
+  call h5%write_group_attr ( "/", "real8", 3.45d0 )
+  call h5%write_group_attr ( "/", "char", "Hello world!" )
   call h5%close
 
   call h5%open ( testfile )

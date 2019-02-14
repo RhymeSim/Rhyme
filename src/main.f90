@@ -79,7 +79,7 @@ program rhyme
     call chombo%write_samr ( samr )
 
     dt = cfl%dt ( ig, samr )
-    t = t + dt
+    samr%levels(0)%t = samr%levels(0)%t + dt
     step = step + 1
   end do
 

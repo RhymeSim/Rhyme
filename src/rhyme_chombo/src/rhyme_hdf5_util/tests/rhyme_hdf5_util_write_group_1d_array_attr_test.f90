@@ -1,10 +1,10 @@
-logical function rhyme_hdf5_util_add_group_1d_array_attr_test () result ( failed )
+logical function rhyme_hdf5_util_write_group_1d_array_attr_test () result ( failed )
   use rhyme_hdf5_util
 
   implicit none
 
   ! Constants
-  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_add_group_1d_array_attr.h5"
+  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_1d_array_attr.h5"
   integer, parameter :: array_int(5) = [ 1, 2, 3, 4, 5 ]
   real ( kind=4 ), parameter :: array_real(5) = [ 1.e0, 2.e0, 3.e0, 4.e0, 5.e0 ]
   real ( kind=8 ), parameter :: array_real8(5) = [ 1.d0, 2.d0, 3.d0, 4.d0, 5.d0 ]
@@ -25,9 +25,9 @@ logical function rhyme_hdf5_util_add_group_1d_array_attr_test () result ( failed
 
 
   call h5%create ( testfile )
-  call h5%add_group_1d_array_attr ( "/", "array_i", array_int )
-  call h5%add_group_1d_array_attr ( "/", "array_r", array_real )
-  call h5%add_group_1d_array_attr ( "/", "array_r8", array_real8 )
+  call h5%write_group_1d_array_attr ( "/", "array_i", array_int )
+  call h5%write_group_1d_array_attr ( "/", "array_r", array_real )
+  call h5%write_group_1d_array_attr ( "/", "array_r8", array_real8 )
   call h5%close
 
 
@@ -65,4 +65,4 @@ logical function rhyme_hdf5_util_add_group_1d_array_attr_test () result ( failed
   .or. any ( abs ( attr_real - array_real ) > epsilon(0.e0) ) .or. trim(key_real) .ne. "array_r" &
   .or. any ( abs ( attr_real8 - array_real8 ) > epsilon(0.d0) ) .or. trim(key_real8) .ne. "array_r8"
 
-end function rhyme_hdf5_util_add_group_1d_array_attr_test
+end function rhyme_hdf5_util_write_group_1d_array_attr_test

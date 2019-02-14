@@ -1,10 +1,10 @@
-logical function rhyme_hdf5_util_add_group_attr_test () result ( failed )
+logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   use rhyme_hdf5_util
 
   implicit none
 
   ! Constants
-  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_add_group_attr.h5"
+  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_attr.h5"
 
   ! HDF5 related variables
   integer :: hdferr
@@ -23,10 +23,10 @@ logical function rhyme_hdf5_util_add_group_attr_test () result ( failed )
 
 
   call h5%create ( testfile )
-  call h5%add_group_attr ( "/", "int", 1 )
-  call h5%add_group_attr ( "/", "real", 2.34e0 )
-  call h5%add_group_attr ( "/", "real8", 3.45d0 )
-  call h5%add_group_attr ( "/", "string", "Hello world!" )
+  call h5%write_group_attr ( "/", "int", 1 )
+  call h5%write_group_attr ( "/", "real", 2.34e0 )
+  call h5%write_group_attr ( "/", "real8", 3.45d0 )
+  call h5%write_group_attr ( "/", "string", "Hello world!" )
   call h5%close
 
 
@@ -79,4 +79,4 @@ logical function rhyme_hdf5_util_add_group_attr_test () result ( failed )
   print *,attr_char
 
   call h5fclose_f ( fid, hdferr )
-end function rhyme_hdf5_util_add_group_attr_test
+end function rhyme_hdf5_util_write_group_attr_test

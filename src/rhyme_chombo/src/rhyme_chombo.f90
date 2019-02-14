@@ -20,6 +20,7 @@ module rhyme_chombo
   contains
     procedure :: init_with => rhyme_chombo_init_with
     procedure :: write_samr => rhyme_chombo_write_samr
+    procedure :: write_level_data => rhyme_chombo_write_level_data
     procedure :: filename_generator => rhyme_chombo_filename_generator
   end type chombo_t
 
@@ -69,7 +70,7 @@ contains
     class ( chombo_t ), intent (inout) :: this
     type ( samr_t ), intent (in) :: samr
 
-    integer :: i, ndims
+    integer :: i, ndims, l
     character ( len=16 ) :: level_name
     character ( len=1024 ) :: filename
 
@@ -82,32 +83,66 @@ contains
     do i = 0, samr%nlevels - 1
       write ( level_name, '(A7,I1)') "/level_", i
       call this%create_group ( level_name, this%level_ids(i) )
-      call this%add_group_1d_array_attr ( level_name, "dx", samr%levels(i)%dx )
-      call this%add_group_attr ( level_name, "ref_ratio", 2**(i+1) * samr%levels(i)%refine_factor )
+      call this%write_group_1d_array_attr ( level_name, "dx", samr%levels(i)%dx )
+      call this%write_group_attr ( level_name, "ref_ratio", samr%levels(i)%refine_factor )
     end do
 
-    call this%add_group_comp_1d_array_attr ( "/level_0", "prob_domain", &
+    call this%write_group_comp_1d_array_attr ( "/level_0", "prob_domain", &
       [ "lo_i", "lo_j", "lo_k", "hi_i", "hi_j", "hi_k" ], &
       [ 0, 0, 0, samr%base_grid(1)-1, samr%base_grid(2)-1, samr%base_grid(3)-1 ] )
 
-    call this%add_group_1d_array_attr ( "/", "ProblemDomain", samr%base_grid )
-    call this%add_group_attr ( "/", "num_levels", samr%nlevels )
-    call this%add_group_attr ( "/", "num_components", 5 )
-    call this%add_group_attr ( "/", "component_0", "rho" )
-    call this%add_group_attr ( "/", "component_1", "rho_u" )
-    call this%add_group_attr ( "/", "component_2", "rho_v" )
-    call this%add_group_attr ( "/", "component_3", "rho_w" )
-    call this%add_group_attr ( "/", "component_4", "E" )
-    ! TODO: not implemented: call this%add_group_attr ( "/", "iteration", samr%levels(0)%iteration )
-    call this%add_group_attr ( "/", "iteration", 1 )
-    ! TODO: not implemented: call this%add_group_attr ( "/", "time", samr%levels(0)%t )
-    call this%add_group_attr ( "/", "time", 0.12d0 )
+    call this%write_group_1d_array_attr ( "/", "ProblemDomain", samr%base_grid )
+    call this%write_group_attr ( "/", "num_levels", samr%nlevels )
+    call this%write_group_attr ( "/", "num_components", 5 )
+    call this%write_group_attr ( "/", "component_0", "rho" )
+    call this%write_group_attr ( "/", "component_1", "rho_u" )
+    call this%write_group_attr ( "/", "component_2", "rho_v" )
+    call this%write_group_attr ( "/", "component_3", "rho_w" )
+    call this%write_group_attr ( "/", "component_4", "e_tot" )
+    call this%write_group_attr ( "/", "iteration", samr%levels(0)%iteration )
+    call this%write_group_attr ( "/", "time", samr%levels(0)%t )
 
     call this%create_group ( "/chombo_global", this%chombo_global_id )
 
     ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
-    call this%add_group_attr ( "/chombo_global", "SpaceDim", ndims )
+    call this%write_group_attr ( "/chombo_global", "SpaceDim", ndims )
+
+    do l = 0, samr%nlevels - 1
+      call this%write_level_data ( samr%levels(l) )
+    end do
 
     call this%close
   end subroutine rhyme_chombo_write_samr
+
+
+  subroutine rhyme_chombo_write_level_data ( this, level )
+    implicit none
+
+    class ( chombo_t ), intent ( in ) :: this
+    type ( samr_level_t ), intent ( in ) :: level
+
+    integer :: b, var, lb, ub, offset = 1, length = 0, dim1d
+    real ( kind=8 ), allocatable :: data(:)
+    integer, allocatable :: boxes(:,:)
+
+    do b = 1, level%nboxes
+      length = length + product( level%boxes(b)%dims ) * 5
+    end do
+
+    allocate ( data( length ) )
+    allocate ( boxes( length, 6 ) )
+
+    do b = 1, level%nboxes
+      dim1d = product( level%boxes(b)%dims )
+
+      do var = hyid%rho, hyid%e_tot
+        lb = offset + (var - 1) * dim1d
+        ub = lb + dim1d
+        ! TODO: Structure of array instead of AoS is needed -> refactoring
+        ! data ( lb:ub ) = reshape ( level%boxes%hydro%u(var) )
+      end do
+    end do
+
+  end subroutine rhyme_chombo_write_level_data
+
 end module rhyme_chombo

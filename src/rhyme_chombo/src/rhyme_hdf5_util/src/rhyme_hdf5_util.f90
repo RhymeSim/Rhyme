@@ -14,13 +14,14 @@ module rhyme_hdf5_util
     integer ( hid_t ) :: fid = h5id%unset
     logical :: initialized = .false.
   contains
+    procedure :: open => rhyme_hdf5_util_open
     procedure :: create => rhyme_hdf5_util_create
     procedure :: create_group => rhyme_hdf5_util_create_group
-    procedure :: add_group_attr => rhyme_hdf5_util_add_group_attribute
-    procedure :: add_group_1d_array_attr => rhyme_hdf5_util_add_group_1d_array_attribute
-    procedure :: add_group_comp_1d_array_attr => rhyme_hdf5_util_add_group_compound_1d_array_attribute
-    procedure :: open => rhyme_hdf5_util_open
+    procedure :: write_group_attr => rhyme_hdf5_util_write_group_attribute
+    procedure :: write_group_1d_array_attr => rhyme_hdf5_util_write_group_1d_array_attribute
+    procedure :: write_group_comp_1d_array_attr => rhyme_hdf5_util_write_group_compound_1d_array_attribute
     procedure :: read_group_attr => rhyme_hdf5_util_read_group_attribute
+    procedure :: write_1d_dataset => rhyme_hdf5_util_write_1d_dataset
     procedure :: close => rhyme_hdf5_util_close
   end type rhyme_hdf5_util_t
 
@@ -60,7 +61,7 @@ contains
   end subroutine rhyme_hdf5_util_create_group
 
 
-  subroutine rhyme_hdf5_util_add_group_attribute ( this, where, key, value )
+  subroutine rhyme_hdf5_util_write_group_attribute ( this, where, key, value )
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent ( in ) :: this
@@ -119,10 +120,10 @@ contains
 
       call h5aclose_f ( attr_id, hdferr )
     end subroutine write_group_attribute
-  end subroutine rhyme_hdf5_util_add_group_attribute
+  end subroutine rhyme_hdf5_util_write_group_attribute
 
 
-  subroutine rhyme_hdf5_util_add_group_1d_array_attribute ( this, where, key, array )
+  subroutine rhyme_hdf5_util_write_group_1d_array_attribute ( this, where, key, array )
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent ( in ) :: this
@@ -155,9 +156,9 @@ contains
     end select
 
     call h5gclose_f ( group_id, hdferr )
-  end subroutine rhyme_hdf5_util_add_group_1d_array_attribute
+  end subroutine rhyme_hdf5_util_write_group_1d_array_attribute
 
-  subroutine rhyme_hdf5_util_add_group_compound_1d_array_attribute ( this, where, key, keys, values )
+  subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute ( this, where, key, keys, values )
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent(inout) :: this
@@ -219,7 +220,7 @@ contains
 
       call h5aclose_f ( attr_id, hdferr )
     end subroutine write_comp_array_attr
-  end subroutine rhyme_hdf5_util_add_group_compound_1d_array_attribute
+  end subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute
 
 
   subroutine rhyme_hdf5_util_open ( this, path )
@@ -278,6 +279,47 @@ contains
 
     call h5aclose_f ( attr_id, hdferr )
   end subroutine rhyme_hdf5_util_read_group_attribute
+
+
+  subroutine rhyme_hdf5_util_write_1d_dataset ( this, where, key, data )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent ( inout ) :: this
+    class (*), intent ( in ) :: where
+    character ( len=* ), intent ( in ) :: key
+    class (*), dimension(:), intent ( in ) :: data
+
+    integer ( hid_t ) :: group_id, dsetid, dspaceid
+    integer ( hsize_t ) :: dims(1)
+    integer :: hdferr
+
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gopen_f ( this%fid, trim(w), group_id, hdferr )
+    type is ( integer ( hid_t ) )
+      group_id = w
+    end select
+
+    dims = int(shape(data), kind=hsize_t)
+
+    call h5screate_simple_f ( 1, dims, dspaceid, hdferr )
+
+    select type ( d => data )
+    type is ( integer )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, dspaceid, dsetid, hdferr )
+      call h5dwrite_f ( dsetid, H5T_NATIVE_INTEGER, d, dims, hdferr )
+    type is ( real( kind=4 ) )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, dspaceid, dsetid, hdferr )
+      call h5dwrite_f ( dsetid, H5T_NATIVE_REAL, d, dims, hdferr )
+    type is ( real( kind=8 ) )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, dspaceid, dsetid, hdferr )
+      call h5dwrite_f ( dsetid, H5T_NATIVE_DOUBLE, d, dims, hdferr )
+    end select
+
+    call h5dclose_f ( dsetid, hdferr )
+    call h5gclose_f ( group_id, hdferr )
+  end subroutine rhyme_hdf5_util_write_1d_dataset
 
 
   subroutine rhyme_hdf5_util_close ( this )
