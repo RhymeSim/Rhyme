@@ -10,8 +10,7 @@ logical function rhyme_samr_bc_set_base_grid_boundaries_test () result (failed)
 
   ! Set reflective boundaries
   bc%types = bcid%reflective
-  failed = .not. bc%set_base_grid_boundaries(samr)
-  if ( failed ) return
+  call bc%set_base_grid_boundaries(samr)
 
   b1 = samr%levels(0)%boxes(1)
 
@@ -64,8 +63,7 @@ logical function rhyme_samr_bc_set_base_grid_boundaries_test () result (failed)
 
   ! Set outflow boundaries
   bc%types = bcid%outflow
-  failed = .not. bc%set_base_grid_boundaries(samr)
-  if ( failed ) return
+  call bc%set_base_grid_boundaries(samr)
 
   b1 = samr%levels(0)%boxes(1)
 
@@ -109,8 +107,7 @@ logical function rhyme_samr_bc_set_base_grid_boundaries_test () result (failed)
 
   ! Set periodic boundaries
   bc%types = bcid%periodic
-  failed = .not. bc%set_base_grid_boundaries(samr)
-  if ( failed ) return
+  call bc%set_base_grid_boundaries(samr)
 
   b1 = samr%levels(0)%boxes(1)
 
