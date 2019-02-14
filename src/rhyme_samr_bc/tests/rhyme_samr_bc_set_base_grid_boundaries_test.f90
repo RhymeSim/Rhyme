@@ -1,4 +1,4 @@
-logical function rhyme_samr_bc_set_test () result (failed)
+logical function rhyme_samr_bc_set_base_grid_boundaries_test () result (failed)
   use rhyme_samr_bc_factory
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_samr_bc_set_test () result (failed)
 
   ! Set reflective boundaries
   bc%types = bcid%reflective
-  failed = .not. bc%set(samr)
+  failed = .not. bc%set_base_grid_boundaries(samr)
   if ( failed ) return
 
   b1 = samr%levels(0)%boxes(1)
@@ -64,7 +64,7 @@ logical function rhyme_samr_bc_set_test () result (failed)
 
   ! Set outflow boundaries
   bc%types = bcid%outflow
-  failed = .not. bc%set(samr)
+  failed = .not. bc%set_base_grid_boundaries(samr)
   if ( failed ) return
 
   b1 = samr%levels(0)%boxes(1)
@@ -109,7 +109,7 @@ logical function rhyme_samr_bc_set_test () result (failed)
 
   ! Set periodic boundaries
   bc%types = bcid%periodic
-  failed = .not. bc%set(samr)
+  failed = .not. bc%set_base_grid_boundaries(samr)
   if ( failed ) return
 
   b1 = samr%levels(0)%boxes(1)
@@ -150,4 +150,4 @@ logical function rhyme_samr_bc_set_test () result (failed)
     any ( abs ( b1%hydro(:,:,zd+1)%u(v) - b1%hydro(:,:,1)%u(v) ) > epsilon(0.d0) )
     if ( failed ) return
   end do
-end function rhyme_samr_bc_set_test
+end function rhyme_samr_bc_set_base_grid_boundaries_test

@@ -1,4 +1,3 @@
-imgae: gcc
 before_script:
   - apt-get update -qq
   - apt-get install -y gfortran cmake

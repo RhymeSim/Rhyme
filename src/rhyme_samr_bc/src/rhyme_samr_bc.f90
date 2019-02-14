@@ -19,7 +19,7 @@ module rhyme_samr_bc
   contains
     procedure :: init_with => rhyme_samr_bc_init_with
     procedure :: init => rhyme_samr_bc_init
-    procedure :: set => rhyme_samr_bc_set
+    procedure :: set_base_grid_boundaries => rhyme_samr_bc_set_base_grid_boundaries
   end type samr_bc_t
 
 contains
@@ -71,7 +71,7 @@ contains
   end subroutine rhyme_samr_bc_init
 
 
-  logical function rhyme_samr_bc_set (this, samr) result (succ)
+  logical function rhyme_samr_bc_set_base_grid_boundaries (this, samr) result (succ)
     implicit none
 
     class (samr_bc_t), intent(in) :: this
@@ -276,5 +276,5 @@ contains
 
     end subroutine set_front_bc
 
-  end function rhyme_samr_bc_set
+  end function rhyme_samr_bc_set_base_grid_boundaries
 end module rhyme_samr_bc

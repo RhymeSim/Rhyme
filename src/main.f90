@@ -59,6 +59,8 @@ program rhyme
 
   do while ( samr%levels(0)%t < 0.2d0 )
 
+    bc%set_base_grid_boundaries ( samr )
+
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         ! bc%set ( samr%levels(l)%boxes(b), samr%ghost_cells )
