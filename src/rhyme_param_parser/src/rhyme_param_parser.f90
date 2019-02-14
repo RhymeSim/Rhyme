@@ -6,22 +6,26 @@ module rhyme_param_parser
   use rhyme_initial_condition
   use rhyme_iterative_riemann_solver
   use rhyme_slope_limiter
+  use rhyme_chombo
 
   implicit none
 
 contains
 
-  logical function parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl ) result ( passed )
+  logical function parse_params ( &
+    param_file, samr, bc, cfl, ig, ic, irs, sl, chombo ) &
+  result ( passed )
     implicit none
 
-    character (len=1024), intent(in) :: param_file
-    type ( samr_t ) :: samr
-    type ( samr_bc_t ) :: bc
-    type ( cfl_t ) :: cfl
-    type ( ideal_gas_t ) :: ig
-    type ( initial_condition_t ) :: ic
-    type ( iterative_riemann_solver_t ) :: irs
-    type ( slope_limiter_t ) :: sl
+    character (len=1024), intent ( in ) :: param_file
+    type ( samr_t ), intent ( out ) :: samr
+    type ( samr_bc_t ), intent ( out ) :: bc
+    type ( cfl_t ), intent ( out ) :: cfl
+    type ( ideal_gas_t ), intent ( out ) :: ig
+    type ( initial_condition_t ), intent ( out ) :: ic
+    type ( iterative_riemann_solver_t ), intent ( out ) :: irs
+    type ( slope_limiter_t ), intent ( out ) :: sl
+    type ( chombo_t ), intent ( out ) :: chombo
 
     integer :: i, ios
     character(len=1024) :: key, op, str
@@ -146,6 +150,10 @@ contains
         end if
 
       case ( "limiter_omega" ); read (1, *) key, op, sl%w
+
+        ! Chombo
+      case ( "prefix" ); read (1, *) key, op, chombo%prefix
+      case ( "nickname" ); read (1, *) key, op, chombo%nickname
 
 
         ! Unknown option

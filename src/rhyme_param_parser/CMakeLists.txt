@@ -20,6 +20,7 @@ set ( deps
   rhyme_initial_condition
   rhyme_iterative_riemann_solver
   rhyme_slope_limiter
+  rhyme_chombo
 )
 
 foreach ( dep ${deps} )

@@ -10,30 +10,73 @@ module rhyme_chombo
 
   type ( rhyme_chombo_indices_t ), parameter :: chid = rhyme_chombo_indices_t ()
 
-  type, extends ( rhyme_hdf5_util_t ) :: rhyme_chombo_t
+  type, extends ( rhyme_hdf5_util_t ) :: chombo_t
     integer :: num_levels = chid%unset
     integer :: num_components = chid%unset
     integer ( hid_t ) :: chombo_global_id
     integer ( hid_t ) :: level_ids(0:23) = chid%unset
+    character ( len=1024 ) :: prefix = " "
+    character ( len=1024 ) :: nickname = " "
   contains
+    procedure :: init_with => rhyme_chombo_init_with
     procedure :: write_samr => rhyme_chombo_write_samr
-  end type rhyme_chombo_t
+    procedure :: filename_generator => rhyme_chombo_filename_generator
+  end type chombo_t
 
 contains
 
-  subroutine rhyme_chombo_write_samr ( this, filename, samr )
+
+  subroutine rhyme_chombo_init_with ( this, prefix, nickname )
     implicit none
 
-    class ( rhyme_chombo_t ), intent (inout) :: this
-    character ( len=* ), intent (in) :: filename
+    class ( chombo_t ), intent ( inout ) :: this
+    character ( len=1024 ), intent ( in ) :: prefix, nickname
+
+    this%prefix = prefix
+    this%nickname = nickname
+
+  end subroutine rhyme_chombo_init_with
+
+
+  subroutine rhyme_chombo_filename_generator ( this, iteration, filename )
+    implicit none
+
+    class ( chombo_t ), intent ( in ) :: this
+    integer, intent ( in ) :: iteration
+    character ( len=1024 ), intent ( out ) :: filename
+
+    character ( len=8 ) :: itr_str
+
+    filename = " "
+
+    if ( len_trim( this%prefix ) > 0 ) then
+      filename = trim(filename) // trim(this%prefix) // '/'
+    end if
+
+    if ( len_trim( this%nickname ) > 0 ) then
+      filename = trim(filename) // trim(this%nickname) // "-"
+    end if
+
+    write ( itr_str, "(I0.5)" ) iteration
+
+    filename = trim(filename) // trim(itr_str) // ".chombo.h5"
+  end subroutine rhyme_chombo_filename_generator
+
+
+  subroutine rhyme_chombo_write_samr ( this, samr )
+    implicit none
+
+    class ( chombo_t ), intent (inout) :: this
     type ( samr_t ), intent (in) :: samr
 
     integer :: i, ndims
     character ( len=16 ) :: level_name
+    character ( len=1024 ) :: filename
 
 
     if ( this%initialized ) return
 
+    call this%filename_generator ( samr%levels(0)%iteration, filename )
     call this%create ( filename )
 
     do i = 0, samr%nlevels - 1
@@ -64,5 +107,7 @@ contains
 
     ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
     call this%add_group_attr ( "/chombo_global", "SpaceDim", ndims )
+
+    call this%close
   end subroutine rhyme_chombo_write_samr
 end module rhyme_chombo

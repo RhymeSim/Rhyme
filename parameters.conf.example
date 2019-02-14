@@ -34,3 +34,7 @@ shape_fill = uniform 1.d0 0.d0 0.d0 0.d0 1.d0
 shape = circle 3.d0 4.d0 5.d0 2.34d0
 shape_trans = cubic 3.d0
 shape_fill = grad_y 1.d0 0.d0 0.d0 0.d0 1.d0 2.d0 3.d0 4.d0 5.d0 6.d0
+
+# Chombo
+prefix = './prefix'
+nickname = 'hydro-simulation'

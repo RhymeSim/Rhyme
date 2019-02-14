@@ -6,13 +6,13 @@ module rhyme_chombo_factory
   implicit none
 
 
-  integer, parameter :: xdim = 16
-  integer, parameter :: ydim = 8
-  integer, parameter :: zdim = 1
+  integer, parameter :: base_grid(3) = [ 16, 8, 1 ]
   integer, parameter :: nlevels = 3
   integer, parameter :: ghost_cells(3) = [ 2, 1, 1 ]
 
-  integer :: tot_nboxes(0:23) = 0
+  integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
+    1, 10, 100, 1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
   type(samr_t) :: samr
 
 contains
@@ -20,9 +20,7 @@ contains
   subroutine rhyme_chombo_factory_init ()
     implicit none
 
-    tot_nboxes(0:3) = [ 1, 10, 100, 1000 ]
-
-    call samr%init_with ( [ xdim, ydim, zdim ], nlevels, tot_nboxes, ghost_cells )
+    call samr%init_with ( base_grid, nlevels, max_nboxes, ghost_cells )
   end subroutine rhyme_chombo_factory_init
 
 end module rhyme_chombo_factory

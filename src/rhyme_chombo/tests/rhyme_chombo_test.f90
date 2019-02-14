@@ -3,7 +3,7 @@ logical function rhyme_chombo_test () result ( failed )
 
   implicit none
 
-  type ( rhyme_chombo_t ) :: ch
+  type ( chombo_t ) :: ch
 
   failed = &
   chid%unset .ne. -1 &

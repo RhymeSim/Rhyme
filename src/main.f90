@@ -10,6 +10,7 @@ program rhyme
   use rhyme_iterative_riemann_solver
   use rhyme_muscl_hancock
   use rhyme_param_parser
+  use rhyme_chombo
   use date_time_module
 
   implicit none
@@ -22,6 +23,7 @@ program rhyme
   type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( muscl_hancock_t ) :: mh
+  type ( chombo_t ) :: chombo
 
   integer :: l, b, step = 1
   real(kind=8) :: t, dt
@@ -34,7 +36,7 @@ program rhyme
 
 
   ! Reading parameter file and converting it to code units
-  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl ) ) stop
+  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
 
   ! Initializing Structured AMR
   call samr%init
@@ -61,14 +63,20 @@ program rhyme
 
     call bc%set_base_grid_boundaries ( samr )
 
+    ! Update structured AMR
+    ! Update workspace
+    ! Update ghost cells of boxes
+
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
-        ! bc%set ( samr%levels(l)%boxes(b), samr%ghost_cells )
         call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, dt )
       end do
     end do
 
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1
+
+    ! Store a snapshot if necessary
+    call chombo%write_samr ( samr )
 
     dt = cfl%dt ( ig, samr )
     t = t + dt
