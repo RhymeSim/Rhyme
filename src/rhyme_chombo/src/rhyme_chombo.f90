@@ -70,7 +70,7 @@ contains
     class ( chombo_t ), intent (inout) :: this
     type ( samr_t ), intent (in) :: samr
 
-    integer :: i, ndims, l
+    integer :: l, ndims
     character ( len=16 ) :: level_name
     character ( len=1024 ) :: filename
 
@@ -80,11 +80,11 @@ contains
     call this%filename_generator ( samr%levels(0)%iteration, filename )
     call this%create ( filename )
 
-    do i = 0, samr%nlevels - 1
-      write ( level_name, '(A7,I1)') "/level_", i
-      call this%create_group ( level_name, this%level_ids(i) )
-      call this%write_group_1d_array_attr ( level_name, "dx", samr%levels(i)%dx )
-      call this%write_group_attr ( level_name, "ref_ratio", samr%levels(i)%refine_factor )
+    do l = 0, samr%nlevels - 1
+      write ( level_name, '(A7,I1)') "/level_", l
+      call this%create_group ( level_name, this%level_ids(l) )
+      call this%write_group_1d_array_attr ( level_name, "dx", samr%levels(l)%dx )
+      call this%write_group_attr ( level_name, "ref_ratio", samr%levels(l)%refine_factor )
     end do
 
     call this%write_group_comp_1d_array_attr ( "/level_0", "prob_domain", &
@@ -107,42 +107,56 @@ contains
     ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
     call this%write_group_attr ( "/chombo_global", "SpaceDim", ndims )
 
-    do l = 0, samr%nlevels - 1
-      call this%write_level_data ( samr%levels(l) )
-    end do
-
     call this%close
   end subroutine rhyme_chombo_write_samr
 
 
-  subroutine rhyme_chombo_write_level_data ( this, level )
+  subroutine rhyme_chombo_write_level_data ( this, l, level )
     implicit none
 
-    class ( chombo_t ), intent ( in ) :: this
+    class ( chombo_t ), intent ( inout ) :: this
+    integer, intent ( in ) :: l
     type ( samr_level_t ), intent ( in ) :: level
 
-    integer :: b, var, lb, ub, offset = 1, length = 0, dim1d
-    real ( kind=8 ), allocatable :: data(:)
+    integer :: b, var, lb, ub, offset, length, dim1d, dims(3)
+    real ( kind=8 ), allocatable :: d(:)
     integer, allocatable :: boxes(:,:)
+
+    offset = 1
+    length = 0
 
     do b = 1, level%nboxes
       length = length + product( level%boxes(b)%dims ) * 5
     end do
 
-    allocate ( data( length ) )
+    allocate ( d( length ) )
     allocate ( boxes( length, 6 ) )
 
     do b = 1, level%nboxes
-      dim1d = product( level%boxes(b)%dims )
+      dims = level%boxes(b)%dims
+      dim1d = product( dims )
 
       do var = hyid%rho, hyid%e_tot
         lb = offset + (var - 1) * dim1d
-        ub = lb + dim1d
-        ! TODO: Structure of array instead of AoS is needed -> refactoring
-        ! data ( lb:ub ) = reshape ( level%boxes%hydro%u(var) )
+        ub = lb + dim1d - 1
+
+        ! TODO: Instead of reshaping, we can directly copy the array using:
+        ! use, intrinsic :: ISO_C_BINDING
+        ! real, allocatable, target :: rank1_array(:)
+        ! real, pointer :: rank3_array(:,:,:)
+        ! call C_F_POINTER (C_LOC(rank1_array), rank3_array, [100,100,1000])
+        d ( lb:ub ) = reshape ( &
+          level%boxes(b)%hydro(1:dims(1),1:dims(2),1:dims(3))%u(var), &
+          [ dim1d ] &
+        )
       end do
+
+      offset = offset + 5 * dim1d
     end do
 
-  end subroutine rhyme_chombo_write_level_data
+    call this%write_1d_dataset ( this%level_ids(l), "data:datatype=0", d )
 
+    deallocate ( d )
+    deallocate ( boxes )
+  end subroutine rhyme_chombo_write_level_data
 end module rhyme_chombo

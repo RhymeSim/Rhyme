@@ -25,8 +25,8 @@ program rhyme
   type ( muscl_hancock_t ) :: mh
   type ( chombo_t ) :: chombo
 
-  integer :: l, b, step = 1
-  real(kind=8) :: t, dt
+  integer :: l, b
+  real(kind=8) :: dt
 
   character(len=1024) :: exe_filename, param_file
 
@@ -57,7 +57,7 @@ program rhyme
   call mh%init_with ( cfl, ig, irs, sl, samr )
 
   dt = cfl%dt ( ig, samr )
-  step = 0
+  samr%levels(0)%iteration = 0
 
   do while ( samr%levels(0)%t < 0.2d0 )
 
@@ -80,7 +80,6 @@ program rhyme
 
     dt = cfl%dt ( ig, samr )
     samr%levels(0)%t = samr%levels(0)%t + dt
-    step = step + 1
   end do
 
   ! Initialize cosmological variables (if COSMO is set)

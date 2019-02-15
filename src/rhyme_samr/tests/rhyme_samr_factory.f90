@@ -54,9 +54,9 @@ contains
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
           do j = 1, samr%levels(l)%boxes(b)%dims(2)
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
-              val = l * 1d1 + b * 1d0 + i * 1d-1 + j * 1d-2 + k * 1d-3
+              val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4 + k * 1d-6
               do uid = hyid%rho, hyid%e_tot
-                samr%levels(l)%boxes(b)%hydro(i,j,k)%u = val + uid * 1d-4
+                samr%levels(l)%boxes(b)%hydro(i,j,k)%u(uid) = val + uid * 1d-7
               end do
             end do
           end do

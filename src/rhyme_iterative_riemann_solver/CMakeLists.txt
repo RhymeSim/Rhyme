@@ -29,5 +29,5 @@ add_library ( ${PROJECT_NAME} STATIC src/rhyme_iterative_riemann_solver.f90 )
 target_link_libraries ( ${PROJECT_NAME} ${deps} )
 
 
-add_subdirectory (tests)
-enable_testing ()
+# add_subdirectory (tests)
+# enable_testing ()
