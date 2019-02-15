@@ -5,5 +5,6 @@ logical function rhyme_samr_test () result ( failed )
 
   failed = &
   samrid%ghost .ne. -1 &
+  .or. samrid%unset .ne. -10 &
   .or. samrid%max_nlevels .ne. 23
 end function rhyme_samr_test

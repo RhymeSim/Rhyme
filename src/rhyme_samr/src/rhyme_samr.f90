@@ -5,6 +5,7 @@ module rhyme_samr
 
   type samr_indices_t
     integer :: ghost = -1
+    integer :: unset = -10
     integer :: max_nlevels = 23
   end type samr_indices_t
 
@@ -13,7 +14,7 @@ module rhyme_samr
 
   type samr_box_t
     integer :: dims(3)
-    real(kind=8) :: left_edge(3), right_edge(3)
+    integer :: left_edge(3), right_edge(3)
     integer, allocatable :: flags (:, :, :)
     type ( hydro_conserved_t ), allocatable :: hydro (:, :, :)
   end type samr_box_t
@@ -23,6 +24,7 @@ module rhyme_samr
     real(kind=8) :: refine_factor
     real(kind=8) :: t, dt, dx(3)
     integer :: nboxes, max_nboxes, iteration
+    integer :: level = samrid%unset
     type ( samr_box_t ), allocatable :: boxes(:)
   end type samr_level_t
 
@@ -39,11 +41,6 @@ module rhyme_samr
     procedure :: init => rhyme_samr_init
     procedure :: init_box => rhyme_samr_init_box
   end type samr_t
-
-
-  integer, parameter :: init_nboxes(0:samrid%max_nlevels) = [ &
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
 
 contains
 
@@ -76,20 +73,22 @@ contains
     implicit none
 
     class ( samr_t ), intent(inout) :: this
-    integer :: l, b, lb(3), ub(3)
+    integer :: l, b, lb(3), ub(3), stat
     real ( kind=8 ) :: ref_factor ( 0:samrid%max_nlevels )
 
     if ( this%initialized ) return
 
+
     ref_factor = 2.d0
     this%max_nboxes ( this%nlevels: ) = 0
 
+    this%levels%level = [ (l, l=0, 23) ]
+    this%levels%nboxes = 0
+    this%levels%refine_factor = ref_factor
+    this%levels%max_nboxes = this%max_nboxes
+
 
     do l = 0, this%nlevels - 1
-      this%levels(l)%nboxes = init_nboxes(l)
-      this%levels(l)%refine_factor = ref_factor(l)
-      this%levels(l)%max_nboxes = this%max_nboxes(l)
-
       this%levels(l)%dx = merge ( &
         1.d0 / real( this%base_grid, kind=8 ) / ref_factor(l)**l, &
         1.d0, &
@@ -97,26 +96,25 @@ contains
       )
 
       allocate ( this%levels(l)%boxes( this%max_nboxes(l) ) )
-
-      if ( l == 0 ) then ! Initializing the first level
-        do b = 1, 1 ! Initializing the only box of the first level
-          this%levels(l)%boxes(b)%dims(:) = this%base_grid(:)
-          this%levels(l)%boxes(b)%left_edge = 0.d0
-          this%levels(l)%boxes(b)%right_edge = 1.d0
-
-          lb = - this%ghost_cells + 1
-          ub = this%base_grid + this%ghost_cells
-
-          allocate ( this%levels(l)%boxes(b)%hydro ( &
-            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-          ))
-
-          allocate ( this%levels(l)%boxes(b)%flags ( &
-            lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-          ))
-        end do
-      end if
     end do
+
+    ! Initializing the first level
+    this%levels(0)%boxes(1)%dims = this%base_grid
+    this%levels(0)%boxes(1)%left_edge = 1
+    this%levels(0)%boxes(1)%right_edge = this%base_grid
+
+    lb = -this%ghost_cells + 1
+    ub = this%base_grid + this%ghost_cells
+
+    allocate ( this%levels(0)%boxes(1)%hydro ( &
+      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
+    ), stat=stat )
+
+    allocate ( this%levels(0)%boxes(1)%flags ( &
+      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
+    ), stat=stat )
+
+    this%levels(0)%nboxes = 1
 
     this%initialized = .true.
   end subroutine rhyme_samr_init

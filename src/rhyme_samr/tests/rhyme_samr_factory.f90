@@ -3,6 +3,8 @@ module rhyme_samr_factory
 
   implicit none
 
+  logical :: rhyme_samr_factory_intialized = .false.
+
   integer, parameter :: nlevels = 4
   integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
   integer, parameter :: ghost_cells(3) = [ 2, 1, 0 ]
@@ -38,8 +40,11 @@ contains
     integer, dimension(3) :: lb, ub, lb1d, ub1d, lbuni, ubuni
     real ( kind=8 ) :: val
 
+    if ( rhyme_samr_factory_intialized ) return
 
     ! Initializing samr
+    samr%levels%level = [ (l, l=0, 23) ]
+
     lb = - ghost_cells + 1
     ub = base_grid + ghost_cells
 
@@ -113,5 +118,8 @@ contains
         end do
       end do
     end do
+
+
+    rhyme_samr_factory_intialized = .true.
   end subroutine rhyme_samr_factory_init
 end module rhyme_samr_factory
