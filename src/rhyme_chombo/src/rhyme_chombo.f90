@@ -111,11 +111,10 @@ contains
   end subroutine rhyme_chombo_write_samr
 
 
-  subroutine rhyme_chombo_write_level_data ( this, l, level )
+  subroutine rhyme_chombo_write_level_data ( this, level )
     implicit none
 
     class ( chombo_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: l
     type ( samr_level_t ), intent ( in ) :: level
 
     integer :: b, var, lb, ub, offset, length, dim1d, dims(3)
@@ -130,11 +129,14 @@ contains
     end do
 
     allocate ( d( length ) )
-    allocate ( boxes( length, 6 ) )
+    allocate ( boxes( 6, level%nboxes ) )
 
     do b = 1, level%nboxes
       dims = level%boxes(b)%dims
       dim1d = product( dims )
+
+      boxes( 1:3, b ) = level%boxes(b)%left_edge(:) - 1
+      boxes( 4:6, b ) = level%boxes(b)%right_edge(:) - 1
 
       do var = hyid%rho, hyid%e_tot
         lb = offset + (var - 1) * dim1d
@@ -154,7 +156,13 @@ contains
       offset = offset + 5 * dim1d
     end do
 
-    call this%write_1d_dataset ( this%level_ids(l), "data:datatype=0", d )
+    call this%write_1d_dataset ( this%level_ids(level%level), "data:datatype=0", d )
+
+    call this%write_group_comp_2d_dataset ( &
+      this%level_ids(level%level), "boxes", &
+      [ "lo_i", "lo_j", "lo_k", "hi_i", "hi_j", "hi_k" ], &
+      boxes &
+    )
 
     deallocate ( d )
     deallocate ( boxes )

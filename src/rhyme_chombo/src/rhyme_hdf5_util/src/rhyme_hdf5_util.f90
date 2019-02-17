@@ -20,6 +20,7 @@ module rhyme_hdf5_util
     procedure :: write_group_attr => rhyme_hdf5_util_write_group_attribute
     procedure :: write_group_1d_array_attr => rhyme_hdf5_util_write_group_1d_array_attribute
     procedure :: write_group_comp_1d_array_attr => rhyme_hdf5_util_write_group_compound_1d_array_attribute
+    procedure :: write_2d_table => rhyme_hdf5_util_write_2d_table
     procedure :: read_group_attr => rhyme_hdf5_util_read_group_attribute
     procedure :: write_1d_dataset => rhyme_hdf5_util_write_1d_dataset
     procedure :: write_2d_dataset => rhyme_hdf5_util_write_2d_dataset
@@ -161,11 +162,13 @@ contains
     call h5gclose_f ( group_id, hdferr )
   end subroutine rhyme_hdf5_util_write_group_1d_array_attribute
 
+
   subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute ( this, where, key, keys, values )
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent(inout) :: this
-    character (len=*), intent(in) :: where, key
+    class (*), intent( in ) :: where
+    character (len=*), intent(in) :: key
     character (len=*), dimension(:), intent(in) :: keys
     class (*), dimension(:) :: values
 
@@ -175,7 +178,12 @@ contains
 
     if ( .not. this%initialized ) return
 
-    call h5gopen_f ( this%fid, trim(where), group_id, hdferr )
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gopen_f ( this%fid, trim(w), group_id, hdferr )
+    type is ( integer ( hid_t ) )
+      group_id = w
+    end select
 
     select type ( vals => values)
     type is ( integer )
@@ -186,7 +194,10 @@ contains
       call write_comp_array_attr ( H5T_NATIVE_DOUBLE )
     end select
 
-    call h5gclose_f ( group_id, hdferr )
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gclose_f ( group_id, hdferr )
+    end select
 
   contains
     subroutine write_comp_array_attr ( type_id )
@@ -224,6 +235,82 @@ contains
       call h5aclose_f ( attr_id, hdferr )
     end subroutine write_comp_array_attr
   end subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute
+
+
+  subroutine rhyme_hdf5_util_write_2d_table ( this, where, key, keys, values )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent(inout) :: this
+    class (*), intent( in ) :: where
+    character (len=*), intent(in) :: key
+    character (len=*), dimension(:), intent(in) :: keys
+    class (*), dimension(:,:) :: values
+
+    integer ( hid_t ) :: group_id
+    integer :: hdferr
+
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gopen_f ( this%fid, trim(w), group_id, hdferr )
+    type is ( integer ( hid_t ) )
+      group_id = w
+    end select
+
+    select type ( vals => values)
+    type is ( integer )
+      call write_comp_2d_dset ( H5T_NATIVE_INTEGER )
+    type is ( real ( kind=4 ) )
+      call write_comp_2d_dset ( H5T_NATIVE_REAL )
+    type is ( real ( kind=8 ) )
+      call write_comp_2d_dset ( H5T_NATIVE_DOUBLE )
+    end select
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gclose_f ( group_id, hdferr )
+    end select
+
+  contains
+    subroutine write_comp_2d_dset ( type_id )
+      implicit none
+
+      integer ( hid_t ) :: type_id
+
+      integer ( hid_t ) :: space_id, dset_id, comp_type
+      integer ( size_t ) :: type_size, total_size, offset
+      integer ( hsize_t ) :: dims(2)
+      integer :: i
+
+      dims = int ( shape( values ), kind=hsize_t )
+
+      call h5tget_size_f ( type_id, type_size, hdferr )
+      total_size = type_size * size( keys )
+      call h5tcreate_f ( H5T_COMPOUND_F, total_size, comp_type, hdferr )
+
+      call h5screate_simple_f ( 1, [ dims(2) ], space_id, hdferr )
+
+      call h5dcreate_f ( group_id, trim(key), comp_type, space_id, dset_id, hdferr )
+
+      ! offset = 0
+      ! do i = 1, size( keys )
+      !   call h5tcreate_f ( H5T_COMPOUND_F , type_size, comp_type, hdferr )
+      !   call h5tinsert_f ( comp_type, trim( keys(i) ), offset, type_id, hdferr )
+      !   offset = offset + type_size
+      !
+      !   select type ( vals => values)
+      !   type is ( integer )
+      !     call h5dwrite_f ( dset_id, comp_type, vals(i,:), [ dims(2) ], hdferr)
+      !   type is ( real( kind=4 ) )
+      !     call h5dwrite_f ( dset_id, comp_type, vals(i,:), [ dims(2) ], hdferr)
+      !   type is ( real( kind=8 ) )
+      !     call h5dwrite_f ( dset_id, comp_type, vals(i,:), [ dims(2) ], hdferr)
+      !   end select
+      ! end do
+
+      call h5dclose_f ( dset_id, hdferr )
+    end subroutine write_comp_2d_dset
+  end subroutine rhyme_hdf5_util_write_2d_table
 
 
   subroutine rhyme_hdf5_util_open ( this, path )
@@ -312,16 +399,21 @@ contains
     type is ( integer )
       call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, dspaceid, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_INTEGER, d, dims, hdferr )
+      call h5dclose_f ( dsetid, hdferr )
     type is ( real( kind=4 ) )
       call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, dspaceid, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_REAL, d, dims, hdferr )
+      call h5dclose_f ( dsetid, hdferr )
     type is ( real( kind=8 ) )
       call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, dspaceid, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_DOUBLE, d, dims, hdferr )
+      call h5dclose_f ( dsetid, hdferr )
     end select
 
-    call h5dclose_f ( dsetid, hdferr )
-    call h5gclose_f ( group_id, hdferr )
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gclose_f ( group_id, hdferr )
+    end select
   end subroutine rhyme_hdf5_util_write_1d_dataset
 
 
@@ -390,7 +482,11 @@ contains
     end select
 
     call h5dclose_f ( dsetid, hdferr )
-    call h5gclose_f ( group_id, hdferr )
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gclose_f ( group_id, hdferr )
+    end select
   end subroutine rhyme_hdf5_util_write_2d_dataset
 
 

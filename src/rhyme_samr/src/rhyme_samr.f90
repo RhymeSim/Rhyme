@@ -73,7 +73,7 @@ contains
     implicit none
 
     class ( samr_t ), intent(inout) :: this
-    integer :: l, b, lb(3), ub(3), stat
+    integer :: l, lb(3), ub(3), stat
     real ( kind=8 ) :: ref_factor ( 0:samrid%max_nlevels )
 
     if ( this%initialized ) return
@@ -130,7 +130,7 @@ contains
 
     class ( samr_t ), intent ( inout ) :: this
     integer, intent ( in ) :: l, b, dims(3)
-    real ( kind=8 ), intent ( in ) :: ledges(3), redges(3)
+    integer, intent ( in ) :: ledges(3), redges(3)
 
     integer :: lb(3), ub(3)
 

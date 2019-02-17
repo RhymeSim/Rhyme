@@ -3,8 +3,8 @@ logical function rhyme_samr_init_box_test () result ( failed )
 
   implicit none
 
-  real ( kind=8 ) :: ledges(3) = [ 0.d0, 0.d0, 0.d0 ]
-  real ( kind=8 ) :: redges(3) = [ 1.d0, 1.d0, 1.d0 ]
+  integer :: ledges(3) = [ 0, 1, 2 ]
+  integer :: redges(3) = [ 3, 4, 5 ]
 
   integer, parameter :: nlevels = 4
   integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
@@ -35,6 +35,8 @@ logical function rhyme_samr_init_box_test () result ( failed )
   .or. .not. allocated ( samr%levels(l)%boxes(b)%flags ) &
   .or. any ( lbound(samr%levels(l)%boxes(b)%flags) .ne. - ghost_cells + 1 ) &
   .or. any ( ubound(samr%levels(l)%boxes(b)%flags) .ne. dims + ghost_cells ) &
-  .or. samr%levels(l)%nboxes .ne. nboxes_before + 1
+  .or. samr%levels(l)%nboxes .ne. nboxes_before + 1 &
+  .or. any ( samr%levels(l)%boxes(b)%left_edge .ne. ledges ) &
+  .or. any ( samr%levels(l)%boxes(b)%right_edge .ne. redges )
 
 end function rhyme_samr_init_box_test

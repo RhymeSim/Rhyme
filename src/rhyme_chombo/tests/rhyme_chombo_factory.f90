@@ -48,6 +48,9 @@ contains
 
           samr%levels(l)%boxes(b)%dims = dims
           samr%levels(l)%nboxes = samr%levels(l)%nboxes + 1
+
+          samr%levels(l)%boxes(b)%left_edge = [ 1, 2, 3 ]
+          samr%levels(l)%boxes(b)%right_edge = [ 4, 5, 6 ]
         end if
 
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
