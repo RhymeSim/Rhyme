@@ -79,4 +79,5 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   print *,attr_char
 
   call h5fclose_f ( fid, hdferr )
+  call h5close_f ( hdferr )
 end function rhyme_hdf5_util_write_group_attr_test

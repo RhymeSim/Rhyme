@@ -157,8 +157,7 @@ contains
     end do
 
     call this%write_1d_dataset ( this%level_ids(level%level), "data:datatype=0", d )
-
-    call this%write_group_comp_2d_dataset ( &
+    call this%write_table ( &
       this%level_ids(level%level), "boxes", &
       [ "lo_i", "lo_j", "lo_k", "hi_i", "hi_j", "hi_k" ], &
       boxes &
