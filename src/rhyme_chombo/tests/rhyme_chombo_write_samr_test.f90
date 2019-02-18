@@ -6,32 +6,43 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
   ! rhyme_chombo variables
   type ( chombo_t ) :: ch
 
-  ! variables
-  integer :: ndims, ndims_read
-
   ! Chombo filename
-  character ( len=1024 ) :: filename = " "
+  character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_samr"
+  character ( len=1024 ) :: filename, level_name
+
+  logical :: exists
+  integer :: l, hdferr
+  integer ( kind=hid_t ) :: file_id
 
 
   call rhyme_chombo_factory_init
 
-  ch%nickname = "rhyme_chombo_write_samr"
-  call ch%filename_generator ( samr%levels(0)%iteration, filename )
+  ch%nickname = nickname
+  ch%iteration = samr%levels(0)%iteration
+  call ch%filename_generator ( filename )
 
   call ch%write_samr ( samr )
 
+  call h5open_f ( hdferr )
+  call h5fopen_f ( filename, H5F_ACC_RDONLY_F, file_id, hdferr )
+
+  do l = 0, samr%nlevels - 1
+    write ( level_name, '(A7,I1)') "/level_", l
+
+    call h5lexists_f ( file_id, trim(level_name)//"/boxes", exists, hdferr )
+    failed = .not. exists
+    if ( failed ) return
+
+    call h5lexists_f ( file_id, trim(level_name)//"/data:datatype=0", exists, hdferr )
+    failed = .not. exists
+    if ( failed ) return
+  end do
+
+  call h5fclose_f ( file_id, hdferr )
+  call h5close_f ( hdferr )
+
   failed = &
-  any ( ch%level_ids(0:samr%nlevels-1) .eq. chid%unset ) &
-  .or. any ( ch%level_ids(samr%nlevels:) .ne. chid%unset )
-  if ( failed ) return
-
-
-  call ch%open ( filename )
-
-  ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
-  call ch%read_group_attr ( "/chombo_global", "SpaceDim", ndims_read )
-
-  failed = ndims .ne. ndims_read
-
-  call ch%close
+  any ( ch%level_ids .ne. chid%unset ) &
+  .or. ch%chombo_global_id .ne. chid%unset &
+  .or. ch%is_opened
 end function rhyme_chombo_write_samr_test

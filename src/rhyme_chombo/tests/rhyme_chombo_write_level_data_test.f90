@@ -7,29 +7,24 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   type ( chombo_t ) :: ch
 
   ! Chombo filename
+  character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_level_data"
   character ( len=1024 ) :: filename = " "
 
   ! variables
   integer :: l, b, length, bdims(3), offset, lb, ub
-  character ( len=16 ) :: level_name
   character ( len=32 ) :: level_data_name
   real ( kind=8 ), allocatable :: data(:), expected_data(:)
+
 
   call rhyme_chombo_factory_init
 
   ! Crete chombo file
-  ch%nickname = "rhyme_chombo_write_level_data"
+  ch%nickname = nickname
+  ch%iteration = samr%levels(0)%iteration
+  call ch%filename_generator ( filename )
 
-  call ch%filename_generator ( samr%levels(0)%iteration, filename )
-  call ch%create ( filename )
-
-  ! Prepare level groups
-  do l = 0, samr%nlevels - 1
-    write ( level_name, '(A7,I1)') "/level_", l
-    call ch%create_group ( level_name, ch%level_ids(l) )
-    call ch%write_group_1d_array_attr ( level_name, "dx", samr%levels(l)%dx )
-    call ch%write_group_attr ( level_name, "ref_ratio", samr%levels(l)%refine_factor )
-  end do
+  call ch%create_chombo
+  call ch%write_headers ( samr )
 
   do l = 0, samr%nlevels - 1
     call ch%write_level_data ( samr%levels(l) )
@@ -37,6 +32,8 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
   call ch%close
 
+
+  ! Tests
   call ch%open ( filename )
 
   do l = 0, samr%nlevels - 1

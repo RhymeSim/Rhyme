@@ -5,20 +5,24 @@ module rhyme_chombo
   implicit none
 
   type rhyme_chombo_indices_t
-    integer :: unset = -1
+    integer :: unset = h5id%unset
   end type rhyme_chombo_indices_t
 
   type ( rhyme_chombo_indices_t ), parameter :: chid = rhyme_chombo_indices_t ()
 
   type, extends ( rhyme_hdf5_util_t ) :: chombo_t
+    logical :: is_opened = .false.
     integer :: num_levels = chid%unset
     integer :: num_components = chid%unset
-    integer ( hid_t ) :: chombo_global_id
+    integer :: iteration = chid%unset
+    integer ( hid_t ) :: chombo_global_id = chid%unset
     integer ( hid_t ) :: level_ids(0:23) = chid%unset
     character ( len=1024 ) :: prefix = " "
     character ( len=1024 ) :: nickname = " "
   contains
     procedure :: init_with => rhyme_chombo_init_with
+    procedure :: create_chombo => rhyme_chombo_create_chombo
+    procedure :: write_headers => rhyme_chombo_write_headers
     procedure :: write_samr => rhyme_chombo_write_samr
     procedure :: write_level_data => rhyme_chombo_write_level_data
     procedure :: filename_generator => rhyme_chombo_filename_generator
@@ -39,11 +43,10 @@ contains
   end subroutine rhyme_chombo_init_with
 
 
-  subroutine rhyme_chombo_filename_generator ( this, iteration, filename )
+  subroutine rhyme_chombo_filename_generator ( this, filename )
     implicit none
 
     class ( chombo_t ), intent ( in ) :: this
-    integer, intent ( in ) :: iteration
     character ( len=1024 ), intent ( out ) :: filename
 
     character ( len=8 ) :: itr_str
@@ -58,27 +61,43 @@ contains
       filename = trim(filename) // trim(this%nickname) // "-"
     end if
 
-    write ( itr_str, "(I0.5)" ) iteration
+    if ( this%iteration .eq. chid%unset ) then
+      write ( itr_str, "(I0.5)" ) 0
+    else
+      write ( itr_str, "(I0.5)" ) this%iteration
+    end if
 
     filename = trim(filename) // trim(itr_str) // ".chombo.h5"
   end subroutine rhyme_chombo_filename_generator
 
 
-  subroutine rhyme_chombo_write_samr ( this, samr )
+  subroutine rhyme_chombo_create_chombo ( this )
     implicit none
 
     class ( chombo_t ), intent (inout) :: this
-    type ( samr_t ), intent (in) :: samr
+
+    character ( len=1024 ) :: filename
+
+    call this%filename_generator ( filename )
+    call this%create ( filename )
+
+    this%is_opened = .true.
+
+  end subroutine rhyme_chombo_create_chombo
+
+
+  subroutine rhyme_chombo_write_headers ( this, samr )
+    implicit none
+
+    class ( chombo_t ), intent (inout) :: this
+    type ( samr_t ), intent ( in ) :: samr
 
     integer :: l, ndims
     character ( len=16 ) :: level_name
-    character ( len=1024 ) :: filename
 
 
-    if ( this%initialized ) return
+    if ( .not. this%is_opened ) return
 
-    call this%filename_generator ( samr%levels(0)%iteration, filename )
-    call this%create ( filename )
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I1)') "/level_", l
@@ -107,8 +126,7 @@ contains
     ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
     call this%write_group_attr ( "/chombo_global", "SpaceDim", ndims )
 
-    call this%close
-  end subroutine rhyme_chombo_write_samr
+  end subroutine rhyme_chombo_write_headers
 
 
   subroutine rhyme_chombo_write_level_data ( this, level )
@@ -120,6 +138,10 @@ contains
     integer :: b, var, lb, ub, offset, length, dim1d, dims(3)
     real ( kind=8 ), allocatable :: d(:)
     integer, allocatable :: boxes(:,:)
+
+
+    if ( .not. this%is_opened ) return
+
 
     offset = 1
     length = 0
@@ -166,4 +188,30 @@ contains
     deallocate ( d )
     deallocate ( boxes )
   end subroutine rhyme_chombo_write_level_data
+
+
+  subroutine rhyme_chombo_write_samr ( this, samr )
+    implicit none
+
+    class ( chombo_t ), intent (inout) :: this
+    type ( samr_t ), intent (in) :: samr
+
+    integer :: l
+
+    this%iteration = samr%levels(0)%iteration
+    call this%create_chombo
+
+    call this%write_headers ( samr )
+
+    do l = 0, samr%nlevels - 1
+      call this%write_level_data ( samr%levels(l) )
+    end do
+
+    call this%close
+
+    this%iteration = chid%unset
+    this%level_ids = chid%unset
+    this%chombo_global_id = chid%unset
+    this%is_opened = .false.
+  end subroutine rhyme_chombo_write_samr
 end module rhyme_chombo
