@@ -26,7 +26,6 @@ program rhyme
   type ( chombo_t ) :: chombo
 
   integer :: l, b
-  real(kind=8) :: dt
 
   character(len=1024) :: exe_filename, param_file
 
@@ -56,8 +55,9 @@ program rhyme
   ! Initializing MUSCL-Hancock
   call mh%init_with ( cfl, ig, irs, sl, samr )
 
-  dt = cfl%dt ( ig, samr )
   samr%levels(0)%iteration = 0
+  samr%levels(0)%dt = cfl%dt ( ig, samr )
+  samr%levels(0)%t = 0.d0
 
   do while ( samr%levels(0)%t < 0.2d0 )
 
@@ -66,20 +66,23 @@ program rhyme
     ! Update structured AMR
     ! Update workspace
     ! Update ghost cells of boxes
+    call chombo%write_samr ( samr )
 
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
-        call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, dt )
+        call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, samr%levels(l)%dt )
       end do
     end do
 
-    samr%levels(0)%iteration = samr%levels(0)%iteration + 1
-
     ! Store a snapshot if necessary
-    call chombo%write_samr ( samr )
+    ! call chombo%write_samr ( samr )
+    ! do l = 1, 128
+    !   print *, samr%levels(0)%boxes(1)%hydro(l,1,1)%u
+    ! end do
 
-    dt = cfl%dt ( ig, samr )
-    samr%levels(0)%t = samr%levels(0)%t + dt
+    samr%levels(0)%dt = cfl%dt ( ig, samr )
+    samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
+    samr%levels(0)%iteration = samr%levels(0)%iteration + 1
   end do
 
   ! Initialize cosmological variables (if COSMO is set)

@@ -5,6 +5,7 @@ module rhyme_samr_bc
 
 
   type samr_bc_indices_t
+    integer :: unset = -1
     integer :: reflective = 1, outflow = 2, periodic = 3
     integer :: left = 1, right = 2, bottom = 3, top = 4, back = 5, front = 6
   end type samr_bc_indices_t
@@ -42,7 +43,6 @@ contains
     if ( .not. samr%initialized ) return
 
     this%types(:) = bc_types(:)
-    this%ghost_cells(:) = samr%ghost_cells(:)
 
     call rhyme_samr_bc_init ( this, samr )
 
@@ -60,6 +60,8 @@ contains
 
     if ( .not. samr%initialized ) return
 
+    this%ghost_cells(:) = samr%ghost_cells(:)
+
     lb = - samr%ghost_cells + 1
     ub = samr%base_grid + samr%ghost_cells
 
@@ -73,6 +75,7 @@ contains
             .or. k > samr%levels(0)%boxes(1)%dims(3) &
           ) then
             samr%levels(0)%boxes(1)%flags(i, j, k) = samrid%ghost
+            samr%levels(0)%boxes(1)%hydro(i, j, k)%u = 0.d0
           end if
         end do
       end do
@@ -85,31 +88,31 @@ contains
   subroutine rhyme_samr_bc_set_base_grid_boundaries (this, samr)
     implicit none
 
-    class (samr_bc_t), intent(in) :: this
-    type (samr_t), intent(inout) :: samr
+    class ( samr_bc_t ), intent ( in ) :: this
+    type ( samr_t ), intent ( inout ) :: samr
 
     if ( .not. this%initialized ) return
     if ( .not. samr%initialized ) return
 
 
-    if ( samr%ghost_cells(1) .ne. 0 ) then
+    if ( samr%ghost_cells(1) > 0 ) then
       call this%set_base_grid_left_boundary ( samr%levels(0)%boxes(1) )
       call this%set_base_grid_right_boundary ( samr%levels(0)%boxes(1) )
     end if
 
-    if ( samr%ghost_cells(2) .ne. 0 ) then
+    if ( samr%ghost_cells(2) > 0 ) then
       call this%set_base_grid_bottom_boundary ( samr%levels(0)%boxes(1) )
       call this%set_base_grid_top_boundary ( samr%levels(0)%boxes(1) )
     end if
 
-    if ( samr%ghost_cells(3) .ne. 0 ) then
+    if ( samr%ghost_cells(3) > 0 ) then
       call this%set_base_grid_back_boundary ( samr%levels(0)%boxes(1) )
       call this%set_base_grid_front_boundary ( samr%levels(0)%boxes(1) )
     end if
   end subroutine rhyme_samr_bc_set_base_grid_boundaries
 
 
-  pure subroutine rhyme_samr_bc_set_base_grid_left_boundary ( this, box )
+  subroutine rhyme_samr_bc_set_base_grid_left_boundary ( this, box )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this
@@ -121,20 +124,20 @@ contains
     case ( bcid%reflective )
       do i = 1, this%ghost_cells(1)
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro(d_ref,:,:) = box%hydro(i,:,:)
-        box%hydro(d_ref,:,:)%u(hyid%rho_u) = -box%hydro(d_ref,:,:)%u(hyid%rho_u)
+        box%hydro(d_ref,1:box%dims(2),1:box%dims(3)) = box%hydro(i,1:box%dims(2),1:box%dims(3))
+        box%hydro(d_ref,1:box%dims(2),1:box%dims(3))%u(hyid%rho_u) = -box%hydro(d_ref,1:box%dims(2),1:box%dims(3))%u(hyid%rho_u)
       end do
 
     case ( bcid%outflow )
       do i = 1, this%ghost_cells(1)
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro(d_ref,:,:) = box%hydro(i,:,:)
+        box%hydro(d_ref,1:box%dims(2),1:box%dims(3)) = box%hydro(i,1:box%dims(2),1:box%dims(3))
       end do
 
     case ( bcid%periodic )
       lb = - this%ghost_cells(1) + 1
       dim1 = box%dims(1)
-      box%hydro( lb:0,:,: ) = box%hydro( dim1+lb:dim1,:,: )
+      box%hydro( lb:0,1:box%dims(2),1:box%dims(3) ) = box%hydro( dim1+lb:dim1,1:box%dims(2),1:box%dims(3) )
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_left_boundary
@@ -155,18 +158,18 @@ contains
     case ( bcid%reflective )
       do i = dim1 - gcell1 + 1, dim1
         d_ref = i + int( 2.d0 * ( (real(dim1) + .5) - real(i) ) )
-        box%hydro( d_ref,:,: ) = box%hydro( i,:,: )
-        box%hydro( d_ref,:,: )%u(hyid%rho_u) = -box%hydro( d_ref,:,: )%u(hyid%rho_u)
+        box%hydro( d_ref,1:box%dims(2),1:box%dims(3) ) = box%hydro( i,1:box%dims(2),1:box%dims(3) )
+        box%hydro( d_ref,1:box%dims(2),1:box%dims(3) )%u(hyid%rho_u) = -box%hydro( d_ref,1:box%dims(2),1:box%dims(3) )%u(hyid%rho_u)
       end do
 
     case ( bcid%outflow )
       do i = dim1 - gcell1 + 1, dim1
         d_ref = i + int( 2.d0 * ( (real(dim1) + .5) - real(i) ) )
-        box%hydro( d_ref,:,: ) = box%hydro( i,:,: )
+        box%hydro( d_ref,1:box%dims(2),1:box%dims(3) ) = box%hydro( i,1:box%dims(2),1:box%dims(3) )
       end do
 
     case ( bcid%periodic )
-      box%hydro( dim1+1:dim1+gcell1,:,: ) = box%hydro( 1:gcell1,:,: )
+      box%hydro( dim1+1:dim1+gcell1,1:box%dims(2),1:box%dims(3) ) = box%hydro( 1:gcell1,1:box%dims(2),1:box%dims(3) )
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_right_boundary
@@ -184,20 +187,20 @@ contains
     case ( bcid%reflective )
       do i = 1, this%ghost_cells(2)
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro( :,d_ref,: ) = box%hydro( :, i,: )
-        box%hydro( :,d_ref,: )%u(hyid%rho_v) = -box%hydro( :,d_ref,: )%u(hyid%rho_v)
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1), i,1:box%dims(3) )
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) )%u(hyid%rho_v) = -box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) )%u(hyid%rho_v)
       end do
 
     case ( bcid%outflow )
       do i = 1, this%ghost_cells(2)
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro( :,d_ref,: ) = box%hydro( :,i,: )
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1),i,1:box%dims(3) )
       end do
 
     case ( bcid%periodic )
       dim2 = box%dims(2)
       gcell2 = this%ghost_cells(2)
-      box%hydro( :,-gcell2+1:0,: ) = box%hydro( :,dim2-gcell2+1:dim2,:)
+      box%hydro( 1:box%dims(1),-gcell2+1:0,1:box%dims(3) ) = box%hydro( 1:box%dims(1),dim2-gcell2+1:dim2,1:box%dims(3))
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_bottom_boundary
@@ -218,18 +221,18 @@ contains
     case ( bcid%reflective )
       do i = dim2 - gcell2 + 1, dim2
         d_ref = i + int( 2.d0 * ( (real(dim2) + .5) - real(i) ) )
-        box%hydro( :,d_ref,: ) = box%hydro( :,i,: )
-        box%hydro( :,d_ref,: )%u(hyid%rho_v) = -box%hydro( :,d_ref,: )%u(hyid%rho_v)
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1),i,1:box%dims(3) )
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) )%u(hyid%rho_v) = -box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) )%u(hyid%rho_v)
       end do
 
     case ( bcid%outflow )
       do i = dim2 - gcell2 + 1, dim2
         d_ref = i + int( 2.d0 * ( (real(dim2) + .5) - real(i) ) )
-        box%hydro( :,d_ref,: ) = box%hydro( :,i,: )
+        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1),i,1:box%dims(3) )
       end do
 
     case ( bcid%periodic )
-      box%hydro( :,dim2+1:dim2+gcell2,: ) = box%hydro( :,1:gcell2,: )
+      box%hydro( 1:box%dims(1),dim2+1:dim2+gcell2,1:box%dims(3) ) = box%hydro( 1:box%dims(1),1:gcell2,1:box%dims(3) )
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_top_boundary
@@ -250,18 +253,18 @@ contains
     case ( bcid%reflective )
       do i = 1, gcell3
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro( :,:,d_ref ) = box%hydro( :,:, i )
-        box%hydro( :,:,d_ref )%u(hyid%rho_w) = -box%hydro( :,:,d_ref )%u(hyid%rho_w)
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref ) = box%hydro( 1:box%dims(1),1:box%dims(2), i )
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref )%u(hyid%rho_w) = -box%hydro( 1:box%dims(1),1:box%dims(2),d_ref )%u(hyid%rho_w)
       end do
 
     case ( bcid%outflow )
       do i = 1, gcell3
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro( :,:,d_ref ) = box%hydro( :,:,i )
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref ) = box%hydro( 1:box%dims(1),1:box%dims(2),i )
       end do
 
     case ( bcid%periodic )
-      box%hydro( :,:,-gcell3+1:0 ) = box%hydro( :,:,dim3-gcell3+1:dim3 )
+      box%hydro( 1:box%dims(1),1:box%dims(2),-gcell3+1:0 ) = box%hydro( 1:box%dims(1),1:box%dims(2),dim3-gcell3+1:dim3 )
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_back_boundary
@@ -282,18 +285,18 @@ contains
     case ( bcid%reflective )
       do i = dim3 - gcell3 + 1, dim3
         d_ref = i + int( 2.d0 * ( (real(dim3) + .5) - real(i) ) )
-        box%hydro( :,:,d_ref ) = box%hydro( :,:,i )
-        box%hydro( :,:,d_ref )%u(hyid%rho_w) = -box%hydro( :,:,d_ref )%u(hyid%rho_w)
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref ) = box%hydro( 1:box%dims(1),1:box%dims(2),i )
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref )%u(hyid%rho_w) = -box%hydro( 1:box%dims(1),1:box%dims(2),d_ref )%u(hyid%rho_w)
       end do
 
     case ( bcid%outflow )
       do i = dim3 - gcell3 + 1, dim3
         d_ref = i + int( 2.d0 * ( (real(dim3) + .5) - real(i) ) )
-        box%hydro( :,:,d_ref ) = box%hydro( :,:,i )
+        box%hydro( 1:box%dims(1),1:box%dims(2),d_ref ) = box%hydro( 1:box%dims(1),1:box%dims(2),i )
       end do
 
     case ( bcid%periodic )
-      box%hydro( :,:,dim3+1:dim3+gcell3 ) = box%hydro( :,:,1:gcell3 )
+      box%hydro( 1:box%dims(1),1:box%dims(2),dim3+1:dim3+gcell3 ) = box%hydro( 1:box%dims(1),1:box%dims(2),1:gcell3 )
     end select
 
   end subroutine rhyme_samr_bc_set_base_grid_front_boundary

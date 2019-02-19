@@ -38,6 +38,4 @@ CMakeCache.txt
 Makefile
 cmake_install.cmake
 build
-
-# Tests
-tests/tests
+debug

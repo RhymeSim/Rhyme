@@ -7,7 +7,7 @@ logical function rhyme_chombo_write_headers_test () result ( failed )
   type ( chombo_t ) :: ch
 
   ! variables
-  integer :: ndims, ndims_read
+  integer :: ndims_read
 
   ! Chombo filename
   character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_headers"
@@ -36,10 +36,9 @@ logical function rhyme_chombo_write_headers_test () result ( failed )
 
   call ch%open ( filename )
 
-  ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
-  call ch%read_group_attr ( "/chombo_global", "SpaceDim", ndims_read )
+  call ch%read_group_attr ( "/Chombo_global", "SpaceDim", ndims_read )
 
-  failed = ndims .ne. ndims_read
+  failed = ndims_read .ne. 3
 
   call ch%close
 end function rhyme_chombo_write_headers_test

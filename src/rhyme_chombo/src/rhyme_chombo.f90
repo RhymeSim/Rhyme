@@ -92,7 +92,7 @@ contains
     class ( chombo_t ), intent (inout) :: this
     type ( samr_t ), intent ( in ) :: samr
 
-    integer :: l, ndims
+    integer :: l
     character ( len=16 ) :: level_name
 
 
@@ -121,10 +121,9 @@ contains
     call this%write_group_attr ( "/", "iteration", samr%levels(0)%iteration )
     call this%write_group_attr ( "/", "time", samr%levels(0)%t )
 
-    call this%create_group ( "/chombo_global", this%chombo_global_id )
+    call this%create_group ( "/Chombo_global", this%chombo_global_id )
 
-    ndims = size ( samr%base_grid ) - sum ( samr%base_grid * merge ( 1, 0, samr%base_grid <= 1 ) )
-    call this%write_group_attr ( "/chombo_global", "SpaceDim", ndims )
+    call this%write_group_attr ( "/Chombo_global", "SpaceDim", 3 )
 
   end subroutine rhyme_chombo_write_headers
 

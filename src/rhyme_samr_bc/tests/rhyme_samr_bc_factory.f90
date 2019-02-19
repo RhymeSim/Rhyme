@@ -5,20 +5,13 @@ module rhyme_samr_bc_factory
   implicit none
 
   logical :: initialized = .false.
-  integer, parameter :: xdim = 16
-  integer, parameter :: ydim = 8
-  integer, parameter :: zdim = 4
+  integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
   integer, parameter :: nlevels = 3
   integer, parameter :: nboxes = 11
-  integer, parameter :: ghost_cells(3) = [2, 1, 1]
-  real(kind=8), parameter :: x = 1.23d0
-  real(kind=8), parameter :: y = 2.34d0
-  real(kind=8), parameter :: z = 3.45d0
-
-  integer :: tot_nboxes(0:23)
-  type(samr_t) :: samr
-
-  type(samr_bc_t) :: bc
+  integer, parameter :: ghost_cells(3) = [ 2, 2, 2 ]
+  integer, parameter :: tot_nboxes(0:23) = [ &
+    1, 10, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
 
   integer :: bc_types(6) = [ &
     bcid%reflective, &
@@ -28,31 +21,34 @@ module rhyme_samr_bc_factory
     bcid%outflow, &
     bcid%periodic ]
 
+  type(samr_t) :: samr
+
 contains
 
   subroutine rhyme_samr_bc_factory_init ()
     implicit none
 
-    integer :: i, j, k
+    integer :: l, b, i, j, k, uid
+    real ( kind=8 ) :: val
 
     if ( initialized ) return
 
-    tot_nboxes(0) = 1
-    tot_nboxes(1) = 10
-    tot_nboxes(2) = 100
-    tot_nboxes(3) = 1000
+    call samr%init_with ( base_grid, nlevels, tot_nboxes, ghost_cells )
 
-    call samr%init_with ( [xdim, ydim, zdim], nlevels, tot_nboxes, ghost_cells )
-
-    do k = 1, zdim
-      do j = 1, ydim
-        do i = 1, xdim
-          samr%levels(0)%boxes(1)%hydro(i,j,k)%u = i * x + j * y + k * z
+    do l = 0, samr%nlevels - 1
+      do b = 1, samr%levels(l)%nboxes
+        do k = 1, samr%base_grid(3)
+          do j = 1, samr%base_grid(2)
+            do i = 1, samr%base_grid(1)
+              val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4 + k * 1d-6
+              do uid = hyid%rho, hyid%e_tot
+                samr%levels(l)%boxes(b)%hydro(i,j,k)%u(uid) = val + uid * 1d-7
+              end do
+            end do
+          end do
         end do
       end do
     end do
-
-    call bc%init_with ( samr, bc_types )
-
   end subroutine rhyme_samr_bc_factory_init
+
 end module rhyme_samr_bc_factory
