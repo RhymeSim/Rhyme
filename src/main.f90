@@ -1,4 +1,5 @@
 program rhyme
+  use rhyme_log
   use rhyme_nombre
   use rhyme_hydro_base
   use rhyme_samr
@@ -15,6 +16,7 @@ program rhyme
 
   implicit none
 
+  type ( log_t ) :: log
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
