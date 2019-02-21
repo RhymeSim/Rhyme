@@ -11,18 +11,18 @@ logical function rhyme_cfl_dt_test () result (failed)
   real(kind=8), parameter :: w = 4.56d0
   real(kind=8), parameter :: p = 6.78d0
 
+  integer, parameter :: max_nboxes(0:23) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
 
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
 
-  integer :: tot_nboxes(0:23)
 
   call ig%init_with ( igid%diatomic )
+  call samr%init_with ( [4, 8, 1], 1, max_nboxes, [2,2,0] )
 
-  tot_nboxes(0) = 1
-
-  call samr%init_with ( [4, 8, 1], 1, tot_nboxes, [2,2,0] )
 
   do k = 1, 1
     do j = 1, 8
@@ -36,8 +36,8 @@ logical function rhyme_cfl_dt_test () result (failed)
     end do
   end do
 
-  dt = cfl%dt ( ig, samr )
 
+  dt = cfl%dt ( ig, samr )
   dt_expected = cfl%courant_number * minval ( samr%levels(0)%dx ) / ig%cs ( samr%levels(0)%boxes(1)%hydro(1,8,1) )
 
   failed = abs ( dt - dt_expected ) > epsilon(0.d0)

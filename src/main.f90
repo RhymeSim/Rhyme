@@ -37,6 +37,7 @@ program rhyme
   call get_command_argument ( 2, log%logfile )
   call get_command_argument ( 3, log%errfile )
 
+
   call log%init
   call log%write_kw ( 'exe', exe_filename )
   call log%write_kw ( 'param_file', param_file )
@@ -65,11 +66,9 @@ program rhyme
   ! Initializing MUSCL-Hancock
   call mh%init_with ( cfl, ig, irs, sl, samr )
 
-  samr%levels(0)%iteration = 0
-  samr%levels(0)%dt = cfl%dt ( ig, samr )
-  samr%levels(0)%t = 0.d0
 
   do while ( samr%levels(0)%t < 0.2d0 )
+    samr%levels(0)%dt = cfl%dt ( ig, samr )
 
     call bc%set_base_grid_boundaries ( samr )
 
@@ -90,7 +89,6 @@ program rhyme
     !   print *, samr%levels(0)%boxes(1)%hydro(l,1,1)%u
     ! end do
 
-    samr%levels(0)%dt = cfl%dt ( ig, samr )
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1
   end do

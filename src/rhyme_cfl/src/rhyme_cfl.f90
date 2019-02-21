@@ -29,6 +29,7 @@ contains
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
         call find_max_cs_in_a_box ( samr%levels(l)%boxes(b), max_cs )
+        max_cs = max_cs * 2.d0**l ! Updating dt for the base level
       end do
     end do
 

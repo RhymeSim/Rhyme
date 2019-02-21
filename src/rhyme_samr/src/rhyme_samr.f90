@@ -21,10 +21,11 @@ module rhyme_samr
 
 
   type samr_level_t
-    real(kind=8) :: refine_factor
-    real(kind=8) :: t, dt, dx(3)
-    integer :: nboxes, max_nboxes, iteration
     integer :: level = samrid%unset
+    integer :: nboxes, max_nboxes, iteration = 0
+    real ( kind=8 ) :: refine_factor
+    real ( kind=8 ) :: t = 0.d0
+    real ( kind=8 ) :: dt, dx(3)
     type ( samr_box_t ), allocatable :: boxes(:)
   end type samr_level_t
 
