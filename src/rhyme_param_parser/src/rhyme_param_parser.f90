@@ -64,28 +64,37 @@ contains
       case ( "left_bc" )
         read (1, *) key, op, str
         bc%types(bcid%left) = select_boundary ( str )
+        call log%write_kw ( 'left_bc', str )
       case ( "right_bc" )
         read (1, *) key, op, str
         bc%types(bcid%right) = select_boundary ( str )
+        call log%write_kw ( 'right_bc', str )
       case ( "bottom_bc" )
         read (1, *) key, op, str
         bc%types(bcid%bottom) = select_boundary ( str )
+        call log%write_kw ( 'bottom_bc', str )
       case ( "top_bc" )
         read (1, *) key, op, str
         bc%types(bcid%top) = select_boundary ( str )
+        call log%write_kw ( 'top_bc', str )
       case ( "back_bc" )
         read (1, *) key, op, str
         bc%types(bcid%back) = select_boundary ( str )
+        call log%write_kw ( 'back_bc', str )
       case ( "front_bc" )
         read (1, *) key, op, str
         bc%types(bcid%front) = select_boundary ( str )
+        call log%write_kw ( 'front_bc', str )
 
         !CFL
-      case ( "courant_number" ); read (1, *) key, op, cfl%courant_number
+      case ( "courant_number" )
+        read (1, *) key, op, cfl%courant_number
+        call log%write_kw ( 'courant_number', cfl%courant_number )
 
         ! Ideal Gas
       case ( "ideal_gas_type" );
          read (1, *) key, op, str
+         call log%write_kw( 'ideal_gas_type', str )
 
         if ( trim(str) .eq. "monatomic" ) then
           ig%type = igid%monatomic
@@ -96,21 +105,32 @@ contains
         end if
 
         ! Initial Condition
-      case ( "background" ); read (1, *) key, op, ic%background%w(hyid%rho:hyid%p)
+      case ( "background" )
+        read (1, *) key, op, ic%background%w(hyid%rho:hyid%p)
+        call log%write_kw1d( 'background', ic%background%w )
+
       case ( "shape" )
         read (1, *) key, op, str
+        call log%write_kw( 'shape', str )
 
         if ( trim(str) .eq. "rect" ) then
           backspace (1)
           shape => ic%new_shape ( icid%rect )
           read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
+          call log%write_kw1d( 'rect_left_edge', shape%xl )
+          call log%write_kw1d( 'rect_length', shape%length )
         else if ( trim(str) .eq. "circle" ) then
           backspace (1)
           shape => ic%new_shape ( icid%circle )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
+          call log%write_kw1d( 'circle_origin', shape%x0 )
+          call log%write_kw( 'circle_radius', shape%r )
         end if
+
       case ( "shape_trans" );
         read (1, *) key, op, str, shape%trans%width_px
+        call log%write_kw( 'shape_transition', str)
+        call log%write_kw( 'shape_transition_width', shape%trans%width_px)
 
         if ( trim(str) .eq. "linear" ) then
           shape%trans%type = icid%linear
@@ -120,14 +140,19 @@ contains
 
       case ( "shape_fill" );
         read (1, *) key, op, str
+        call log%write_kw( 'shape_filling', str )
+
         backspace (1)
 
         if ( trim(str) .eq. "uniform" ) then
           read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p)
           shape%fill%type = icid%uniform
+          call log%write_kw1d( 'shape_filling_primary', shape%fill%states(1)%w )
         else
           read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p), &
           shape%fill%states(2)%w(hyid%rho:hyid%p)
+          call log%write_kw( 'shape_filling_gradient', str )
+          call log%write_kw1d( 'shape_filling_secondary', shape%fill%states(2)%w )
 
           if ( trim(str) .eq. "grad_x" ) then
             shape%fill%type = icid%grad_x
@@ -141,13 +166,20 @@ contains
         end if
 
         ! Iterative Riemann Solver
-      case ( "pressure_floor" ); read (1, *) key, op, irs%pressure_floor
-      case ( "tolerance" ); read (1, *) key, op, irs%tolerance
-      case ( "n_iteration" ); read (1, *) key, op, irs%n_iteration
+      case ( "pressure_floor" )
+        read (1, *) key, op, irs%pressure_floor
+        call log%write_kw( 'pressure_floor', irs%pressure_floor )
+      case ( "tolerance" )
+        read (1, *) key, op, irs%tolerance
+        call log%write_kw( 'tolerance', irs%tolerance )
+      case ( "n_iteration" )
+        read (1, *) key, op, irs%n_iteration
+        call log%write_kw( 'n_iteration', irs%n_iteration )
 
         ! Slope limiter
       case ( "limiter" )
         read (1, *) key, op, str
+        call log%write_kw( 'slope_limiter', str )
 
         if ( trim(str) .eq. "van_leer") then
           sl%type = slid%van_Leer
@@ -159,11 +191,17 @@ contains
           sl%type = slid%superbee
         end if
 
-      case ( "limiter_omega" ); read (1, *) key, op, sl%w
+      case ( "limiter_omega" )
+        read (1, *) key, op, sl%w
+        call log%write_kw( 'slope_limiter_omega (w)', sl%w )
 
         ! Chombo
-      case ( "prefix" ); read (1, *) key, op, chombo%prefix
-      case ( "nickname" ); read (1, *) key, op, chombo%nickname
+      case ( "prefix" )
+        read (1, *) key, op, chombo%prefix
+        call log%write_kw( 'prefix', chombo%prefix )
+      case ( "nickname" )
+        read (1, *) key, op, chombo%nickname
+        call log%write_kw( 'nickname', chombo%nickname )
 
 
         ! Unknown option

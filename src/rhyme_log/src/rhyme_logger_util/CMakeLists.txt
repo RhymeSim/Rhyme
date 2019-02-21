@@ -1,8 +1,8 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_log )
+project ( rhyme_logger_util )
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+add_compile_options ( -Wall -Wextra -std=f2008 -ffree-line-length-512 )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -15,24 +15,15 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 set ( deps )
 
 foreach ( dep ${deps} )
-  if( NOT TARGET ${dep} )
+  if ( NOT TARGET ${dep} )
     add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
 
 
-set ( internal_deps
-  rhyme_logger_util
-)
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_logger_util.f90 )
+target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
 
-foreach ( i_dep ${internal_deps} )
-  if ( NOT TARGET ${i_dep} )
-    add_subdirectory ( src/${i_dep} )
-  endif ()
-endforeach ( i_dep )
-
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_log.f90 )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} ${internal_deps} )
 
 add_subdirectory ( tests )
 enable_testing ()

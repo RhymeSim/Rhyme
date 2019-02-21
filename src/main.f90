@@ -34,10 +34,14 @@ program rhyme
 
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
+  call get_command_argument ( 2, log%logfile )
+  call get_command_argument ( 3, log%errfile )
 
   call log%init
   call log%write_kw ( 'exe', exe_filename )
-  call log%write_kw ( 'param file', param_file )
+  call log%write_kw ( 'param_file', param_file )
+  call log%write_kw ( 'log_file', log%logfile )
+  call log%write_kw ( 'err_file', log%errfile )
 
 
   ! Reading parameter file and converting it to code units

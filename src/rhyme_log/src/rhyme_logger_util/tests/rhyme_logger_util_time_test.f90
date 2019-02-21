@@ -1,9 +1,9 @@
-logical function rhyme_log_time_test () result ( failed )
-  use rhyme_log
+logical function rhyme_logger_util_time_test () result ( failed )
+  use rhyme_logger_util
 
   implicit none
 
-  type ( log_t ) :: log
+  type ( logger_util_t ) :: log
   character ( len=1024 ) :: t
 
   t = log%time( color=.false. )
@@ -21,4 +21,4 @@ logical function rhyme_log_time_test () result ( failed )
   failed = &
   t(:len(tc%gn)) .ne. tc%gn
   if ( failed ) return
-end function rhyme_log_time_test
+end function rhyme_logger_util_time_test
