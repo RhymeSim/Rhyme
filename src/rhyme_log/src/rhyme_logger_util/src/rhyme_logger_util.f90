@@ -46,6 +46,7 @@ module rhyme_logger_util
     procedure :: write => rhyme_logger_util_write
     procedure :: write_kw => rhyme_logger_util_write_kw
     procedure :: write_kw1d => rhyme_logger_util_write_kw1d
+    procedure :: done => rhyme_logger_util_done
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
     procedure :: open_logfile => rhyme_logger_util_open_logfile
@@ -66,6 +67,7 @@ contains
 
     if ( this%initialized ) return
 
+    call this%update_time
     call this%set_logo
     call this%set_vivid_logo
 
@@ -106,6 +108,8 @@ contains
     call this%close_logfile
 
     this%sec = trim(section)
+
+    call this%update_time
   end subroutine rhyme_logger_util_set_section
 
 
@@ -232,6 +236,52 @@ contains
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write_kw1d
+
+
+  subroutine rhyme_logger_util_done ( this, msg )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: msg
+
+    integer :: delta_t(8), t_new(8)
+    character ( len=64 ) :: time_str
+
+    call date_and_time ( values=t_new )
+
+    delta_t = t_new - this%t
+
+    if ( delta_t(7) < 0 ) then
+      delta_t(7) = delta_t(7) + 60
+      delta_t(6) = delta_t(6) - 1
+    end if
+    if ( delta_t(6) < 0 ) then
+      delta_t(6) = delta_t(6) + 60
+      delta_t(5) = delta_t(5) - 1
+    end if
+    if ( delta_t(5) < 0 ) then
+      delta_t(5) = delta_t(5) + 24
+      delta_t(3) = delta_t(3) - 1
+    end if
+    if ( delta_t(3) > 0 ) then
+      delta_t(5) = 24 * delta_t(3) + delta_t(5)
+    end if
+    if ( delta_t(2) > 0 ) then
+      delta_t(5) = int( 365.25 / 12 * 24 * delta_t(3) ) + delta_t(5) ! TODO: WTF
+    end if
+    if ( delta_t(1) > 0 ) then
+      delta_t(5) = int( 365.25 * 24 * delta_t(3) ) + delta_t(5) ! TODO: WTF
+    end if
+
+    write ( time_str, '(A,I0,A,I0.2,A,I0.2,A)') ' [ done in ', delta_t(5), 'h:', delta_t(6), 'm:', delta_t(7), 's ]'
+
+    call this%open_logfile
+
+    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(msg)//trim(time_str)
+    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(msg)//trim(time_str)
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_done
 
 
   subroutine rhyme_logger_util_update_time ( this )

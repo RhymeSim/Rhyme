@@ -68,26 +68,29 @@ program rhyme
 
 
   do while ( samr%levels(0)%t < 0.2d0 )
+    call log%begin_iteration ( samr%levels(0)%iteration )
+
     samr%levels(0)%dt = cfl%dt ( ig, samr )
+    call log%write_kw( 't', samr%levels(0)%t )
+    call log%write_kw( 'dt', samr%levels(0)%dt )
 
     call bc%set_base_grid_boundaries ( samr )
+    call log%done( 'set_base_grid_boundaries' )
 
     ! Update structured AMR
     ! Update workspace
     ! Update ghost cells of boxes
-    call chombo%write_samr ( samr )
 
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, samr%levels(l)%dt )
       end do
     end do
+    call log%done( 'Hydro solver' )
 
     ! Store a snapshot if necessary
-    ! call chombo%write_samr ( samr )
-    ! do l = 1, 128
-    !   print *, samr%levels(0)%boxes(1)%hydro(l,1,1)%u
-    ! end do
+    call chombo%write_samr ( samr )
+    call log%done( 'Drop an output (chombo) file' )
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1
