@@ -7,21 +7,22 @@ logical function rhyme_irs_test_cases_test () result (failed)
 
   call rhyme_iterative_riemann_solver_factory_init
 
-  call irs_test_cases ( irs_Sod_test, "Sod", failed_sod )
-  call irs_test_cases ( irs_123_test, "123 test", failed_123 )
-  call irs_test_cases ( irs_left_blast_wave_test, "left blast wave", failed_left )
-  call irs_test_cases ( irs_right_blast_wave_test, "right blast wave", failed_right )
-  call irs_test_cases ( irs_two_shocks_collision_test, "two shock collision", failed_shocks )
+  call irs_test_cases ( irs_Sod_test, "Sod", irs_sod_acc, failed_sod )
+  call irs_test_cases ( irs_123_test, "123 test", irs_123_acc, failed_123 )
+  call irs_test_cases ( irs_left_blast_wave_test, "left blast wave", irs_lblast_acc, failed_left )
+  call irs_test_cases ( irs_right_blast_wave_test, "right blast wave", irs_rblast_acc, failed_right )
+  call irs_test_cases ( irs_two_shocks_collision_test, "two shock collision", irs_two_shocks_acc, failed_shocks )
 
   failed = failed_sod .or. failed_123 .or. failed_left .or. failed_right .or. failed_shocks
 
 contains
 
-  subroutine irs_test_cases ( func, test_name, failed )
+  subroutine irs_test_cases ( func, test_name, acc, failed )
     implicit none
 
     external :: func
     character(len=*) :: test_name
+    type ( irs_accuracy_t ) :: acc
     logical :: failed
 
     type ( hydro_conserved_t ) :: L, R
@@ -53,19 +54,19 @@ contains
     end if
 
 
-    failed_p = abs ( ( star%p - ex_p ) ) > epsilon(0.e0)
+    failed_p = abs ( ( star%p - ex_p ) / ex_p ) > acc%star_p
 
     if ( failed_p ) then
       print *, test_name // " star region pressure"
-      print *, "  - accuracy: ", abs ( ( star%p - ex_p ) / ex_p ), "  - expected: ", epsilon(0.e0)
+      print *, "  - accuracy: ", abs ( ( star%p - ex_p ) / ex_p ), "  - expected: ", acc%star_p
     end if
 
 
-    failed_v = abs ( ( star%u - ex_u ) / ex_u ) > epsilon(0.e0)
+    failed_v = abs ( ( star%u - ex_u ) / ex_u ) > acc%star_v
 
     if ( failed_v ) then
       print *, test_name // " star region velocity"
-      print *, "  - accuracy: ", abs ( ( star%u - ex_u ) / ex_u ), "  - expected: ", epsilon(0.e0)
+      print *, "  - accuracy: ", abs ( ( star%u - ex_u ) / ex_u ), "  - expected: ", acc%star_v
     end if
 
 
@@ -73,12 +74,12 @@ contains
     if ( failed_lshock ) print *, test_name // " left shock test has failed"
 
 
-    failed_lrho = abs ( ( star_left_rho - ex_left_rho ) / ex_left_rho ) > epsilon(0.e0)
+    failed_lrho = abs ( ( star_left_rho - ex_left_rho ) / ex_left_rho ) > acc%left_rho
 
     if ( failed_lrho ) then
       print *, test_name // " left wave density"
       print *, "  - accuracy: ", abs ( ( star_left_rho - ex_left_rho ) / ex_left_rho ) &
-      , "  - expected: ", epsilon(0.e0)
+      , "  - expected: ", acc%left_rho
     end if
 
 
@@ -86,12 +87,12 @@ contains
     if ( failed_rshock ) print *, test_name // " right shock test has failed"
 
 
-    failed_rrho = abs ( ( star_right_rho - ex_right_rho ) / ex_right_rho ) > epsilon(0.e0)
+    failed_rrho = abs ( ( star_right_rho - ex_right_rho ) / ex_right_rho ) > acc%right_rho
 
     if ( failed_rrho ) then
       print *, test_name //" right wave density"
       print *, "  - accuracy: ", abs ( ( star_right_rho - ex_right_rho ) / ex_right_rho ) &
-      , "  - expected: ", epsilon(0.e0)
+      , "  - expected: ", acc%right_rho
     end if
 
     failed = failed_p .or. failed_v .or. failed_lshock .or. failed_lrho .or. failed_rshock .or. failed_rrho

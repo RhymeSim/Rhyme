@@ -12,16 +12,17 @@ logical function rhyme_irs_nonlinear_waves_test () result (failed)
 
   p = irs%pressure_floor
 
-  call random_seed
   call irs%nonlinear_waves ( rho, p, p_star, prev_f, prev_fprime )
 
   do i = 1, 800
     p = 2.34d0 * p
+
     call irs%nonlinear_waves ( rho, p, p_star, f, fprime )
 
-    if ( fprime < 0.0 .or. prev_fprime - fprime > irs%tolerance * fprime  .or. f - prev_f > irs%tolerance * f ) then
-      failed = .true.
-    end if
+    failed = fprime < 0.0 &
+    .or. prev_fprime - fprime > irs%tolerance * fprime &
+    .or. f - prev_f > irs%tolerance * f
+    if ( failed ) return
 
     prev_f = f
     prev_fprime = fprime
