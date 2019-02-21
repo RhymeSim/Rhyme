@@ -12,7 +12,6 @@ program rhyme
   use rhyme_muscl_hancock
   use rhyme_param_parser
   use rhyme_chombo
-  use date_time_module
 
   implicit none
 
