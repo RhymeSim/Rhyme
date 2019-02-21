@@ -47,6 +47,9 @@ program rhyme
   ! Reading parameter file and converting it to code units
   if ( .not. parse_params ( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
 
+
+  call log%set_section( 'init' )
+
   ! Initializing Structured AMR
   call samr%init
 
@@ -64,6 +67,9 @@ program rhyme
 
   ! Initializing MUSCL-Hancock
   call mh%init_with ( cfl, ig, irs, sl, samr )
+
+  ! Initializing Chombo
+  call chombo%init( log )
 
 
   do while ( samr%levels(0)%t < 0.2d0 )

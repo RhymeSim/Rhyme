@@ -47,6 +47,7 @@ module rhyme_logger_util
     procedure :: write_kw => rhyme_logger_util_write_kw
     procedure :: write_kw1d => rhyme_logger_util_write_kw1d
     procedure :: done => rhyme_logger_util_done
+    procedure :: warn => rhyme_logger_util_warn
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
     procedure :: open_logfile => rhyme_logger_util_open_logfile
@@ -89,8 +90,8 @@ contains
 
 
     ! Start point
-    call this%set_section ( 'init' )
-    call this%write ( 'Start! ツ' )
+    call this%set_section ( 'ツ' )
+    call this%write ( 'Start!' )
 
     this%initialized = .true.
   end subroutine rhyme_logger_util_init
@@ -282,6 +283,36 @@ contains
 
     call this%close_logfile
   end subroutine rhyme_logger_util_done
+
+
+  subroutine rhyme_logger_util_warn ( this, message )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    class (*), intent ( in ) :: message
+
+    character ( len=512 ) :: warning
+
+    select type ( msg => message )
+    type is ( character(*) )
+      warning = msg
+    type is ( integer )
+      write ( warning, logger_util_const%int_fmt ) msg
+    type is ( real( kind=4 ) )
+      write ( warning, logger_util_const%real_fmt ) msg
+    type is ( real( kind=8 ) )
+      write ( warning, logger_util_const%real8_fmt ) msg
+    end select
+
+    warning = adjustl( warning )
+
+    call this%open_logfile
+
+    write ( stdout,* ) tc%yl//trim(this%time(color=.false.))//tc%nc//' '//trim(this%sec)//': [WARN] '//trim(warning)
+    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': [WARN] '//trim(warning)
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_warn
 
 
   subroutine rhyme_logger_util_update_time ( this )

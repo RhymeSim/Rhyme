@@ -1,6 +1,7 @@
 module rhyme_chombo
   use rhyme_hdf5_util
   use rhyme_samr
+  use rhyme_log
 
   implicit none
 
@@ -21,6 +22,7 @@ module rhyme_chombo
     character ( len=1024 ) :: nickname = " "
   contains
     procedure :: init_with => rhyme_chombo_init_with
+    procedure :: init => rhyme_chombo_init
     procedure :: create_chombo => rhyme_chombo_create_chombo
     procedure :: write_headers => rhyme_chombo_write_headers
     procedure :: write_samr => rhyme_chombo_write_samr
@@ -31,16 +33,36 @@ module rhyme_chombo
 contains
 
 
-  subroutine rhyme_chombo_init_with ( this, prefix, nickname )
+  subroutine rhyme_chombo_init_with ( this, prefix, nickname, log )
     implicit none
 
     class ( chombo_t ), intent ( inout ) :: this
     character ( len=1024 ), intent ( in ) :: prefix, nickname
+    type ( log_t ), intent ( inout ) :: log
 
     this%prefix = prefix
     this%nickname = nickname
 
+    call this%init( log )
   end subroutine rhyme_chombo_init_with
+
+
+  subroutine rhyme_chombo_init ( this, log )
+    implicit none
+
+    class ( chombo_t ), intent ( in ) :: this
+    type ( log_t ), intent ( inout ) :: log
+
+    logical :: ex
+
+    inquire ( file=trim(this%prefix)//"/.", exist=ex )
+
+    if ( .not. ex ) then
+      call log%warn( trim(this%prefix)//' does not exist!')
+      call execute_command_line('mkdir -p '//trim(this%prefix) )
+      call log%write( trim(this%prefix)//' has been created' )
+    end if
+  end subroutine rhyme_chombo_init
 
 
   subroutine rhyme_chombo_filename_generator ( this, filename )
