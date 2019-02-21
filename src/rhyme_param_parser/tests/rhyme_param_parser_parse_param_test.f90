@@ -3,6 +3,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   implicit none
 
+  type ( log_t ) :: log
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
@@ -14,7 +15,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  failed = .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl, chombo )
+  failed = .not. parse_params ( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo )
   if ( failed ) return
 
   ! Structured AMR

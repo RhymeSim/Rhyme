@@ -43,6 +43,7 @@ module rhyme_log
     procedure :: set_section => rhyme_log_set_section
     procedure :: write => rhyme_log_write
     procedure :: write_kw => rhyme_log_write_kw
+    procedure :: write_kw1d => rhyme_log_write_kw1d
     procedure :: update_time => rhyme_log_update_time
     procedure :: time => rhyme_log_time
     procedure :: open_logfile => rhyme_log_open_logfile
@@ -94,6 +95,11 @@ contains
 
     class ( log_t ), intent ( inout ) :: this
     character ( len=* ), intent ( in ) :: section
+
+    call this%open_logfile
+    write ( stdout,* ) ""
+    write ( this%logfile_unit,* ) ""
+    call this%close_logfile
 
     this%sec = trim(section)
   end subroutine rhyme_log_set_section
@@ -165,11 +171,63 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(k)//' => '//trim(v)
+    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
     write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(k)//' => '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_log_write_kw
+
+
+  subroutine rhyme_log_write_kw1d ( this, key, value )
+    implicit none
+
+    class ( log_t ), intent ( inout ) :: this
+    class (*), intent ( in ) :: key
+    class (*), dimension(:), intent ( in ) :: value
+
+    character ( len=512 ) :: k = "", v = ""
+    integer :: i
+
+    select type ( ke => key )
+    type is ( character (*) )
+      k = ke
+    type is ( integer )
+      write ( k, logid%int_fmt ) ke
+    type is ( real( kind=4 ) )
+      write ( k, logid%real_fmt ) ke
+    type is ( real( kind=8 ) )
+      write ( k, logid%real8_fmt ) ke
+    end select
+    k = adjustl( k )
+
+    v = '[ '
+    select type ( val => value )
+    type is ( character (*) )
+      do i = 1, size( val )
+        write ( v, '(A,A,A,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( integer )
+      do i = 1, size( val )
+        write ( v, '(A,A,I0,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( real( kind=4 ) )
+      do i = 1, size( val )
+        write ( v, '(A,A,E16.5,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( real( kind=8 ) )
+      do i = 1, size( val )
+        write ( v, '(A,A,E16.7,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    end select
+    v = trim(v)//' ]'
+
+    call this%open_logfile
+
+    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(k)//' => '//trim(v)
+
+    call this%close_logfile
+  end subroutine rhyme_log_write_kw1d
 
 
   subroutine rhyme_log_update_time ( this )
@@ -268,7 +326,7 @@ contains
     this%vivid_logo(5) = tc%ig//"█"//tc%vt//"█"//tc%rd//"  ▀"//tc%yl//"██"//tc%gn//"▄"//tc%bl//  "  █"//tc%ig//"█"//tc%rd//           "    █"//tc%yl//"█"//tc%bl//           "    █"//tc%ig//"██"//tc%vt//"█▀"//tc%yl//           "   █"//tc%gn//"█"//tc%bl//" ██"//tc%ig//" █"//tc%vt//"█"//tc%rd//"  █"//tc%yl//"█▀"//tc%gn//"▀▀"//tc%bl//"▀▀"//tc%ig//"▀"//tc%nc
     this%vivid_logo(6) = tc%vt//"█"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//  "  █"//tc%vt//"█"//tc%yl//           "    █"//tc%gn//"█"//tc%vt//                      "     ██"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//" ██"//tc%vt//" █"//tc%rd//"█"//tc%yl//"  ▀"//tc%gn//"██"//tc%bl//"▄▄"//tc%ig//"▄▄"//tc%vt//"█"//tc%nc
     this%vivid_logo(7) = tc%rd//"▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//  " ▀"//tc%rd//"▀"//tc%gn//           "    ▀"//tc%bl//"▀"//tc%rd//                      "     ██"//tc%bl//                      "     ▀"//tc%ig//"▀"//tc%vt//" ▀▀"//tc%rd//" ▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//"▀▀"//tc%nc
-    this%vivid_logo(8) = tc%rd//                                                                                                                          "                      ██"//tc%yl//"█"//tc%nc//"  © Saeed Sarpas, 2019"
+    this%vivid_logo(8) = tc%rd//                                                                                                                          "                      ██"//tc%yl//"█"//tc%nc//"  © Saeed Sarpas, 2019"//tc%nc
     this%vivid_logo(9) = tc%nc
   end subroutine rhyme_log_set_vivid_logo
 

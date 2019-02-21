@@ -13,6 +13,7 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
+  rhyme_log
   rhyme_samr
   rhyme_samr_bc
   rhyme_cfl

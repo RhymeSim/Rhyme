@@ -35,9 +35,13 @@ program rhyme
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
 
+  call log%init
+  call log%write_kw ( 'exe', exe_filename )
+  call log%write_kw ( 'param file', param_file )
+
 
   ! Reading parameter file and converting it to code units
-  if ( .not. parse_params ( param_file, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
+  if ( .not. parse_params ( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
 
   ! Initializing Structured AMR
   call samr%init

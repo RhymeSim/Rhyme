@@ -1,4 +1,5 @@
 module rhyme_param_parser
+  use rhyme_log
   use rhyme_samr
   use rhyme_samr_bc
   use rhyme_cfl
@@ -13,11 +14,12 @@ module rhyme_param_parser
 contains
 
   logical function parse_params ( &
-    param_file, samr, bc, cfl, ig, ic, irs, sl, chombo ) &
+    param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo ) &
   result ( passed )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
+    type ( log_t ), intent ( out ) :: log
     type ( samr_t ), intent ( out ) :: samr
     type ( samr_bc_t ), intent ( out ) :: bc
     type ( cfl_t ), intent ( out ) :: cfl
@@ -31,6 +33,7 @@ contains
     character(len=1024) :: key, op, str
     type ( ic_shape_t ), pointer :: shape
 
+    call log%set_section( 'params' )
 
     open (1, file=param_file, action='read', form="formatted")
 
@@ -46,9 +49,16 @@ contains
       select case ( adjustl(trim(key)) )
 
         ! Structured AMR
-      case ( "base_grid" ); read (1, *) key, op, samr%base_grid(1:3)
-      case ( "nlevels" ); read (1, *) key, op, samr%nlevels
-      case ( "nboxes" ); read (1, *) key, op, samr%max_nboxes(0:samr%nlevels-1)
+      case ( "base_grid" )
+        read (1, *) key, op, samr%base_grid(1:3)
+        call log%write_kw1d( 'base_grid', samr%base_grid )
+      case ( "nlevels" )
+        read (1, *) key, op, samr%nlevels
+        call log%write_kw( 'nlevels', samr%nlevels )
+      case ( "max_nboxes" )
+        read (1, *) key, op, samr%max_nboxes( 0:samr%nlevels-1 )
+        samr%max_nboxes( samr%nlevels: ) = 0
+        call log%write_kw1d( 'max_nboxes', samr%max_nboxes )
 
         ! Boundary Condition
       case ( "left_bc" )
