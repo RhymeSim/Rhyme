@@ -6,7 +6,7 @@ logical function rhyme_logger_util_time_test () result ( failed )
   type ( logger_util_t ) :: log
   character ( len=1024 ) :: t
 
-  t = log%time( color=.false. )
+  t = log%time()
 
   failed = &
   t(1:2) .ne. '[ ' &
@@ -17,7 +17,7 @@ logical function rhyme_logger_util_time_test () result ( failed )
   .or. t(21:21) .ne. ':'
   if ( failed ) return
 
-  t = log%time( color=.true. )
+  t = log%time( color=tc%gn )
   failed = &
   t(:len(tc%gn)) .ne. tc%gn
   if ( failed ) return

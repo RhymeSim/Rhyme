@@ -48,8 +48,11 @@ module rhyme_logger_util
     procedure :: write_kw1d => rhyme_logger_util_write_kw1d
     procedure :: done => rhyme_logger_util_done
     procedure :: warn => rhyme_logger_util_warn
+    procedure :: warn_kw => rhyme_logger_util_warn_kw
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
+    procedure :: time_and_section => rhyme_logger_util_time_and_section
+    procedure :: tas => rhyme_logger_util_time_and_section
     procedure :: open_logfile => rhyme_logger_util_open_logfile
     procedure :: close_logfile => rhyme_logger_util_close_logfile
     procedure :: open_errfile => rhyme_logger_util_open_errfile
@@ -137,8 +140,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(i)
-    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(i)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(i)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(i)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write
@@ -180,8 +183,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(k)//' => '//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(k)//' => '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write_kw
@@ -232,8 +235,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(k)//' => '//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(k)//' => '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write_kw1d
@@ -274,12 +277,13 @@ contains
       delta_t(5) = int( 365.25 * 24 * delta_t(3) ) + delta_t(5) ! TODO: WTF
     end if
 
-    write ( time_str, '(A,I0,A,I0.2,A,I0.2,A)') ' [ done in ', delta_t(5), 'h:', delta_t(6), 'm:', delta_t(7), 's ]'
-
     call this%open_logfile
 
-    write ( stdout,* ) this%time(color=.true.)//' '//trim(this%sec)//': '//trim(msg)//trim(time_str)
-    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': '//trim(msg)//trim(time_str)
+    write ( time_str, '(A,I0,A,I0.2,A,I0.2,A)') &
+      ' [ done in ', delta_t(5), 'h:', delta_t(6), 'm:', delta_t(7), 's ]'
+
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(msg)//trim(time_str)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(msg)//trim(time_str)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_done
@@ -289,30 +293,68 @@ contains
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
-    class (*), intent ( in ) :: message
-
-    character ( len=512 ) :: warning
-
-    select type ( msg => message )
-    type is ( character(*) )
-      warning = msg
-    type is ( integer )
-      write ( warning, logger_util_const%int_fmt ) msg
-    type is ( real( kind=4 ) )
-      write ( warning, logger_util_const%real_fmt ) msg
-    type is ( real( kind=8 ) )
-      write ( warning, logger_util_const%real8_fmt ) msg
-    end select
-
-    warning = adjustl( warning )
+    character ( len=* ), intent ( in ) :: message
 
     call this%open_logfile
 
-    write ( stdout,* ) tc%yl//trim(this%time(color=.false.))//tc%nc//' '//trim(this%sec)//': [WARN] '//trim(warning)
-    write ( this%logfile_unit,* ) trim(this%time(color=.false.))//' '//trim(this%sec)//': [WARN] '//trim(warning)
+    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//'[WARN] '//adjustl(trim(message))
+    write ( this%logfile_unit,* ) trim( this%tas() )//'[WARN] '//adjustl(trim(message))
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn
+
+
+  subroutine rhyme_logger_util_warn_kw ( this, msg, key, value, operator )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: msg
+    class (*), intent ( in ) :: key, value
+    character ( len=* ), intent ( in ), optional :: operator
+
+    character ( len=512 ) :: message, k, v
+    character ( len=16 ) :: op
+
+    if ( present( operator ) ) then
+      op = trim( operator )
+    else
+      op = ' => '
+    end if
+
+    select type ( ke => key )
+    type is ( character (*) )
+      k = ke
+    type is ( integer )
+      write ( k, logger_util_const%int_fmt ) ke
+    type is ( real( kind=4 ) )
+      write ( k, logger_util_const%real_fmt ) ke
+    type is ( real( kind=8 ) )
+      write ( k, logger_util_const%real8_fmt ) ke
+    end select
+
+    select type ( val => value )
+    type is ( character (*) )
+      v = val
+    type is ( integer )
+      write ( v, logger_util_const%int_fmt ) val
+    type is ( real( kind=4 ) )
+      write ( v, logger_util_const%real_fmt ) val
+    type is ( real( kind=8 ) )
+      write ( v, logger_util_const%real8_fmt ) val
+    end select
+
+    k = adjustl( k )
+    v = adjustl( v )
+
+    call this%open_logfile
+
+    message = ': [WARN] '//adjustl(trim(msg))//', '//trim(k)
+
+    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_warn_kw
 
 
   subroutine rhyme_logger_util_update_time ( this )
@@ -324,11 +366,19 @@ contains
   end subroutine rhyme_logger_util_update_time
 
 
-  character ( len=41 ) function rhyme_logger_util_time ( this, color ) result ( time_str )
+  character ( len=64 ) function rhyme_logger_util_time ( this, color ) result ( time_str )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
-    logical, intent ( in ) :: color
+    character ( len=* ), intent ( in ), optional :: color
+
+    logical :: colored
+
+    if ( present( color ) ) then
+      colored = .true.
+    else
+      colored = .false.
+    end if
 
     call this%update_time
 
@@ -336,9 +386,25 @@ contains
       '[ ',this%t(1),'-',this%t(2),'-',this%t(3),' | ', &
       this%t(5),':',this%t(6),':',this%t(7),' ]'
 
-    if ( color ) time_str = tc%gn//trim(time_str)//tc%nc
+      if ( colored ) then
+        time_str = trim(color)//trim(time_str)//tc%nc
+      end if
   end function rhyme_logger_util_time
 
+
+  function rhyme_logger_util_time_and_section ( this, color ) result ( tas_str )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ), optional :: color
+    character ( len=126 ) :: tas_str
+
+    if ( present( color ) ) then
+      tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )//': '
+    else
+      tas_str = trim( this%time() )//' '//trim( this%sec )//': '
+    end if
+  end function rhyme_logger_util_time_and_section
 
 
   subroutine rhyme_logger_util_open_logfile ( this)

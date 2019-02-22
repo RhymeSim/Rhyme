@@ -26,11 +26,12 @@ program rhyme
   type ( muscl_hancock_t ) :: mh
   type ( chombo_t ) :: chombo
 
+
   integer :: l, b
+  character ( len=1024 ) :: exe_filename, param_file
 
-  character(len=1024) :: exe_filename, param_file
 
-
+  ! TODO: use flags to read additional command line arguments
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
   call get_command_argument ( 2, log%logfile )
@@ -44,38 +45,40 @@ program rhyme
   call log%write_kw ( 'err_file', log%errfile )
 
 
-  ! Reading parameter file and converting it to code units
-  if ( .not. parse_params ( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
+  ! Reading parameters and converting them to code units
+  if ( .not. parse_params( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo ) ) stop
 
-
+  ! Initializing
   call log%set_section( 'init' )
 
-  ! Initializing Structured AMR
+  ! Structured AMR
   call samr%init
 
-  ! Initializing Boundary Conditions
+  ! Boundary Conditions
   call bc%init ( samr )
 
-  ! Initializing Ideal Gas
+  ! Ideal Gas
   call ig%init
 
-  ! Applying Initial Condition
+  ! Initial Condition
   call ic%apply ( ig, samr )
 
-  ! Initializing Iterative Riemann Solver
+  ! Iterative Riemann Solver
   call irs%init ( ig )
 
-  ! Initializing MUSCL-Hancock
+  ! MUSCL-Hancock
   call mh%init_with ( cfl, ig, irs, sl, samr )
 
-  ! Initializing Chombo
+  ! Chombo Output
   call chombo%init( log )
 
 
+  ! Main loop
   do while ( samr%levels(0)%t < 0.2d0 )
     call log%begin_iteration ( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = cfl%dt ( ig, samr )
+
     call log%write_kw( 't', samr%levels(0)%t )
     call log%write_kw( 'dt', samr%levels(0)%dt )
 

@@ -27,6 +27,7 @@ set ( deps
   rhyme_param_parser
   rhyme_muscl_hancock
   rhyme_chombo
+  radamesh_spectrum
 )
 
 foreach ( dep ${deps} )
