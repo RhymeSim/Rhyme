@@ -217,7 +217,7 @@ contains
     class ( chombo_t ), intent (inout) :: this
     type ( samr_t ), intent (in) :: samr
 
-    integer :: l
+    integer :: l, hdferr
 
     this%iteration = samr%levels(0)%iteration
     call this%create_chombo
@@ -227,6 +227,12 @@ contains
     do l = 0, samr%nlevels - 1
       call this%write_level_data ( samr%levels(l) )
     end do
+
+    ! Closing open groups
+    do l = 0, samr%nlevels - 1
+      call h5gclose_f ( this%level_ids(l), hdferr )
+    end do
+    call h5gclose_f ( this%chombo_global_id, hdferr )
 
     call this%close
 

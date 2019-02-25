@@ -54,6 +54,7 @@ contains
 
 
   subroutine rhyme_hdf5_util_create_group ( this, where, group_id )
+    ! NB: groups created by this subroutine must be closed accordingly
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent (in) :: this
@@ -126,6 +127,7 @@ contains
       end select
 
       call h5aclose_f ( attr_id, hdferr )
+      call h5sclose_f ( space_id, hdferr )
     end subroutine write_group_attribute
   end subroutine rhyme_hdf5_util_write_group_attribute
 
@@ -162,6 +164,8 @@ contains
       call h5awrite_f ( attr_id, H5T_NATIVE_DOUBLE, arr, dims, hdferr )
     end select
 
+    call h5aclose_f ( attr_id, hdferr )
+    call h5sclose_f ( space_id, hdferr )
     call h5gclose_f ( group_id, hdferr )
   end subroutine rhyme_hdf5_util_write_group_1d_array_attribute
 
@@ -236,6 +240,7 @@ contains
       end select
 
       call h5aclose_f ( attr_id, hdferr )
+      call h5tclose_f ( comp_id, hdferr )
     end subroutine write_comp_array_attr
   end subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute
 
@@ -313,6 +318,8 @@ contains
       end select
 
       call h5dclose_f ( dset_id, hdferr )
+      call h5tclose_f ( table_id, hdferr )
+      call h5sclose_f ( space_id, hdferr )
     end subroutine write_table
   end subroutine rhyme_hdf5_util_write_table
 
@@ -369,6 +376,8 @@ contains
     type is ( real( kind=8 ) )
       call h5dread_f ( dset_id, table_id, buf, dims, hdferr)
     end select
+
+    call h5tclose_f ( table_id, hdferr )
 
     select type ( w => where )
     type is ( character (*) )
@@ -432,6 +441,11 @@ contains
     end select
 
     call h5aclose_f ( attr_id, hdferr )
+
+    select type ( w => where )
+    type is ( character (*) )
+      call h5gclose_f ( group_id, hdferr )
+    end select
   end subroutine rhyme_hdf5_util_read_group_attribute
 
 
@@ -443,7 +457,7 @@ contains
     character ( len=* ), intent ( in ) :: key
     class (*), dimension(:), intent ( in ) :: data
 
-    integer ( hid_t ) :: group_id, dsetid, dspaceid
+    integer ( hid_t ) :: group_id, dsetid, space_id
     integer ( hsize_t ) :: dims(1)
     integer :: hdferr
 
@@ -457,22 +471,22 @@ contains
 
     dims = int(shape(data), kind=hsize_t)
 
-    call h5screate_simple_f ( 1, dims, dspaceid, hdferr )
+    call h5screate_simple_f ( 1, dims, space_id, hdferr )
 
     select type ( d => data )
     type is ( integer )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_INTEGER, d, dims, hdferr )
-      call h5dclose_f ( dsetid, hdferr )
     type is ( real( kind=4 ) )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_REAL, d, dims, hdferr )
-      call h5dclose_f ( dsetid, hdferr )
     type is ( real( kind=8 ) )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_DOUBLE, d, dims, hdferr )
-      call h5dclose_f ( dsetid, hdferr )
     end select
+
+    call h5dclose_f ( dsetid, hdferr )
+    call h5sclose_f ( space_id, hdferr )
 
     select type ( w => where )
     type is ( character (*) )
@@ -517,7 +531,7 @@ contains
     character ( len=* ), intent ( in ) :: key
     class (*), dimension(:,:), intent ( in ) :: data
 
-    integer ( hid_t ) :: group_id, dsetid, dspaceid
+    integer ( hid_t ) :: group_id, dsetid, space_id
     integer ( hsize_t ) :: dims(2)
     integer :: hdferr
 
@@ -531,21 +545,22 @@ contains
 
     dims = int(shape(data), kind=hsize_t)
 
-    call h5screate_simple_f ( 2, dims, dspaceid, hdferr )
+    call h5screate_simple_f ( 2, dims, space_id, hdferr )
 
     select type ( d => data )
     type is ( integer )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_INTEGER, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_INTEGER, d, dims, hdferr )
     type is ( real( kind=4 ) )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_REAL, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_REAL, d, dims, hdferr )
     type is ( real( kind=8 ) )
-      call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, dspaceid, dsetid, hdferr )
+      call h5dcreate_f ( group_id, key, H5T_NATIVE_DOUBLE, space_id, dsetid, hdferr )
       call h5dwrite_f ( dsetid, H5T_NATIVE_DOUBLE, d, dims, hdferr )
     end select
 
     call h5dclose_f ( dsetid, hdferr )
+    call h5sclose_f ( space_id, hdferr )
 
     select type ( w => where )
     type is ( character (*) )
@@ -593,6 +608,7 @@ contains
     if ( .not. this%initialized ) return
 
     call h5fclose_f ( this%fid, hdferr )
+    call h5close_f ( hdferr )
 
     if ( hdferr >= 0 ) then
       this%fid = h5id%unset
