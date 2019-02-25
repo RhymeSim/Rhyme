@@ -9,23 +9,28 @@ logical function radamesh_spectrum_new_region_test () result ( failed )
   failed = associated( spec%regions )
   if ( failed ) return
 
-  region => spec%new_region( spid%line )
+  region => spec%new_region( spid%lin_space, spid%power_law )
 
   failed = &
-  spec%regions%type .ne. spid%line &
+  spec%regions%binning_type .ne. spid%lin_space &
+  .or. spec%regions%spectrum_type .ne. spid%power_law &
   .or. abs( spec%regions%slope - 0.d0 ) > epsilon(0.d0) &
-  .or. region%type .ne. spid%line &
+  .or. region%binning_type .ne. spid%lin_space &
+  .or. region%spectrum_type .ne. spid%power_law &
   .or. abs( region%slope - 0.d0 ) > epsilon(0.d0)
   if ( failed ) return
 
-  region => spec%new_region( spid%power_law )
+  region => spec%new_region( spid%log_space, spid%blackbody )
 
   failed = &
-  spec%regions%type .ne. spid%line &
+  spec%regions%binning_type .ne. spid%lin_space &
+  .or. spec%regions%spectrum_type .ne. spid%power_law &
   .or. abs( spec%regions%slope - 0.d0 ) > epsilon(0.d0) &
-  .or. spec%regions%next%type .ne. spid%power_law &
+  .or. spec%regions%next%binning_type .ne. spid%log_space &
+  .or. spec%regions%next%spectrum_type .ne. spid%blackbody &
   .or. abs( spec%regions%next%slope - 0.d0 ) > epsilon(0.d0) &
-  .or. region%type .ne. spid%power_law &
+  .or. region%binning_type .ne. spid%log_space &
+  .or. region%spectrum_type .ne. spid%blackbody &
   .or. abs( region%slope - 0.d0 ) > epsilon(0.d0)
   if ( failed ) return
 end function radamesh_spectrum_new_region_test
