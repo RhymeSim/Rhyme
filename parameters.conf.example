@@ -41,6 +41,7 @@ nickname = 'hydro-simulation'
 
 # Sources
 source_coordinate = 0.12d0 0.34d0 0.56d0
+opening_angle = 4 pi
 spectral_region = power_law 1.d0 2.d0 6.78d9 10 -1.7
 spectral_region = linear 2.d0 3.d0 5.67d8 15
 spectral_region = line 3.d0 3.01d0 4.56d7d8
