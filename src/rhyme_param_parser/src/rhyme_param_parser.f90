@@ -104,21 +104,21 @@ contains
           ig%type = igid%polyatomic
         end if
 
-        ! Initial Condition
-      case ( "background" )
+        ! drawing
+      case ( "canvas" )
         read (1, *) key, op, str
-        call log%write_kw( 'background_type', str )
+        call log%write_kw( 'canvas_type', str )
         backspace(1)
 
         if ( trim(str) .eq. 'uniform' ) then
           draw%type = drid%uniform_bg
-          read (1, *) key, op, str, draw%background%w(hyid%rho:hyid%p)
-          call log%write_kw1d( 'background_uniform', draw%background%w )
+          read (1, *) key, op, str, draw%canvas%w(hyid%rho:hyid%p)
+          call log%write_kw1d( 'canvas_uniform', draw%canvas%w )
         else if ( trim(str) .eq. 'transparent' ) then
           draw%type = drid%transparent_bg
-          call log%write( 'Using transparent background' )
+          call log%write( 'Using transparent canvas' )
         else
-          call log%warn_kw( 'Unsuported background', 'bakcground_type', str )
+          call log%warn_kw( 'Unsuported canvas', 'canvas_type', str )
         end if
 
 

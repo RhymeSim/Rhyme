@@ -26,8 +26,8 @@ limiter_omega = 1.23d0
 # CFL
 courant_number = .81d0
 
-# Initial Condition
-background = uniform .125d0 0.d0 0.d0 0.d0 .1d0
+# Drawing
+canvas = uniform .125d0 0.d0 0.d0 0.d0 .1d0
 shape = rect 1 1 1 64 128 1
 shape_trans = linear 0.d0
 shape_fill = uniform 1.d0 0.d0 0.d0 0.d0 1.d0

@@ -31,7 +31,7 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
 
   call samr%init_with ( g, 1, tot_nboxes, ghost )
 
-  draw%background%w = [ rho, u, v, w, p ]
+  draw%canvas%w = [ rho, u, v, w, p ]
 
   shape => draw%new_shape ( drid%rect )
 

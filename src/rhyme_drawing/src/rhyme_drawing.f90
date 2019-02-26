@@ -41,7 +41,7 @@ module rhyme_drawing
 
   type drawing_t
     integer :: type = drid%uniform_bg
-    type ( hydro_primitive_t ) :: background
+    type ( hydro_primitive_t ) :: canvas
     type ( shape_t ), pointer :: shapes => null()
     logical :: initialized
   contains
@@ -94,7 +94,7 @@ contains
 
     ! No action for transparent
     if ( this%type .eq. drid%uniform_bg ) then
-      call ig%prim_to_cons ( this%background, bg )
+      call ig%prim_to_cons ( this%canvas, bg )
 
       do k = 1, samr%levels(0)%boxes(1)%dims(3)
         do j = 1, samr%levels(0)%boxes(1)%dims(2)

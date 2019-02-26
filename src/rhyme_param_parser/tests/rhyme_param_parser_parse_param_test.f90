@@ -40,9 +40,9 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   failed = ig%type .ne. igid%monatomic
   if ( failed ) return
 
-  ! Initial Condition
+  ! Drawing
   failed = &
-  any ( abs ( draw%background%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
+  any ( abs ( draw%canvas%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
   .or. draw%type .ne. drid%uniform_bg &
   .or. draw%shapes%type .ne. drid%rect &
   .or. any ( draw%shapes%xl .ne. 1 ) &
