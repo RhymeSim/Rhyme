@@ -1,5 +1,6 @@
 module rhyme_initial_condition
   use rhyme_samr
+  use rhyme_chombo
   use rhyme_log
 
   implicit none
@@ -17,6 +18,7 @@ module rhyme_initial_condition
     integer :: base_grid(3) = icid%unset
     integer :: nlevels = icid%unset
     integer :: max_nboxes(0:samrid%max_nlevels) = 0
+    character ( len=2024 ) :: path = ''
   contains
     procedure :: init => rhyme_initial_condition_init
     procedure :: init_simple => rhyme_initial_condition_init_simple
@@ -37,13 +39,24 @@ contains
       return
     end if
 
+    if ( this%type .eq. icid%unset ) then
+      call log%err( 'ic_type is not set' )
+      return
+    end if
+
+    if ( all( this%max_nboxes < 1 ) ) then
+      call log%err_kw1d( 'max_nboxes is not valid', 'max_nboxes', this%max_nboxes )
+    end if
+
     if ( this%type .eq. icid%simple ) then
       call this%init_simple( samr, log )
     else if ( this%type .eq. icid%load ) then
       call this%load( samr, log )
     else
-      call log%warn_kw( 'Unknown initial condition type', 'ic_type', this%type )
+      call log%err_kw( 'Unknown initial condition type', 'ic_type', this%type )
+      return
     end if
+
   end subroutine rhyme_initial_condition_init
 
 
@@ -57,6 +70,12 @@ contains
     real ( kind=8 ) :: ref_factor
     integer :: l, lb(3), ub(3), stat
 
+    if ( &
+      any( this%base_grid .eq. icid%unset ) &
+      .or. this%nlevels .eq. icid%unset ) then
+      call log%err( 'ic_base_grid or ic_nlevels is not set' )
+      return
+    end if
 
     samr%nlevels = this%nlevels
     samr%base_grid = this%base_grid
@@ -102,12 +121,35 @@ contains
 
 
   subroutine rhyme_initial_condition_load ( this, samr, log )
+    use rhyme_chombo
+
     implicit none
 
     class ( initial_condition_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
     type ( log_t ), intent ( inout ) :: log
 
+    type ( chombo_t ) :: chombo
+    integer :: l
+    character ( len=16 ) :: level_name
+    logical :: exist
 
+    inquire ( file=trim(this%path), exist=exist )
+    if ( .not. exist ) then
+      call log%err( 'ic_snap does not exist' )
+      return
+    end if
+
+    call chombo%open( this%path )
+
+    call chombo%read_group_attr( '/', 'num_level', samr%nlevels )
+    call chombo%read_group_1d_array_attr( '/', 'ProblemDomain', samr%base_grid )
+
+    do l = 0, samr%nlevels - 1
+      write ( level_name, '(A7,I0)') "/level_", l
+
+      ! TODO: open levels, read boxes, allocate and load samr boxes
+    end do
+    call chombo%close
   end subroutine rhyme_initial_condition_load
 end module rhyme_initial_condition

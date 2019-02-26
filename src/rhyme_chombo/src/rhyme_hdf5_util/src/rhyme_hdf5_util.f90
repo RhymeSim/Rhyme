@@ -25,6 +25,7 @@ module rhyme_hdf5_util
     procedure :: write_table => rhyme_hdf5_util_write_table
     procedure :: read_table => rhyme_hdf5_util_read_table
     procedure :: read_group_attr => rhyme_hdf5_util_read_group_attribute
+    procedure :: read_group_1d_array_attr => rhyme_hdf5_util_read_group_1d_array_attribute
     procedure :: write_1d_dataset => rhyme_hdf5_util_write_1d_dataset
     procedure :: write_2d_dataset => rhyme_hdf5_util_write_2d_dataset
     procedure :: read_1d_dataset => rhyme_hdf5_util_read_1d_dataset
@@ -168,6 +169,37 @@ contains
     call h5sclose_f ( space_id, hdferr )
     call h5gclose_f ( group_id, hdferr )
   end subroutine rhyme_hdf5_util_write_group_1d_array_attribute
+
+
+  subroutine rhyme_hdf5_util_read_group_1d_array_attribute ( this, where, key, array )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent ( in ) :: this
+    character ( len=* ), intent(in) :: where, key
+    class (*), dimension(:), intent ( out ) :: array
+
+    integer ( hid_t ) :: group_id, attr_id
+    integer :: hdferr
+
+    integer ( hsize_t ) :: dims(1)
+
+    call h5gopen_f ( this%fid, trim(where), group_id, hdferr )
+    call h5aopen_f ( this%fid, trim(key), attr_id, hdferr )
+
+    dims(1) = size ( array )
+
+    select type ( arr => array )
+    type is ( integer )
+      call h5aread_f ( attr_id, H5T_NATIVE_INTEGER, arr, dims, hdferr )
+    type is ( real ( kind=4 ) )
+      call h5aread_f ( attr_id, H5T_NATIVE_REAL, arr, dims, hdferr )
+    type is ( real ( kind=8 ) )
+      call h5aread_f ( attr_id, H5T_NATIVE_DOUBLE, arr, dims, hdferr )
+    end select
+
+    call h5aclose_f ( attr_id, hdferr )
+    call h5gclose_f ( group_id, hdferr )
+  end subroutine rhyme_hdf5_util_read_group_1d_array_attribute
 
 
   subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute ( this, where, key, keys, values )

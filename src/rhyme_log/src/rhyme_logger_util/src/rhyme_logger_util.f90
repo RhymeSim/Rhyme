@@ -1,4 +1,5 @@
 module rhyme_logger_util
+  ! TODO: need a serious refactoring :(
   use, intrinsic :: iso_fortran_env, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
 
   implicit none
@@ -49,6 +50,9 @@ module rhyme_logger_util
     procedure :: done => rhyme_logger_util_done
     procedure :: warn => rhyme_logger_util_warn
     procedure :: warn_kw => rhyme_logger_util_warn_kw
+    procedure :: err => rhyme_logger_util_err
+    procedure :: err_kw => rhyme_logger_util_err_kw
+    procedure :: err_kw1d => rhyme_logger_util_err_kw1d
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
     procedure :: time_and_section => rhyme_logger_util_time_and_section
@@ -304,6 +308,21 @@ contains
   end subroutine rhyme_logger_util_warn
 
 
+  subroutine rhyme_logger_util_err ( this, message )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: message
+
+    call this%open_logfile
+
+    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//'[ERROR] '//adjustl(trim(message))
+    write ( this%logfile_unit,* ) trim( this%tas() )//'[ERROR] '//adjustl(trim(message))
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_err
+
+
   subroutine rhyme_logger_util_warn_kw ( this, msg, key, value, operator )
     implicit none
 
@@ -355,6 +374,115 @@ contains
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn_kw
+
+
+  subroutine rhyme_logger_util_err_kw ( this, msg, key, value, operator )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: msg
+    class (*), intent ( in ) :: key, value
+    character ( len=* ), intent ( in ), optional :: operator
+
+    character ( len=512 ) :: message, k, v
+    character ( len=16 ) :: op
+
+    if ( present( operator ) ) then
+      op = trim( operator )
+    else
+      op = ' => '
+    end if
+
+    select type ( ke => key )
+    type is ( character (*) )
+      k = ke
+    type is ( integer )
+      write ( k, logger_util_const%int_fmt ) ke
+    type is ( real( kind=4 ) )
+      write ( k, logger_util_const%real_fmt ) ke
+    type is ( real( kind=8 ) )
+      write ( k, logger_util_const%real8_fmt ) ke
+    end select
+
+    select type ( val => value )
+    type is ( character (*) )
+      v = val
+    type is ( integer )
+      write ( v, logger_util_const%int_fmt ) val
+    type is ( real( kind=4 ) )
+      write ( v, logger_util_const%real_fmt ) val
+    type is ( real( kind=8 ) )
+      write ( v, logger_util_const%real8_fmt ) val
+    end select
+
+    k = adjustl( k )
+    v = adjustl( v )
+
+    call this%open_logfile
+
+    message = ': [ERROR] '//adjustl(trim(msg))//', '//trim(k)
+
+    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_err_kw
+
+
+  subroutine rhyme_logger_util_err_kw1d ( this, msg, key, value )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: msg
+    class (*), intent ( in ) :: key
+    class (*), dimension(:), intent ( in ) :: value
+
+    character ( len=1024 ) :: message
+    character ( len=512 ) :: k = "", v = ""
+    integer :: i
+
+    select type ( ke => key )
+    type is ( character (*) )
+      k = ke
+    type is ( integer )
+      write ( k, logger_util_const%int_fmt ) ke
+    type is ( real( kind=4 ) )
+      write ( k, logger_util_const%real_fmt ) ke
+    type is ( real( kind=8 ) )
+      write ( k, logger_util_const%real8_fmt ) ke
+    end select
+    k = adjustl( k )
+
+    v = '[ '
+    select type ( val => value )
+    type is ( character (*) )
+      do i = 1, size( val )
+        write ( v, '(A,A,A,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( integer )
+      do i = 1, size( val )
+        write ( v, '(A,A,I0,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( real( kind=4 ) )
+      do i = 1, size( val )
+        write ( v, '(A,A,E16.5,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    type is ( real( kind=8 ) )
+      do i = 1, size( val )
+        write ( v, '(A,A,E16.7,A)' ) trim(v), ' ', val(i), ' '
+      end do
+    end select
+    v = trim(v)//' ]'
+
+    call this%open_logfile
+
+    message = ': [ERROR] '//adjustl(trim(msg))//', '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+
+    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim( message )
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim( message )
+
+    call this%close_logfile
+  end subroutine rhyme_logger_util_err_kw1d
 
 
   subroutine rhyme_logger_util_update_time ( this )
