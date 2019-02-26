@@ -13,18 +13,26 @@ logical function rhyme_samr_init_box_test () result ( failed )
     1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  integer, parameter :: l = nlevels - 1
+  integer :: l
   integer :: b, nboxes_before
   integer, parameter :: dims(3) = [ 5, 7, 11 ]
 
   type ( samr_t ) :: samr
 
-  call samr%init_with ( base_grid, nlevels, max_nboxes, ghost_cells )
+  samr%base_grid = base_grid
+  samr%nlevels = nlevels
+  samr%max_nboxes = max_nboxes
+  samr%ghost_cells = ghost_cells
+
+  do l = 0, samr%nlevels - 1
+    allocate( samr%levels(l)%boxes( samr%max_nboxes(l) ) )
+  end do
 
   nboxes_before = samr%levels(l)%nboxes
   failed = nboxes_before .ne. 0
   if ( failed ) return
 
+  l = nlevels - 1
   b = max_nboxes(l)
   call samr%init_box ( l, b, dims, ledges, redges )
 

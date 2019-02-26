@@ -14,7 +14,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 set ( deps
   rhyme_log
-  rhyme_samr
   rhyme_samr_bc
   rhyme_cfl
   rhyme_ideal_gas
@@ -22,6 +21,7 @@ set ( deps
   rhyme_iterative_riemann_solver
   rhyme_slope_limiter
   rhyme_chombo
+  rhyme_initial_condition
 )
 
 foreach ( dep ${deps} )

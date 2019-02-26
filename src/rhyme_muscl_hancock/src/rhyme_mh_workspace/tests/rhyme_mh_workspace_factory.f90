@@ -30,7 +30,10 @@ contains
 
     if ( mh_ws_factory_initialized ) return
 
-    call samr%init_with ( base_grid, nlevels, mh_ws_factory_max_nboxes, ghost_cells )
+    samr%base_grid = base_grid
+    samr%nlevels = nlevels
+    samr%max_nboxes = mh_ws_factory_max_nboxes
+    samr%ghost_cells = ghost_cells
 
     do l = 0, samr%nlevels
       samr%levels(l)%nboxes = mh_ws_factory_init_nboxes(l)
@@ -72,5 +75,4 @@ contains
     mh_ws_factory_initialized = .true.
 
   end subroutine rhyme_mh_workspace_factory_init
-
 end module rhyme_mh_workspace_factory

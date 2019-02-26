@@ -15,10 +15,10 @@ module rhyme_initial_condition
 
   type initial_condition_t
     integer :: type = icid%unset
-    integer :: base_grid(3) = icid%unset
     integer :: nlevels = icid%unset
+    integer :: base_grid(3) = icid%unset
     integer :: max_nboxes(0:samrid%max_nlevels) = 0
-    character ( len=2024 ) :: path = ''
+    character ( len=1024 ) :: path = ''
   contains
     procedure :: init => rhyme_initial_condition_init
     procedure :: init_simple => rhyme_initial_condition_init_simple
@@ -67,7 +67,6 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
     type ( log_t ), intent ( inout ) :: log
 
-    real ( kind=8 ) :: ref_factor
     integer :: l, lb(3), ub(3), stat
 
     if ( &
@@ -90,7 +89,7 @@ contains
 
     do l = 1, samr%nlevels - 1
       samr%levels(l)%dx = merge ( &
-        1.d0 / real( samr%base_grid, kind=8 ) / ref_factor(l)**l, &
+        1.d0 / real( samr%base_grid, kind=8 ) / 2.d0**l, &
         1.d0, &
         samr%base_grid .ne. 1 &
       )

@@ -27,6 +27,7 @@ set ( deps
   rhyme_param_parser
   rhyme_muscl_hancock
   rhyme_chombo
+  rhyme_initial_condition
   radamesh_spectrum
 )
 

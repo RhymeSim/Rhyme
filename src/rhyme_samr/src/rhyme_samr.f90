@@ -38,89 +38,10 @@ module rhyme_samr
     integer :: max_nboxes (0:samrid%max_nlevels)
     type ( samr_level_t ) :: levels(0:samrid%max_nlevels)
   contains
-    procedure :: init_with => rhyme_samr_init_with
-    procedure :: init => rhyme_samr_init
     procedure :: init_box => rhyme_samr_init_box
   end type samr_t
 
 contains
-
-  !> Initialize a Structured AMR
-  !> @param[in] base_grid Base grid dimensions
-  !> @param[in] n_levels Number of refinement levels (not including the zeroth level)
-  !> @param[in] max_nboxes Maximum number of boxes
-  !> @param[in] ghost_cells Ghost cells (responsible for boundary condition)
-  pure subroutine rhyme_samr_init_with ( this, base_grid, nlevels, max_nboxes, ghost_cells )
-    implicit none
-
-    class ( samr_t ), intent(inout) :: this
-    integer, intent(in) :: max_nboxes(0:samrid%max_nlevels)
-    integer, intent(in) :: base_grid(3), nlevels, ghost_cells(3)
-
-
-    if ( this%initialized ) return
-
-    this%nlevels = nlevels
-    this%max_nboxes(:) = max_nboxes(:)
-    this%ghost_cells(:) = ghost_cells(:)
-    this%base_grid(:) = base_grid(:)
-
-    call rhyme_samr_init ( this )
-
-  end subroutine rhyme_samr_init_with
-
-
-  pure subroutine rhyme_samr_init ( this )
-    implicit none
-
-    class ( samr_t ), intent(inout) :: this
-    integer :: l, lb(3), ub(3), stat
-    real ( kind=8 ) :: ref_factor ( 0:samrid%max_nlevels )
-
-    if ( this%initialized ) return
-
-
-    ref_factor = 2.d0
-    this%max_nboxes ( this%nlevels: ) = 0
-
-    this%levels%level = [ (l, l=0, 23) ]
-    this%levels%nboxes = 0
-    this%levels%refine_factor = ref_factor
-    this%levels%max_nboxes = this%max_nboxes
-
-
-    do l = 0, this%nlevels - 1
-      this%levels(l)%dx = merge ( &
-        1.d0 / real( this%base_grid, kind=8 ) / ref_factor(l)**l, &
-        1.d0, &
-        this%base_grid .ne. 1 &
-      )
-
-      allocate ( this%levels(l)%boxes( this%max_nboxes(l) ) )
-    end do
-
-    ! Initializing the first level
-    this%levels(0)%boxes(1)%dims = this%base_grid
-    this%levels(0)%boxes(1)%left_edge = 1
-    this%levels(0)%boxes(1)%right_edge = this%base_grid
-
-    lb = -this%ghost_cells + 1
-    ub = this%base_grid + this%ghost_cells
-
-    allocate ( this%levels(0)%boxes(1)%hydro ( &
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-    ), stat=stat )
-
-    allocate ( this%levels(0)%boxes(1)%flags ( &
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-    ), stat=stat )
-
-    this%levels(0)%nboxes = 1
-
-    this%initialized = .true.
-  end subroutine rhyme_samr_init
-
-
   subroutine rhyme_samr_init_box ( this, l, b, dims, ledges, redges )
     ! NB: This subroutine allocates a box at a given location and increments
     !     the number of boxes on that level. Make sure all the boxes between

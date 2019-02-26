@@ -4,14 +4,15 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
   implicit none
 
   integer :: i, actual_grid_size(3) = base_grid + ( 2 * ghost_cells )
+  type ( samr_t ) :: samr, samr1d, samr_uni
+  type ( log_t ) :: log
 
 
   ! SAMR test
-  call samr%init
+  call simple%init( samr, log )
 
   failed = &
   samr%nlevels .ne. nlevels &
-  .or. .not. samr%initialized &
   .or. any ( samr%max_nboxes .ne. max_nboxes ) &
   .or. any ( samr%base_grid .ne. base_grid ) &
   .or. any ( samr%ghost_cells .ne. ghost_cells ) &
@@ -28,7 +29,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
 
   ! 1D SAMR test
-  call samr1d%init
+  call simple1d%init( samr, log )
 
   failed = &
   any ( abs ( samr1d%levels(1)%dx - [ 1.d0 / ( 2.d0 * base_grid_1d(1)) , 1.d0, 1.d0] ) > epsilon(0.d0) ) &
@@ -38,7 +39,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
 
   ! Uniform SAMR test
-  call samr_uni%init
+  call simple_uni%init( samr, log )
 
   failed = &
   samr_uni%max_nboxes(0) .ne. 1 &

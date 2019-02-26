@@ -21,8 +21,11 @@ logical function rhyme_cfl_dt_test () result (failed)
 
 
   call ig%init_with ( igid%diatomic )
-  call samr%init_with ( [4, 8, 1], 1, max_nboxes, [2,2,0] )
 
+  samr%base_grid = [ 4, 8, 1 ]
+  samr%nlevels = 1
+  samr%max_nboxes = max_nboxes
+  samr%ghost_cells = [ 2, 2, 0 ]
 
   do k = 1, 1
     do j = 1, 8

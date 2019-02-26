@@ -27,14 +27,16 @@ contains
     integer :: l, b, i, j, k, uid, lb(3), ub(3), dims(3)
     real ( kind=8 ) :: val
 
-    call samr%init_with ( &
-      base_grid, &
-      nlevels, &
-      chombo_factory_max_nboxes, &
-      chombo_factory_ghost_cells &
-    )
+    samr%base_grid = base_grid
+    samr%nlevels = nlevels
+    samr%max_nboxes = chombo_factory_max_nboxes
+    samr%ghost_cells = chombo_factory_ghost_cells
 
     do l = 0, samr%nlevels - 1
+      if ( .not. allocated( samr%levels(l)%boxes ) ) then
+        allocate( samr%levels(l)%boxes( samr%max_nboxes(l) ) )
+      end if
+
       do b = 1, chombo_factory_init_nboxes(l)
 
         if ( .not. allocated( samr%levels(l)%boxes(b)%hydro ) ) then

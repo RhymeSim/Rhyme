@@ -16,7 +16,7 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
   integer, parameter :: xl(3) = [ 4, 6, 8 ]
   integer, parameter :: l(3) = [ 4, 2, 1 ]
 
-  integer :: tot_nboxes(0:23)
+  integer :: max_nboxes(0:23)
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
@@ -27,9 +27,12 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
 
   call ig%init_with ( igid%diatomic )
 
-  tot_nboxes(0) = 1
+  max_nboxes(0) = 1
 
-  call samr%init_with ( g, 1, tot_nboxes, ghost )
+  samr%base_grid = g
+  samr%nlevels = 1
+  samr%max_nboxes = max_nboxes
+  samr%ghost_cells = ghost
 
   draw%canvas%w = [ rho, u, v, w, p ]
 

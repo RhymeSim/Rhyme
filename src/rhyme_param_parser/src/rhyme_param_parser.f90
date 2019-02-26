@@ -1,6 +1,6 @@
 module rhyme_param_parser
   use rhyme_log
-  use rhyme_samr
+  use rhyme_initial_condition
   use rhyme_samr_bc
   use rhyme_cfl
   use rhyme_ideal_gas
@@ -14,13 +14,13 @@ module rhyme_param_parser
 contains
 
   logical function parse_params ( &
-    param_file, log, samr, bc, cfl, ig, draw, irs, sl, chombo ) &
+    param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo ) &
   result ( passed )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
     type ( log_t ), intent ( out ) :: log
-    type ( samr_t ), intent ( out ) :: samr
+    type ( initial_condition_t ), intent ( out ) :: ic
     type ( samr_bc_t ), intent ( out ) :: bc
     type ( cfl_t ), intent ( out ) :: cfl
     type ( ideal_gas_t ), intent ( out ) :: ig
@@ -29,7 +29,7 @@ contains
     type ( slope_limiter_t ), intent ( out ) :: sl
     type ( chombo_t ), intent ( out ) :: chombo
 
-    integer :: i, ios
+    integer :: ios
     character(len=1024) :: key, op, str
     type ( shape_t ), pointer :: shape
 
@@ -49,16 +49,16 @@ contains
       select case ( adjustl(trim(key)) )
 
         ! Structured AMR
-      case ( "base_grid" )
-        read (1, *) key, op, samr%base_grid(1:3)
-        call log%write_kw1d( 'base_grid', samr%base_grid )
-      case ( "nlevels" )
-        read (1, *) key, op, samr%nlevels
-        call log%write_kw( 'nlevels', samr%nlevels )
+      case ( "ic_grid" )
+        read (1, *) key, op, ic%base_grid(1:3)
+        call log%write_kw1d( 'ic_grid', ic%base_grid )
+      case ( "ic_nlevels" )
+        read (1, *) key, op, ic%nlevels
+        call log%write_kw( 'ic_nlevels', ic%nlevels )
       case ( "max_nboxes" )
-        read (1, *) key, op, samr%max_nboxes( 0:samr%nlevels-1 )
-        samr%max_nboxes( samr%nlevels: ) = 0
-        call log%write_kw1d( 'max_nboxes', samr%max_nboxes )
+        ic%max_nboxes = 0
+        read (1, *) key, op, ic%max_nboxes( 0:ic%nlevels - 1 )
+        call log%write_kw1d( 'max_nboxes', ic%max_nboxes )
 
         ! Boundary Condition
       case ( "left_bc" )
@@ -225,14 +225,6 @@ contains
     end do
 
     close (1)
-
-    do i = 1, 3
-      if ( samr%base_grid(i) .gt. 1 ) then
-        samr%ghost_cells(i) = 2
-      else
-        samr%ghost_cells(i) = 0
-      end if
-    end do
 
     passed = .true.
 

@@ -9,7 +9,7 @@ module rhyme_samr_bc_factory
   integer, parameter :: nlevels = 3
   integer, parameter :: nboxes = 11
   integer, parameter :: ghost_cells(3) = [ 2, 2, 2 ]
-  integer, parameter :: tot_nboxes(0:23) = [ &
+  integer, parameter :: max_nboxes(0:23) = [ &
     1, 10, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
@@ -33,7 +33,10 @@ contains
 
     if ( initialized ) return
 
-    call samr%init_with ( base_grid, nlevels, tot_nboxes, ghost_cells )
+    samr%base_grid = base_grid
+    samr%nlevels = nlevels
+    samr%max_nboxes = max_nboxes
+    samr%ghost_cells = ghost_cells
 
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
