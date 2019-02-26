@@ -1,64 +1,64 @@
-module rhyme_initial_condition
+module rhyme_drawing
   use rhyme_samr
   use rhyme_hydro_base
   use rhyme_ideal_gas
 
   implicit none
 
-  type ic_indices_t
+  type drawing_indices_t
     integer :: grad_x = -1, grad_y = -2, grad_z = -3, grad_r = -4 ! Filling types
     integer :: uniform = 0
     integer :: linear = 1, cubic = 2 ! Gradient/transition types
     integer :: rect = 10, circle = 11 ! Shapes
     integer :: uniform_bg = 20, transparent_bg = 21
     integer :: unset = -1234 ! Unset
-  end type ic_indices_t
+  end type drawing_indices_t
 
-  type ( ic_indices_t ), parameter :: icid = ic_indices_t ()
+  type ( drawing_indices_t ), parameter :: drid = drawing_indices_t ()
 
 
-  type ic_transition_t
+  type shape_transition_t
     integer :: type
     real(kind=8) :: width_px
-  end type ic_transition_t
+  end type shape_transition_t
 
 
-  type ic_filling_t
+  type shape_filling_t
     integer :: type
     type ( hydro_primitive_t ) :: states(2)
-  end type ic_filling_t
+  end type shape_filling_t
 
 
-  type ic_shape_t
+  type shape_t
     integer :: type ! Shape
     integer :: xl(3) = 0, length(3) = 0 ! Rectangle (in pixel unit)
     real(kind=8) :: x0(3) = 0.d0, r = 0.d0 ! Circle (in pixel unit)
-    type ( ic_filling_t ) :: fill
-    type ( ic_transition_t ) :: trans
-    type ( ic_shape_t ), pointer :: next => null()
-  end type ic_shape_t
+    type ( shape_filling_t ) :: fill
+    type ( shape_transition_t ) :: trans
+    type ( shape_t ), pointer :: next => null()
+  end type shape_t
 
 
-  type initial_condition_t
-    integer :: type = icid%uniform_bg
+  type drawing_t
+    integer :: type = drid%uniform_bg
     type ( hydro_primitive_t ) :: background
-    type ( ic_shape_t ), pointer :: shapes => null()
+    type ( shape_t ), pointer :: shapes => null()
     logical :: initialized
   contains
-    procedure :: new_shape => rhyme_initial_condition_new_shape
-    procedure :: apply => rhyme_initial_condition_apply
-  end type initial_condition_t
+    procedure :: new_shape => rhyme_drawing_new_shape
+    procedure :: apply => rhyme_drawing_apply
+  end type drawing_t
 
 contains
 
 
-  function rhyme_initial_condition_new_shape ( this, shape_type ) result ( shape )
+  function rhyme_drawing_new_shape ( this, shape_type ) result ( shape )
     implicit none
 
-    class ( initial_condition_t ), intent(inout) :: this
+    class ( drawing_t ), intent(inout) :: this
     integer, intent(in) :: shape_type
 
-    type ( ic_shape_t ), pointer :: shape
+    type ( shape_t ), pointer :: shape
 
     shape => this%shapes
 
@@ -75,25 +75,25 @@ contains
     end if
 
     shape%type = shape_type
-    shape%fill%type = icid%unset
-    shape%trans%type = icid%unset
-  end function rhyme_initial_condition_new_shape
+    shape%fill%type = drid%unset
+    shape%trans%type = drid%unset
+  end function rhyme_drawing_new_shape
 
 
-  subroutine rhyme_initial_condition_apply ( this, ig, samr )
+  subroutine rhyme_drawing_apply ( this, ig, samr )
     implicit none
 
-    class ( initial_condition_t ), intent(in) :: this
+    class ( drawing_t ), intent(in) :: this
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(inout) :: samr
 
     integer :: i, j, k
     type ( hydro_conserved_t ) :: bg, h(2)
-    type ( ic_shape_t ), pointer :: shape
+    type ( shape_t ), pointer :: shape
 
 
     ! No action for transparent
-    if ( this%type .eq. icid%uniform_bg ) then
+    if ( this%type .eq. drid%uniform_bg ) then
       call ig%prim_to_cons ( this%background, bg )
 
       do k = 1, samr%levels(0)%boxes(1)%dims(3)
@@ -111,8 +111,8 @@ contains
       call ig%prim_to_cons ( shape%fill%states(1), h(1))
       call ig%prim_to_cons ( shape%fill%states(2), h(2))
 
-      if ( shape%type .eq. icid%rect ) then
-        if ( shape%fill%type .eq. icid%uniform) then
+      if ( shape%type .eq. drid%rect ) then
+        if ( shape%fill%type .eq. drid%uniform) then
 
           do k = shape%xl(3), shape%xl(3) + shape%length(3) - 1
             do j = shape%xl(2), shape%xl(2) + shape%length(2) - 1
@@ -127,5 +127,5 @@ contains
 
       shape => shape%next
     end do
-  end subroutine rhyme_initial_condition_apply
-end module rhyme_initial_condition
+  end subroutine rhyme_drawing_apply
+end module rhyme_drawing

@@ -8,14 +8,14 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
-  type ( initial_condition_t ) :: ic
+  type ( drawing_t ) :: draw
   type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( chombo_t ) :: chombo
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  failed = .not. parse_params ( param_file, log, samr, bc, cfl, ig, ic, irs, sl, chombo )
+  failed = .not. parse_params ( param_file, log, samr, bc, cfl, ig, draw, irs, sl, chombo )
   if ( failed ) return
 
   ! Structured AMR
@@ -42,23 +42,23 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   ! Initial Condition
   failed = &
-  any ( abs ( ic%background%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
-  .or. ic%type .ne. icid%uniform_bg &
-  .or. ic%shapes%type .ne. icid%rect &
-  .or. any ( ic%shapes%xl .ne. 1 ) &
-  .or. any ( ic%shapes%length .ne. [ 64, 128, 1 ] ) &
-  .or. ic%shapes%trans%type .ne. icid%linear &
-  .or. abs ( ic%shapes%trans%width_px - 0.d0 ) > epsilon(0.d0) &
-  .or. ic%shapes%fill%type .ne. icid%uniform &
-  .or. any ( abs ( ic%shapes%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. ic%shapes%next%type .ne. icid%circle &
-  .or. any ( abs ( ic%shapes%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
-  .or. abs ( ic%shapes%next%r - 2.34d0 ) > epsilon(0.d0) &
-  .or. ic%shapes%next%trans%type .ne. icid%cubic &
-  .or. abs ( ic%shapes%next%trans%width_px - 3.d0 ) > epsilon(0.d0) &
-  .or. ic%shapes%next%fill%type .ne. icid%grad_y &
-  .or. any ( abs ( ic%shapes%next%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. any ( abs ( ic%shapes%next%fill%states(2)%w - [ 2.d0, 3.d0, 4.d0, 5.d0, 6.d0 ] ) > epsilon(0.d0) )
+  any ( abs ( draw%background%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
+  .or. draw%type .ne. drid%uniform_bg &
+  .or. draw%shapes%type .ne. drid%rect &
+  .or. any ( draw%shapes%xl .ne. 1 ) &
+  .or. any ( draw%shapes%length .ne. [ 64, 128, 1 ] ) &
+  .or. draw%shapes%trans%type .ne. drid%linear &
+  .or. abs ( draw%shapes%trans%width_px - 0.d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%fill%type .ne. drid%uniform &
+  .or. any ( abs ( draw%shapes%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. draw%shapes%next%type .ne. drid%circle &
+  .or. any ( abs ( draw%shapes%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
+  .or. abs ( draw%shapes%next%r - 2.34d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%next%trans%type .ne. drid%cubic &
+  .or. abs ( draw%shapes%next%trans%width_px - 3.d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%next%fill%type .ne. drid%grad_y &
+  .or. any ( abs ( draw%shapes%next%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. any ( abs ( draw%shapes%next%fill%states(2)%w - [ 2.d0, 3.d0, 4.d0, 5.d0, 6.d0 ] ) > epsilon(0.d0) )
   if ( failed ) return
 
   ! Iterative Riemann Solver

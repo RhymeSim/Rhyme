@@ -18,7 +18,7 @@ set ( deps
   rhyme_samr_bc
   rhyme_cfl
   rhyme_ideal_gas
-  rhyme_initial_condition
+  rhyme_drawing
   rhyme_iterative_riemann_solver
   rhyme_slope_limiter
   rhyme_chombo

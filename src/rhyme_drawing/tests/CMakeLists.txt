@@ -1,4 +1,4 @@
-project ( rhyme_initial_condition_tests )
+project ( rhyme_drawing_tests )
 
 enable_language ( C Fortran )
 enable_testing ()
@@ -21,7 +21,7 @@ create_test_sourcelist ( _ main.c ${test_libs} )
 
 add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} )
 add_executable ( ${PROJECT_NAME} main.c )
-target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_initial_condition )
+target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_drawing )
 
 
 set ( idx 0 )

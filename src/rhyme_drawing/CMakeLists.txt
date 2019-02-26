@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_initial_condition )
+project ( rhyme_drawing )
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra -std=f2008 )
 
@@ -25,7 +25,7 @@ foreach ( dep ${deps} )
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_initial_condition.f90 )
+add_library ( ${PROJECT_NAME} STATIC src/rhyme_drawing.f90 )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
 
 

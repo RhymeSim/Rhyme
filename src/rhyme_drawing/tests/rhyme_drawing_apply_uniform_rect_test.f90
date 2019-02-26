@@ -1,5 +1,5 @@
-logical function rhyme_initial_condition_apply_uniform_rect_test () result (failed)
-  use rhyme_initial_condition
+logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
+  use rhyme_drawing
 
   implicit none
 
@@ -18,8 +18,8 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
 
   integer :: tot_nboxes(0:23)
 
-  type ( initial_condition_t ) :: ic
-  type ( ic_shape_t ), pointer :: shape
+  type ( drawing_t ) :: draw
+  type ( shape_t ), pointer :: shape
   type ( samr_t ) :: samr
   type ( ideal_gas_t ) :: ig
 
@@ -31,16 +31,16 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
 
   call samr%init_with ( g, 1, tot_nboxes, ghost )
 
-  ic%background%w = [ rho, u, v, w, p ]
+  draw%background%w = [ rho, u, v, w, p ]
 
-  shape => ic%new_shape ( icid%rect )
+  shape => draw%new_shape ( drid%rect )
 
   shape%xl = xl
   shape%length = l
-  shape%fill%type = icid%uniform
+  shape%fill%type = drid%uniform
   shape%fill%states(1)%w = [ delta * rho, u, v, w, p ]
 
-  call ic%apply ( ig, samr )
+  call draw%apply ( ig, samr )
 
 
   do k = xl(3), xl(3) + l(3) - 1
@@ -74,4 +74,4 @@ logical function rhyme_initial_condition_apply_uniform_rect_test () result (fail
     end do
   end do
 
-end function rhyme_initial_condition_apply_uniform_rect_test
+end function rhyme_drawing_apply_uniform_rect_test
