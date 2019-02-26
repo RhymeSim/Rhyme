@@ -43,6 +43,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   ! Initial Condition
   failed = &
   any ( abs ( ic%background%w - [.125d0, 0.d0, 0.d0, 0.d0, .1d0] ) > epsilon(0.d0) ) &
+  .or. ic%type .ne. icid%uniform_bg &
   .or. ic%shapes%type .ne. icid%rect &
   .or. any ( ic%shapes%xl .ne. 1 ) &
   .or. any ( ic%shapes%length .ne. [ 64, 128, 1 ] ) &

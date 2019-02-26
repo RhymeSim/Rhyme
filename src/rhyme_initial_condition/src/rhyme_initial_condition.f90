@@ -6,9 +6,11 @@ module rhyme_initial_condition
   implicit none
 
   type ic_indices_t
-    integer :: rect = 10, circle = 11 ! Shapes
+    integer :: grad_x = -1, grad_y = -2, grad_z = -3, grad_r = -4 ! Filling types
+    integer :: uniform = 0
     integer :: linear = 1, cubic = 2 ! Gradient/transition types
-    integer :: uniform = 0, grad_x = -1, grad_y = -2, grad_z = -3, grad_r = -4 ! Filling types
+    integer :: rect = 10, circle = 11 ! Shapes
+    integer :: uniform_bg = 20, transparent_bg = 21
     integer :: unset = -1234 ! Unset
   end type ic_indices_t
 
@@ -38,6 +40,7 @@ module rhyme_initial_condition
 
 
   type initial_condition_t
+    integer :: type = icid%uniform_bg
     type ( hydro_primitive_t ) :: background
     type ( ic_shape_t ), pointer :: shapes => null()
     logical :: initialized
@@ -88,15 +91,19 @@ contains
     type ( hydro_conserved_t ) :: bg, h(2)
     type ( ic_shape_t ), pointer :: shape
 
-    call ig%prim_to_cons ( this%background, bg )
 
-    do k = 1, samr%levels(0)%boxes(1)%dims(3)
-      do j = 1, samr%levels(0)%boxes(1)%dims(2)
-        do i = 1, samr%levels(0)%boxes(1)%dims(1)
-          samr%levels(0)%boxes(1)%hydro(i,j,k)%u = bg%u
+    ! No action for transparent
+    if ( this%type .eq. icid%uniform_bg ) then
+      call ig%prim_to_cons ( this%background, bg )
+
+      do k = 1, samr%levels(0)%boxes(1)%dims(3)
+        do j = 1, samr%levels(0)%boxes(1)%dims(2)
+          do i = 1, samr%levels(0)%boxes(1)%dims(1)
+            samr%levels(0)%boxes(1)%hydro(i,j,k)%u = bg%u
+          end do
         end do
       end do
-    end do
+    end if
 
     shape => this%shapes
 

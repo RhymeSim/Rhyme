@@ -106,21 +106,34 @@ contains
 
         ! Initial Condition
       case ( "background" )
-        read (1, *) key, op, ic%background%w(hyid%rho:hyid%p)
-        call log%write_kw1d( 'background', ic%background%w )
+        read (1, *) key, op, str
+        call log%write_kw( 'background_type', str )
+        backspace(1)
+
+        if ( trim(str) .eq. 'uniform' ) then
+          ic%type = icid%uniform_bg
+          read (1, *) key, op, str, ic%background%w(hyid%rho:hyid%p)
+          call log%write_kw1d( 'background_uniform', ic%background%w )
+        else if ( trim(str) .eq. 'transparent' ) then
+          ic%type = icid%transparent_bg
+          call log%write( 'Using transparent background' )
+        else
+          call log%warn_kw( 'Unsuported background', 'bakcground_type', str )
+        end if
+
+
 
       case ( "shape" )
         read (1, *) key, op, str
         call log%write_kw( 'shape', str )
+        backspace (1)
 
         if ( trim(str) .eq. "rect" ) then
-          backspace (1)
           shape => ic%new_shape ( icid%rect )
           read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
           call log%write_kw1d( 'rect_left_edge', shape%xl )
           call log%write_kw1d( 'rect_length', shape%length )
         else if ( trim(str) .eq. "circle" ) then
-          backspace (1)
           shape => ic%new_shape ( icid%circle )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
           call log%write_kw1d( 'circle_origin', shape%x0 )
