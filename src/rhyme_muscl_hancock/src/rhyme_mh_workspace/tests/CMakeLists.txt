@@ -15,11 +15,19 @@ foreach ( test_file ${test_files} )
   list ( APPEND test_libs ${test_lib}_ )
 endforeach ( test_file )
 
-
 create_test_sourcelist ( _ main.c ${test_libs} )
 
 
-add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} )
+set ( factories
+  rhyme_samr
+)
+
+foreach ( factory ${factories} )
+  list ( APPEND ext_factories ../../../../${factory}/tests/${factory}_factory.f90 )
+endforeach ( factory )
+
+
+add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} ${ext_factories} )
 add_executable ( ${PROJECT_NAME} main.c )
 target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_mh_workspace )
 

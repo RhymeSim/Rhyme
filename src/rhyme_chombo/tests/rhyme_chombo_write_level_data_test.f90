@@ -7,8 +7,8 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   type ( chombo_t ) :: ch
 
   ! Chombo filename
-  character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_level_data"
-  character ( len=1024 ) :: filename = " "
+  character ( len=1024 ), parameter :: nickname = 'rhyme_chombo_write_level_data'
+  character ( len=1024 ) :: filename = ''
 
   ! variables
   integer :: l, b, length, bdims(3), offset, lb, ub
@@ -17,6 +17,7 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
 
   call rhyme_chombo_factory_init
+
 
   ! Crete chombo file
   ch%nickname = nickname

@@ -15,7 +15,6 @@ foreach ( test_file ${test_files} )
   list ( APPEND test_libs ${test_lib}_ )
 endforeach ( test_file )
 
-
 create_test_sourcelist ( _ main.c ${test_libs} )
 
 

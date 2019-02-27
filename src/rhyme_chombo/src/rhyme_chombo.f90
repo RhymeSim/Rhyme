@@ -163,7 +163,6 @@ contains
 
     if ( .not. this%is_opened ) return
 
-
     offset = 1
     length = 0
 

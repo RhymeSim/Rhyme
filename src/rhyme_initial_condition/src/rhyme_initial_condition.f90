@@ -69,8 +69,7 @@ contains
 
     integer :: l, lb(3), ub(3), stat
 
-    if ( &
-      any( this%base_grid .eq. icid%unset ) &
+    if ( any( this%base_grid .eq. icid%unset ) &
       .or. this%nlevels .eq. icid%unset ) then
       call log%err( 'ic_base_grid or ic_nlevels is not set' )
       return
@@ -87,7 +86,7 @@ contains
     samr%levels%refine_factor = 2.d0
     samr%levels%max_nboxes = samr%max_nboxes
 
-    do l = 1, samr%nlevels - 1
+    do l = 0, samr%nlevels - 1
       samr%levels(l)%dx = merge ( &
         1.d0 / real( samr%base_grid, kind=8 ) / 2.d0**l, &
         1.d0, &

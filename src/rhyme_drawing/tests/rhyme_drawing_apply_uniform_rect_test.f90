@@ -1,4 +1,5 @@
 logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
+  use rhyme_samr_factory
   use rhyme_drawing
 
   implicit none
@@ -11,28 +12,29 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
   real(kind=8), parameter :: e_tot = .5d0 * rho * (u**2 + v**2 + w**2) + p / .4d0
   real(kind=8), parameter :: delta = 6.78d0 ! Over density
 
-  integer, parameter :: g(3) = [ 8, 10, 10 ]
-  integer, parameter :: ghost(3) = [ 0, 0, 0 ]
+  integer, parameter :: nlevels = 1
+  integer, parameter :: base_grid(3) = [ 8, 10, 10 ]
+  integer, parameter :: ghost_cells(3) = [ 0, 0, 0 ]
+  integer, parameter :: max_nboxes( 0:samrid%max_nlevels ) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
+  integer, parameter :: init_nboxes( 0:samrid%max_nlevels ) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
   integer, parameter :: xl(3) = [ 4, 6, 8 ]
   integer, parameter :: l(3) = [ 4, 2, 1 ]
 
-  integer :: max_nboxes(0:23)
-
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
-  type ( samr_t ) :: samr
   type ( ideal_gas_t ) :: ig
+  type ( samr_t ) :: samr
 
-  integer :: i, j, k
+  integer :: i, j, k, g(3)
 
   call ig%init_with ( igid%diatomic )
-
-  max_nboxes(0) = 1
-
-  samr%base_grid = g
-  samr%nlevels = 1
-  samr%max_nboxes = max_nboxes
-  samr%ghost_cells = ghost
+  call rhyme_samr_factory_fill ( &
+    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
+  )
 
   draw%canvas%w = [ rho, u, v, w, p ]
 
@@ -45,6 +47,7 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
 
   call draw%apply ( ig, samr )
 
+  g = base_grid
 
   do k = xl(3), xl(3) + l(3) - 1
     do j = xl(2), xl(2) + l(2) - 1
@@ -76,5 +79,4 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
       end do
     end do
   end do
-
 end function rhyme_drawing_apply_uniform_rect_test

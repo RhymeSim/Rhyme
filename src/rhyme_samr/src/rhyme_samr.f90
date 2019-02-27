@@ -56,7 +56,7 @@ contains
 
     integer :: lb(3), ub(3)
 
-    lb = - this%ghost_cells + 1
+    lb = -this%ghost_cells + 1
     ub = dims + this%ghost_cells
 
     allocate ( this%levels(l)%boxes(b)%flags ( &

@@ -367,7 +367,7 @@ contains
 
     call this%open_logfile
 
-    message = ': [WARN] '//adjustl(trim(msg))//', '//trim(k)
+    message = '[WARN] '//adjustl(trim(msg))//', '//trim(k)
 
     write ( stdout,* ) trim( this%tas( color=tc%yl ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
     write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
@@ -420,7 +420,7 @@ contains
 
     call this%open_logfile
 
-    message = ': [ERROR] '//adjustl(trim(msg))//', '//trim(k)
+    message = '[ERROR] '//adjustl(trim(msg))//', '//trim(k)
 
     write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
     write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
@@ -476,7 +476,7 @@ contains
 
     call this%open_logfile
 
-    message = ': [ERROR] '//adjustl(trim(msg))//', '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    message = '[ERROR] '//adjustl(trim(msg))//', '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
 
     write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim( message )
     write ( this%logfile_unit,* ) trim( this%tas() )//trim( message )
