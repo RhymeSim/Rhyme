@@ -82,5 +82,4 @@ contains
 
     call h5aclose_f ( attr_id, hdferr )
   end subroutine read_comp_array_attr
-
 end function rhyme_hdf5_util_write_group_comp_1d_array_attr_test

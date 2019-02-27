@@ -24,8 +24,10 @@ module rhyme_hdf5_util
     procedure :: write_group_comp_1d_array_attr => rhyme_hdf5_util_write_group_compound_1d_array_attribute
     procedure :: write_table => rhyme_hdf5_util_write_table
     procedure :: read_table => rhyme_hdf5_util_read_table
+    procedure :: get_table_size => rhyme_hdf5_util_get_table_size
     procedure :: read_group_attr => rhyme_hdf5_util_read_group_attribute
     procedure :: read_group_1d_array_attr => rhyme_hdf5_util_read_group_1d_array_attribute
+    procedure :: read_group_comp_1d_array_attr => rhyme_hdf5_util_read_group_compound_1d_array_attribute
     procedure :: write_1d_dataset => rhyme_hdf5_util_write_1d_dataset
     procedure :: write_2d_dataset => rhyme_hdf5_util_write_2d_dataset
     procedure :: read_1d_dataset => rhyme_hdf5_util_read_1d_dataset
@@ -202,6 +204,59 @@ contains
   end subroutine rhyme_hdf5_util_read_group_1d_array_attribute
 
 
+  subroutine rhyme_hdf5_util_read_group_compound_1d_array_attribute ( this, where, key, headers, buffer )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent ( in ) :: this
+    character ( len=* ), intent ( in ) :: where, key
+    character (len=*), dimension(:), intent(in) :: headers
+    class (*), intent ( out ) :: buffer(:)
+
+    integer ( hid_t ) :: group_id, attr_id, comp_id, type_id
+    integer ( size_t ) :: element_size, tot_size, offset
+    integer ( hsize_t ) :: dims(1) = 1
+    integer :: hdferr, i
+
+    call h5gopen_f ( this%fid, trim(where), group_id, hdferr )
+
+    select type ( buf => buffer)
+    type is ( integer )
+      call h5tcopy_f ( H5T_NATIVE_INTEGER, type_id, hdferr )
+    type is ( real ( kind = 4 ) )
+      call h5tcopy_f ( H5T_NATIVE_REAL, type_id, hdferr )
+    type is ( real ( kind = 8 ) )
+      call h5tcopy_f ( H5T_NATIVE_DOUBLE, type_id, hdferr )
+    end select
+
+    call h5aopen_f ( group_id, trim(key), attr_id, hdferr )
+
+    call h5tget_size_f ( type_id, element_size, hdferr )
+    tot_size = size( buffer ) * element_size
+    call h5tcreate_f ( H5T_COMPOUND_F , tot_size, comp_id, hdferr )
+
+    offset = 0
+    do i = 1, size( buffer )
+      call h5tinsert_f ( comp_id, trim( headers(i) ), offset, type_id, hdferr )
+      offset = offset + element_size
+    end do
+
+    dims = int( size( buffer ), kind=hsize_t )
+
+    select type ( buf => buffer )
+    type is ( integer )
+      call h5aread_f ( attr_id, comp_id, buf, dims, hdferr)
+    type is ( real ( kind = 4 ) )
+      call h5aread_f ( attr_id, comp_id, buf, dims, hdferr)
+    type is ( real ( kind = 8 ) )
+      call h5aread_f ( attr_id, comp_id, buf, dims, hdferr)
+    end select
+
+    call h5tclose_f ( comp_id, hdferr )
+    call h5aclose_f ( attr_id, hdferr )
+    call h5gclose_f ( group_id, hdferr )
+  end subroutine rhyme_hdf5_util_read_group_compound_1d_array_attribute
+
+
   subroutine rhyme_hdf5_util_write_group_compound_1d_array_attribute ( this, where, key, keys, values )
     implicit none
 
@@ -356,26 +411,21 @@ contains
   end subroutine rhyme_hdf5_util_write_table
 
 
-  subroutine rhyme_hdf5_util_read_table ( this, where, headers, buffer )
+  subroutine rhyme_hdf5_util_read_table ( this, where, key, headers, buffer )
     implicit none
 
     class ( rhyme_hdf5_util_t ), intent ( in ) :: this
-    class (*), intent ( in ) :: where
+    character ( len=* ), intent ( in ) :: where, key
     character ( len=8 ), intent ( in ) :: headers(:)
     class (*), dimension(:,:), intent ( out ) :: buffer
 
-    integer ( kind=hid_t ) :: type_id, table_id, dset_id
+    integer ( kind=hid_t ) :: type_id, table_id, group_id, dset_id
     integer ( kind=hsize_t ) :: type_size, row_size, offset, dims(2)
     integer :: h, hdferr
 
 
-    select type ( w => where )
-    type is ( character (*) )
-      call h5dopen_f ( this%fid, trim(w), dset_id, hdferr )
-    type is ( integer ( hid_t ) )
-      dset_id = w
-    end select
-
+    call h5gopen_f ( this%fid, trim(where), group_id, hdferr )
+    call h5dopen_f ( group_id, trim(key), dset_id, hdferr )
 
     select type ( buf => buffer )
     type is ( integer )
@@ -397,7 +447,6 @@ contains
       offset = offset + type_size
     end do
 
-
     dims = int( size( buffer ), kind=hsize_t )
 
     select type ( buf => buffer )
@@ -411,11 +460,31 @@ contains
 
     call h5tclose_f ( table_id, hdferr )
 
-    select type ( w => where )
-    type is ( character (*) )
-      call h5dclose_f ( dset_id, hdferr )
-    end select
+    call h5dclose_f ( dset_id, hdferr )
+    call h5gclose_f ( group_id, hdferr )
   end subroutine rhyme_hdf5_util_read_table
+
+
+  function rhyme_hdf5_util_get_table_size ( this, where ) result ( table_size )
+    implicit none
+
+    class ( rhyme_hdf5_util_t ), intent ( in ) :: this
+    character ( len=* ), intent ( in ) :: where
+    integer :: table_size
+
+    integer ( kind=hsize_t ) :: tsize(1)
+    integer ( kind=hsize_t ) :: max_tsize(1)
+    integer ( kind=hid_t ) :: dset_id, space_id
+    integer :: hdferr
+
+    call h5dopen_f ( this%fid, trim(where), dset_id, hdferr )
+    call h5dget_space_f ( dset_id, space_id, hdferr )
+
+    call h5sget_simple_extent_dims_f ( space_id, tsize, max_tsize, hdferr )
+    table_size = int( tsize(1) )
+
+    call h5dclose_f ( dset_id, hdferr )
+  end function rhyme_hdf5_util_get_table_size
 
 
   subroutine rhyme_hdf5_util_open ( this, path )

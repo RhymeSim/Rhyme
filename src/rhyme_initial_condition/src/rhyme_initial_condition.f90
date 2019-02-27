@@ -8,6 +8,10 @@ module rhyme_initial_condition
   type initial_condition_indices_t
     integer :: unset = -1
     integer :: simple = 1, load = 2
+    character ( len=8 ), dimension(3) :: prob_domain_headers = [ &
+      'hi_i    ', 'hi_j    ', 'hi_k    ' ]
+    character ( len=8 ) :: boxes_headers(6) = [ &
+      'lo_i    ', 'lo_j    ', 'lo_k    ', 'hi_i    ', 'hi_j    ', 'hi_k    ' ]
   end type initial_condition_indices_t
 
   type ( initial_condition_indices_t ), parameter :: icid = initial_condition_indices_t ()
@@ -128,7 +132,8 @@ contains
     type ( log_t ), intent ( inout ) :: log
 
     type ( chombo_t ) :: chombo
-    integer :: l
+    integer :: l, b, boxes_size, lb(3), ub(3), prob_domain(3)
+    integer, allocatable :: boxes( :, : )
     character ( len=16 ) :: level_name
     logical :: exist
 
@@ -140,14 +145,50 @@ contains
 
     call chombo%open( this%path )
 
-    call chombo%read_group_attr( '/', 'num_level', samr%nlevels )
-    call chombo%read_group_1d_array_attr( '/', 'ProblemDomain', samr%base_grid )
+    call chombo%read_group_attr( '/', 'num_levels', samr%nlevels )
+    call chombo%read_group_comp_1d_array_attr( &
+      'level_0', 'prob_domain', icid%prob_domain_headers, prob_domain )
+    samr%base_grid = prob_domain + 1
+    samr%ghost_cells = merge( 2, 0, samr%base_grid > 1 )
+    samr%max_nboxes = this%max_nboxes
+
+    lb = -samr%ghost_cells + 1
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
 
-      ! TODO: open levels, read boxes, allocate and load samr boxes
+      samr%levels(l)%max_nboxes = this%max_nboxes(l)
+
+      boxes_size = chombo%get_table_size( trim(level_name)//'/boxes' )
+      allocate( boxes( boxes_size, 6 ) )
+
+      call chombo%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
+
+      if ( boxes_size > samr%levels(l)%max_nboxes ) then
+        call log%err_kw( 'Number of boxes is less than maximum available', &
+          boxes_size, samr%levels(l)%max_nboxes, '>' )
+        return
+      end if
+
+      allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
+
+      do b = 1, boxes_size
+        samr%levels(l)%boxes(b)%left_edge = boxes(b, 1:3) + 1
+        samr%levels(l)%boxes(b)%right_edge = boxes(b, 4:6) + 1
+        samr%levels(l)%boxes(b)%dims = boxes(b, 4:6) - boxes(b, 1:3) + 1
+
+        ub = samr%levels(l)%boxes(b)%dims + samr%ghost_cells
+
+        print *, lb, ub, samr%levels(l)%boxes(b)%dims
+        allocate( samr%levels(l)%boxes(b)%hydro( &
+          lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
+        allocate( samr%levels(l)%boxes(b)%flags( &
+          lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
+      end do
+
+      deallocate( boxes )
     end do
+
     call chombo%close
   end subroutine rhyme_initial_condition_load
 end module rhyme_initial_condition

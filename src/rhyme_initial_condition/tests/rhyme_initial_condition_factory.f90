@@ -11,6 +11,9 @@ module rhyme_initial_condition_factory
   integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
     1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
+  integer, parameter :: init_nboxes ( 0:samrid%max_nlevels ) = [ &
+    1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
   type ( initial_condition_t ) :: simple = initial_condition_t ( &
     icid%simple, nlevels, base_grid, max_nboxes, '' &
   )

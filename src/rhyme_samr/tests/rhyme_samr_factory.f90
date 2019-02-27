@@ -46,7 +46,7 @@ contains
         allocate ( samr%levels(l)%boxes(b)%flags(lb(1):ub(1), lb(2):ub(2), lb(3):ub(3)) )
 
         samr%levels(l)%boxes(b)%left_edge = (b - 1) * box_dims + 1
-        samr%levels(l)%boxes(b)%right_edge = b * box_dims + 1
+        samr%levels(l)%boxes(b)%right_edge = b * box_dims
 
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
           do j = 1, samr%levels(l)%boxes(b)%dims(2)

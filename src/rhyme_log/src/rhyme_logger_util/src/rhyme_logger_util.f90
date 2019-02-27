@@ -144,8 +144,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(i)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(i)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(i)
+    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(i)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write
@@ -187,8 +187,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(k)//' => '//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(k)//' => '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write_kw
@@ -239,8 +239,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(k)//' => '//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(k)//' => '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_write_kw1d
@@ -286,8 +286,8 @@ contains
     write ( time_str, '(A,I0,A,I0.2,A,I0.2,A)') &
       ' [ done in ', delta_t(5), 'h:', delta_t(6), 'm:', delta_t(7), 's ]'
 
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//trim(msg)//trim(time_str)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(msg)//trim(time_str)
+    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(msg)//trim(time_str)
+    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(msg)//trim(time_str)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_done
@@ -301,8 +301,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//'[WARN] '//adjustl(trim(message))
-    write ( this%logfile_unit,* ) trim( this%tas() )//'[WARN] '//adjustl(trim(message))
+    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//' [WARN] '//adjustl(trim(message))
+    write ( this%logfile_unit,* ) trim( this%tas() )//' [WARN] '//adjustl(trim(message))
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn
@@ -316,8 +316,8 @@ contains
 
     call this%open_logfile
 
-    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//'[ERROR] '//adjustl(trim(message))
-    write ( this%logfile_unit,* ) trim( this%tas() )//'[ERROR] '//adjustl(trim(message))
+    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//' [ERROR] '//adjustl(trim(message))
+    write ( this%logfile_unit,* ) trim( this%tas() )//' [ERROR] '//adjustl(trim(message))
 
     call this%close_logfile
   end subroutine rhyme_logger_util_err
@@ -367,10 +367,10 @@ contains
 
     call this%open_logfile
 
-    message = '[WARN] '//adjustl(trim(msg))//', '//trim(k)
+    message = ' [WARN] '//adjustl(trim(msg))//', '//trim(k)
 
-    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//trim(message)//tc%ig//' '//trim(op)//' '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//' '//trim(op)//' '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn_kw
@@ -388,9 +388,9 @@ contains
     character ( len=16 ) :: op
 
     if ( present( operator ) ) then
-      op = trim( operator )
+      op = adjustl( trim( operator ) )
     else
-      op = ' => '
+      op = '=>'
     end if
 
     select type ( ke => key )
@@ -420,10 +420,10 @@ contains
 
     call this%open_logfile
 
-    message = '[ERROR] '//adjustl(trim(msg))//', '//trim(k)
+    message = ' [ERROR] '//adjustl(trim(msg))//', '//trim(k)
 
-    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim(message)//tc%ig//trim(op)//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//trim(op)//trim(v)
+    write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim(message)//tc%ig//' '//trim(op)//' '//tc%nc//trim(v)
+    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//' '//trim(op)//' '//trim(v)
 
     call this%close_logfile
   end subroutine rhyme_logger_util_err_kw
@@ -476,7 +476,7 @@ contains
 
     call this%open_logfile
 
-    message = '[ERROR] '//adjustl(trim(msg))//', '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
+    message = ' [ERROR] '//adjustl(trim(msg))//', '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
 
     write ( stdout,* ) trim( this%tas( color=tc%rd ) )//trim( message )
     write ( this%logfile_unit,* ) trim( this%tas() )//trim( message )
@@ -528,9 +528,9 @@ contains
     character ( len=126 ) :: tas_str
 
     if ( present( color ) ) then
-      tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )//': '
+      tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )
     else
-      tas_str = trim( this%time() )//' '//trim( this%sec )//': '
+      tas_str = trim( this%time() )//' '//trim( this%sec )
     end if
   end function rhyme_logger_util_time_and_section
 
