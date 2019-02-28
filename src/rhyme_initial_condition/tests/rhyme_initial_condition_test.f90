@@ -7,7 +7,10 @@ logical function rhyme_initial_condition_test () result ( failed )
 
   failed = &
   icid%simple .ne. 1 &
-  .or. icid%load .ne. 2 &
+  .or. icid%snapshot .ne. 2 &
+  .or. icid%rhyme .ne. 10 &
+  .or. icid%radamesh .ne. 11 &
+  .or. icid%r2c_2d .ne. 12 &
   .or. icid%unset .ne. -1
   if ( failed ) return
 

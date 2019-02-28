@@ -383,17 +383,14 @@ contains
       row_size = size( headers ) * type_size
       call h5tcreate_f ( H5T_COMPOUND_F, row_size, table_id, hdferr )
 
-
       offset = 0
       do i = 1, size( headers )
         call h5tinsert_f ( table_id, trim( headers(i) ), offset, type_id, hdferr )
         offset = offset + type_size
       end do
 
-
       call h5screate_simple_f ( 1, dims, space_id, hdferr )
       call h5dcreate_f ( group_id, trim(key), table_id, space_id, dset_id, hdferr )
-
 
       select type ( vals => values)
       type is ( integer )

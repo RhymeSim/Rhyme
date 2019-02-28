@@ -15,6 +15,7 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 set ( deps
   rhyme_samr
   rhyme_chombo
+  rhyme_ideal_gas
   rhyme_log
 )
 

@@ -15,7 +15,7 @@ module rhyme_initial_condition_factory
     1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
   type ( initial_condition_t ) :: simple = initial_condition_t ( &
-    icid%simple, nlevels, base_grid, max_nboxes, '' &
+    icid%simple, icid%unset, nlevels, base_grid, max_nboxes, '' &
   )
 
   integer, parameter :: nlevels_1d = 4
@@ -25,7 +25,7 @@ module rhyme_initial_condition_factory
     1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
   type ( initial_condition_t ) :: simple1d = initial_condition_t ( &
-    icid%simple, nlevels_1d, base_grid_1d, max_nboxes_1d, '' &
+    icid%simple, icid%unset, nlevels_1d, base_grid_1d, max_nboxes_1d, '' &
   )
 
   integer, parameter :: nlevels_uni = 1
@@ -35,7 +35,7 @@ module rhyme_initial_condition_factory
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
   type ( initial_condition_t ) :: simple_uni = initial_condition_t ( &
-    icid%simple, nlevels_uni, base_grid_uni, max_nboxes_uni, '' &
+    icid%simple, icid%unset, nlevels_uni, base_grid_uni, max_nboxes_uni, '' &
   )
 
 end module rhyme_initial_condition_factory

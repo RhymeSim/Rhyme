@@ -34,7 +34,7 @@ contains
       allocate ( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
       box_dims = floor( base_grid / real( init_nboxes(l) ) )
-      box_dims = merge( box_dims, 1, box_dims > 0 )
+      box_dims = merge( box_dims, 1, box_dims > 1 )
 
       do b = 1, samr%levels(l)%nboxes
         lb = -ghost_cells + 1

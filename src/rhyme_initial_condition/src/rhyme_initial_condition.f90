@@ -1,13 +1,15 @@
 module rhyme_initial_condition
   use rhyme_samr
   use rhyme_chombo
+  use rhyme_ideal_gas
   use rhyme_log
 
   implicit none
 
   type initial_condition_indices_t
     integer :: unset = -1
-    integer :: simple = 1, load = 2
+    integer :: simple = 1, snapshot = 2
+    integer :: rhyme = 10, radamesh = 11, r2c_2d = 12
     character ( len=8 ), dimension(3) :: prob_domain_headers = [ &
       'hi_i    ', 'hi_j    ', 'hi_k    ' ]
     character ( len=8 ) :: boxes_headers(6) = [ &
@@ -19,6 +21,7 @@ module rhyme_initial_condition
 
   type initial_condition_t
     integer :: type = icid%unset
+    integer :: snapshot_type = icid%unset
     integer :: nlevels = icid%unset
     integer :: base_grid(3) = icid%unset
     integer :: max_nboxes(0:samrid%max_nlevels) = 0
@@ -26,16 +29,17 @@ module rhyme_initial_condition
   contains
     procedure :: init => rhyme_initial_condition_init
     procedure :: init_simple => rhyme_initial_condition_init_simple
-    procedure :: load => rhyme_initial_condition_load
+    procedure :: load_snapshot => rhyme_initial_condition_load_snapshot
   end type initial_condition_t
 
 contains
 
-  subroutine rhyme_initial_condition_init ( this, samr, log )
+  subroutine rhyme_initial_condition_init ( this, samr, ig, log )
     implicit none
 
     class ( initial_condition_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: log
 
     if ( samr%initialized ) then
@@ -54,8 +58,8 @@ contains
 
     if ( this%type .eq. icid%simple ) then
       call this%init_simple( samr, log )
-    else if ( this%type .eq. icid%load ) then
-      call this%load( samr, log )
+    else if ( this%type .eq. icid%snapshot ) then
+      call this%load_snapshot( samr, ig, log )
     else
       call log%err_kw( 'Unknown initial condition type', 'ic_type', this%type )
       return
@@ -122,18 +126,20 @@ contains
   end subroutine rhyme_initial_condition_init_simple
 
 
-  subroutine rhyme_initial_condition_load ( this, samr, log )
+  subroutine rhyme_initial_condition_load_snapshot ( this, samr, ig, log )
     use rhyme_chombo
 
     implicit none
 
     class ( initial_condition_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: log
 
     type ( chombo_t ) :: chombo
-    integer :: l, b, boxes_size, lb(3), ub(3), prob_domain(3)
-    integer, allocatable :: boxes( :, : )
+    integer :: l, b, ub(3), boxes_size, prob_domain(3), box_dims(3), b_len
+    integer, allocatable :: boxes(:,:)
+    real ( kind=8 ), allocatable :: data(:)
     character ( len=16 ) :: level_name
     logical :: exist
 
@@ -152,15 +158,14 @@ contains
     samr%ghost_cells = merge( 2, 0, samr%base_grid > 1 )
     samr%max_nboxes = this%max_nboxes
 
-    lb = -samr%ghost_cells + 1
-
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
 
       samr%levels(l)%max_nboxes = this%max_nboxes(l)
+      allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
       boxes_size = chombo%get_table_size( trim(level_name)//'/boxes' )
-      allocate( boxes( boxes_size, 6 ) )
+      allocate( boxes( 6, boxes_size ) )
 
       call chombo%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
 
@@ -170,25 +175,44 @@ contains
         return
       end if
 
-      allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
-
       do b = 1, boxes_size
-        samr%levels(l)%boxes(b)%left_edge = boxes(b, 1:3) + 1
-        samr%levels(l)%boxes(b)%right_edge = boxes(b, 4:6) + 1
-        samr%levels(l)%boxes(b)%dims = boxes(b, 4:6) - boxes(b, 1:3) + 1
+        box_dims = boxes(4:6, b) - boxes(1:3, b) + 1
+        b_len = product( box_dims )
+        ub = box_dims
 
-        ub = samr%levels(l)%boxes(b)%dims + samr%ghost_cells
+        call samr%init_box( l, b, box_dims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
 
-        print *, lb, ub, samr%levels(l)%boxes(b)%dims
-        allocate( samr%levels(l)%boxes(b)%hydro( &
-          lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
-        allocate( samr%levels(l)%boxes(b)%flags( &
-          lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
+        select case ( this%snapshot_type )
+        case ( icid%r2c_2d )
+          allocate( data(7 * product( box_dims )) )
+          call chombo%read_1d_dataset( trim(level_name)//'/data:datatype=0', data )
+
+          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
+            reshape( data( 1:product(box_dims) ), box_dims )
+
+          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
+            reshape( data( 1:b_len ) * data( 1*b_len+1:2*b_len ), box_dims )
+
+          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
+            reshape( data( 1:b_len ) * data( 2*b_len+1:3*b_len ), box_dims )
+
+          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = 0.d0
+
+          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
+            reshape( &
+              0.d5 * data( 1:b_len ) * ( &
+                data( 1*b_len+1:2*b_len )**2 + data( 2*b_len+1:3*b_len )**2 &
+              ) + data( 3*b_len+1:4*b_len ) / ( ig%gamma - 1.d0 ) &
+            , box_dims )
+          deallocate( data )
+        case default
+          call log%err_kw( 'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
+        end select
       end do
 
       deallocate( boxes )
     end do
 
     call chombo%close
-  end subroutine rhyme_initial_condition_load
+  end subroutine rhyme_initial_condition_load_snapshot
 end module rhyme_initial_condition

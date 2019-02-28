@@ -52,14 +52,14 @@ program rhyme
   ! Initializing
   call log%set_section( 'init' )
 
+  ! Ideal Gas
+  call ig%init
+
   ! Structured AMR
-  call ic%init( samr, log )
+  call ic%init( samr, ig, log )
 
   ! Boundary Conditions
   call bc%init( samr )
-
-  ! Ideal Gas
-  call ig%init
 
   ! Initial Condition
   call draw%apply( ig, samr )

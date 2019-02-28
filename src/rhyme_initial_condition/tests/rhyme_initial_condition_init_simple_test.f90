@@ -5,11 +5,13 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   integer :: i, actual_grid_size(3) = base_grid + ( 2 * ghost_cells )
   type ( samr_t ) :: samr, samr1d, samr_uni
+  type ( ideal_gas_t ) :: ig
   type ( log_t ) :: log
 
+  call ig%init_with( igid%monatomic )
 
   ! SAMR test
-  call simple%init( samr, log )
+  call simple%init( samr, ig, log )
 
   failed = &
   samr%nlevels .ne. nlevels &
@@ -29,7 +31,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
 
   ! 1D SAMR test
-  call simple1d%init( samr1d, log )
+  call simple1d%init( samr1d, ig, log )
 
   failed = &
   any ( abs ( samr1d%levels(1)%dx - [ 1.d0 / ( 2.d0 * base_grid_1d(1)) , 1.d0, 1.d0] ) > epsilon(0.d0) ) &
@@ -39,7 +41,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
 
   ! Uniform SAMR test
-  call simple_uni%init( samr_uni, log )
+  call simple_uni%init( samr_uni, ig, log )
 
   failed = &
   samr_uni%max_nboxes(0) .ne. 1 &
