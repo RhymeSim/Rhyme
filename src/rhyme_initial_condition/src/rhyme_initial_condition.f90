@@ -30,6 +30,9 @@ module rhyme_initial_condition
     procedure :: init => rhyme_initial_condition_init
     procedure :: init_simple => rhyme_initial_condition_init_simple
     procedure :: load_snapshot => rhyme_initial_condition_load_snapshot
+    procedure :: load_headers => rhyme_initial_condition_load_headers
+    procedure :: load_rhyme => rhyme_initial_condition_load_rhyme
+    procedure :: load_r2c_2d => rhyme_initial_condition_load_r2c_2d
   end type initial_condition_t
 
 contains
@@ -64,7 +67,6 @@ contains
       call log%err_kw( 'Unknown initial condition type', 'ic_type', this%type )
       return
     end if
-
   end subroutine rhyme_initial_condition_init
 
 
@@ -136,11 +138,6 @@ contains
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: log
 
-    type ( chombo_t ) :: chombo
-    integer :: l, b, ub(3), boxes_size, prob_domain(3), box_dims(3), b_len
-    integer, allocatable :: boxes(:,:)
-    real ( kind=8 ), allocatable :: data(:)
-    character ( len=16 ) :: level_name
     logical :: exist
 
     inquire ( file=trim(this%path), exist=exist )
@@ -149,70 +146,198 @@ contains
       return
     end if
 
-    call chombo%open( this%path )
+    call this%load_headers( samr )
+    samr%max_nboxes = this%max_nboxes
+    samr%levels%max_nboxes = this%max_nboxes
 
-    call chombo%read_group_attr( '/', 'num_levels', samr%nlevels )
-    call chombo%read_group_comp_1d_array_attr( &
+    samr%levels%nboxes = 0 ! It will be incremented by init_box procedure
+
+    select case ( this%snapshot_type )
+    case ( icid%rhyme )
+      call this%load_rhyme( samr, log )
+    ! case ( icid%r2c_2d )
+      ! call this%load_r2c_2d( same )
+    case default
+      call log%err_kw( &
+        'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
+    end select
+  end subroutine rhyme_initial_condition_load_snapshot
+
+
+  subroutine rhyme_initial_condition_load_headers ( this, samr )
+    implicit none
+
+    class ( initial_condition_t ), intent ( in ) :: this
+    type ( samr_t ), intent ( inout ) :: samr
+
+    type ( chombo_t ) :: ch
+    integer :: prob_domain(3)
+
+    call ch%open( this%path )
+
+    call ch%read_group_attr( '/', 'num_levels', samr%nlevels )
+    call ch%read_group_comp_1d_array_attr( &
       'level_0', 'prob_domain', icid%prob_domain_headers, prob_domain )
     samr%base_grid = prob_domain + 1
     samr%ghost_cells = merge( 2, 0, samr%base_grid > 1 )
-    samr%max_nboxes = this%max_nboxes
+
+    call ch%close
+  end subroutine rhyme_initial_condition_load_headers
+
+
+  subroutine rhyme_initial_condition_load_rhyme ( this, samr, log )
+    implicit none
+
+    class ( initial_condition_t ), intent ( in ) :: this
+    type ( samr_t ), intent ( inout ) :: samr
+    type ( log_t ), intent ( inout ) :: log
+
+    integer, parameter :: ncomp = 5
+
+    type ( chombo_t ) :: ch
+    integer :: l, b, ofs
+    integer :: nboxes, lboxes
+    integer :: bdims(3), ub(3), blen
+    character ( len=16 ) :: level_name
+    integer, allocatable :: boxes(:,:)
+    real ( kind=8 ), allocatable :: data(:)
+
+    call ch%open( this%path )
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
 
-      samr%levels(l)%max_nboxes = this%max_nboxes(l)
       allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
-      boxes_size = chombo%get_table_size( trim(level_name)//'/boxes' )
-      allocate( boxes( 6, boxes_size ) )
+      nboxes = ch%get_table_size( trim(level_name)//'/boxes' )
+      allocate( boxes( 6, nboxes ) )
 
-      call chombo%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
+      call ch%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
 
-      if ( boxes_size > samr%levels(l)%max_nboxes ) then
+      if ( nboxes > samr%levels(l)%max_nboxes ) then
         call log%err_kw( 'Number of boxes is less than maximum available', &
-          boxes_size, samr%levels(l)%max_nboxes, '>' )
+          nboxes, samr%levels(l)%max_nboxes, '>' )
         return
       end if
 
-      do b = 1, boxes_size
-        box_dims = boxes(4:6, b) - boxes(1:3, b) + 1
-        b_len = product( box_dims )
-        ub = box_dims
+      lboxes = sum( [ (product(boxes(4:6, b) + 1), b=1, nboxes ) ] )
 
-        call samr%init_box( l, b, box_dims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
+      ! Reading data dataset
+      allocate( data( ncomp * lboxes ) )
+      call ch%read_1d_dataset( trim(level_name)//'/data:datatype=0', data )
 
-        select case ( this%snapshot_type )
-        case ( icid%r2c_2d )
-          allocate( data(7 * product( box_dims )) )
-          call chombo%read_1d_dataset( trim(level_name)//'/data:datatype=0', data )
+      ofs = 0
+      do b = 1, nboxes
+        bdims = boxes(4:6, b) - boxes(1:3, b) + 1
+        blen = product( bdims )
+        ub = bdims
 
-          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
-            reshape( data( 1:product(box_dims) ), box_dims )
+        call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
 
-          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
-            reshape( data( 1:b_len ) * data( 1*b_len+1:2*b_len ), box_dims )
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
+        reshape( data( ofs+0*blen+1:ofs+1*blen ), bdims )
 
-          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
-            reshape( data( 1:b_len ) * data( 2*b_len+1:3*b_len ), box_dims )
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
+        reshape( data( ofs+1*blen+1:ofs+2*blen ), bdims )
 
-          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = 0.d0
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
+        reshape( data( ofs+2*blen+1:ofs+3*blen ), bdims )
 
-          samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
-            reshape( &
-              0.d5 * data( 1:b_len ) * ( &
-                data( 1*b_len+1:2*b_len )**2 + data( 2*b_len+1:3*b_len )**2 &
-              ) + data( 3*b_len+1:4*b_len ) / ( ig%gamma - 1.d0 ) &
-            , box_dims )
-          deallocate( data )
-        case default
-          call log%err_kw( 'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
-        end select
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_w) = &
+        reshape( data( ofs+3*blen+1:ofs+4*blen ), bdims )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
+        reshape( data( ofs+4*blen+1:ofs+5*blen ), bdims )
+
+        ofs = ofs + ncomp * blen
       end do
 
+      deallocate( data )
       deallocate( boxes )
     end do
 
-    call chombo%close
-  end subroutine rhyme_initial_condition_load_snapshot
+    call ch%close
+  end subroutine rhyme_initial_condition_load_rhyme
+
+
+  subroutine rhyme_initial_condition_load_r2c_2d ( this, samr, log )
+    implicit none
+
+    class ( initial_condition_t ), intent ( in ) :: this
+    type ( samr_t ), intent ( inout ) :: samr
+    type ( log_t ), intent ( inout ) :: log
+
+    integer, parameter :: ncomp = 6
+
+    type ( chombo_t ) :: ch
+    integer :: l, b, ofs
+    integer :: nboxes, lboxes
+    integer :: bdims(3), ub(3), blen
+    character ( len=16 ) :: level_name
+    integer, allocatable :: boxes(:,:)
+    real ( kind=8 ), allocatable :: data(:)
+
+    call ch%open( this%path )
+
+    do l = 0, samr%nlevels - 1
+      write ( level_name, '(A7,I0)') "/level_", l
+
+      allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
+
+      nboxes = ch%get_table_size( trim(level_name)//'/boxes' )
+      allocate( boxes( 6, nboxes ) )
+
+      call ch%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
+
+      if ( nboxes > samr%levels(l)%max_nboxes ) then
+        call log%err_kw( 'Number of boxes is less than maximum available', &
+          nboxes, samr%levels(l)%max_nboxes, '>' )
+        return
+      end if
+
+      lboxes = sum( [ (product(boxes(4:6, b) + 1), b=1, nboxes ) ] )
+
+      ! Reading data dataset
+      allocate( data( ncomp * lboxes ) )
+      call ch%read_1d_dataset( trim(level_name)//'/data:datatype=0', data )
+
+      ofs = 0
+      do b = 1, nboxes
+        bdims = boxes(4:6, b) - boxes(1:3, b) + 1
+        blen = product( bdims )
+        ub = bdims
+
+        call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
+        reshape( data( 1:product(bdims) ), bdims )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
+          reshape( data( 1:product(bdims) ), bdims )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
+          reshape( data( 1:blen ) * data( 1*blen+1:2*blen ), bdims )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
+          reshape( data( 1:blen ) * data( 2*blen+1:3*blen ), bdims )
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_w) = 0.d0
+
+        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
+          reshape( &
+            0.d5 * data( 1:blen ) * ( &
+              data( 1*blen+1:2*blen )**2 + data( 2*blen+1:3*blen )**2 &
+            ) + data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ) &
+          , bdims )
+
+        ofs = ofs + ncomp * blen
+      end do
+
+      deallocate( data )
+      deallocate( boxes )
+    end do
+
+    call ch%close
+
+  end subroutine rhyme_initial_condition_load_r2c_2d
 end module rhyme_initial_condition

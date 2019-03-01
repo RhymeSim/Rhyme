@@ -22,7 +22,7 @@ module rhyme_samr
 
   type samr_level_t
     integer :: level = samrid%unset
-    integer :: nboxes, max_nboxes, iteration = 0
+    integer :: nboxes = 0, max_nboxes = 0, iteration = 0
     real ( kind=8 ) :: refine_factor
     real ( kind=8 ) :: t = 0.d0
     real ( kind=8 ) :: dt, dx(3)
@@ -69,6 +69,7 @@ contains
 
     this%levels(l)%nboxes = this%levels(l)%nboxes + 1
 
+    this%levels(l)%boxes(b)%dims = dims
     this%levels(l)%boxes(b)%left_edge(:) = ledges(:)
     this%levels(l)%boxes(b)%right_edge(:) = redges(:)
   end subroutine rhyme_samr_init_box

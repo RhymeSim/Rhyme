@@ -243,8 +243,7 @@ contains
   end subroutine rhyme_ideal_gas_flux_at
 
 
-  ! pure subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
-  subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
+  pure subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
     implicit none
 
     class ( ideal_gas_t ), intent(in) :: this
