@@ -7,6 +7,12 @@ enable_testing ()
 file ( GLOB_RECURSE test_files RELATIVE ${PROJECT_SOURCE_DIR} *_test.f90 )
 file ( GLOB_RECURSE factory_files RELATIVE ${PROJECT_SOURCE_DIR} *_factory.f90 )
 
+configure_file (
+  "./assets/r2c_2d_sample.hdf5"
+  "r2c_2d_sample.hdf5"
+  COPYONLY
+)
+
 
 set ( test_libs )
 

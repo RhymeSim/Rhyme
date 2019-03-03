@@ -4,27 +4,9 @@ logical function rhyme_initial_condition_load_snapshot_test () result ( failed )
 
   implicit none
 
-  character ( len=1024 ) :: nickname = 'rhyme_initial_condition_load_snapshot.h5'
+  ! type ( initial_condition_t ) :: ic
+  ! type ( samr_t ) :: samr
 
-  character ( len=1024 ) :: filename
-  integer :: l, b, i, j, k, ub(3)
-  type ( initial_condition_t ) :: ic
-  type ( samr_t ) :: samr, samr_read
-  type ( chombo_t ) :: ch
-  type ( ideal_gas_t ) :: ig
-  type ( log_t ) :: log
-
-
-  ! Initializing SAMR object
-  call rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
-
-  ! Initializing ideal gas
-  call ig%init_with( igid%monatomic )
-
-  ! Prepare chombo file
-  ch%nickname = nickname
-  call ch%filename_generator ( filename )
-  call ch%write_samr ( samr )
-
+  ! TODO: test if load_snapshot sets nboxes to zero
+  failed = .true.
 end function rhyme_initial_condition_load_snapshot_test

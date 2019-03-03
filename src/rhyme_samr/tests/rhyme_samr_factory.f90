@@ -1,20 +1,29 @@
 module rhyme_samr_factory
   use rhyme_samr
+  use rhyme_hydro_base
 
   implicit none
 
 contains
   subroutine rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
+    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr, base_state )
     implicit none
 
     integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
     integer, intent ( in ) :: max_nboxes( 0:samrid%max_nlevels )
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
     type ( samr_t ), intent ( out ) :: samr
+    type ( hydro_conserved_t ), intent ( in ), optional :: base_state
 
+    type ( hydro_conserved_t ) :: cons
     integer :: l, b, i, j, k, uid, lb(3), ub(3), box_dims(3)
     real ( kind=8 ) :: val
+
+    if ( present( base_state ) ) then
+      cons%u = base_state%u
+    else
+      cons%u = 1.d0
+    end if
 
     if ( samr%initialized ) then
       print *, 'SAMR has already been initialized'
@@ -55,7 +64,7 @@ contains
               samr%levels(l)%boxes(b)%flags(i,j,k) = int ( val * 1e3 )
 
               do uid = hyid%rho, hyid%e_tot
-                samr%levels(l)%boxes(b)%hydro(i,j,k)%u(uid) = val + uid * 1d-7
+                samr%levels(l)%boxes(b)%hydro(i,j,k)%u(uid) = val + uid * 1d-7 * cons%u(uid)
               end do
             end do
           end do

@@ -147,16 +147,14 @@ contains
     end if
 
     call this%load_headers( samr )
-    samr%max_nboxes = this%max_nboxes
-    samr%levels%max_nboxes = this%max_nboxes
 
     samr%levels%nboxes = 0 ! It will be incremented by init_box procedure
 
     select case ( this%snapshot_type )
     case ( icid%rhyme )
       call this%load_rhyme( samr, log )
-    ! case ( icid%r2c_2d )
-      ! call this%load_r2c_2d( same )
+    case ( icid%r2c_2d )
+      call this%load_r2c_2d( samr, ig, log )
     case default
       call log%err_kw( &
         'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
@@ -171,15 +169,26 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
 
     type ( chombo_t ) :: ch
-    integer :: prob_domain(3)
+    integer :: l, prob_domain(3)
 
     call ch%open( this%path )
 
     call ch%read_group_attr( '/', 'num_levels', samr%nlevels )
+    call ch%read_group_attr( '/', 'iteration', samr%levels(0)%iteration )
+    call ch%read_group_attr( '/', 'time', samr%levels(0)%t )
     call ch%read_group_comp_1d_array_attr( &
       'level_0', 'prob_domain', icid%prob_domain_headers, prob_domain )
     samr%base_grid = prob_domain + 1
     samr%ghost_cells = merge( 2, 0, samr%base_grid > 1 )
+
+    ! Initialize other variables
+    samr%max_nboxes = this%max_nboxes
+    samr%levels%max_nboxes = this%max_nboxes
+    samr%levels%level = [ (l, l=0, samrid%max_nlevels) ]
+
+    do l = 0, samr%nlevels - 1
+      samr%levels(l)%dx = 1.d0 / ( samr%base_grid * 2.d0**l )
+    end do
 
     call ch%close
   end subroutine rhyme_initial_condition_load_headers
@@ -260,11 +269,12 @@ contains
   end subroutine rhyme_initial_condition_load_rhyme
 
 
-  subroutine rhyme_initial_condition_load_r2c_2d ( this, samr, log )
+  subroutine rhyme_initial_condition_load_r2c_2d ( this, samr, ig, log )
     implicit none
 
     class ( initial_condition_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: log
 
     integer, parameter :: ncomp = 6
@@ -276,6 +286,10 @@ contains
     character ( len=16 ) :: level_name
     integer, allocatable :: boxes(:,:)
     real ( kind=8 ), allocatable :: data(:)
+
+    ! Fix wrong grid dimension (buf in R2C)
+    samr%base_grid(3) = 1
+    samr%ghost_cells(3) = 0
 
     call ch%open( this%path )
 
@@ -338,6 +352,5 @@ contains
     end do
 
     call ch%close
-
   end subroutine rhyme_initial_condition_load_r2c_2d
 end module rhyme_initial_condition

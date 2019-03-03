@@ -5,7 +5,12 @@ enable_testing ()
 
 
 file ( GLOB_RECURSE test_files RELATIVE ${PROJECT_SOURCE_DIR} *_test.f90 )
-configure_file("../../../parameters.conf.example" "parameters.conf.example" COPYONLY)
+
+configure_file (
+  "../../../parameters.conf.example"
+  "parameters.conf.example"
+  COPYONLY
+)
 
 
 set ( test_libs )
