@@ -3,9 +3,11 @@ logical function rhyme_hydro_base_sp_kinetic_e_test () result (failed)
 
   implicit none
 
+  type ( hydro_conserved_t ) :: cons
   real ( kind=8 ) :: e_kin_sp
 
-  e_kin_sp = 0.5d0 * ( u**2 + v**2 + w**2 )
+  cons = hyfact%cons()
+  e_kin_sp = 0.5d0 * ( hyfact%u**2 + hyfact%v**2 + hyfact%w**2 )
 
   failed = abs ( hy_sp_kinetic_e( cons ) - e_kin_sp ) > epsilon(0.e0)
 end function rhyme_hydro_base_sp_kinetic_e_test

@@ -3,7 +3,11 @@ logical function rhyme_hydro_base_sp_internal_e_test () result (failed)
 
   implicit none
 
+  type ( hydro_conserved_t ) :: cons
+
+  cons = hyfact%cons()
+
   failed = abs ( &
-    hy_sp_internal_e( cons ) - e_int / rho &
+    hy_sp_internal_e( cons ) - hyfact%e_int() / hyfact%rho &
   ) > epsilon(0.e0)
 end function rhyme_hydro_base_sp_internal_e_test

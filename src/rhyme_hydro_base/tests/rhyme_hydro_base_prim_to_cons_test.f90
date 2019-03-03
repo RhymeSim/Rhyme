@@ -3,15 +3,20 @@ logical function rhyme_hydro_base_prim_to_cons_test () result (failed)
 
   implicit none
 
-  type ( hydro_conserved_t ) :: hy_cons
+  type ( hydro_primitive_t ) :: prim
+  type ( hydro_conserved_t ) :: cons
+  real ( kind=8 ) :: e_tot
 
+  prim = hyfact%prim()
 
-  call hy_prim_to_cons ( prim, 1.23d0, hy_cons )
+  call hy_prim_to_cons ( prim, hyfact%e_int(), cons )
+
+  e_tot = hyfact%rho * 0.5d0 * (hyfact%u**2 + hyfact%v**2 + hyfact%w**2) + hyfact%p() / (hyfact%gamma - 1.d0)
 
   failed = &
-  abs ( hy_cons%u(hyid%rho) - rho ) > epsilon(0.d0) &
-  .or. abs ( hy_cons%u(hyid%rho_u) - rho * u ) > epsilon(0.d0) &
-  .or. abs ( hy_cons%u(hyid%rho_v) - rho * v ) > epsilon(0.d0) &
-  .or. abs ( hy_cons%u(hyid%rho_w) - rho * w ) > epsilon(0.d0) &
-  .or. abs ( hy_cons%u(hyid%e_tot) - ( rho * 0.5d0 * (u**2 + v**2 + w**2) + 1.23d0 ) ) > epsilon(0.d0)
+       abs ( cons%u(hyid%rho)   - hyfact%rho ) > epsilon(0.d0) &
+  .or. abs ( cons%u(hyid%rho_u) - hyfact%rho * hyfact%u ) > epsilon(0.d0) &
+  .or. abs ( cons%u(hyid%rho_v) - hyfact%rho * hyfact%v ) > epsilon(0.d0) &
+  .or. abs ( cons%u(hyid%rho_w) - hyfact%rho * hyfact%w ) > epsilon(0.d0) &
+  .or. abs ( cons%u(hyid%e_tot) - e_tot ) > epsilon(0.d0)
 end function rhyme_hydro_base_prim_to_cons_test
