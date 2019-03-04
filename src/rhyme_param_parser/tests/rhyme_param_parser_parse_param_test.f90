@@ -15,12 +15,13 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  failed = .not. parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
-  if ( failed ) return
+
+  call parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
 
   ! Structured AMR
   failed = &
-  any ( ic%base_grid .ne. [ 128, 128, 1 ] ) &
+  ic%type .ne. icid%simple &
+  .or. any ( ic%base_grid .ne. [ 128, 128, 1 ] ) &
   .or. ic%nlevels .ne. 3 &
   .or. any ( ic%max_nboxes(0:ic%nlevels-1) .ne. [ 1, 10, 100 ] ) &
   .or. any ( ic%max_nboxes(ic%nlevels:) .ne. 0 )

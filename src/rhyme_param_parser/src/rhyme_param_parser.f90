@@ -1,4 +1,6 @@
 module rhyme_param_parser
+  ! TODO: replace iteration with fortran namelists
+  
   use rhyme_log
   use rhyme_initial_condition
   use rhyme_samr_bc
@@ -13,9 +15,7 @@ module rhyme_param_parser
 
 contains
 
-  logical function parse_params ( &
-    param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo ) &
-  result ( passed )
+  subroutine parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
@@ -49,6 +49,36 @@ contains
       select case ( adjustl(trim(key)) )
 
         ! Structured AMR
+      case ( 'ic_type' )
+        read (1, *) key, op, str
+
+        if ( trim(str) .eq. 'simple' ) then
+          ic%type = icid%simple
+        else if ( trim(str) .eq. 'snapshot' ) then
+          ic%type = icid%snapshot
+        else
+          call log%err_kw( 'Unknown ic_type', 'ic_type', str )
+        end if
+
+        call log%write_kw( 'ic_type', ic%type )
+
+      case ( 'ic_snapshot_type')
+        read (1, *) key, op, str
+
+        if ( trim(str) .eq. 'rhyme' ) then
+          ic%type = icid%rhyme
+        else if ( trim(str) .eq. 'r2c_2d' ) then
+          ic%type = icid%r2c_2d
+        else
+          call log%err_kw( 'Unknown ic_snapshot_type', 'ic_snapshot_type', str )
+        end if
+
+        call log%write_kw( 'ic_snapshot_type', ic%type )
+
+      case ( 'ic_snapshot_path')
+        read (1, *) key, op, ic%path
+        call log%write_kw( 'ic_snapshot_path', ic%path )
+
       case ( "ic_grid" )
         read (1, *) key, op, ic%base_grid(1:3)
         call log%write_kw1d( 'ic_grid', ic%base_grid )
@@ -219,28 +249,27 @@ contains
 
         ! Unknown option
       case default
-        print *, "**", trim(key), "**", " is not an option!"
-        read (1, *)
+        read (1, *) key, op, str
+        call log%warn_kw( 'Unknown option', key, str, trim(op) )
       end select
     end do
 
     close (1)
 
-    passed = .true.
-
   contains
 
-    integer function select_boundary ( str ) result ( bc )
+    integer function select_boundary ( bundry ) result ( bc )
       implicit none
 
-      character(len=1024) :: str
+      character(len=1024) :: bundry
 
-      select case ( trim(str) )
+      select case ( trim(bundry) )
       case ( "reflective" ); bc = bcid%reflective
       case ( "outflow" ); bc = bcid%outflow
       case ( "periodic" ); bc = bcid%periodic
       end select
     end function select_boundary
-  end function parse_params
+
+  end subroutine parse_params
 
 end module rhyme_param_parser

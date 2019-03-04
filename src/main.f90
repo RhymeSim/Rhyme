@@ -47,7 +47,7 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  if ( .not. parse_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo ) ) stop
+  call parse_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
 
   ! Initializing
   call log%set_section( 'init' )
