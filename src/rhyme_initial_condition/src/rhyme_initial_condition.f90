@@ -277,7 +277,6 @@ contains
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: log
 
-    integer, parameter :: ncomp = 6
 
     type ( chombo_t ) :: ch
     integer :: l, b, ofs
@@ -286,12 +285,17 @@ contains
     character ( len=16 ) :: level_name
     integer, allocatable :: boxes(:,:)
     real ( kind=8 ), allocatable :: data(:)
+    real ( kind=8 ) :: rho_b
+    integer:: ncomp
 
     ! Fix wrong grid dimension (buf in R2C)
     samr%base_grid(3) = 1
     samr%ghost_cells(3) = 0
 
     call ch%open( this%path )
+
+    call ch%read_group_attr( '/', 'MeanBarDen', rho_b )
+    call ch%read_group_attr( '/', 'num_components', ncomp )
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
@@ -324,25 +328,22 @@ contains
         call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
-        reshape( data( 1:product(bdims) ), bdims )
-
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
-          reshape( data( 1:product(bdims) ), bdims )
+          reshape( rho_b * data( 1:product(bdims) ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
-          reshape( data( 1:blen ) * data( 1*blen+1:2*blen ), bdims )
+          reshape( rho_b * data( 1:blen ) * data( 1*blen+1:2*blen ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
-          reshape( data( 1:blen ) * data( 2*blen+1:3*blen ), bdims )
+          reshape( rho_b * data( 1:blen ) * data( 2*blen+1:3*blen ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_w) = 0.d0
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
           reshape( &
-            0.d5 * data( 1:blen ) * ( &
+            0.d5 * rho_b * data( 1:blen ) * ( &
               data( 1*blen+1:2*blen )**2 + data( 2*blen+1:3*blen )**2 &
-            ) + data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ) &
-          , bdims )
+            ) + data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ), &
+          bdims )
 
         ofs = ofs + ncomp * blen
       end do

@@ -37,7 +37,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   if ( failed ) return
 
   ! Ideal Gas
-  failed = ig%type .ne. igid%monatomic
+  failed = ig%type .ne. igid%diatomic
   if ( failed ) return
 
   ! Drawing
