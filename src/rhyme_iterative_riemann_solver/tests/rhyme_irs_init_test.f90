@@ -3,11 +3,7 @@ logical function rhyme_irs_init_test () result ( failed )
 
   implicit none
 
-  call ig%init_with ( irs_factory_gastype )
-  call irs%init ( ig )
+  call irs%init
 
-  failed = &
-  .not. irs%initialized &
-  .or. .not. irs%ig%initialized &
-  .or. irs%ig%type .ne. irs_factory_gastype
+  failed = .not. irs%initialized
 end function rhyme_irs_init_test

@@ -4,18 +4,18 @@ module rhyme_hydro_base
 
   type hydro_primitive_t
     ! rho, x-velocity, y-velocity, z-velocity, p
-    real(kind=8) :: w(5)
+    real(kind=8) :: w(5) = 0.d0
   end type hydro_primitive_t
 
 
   type hydro_conserved_t
     ! rho, x-momentum, y-momentum, z-momentum, e_tot per unit volume
-    real(kind=8) :: u(5)
+    real(kind=8) :: u(5) = 0.d0
   end type hydro_conserved_t
 
 
   type hydro_flux_t
-    real(kind=8) :: f(5)
+    real(kind=8) :: f(5) = 0.d0
   end type hydro_flux_t
 
 
@@ -55,7 +55,7 @@ contains
   !> Copy a given hydro cell into another one
   !> @param[in] source
   !> @param[out] traget
-  subroutine rhyme_hydro_base_copy (source, target)
+  pure subroutine rhyme_hydro_base_copy (source, target)
     implicit none
 
     type ( hydro_conserved_t ), intent(in) :: source

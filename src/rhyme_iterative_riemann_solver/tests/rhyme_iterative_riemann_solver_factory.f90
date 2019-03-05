@@ -1,6 +1,8 @@
 module rhyme_iterative_riemann_solver_factory
   use rhyme_iterative_riemann_solver
   use rhyme_ideal_gas
+  use rhyme_chemistry
+  use rhyme_thermo_base
 
   implicit none
 
@@ -37,24 +39,33 @@ module rhyme_iterative_riemann_solver_factory
 
 contains
 
-
   subroutine rhyme_iterative_riemann_solver_factory_init ()
     implicit none
 
+    type ( chemistry_t ) :: chemi
+    type ( thermo_base_t ) :: thermo
+
     if ( irs_factory_initialized ) return
 
-    call ig%init_with ( irs_factory_gastype )
-    call irs%init_with ( ig, irs_factory_n_iteration, irs_factory_tolerance, &
-      irs_factory_pressure_floor )
+    call chemi%init
+    call thermo%init
+    call ig%init_with ( chemi, thermo, irs_factory_gastype )
+
+    call irs%init_with ( &
+      irs_factory_n_iteration, &
+      irs_factory_tolerance, &
+      irs_factory_pressure_floor &
+    )
 
     irs_factory_initialized = .true.
   end subroutine rhyme_iterative_riemann_solver_factory_init
 
   !> Sod test (very mild test)
   !! a left rarefacton, a contact discontinuity and a right shock
-  subroutine irs_Sod_test (L, R, star)
+  subroutine irs_Sod_test ( ig, L, R, star )
     implicit none
 
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type(hydro_conserved_t), intent(out) :: L, R
     type(rp_star_region_t), intent(out) :: star
 
@@ -65,8 +76,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d0])
     R_prim = hydro_primitive_t([.125d0, 0.d0, 0.d0, 0.d0, .1d0])
 
-    e_int_L = 1.d0 / (irs%ig%gamma - 1.d0)
-    e_int_R = .1d0 / (irs%ig%gamma - 1.d0)
+    e_int_L = 1.d0 / (ig%gamma - 1.d0)
+    e_int_R = .1d0 / (ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -84,9 +95,10 @@ contains
   !> 123 test (einfeldt et al. 1991)
   !! Two strong rarefactions and a trivial stationary constact dicontinuity
   !! p* is too small and close to vacuum
-  pure subroutine irs_123_test (L, R, star)
+  pure subroutine irs_123_test ( ig, L, R, star )
     implicit none
 
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type(hydro_conserved_t), intent(out) :: L, R
     type(rp_star_region_t), intent(out) :: star
 
@@ -97,8 +109,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, -2.d0, -2.d0, -2.d0, .4d0])
     R_prim = hydro_primitive_t([1.d0, 2.d0, 2.d0, 2.d0, .4d0])
 
-    e_int_L = .4d0 / (irs%ig%gamma - 1.d0)
-    e_int_R = .4d0 / (irs%ig%gamma - 1.d0)
+    e_int_L = .4d0 / (ig%gamma - 1.d0)
+    e_int_R = .4d0 / (ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -114,9 +126,10 @@ contains
 
   !> Left half of the blast wave problem of Woodward and Colella
   !! a left rarefaction, a contact and a right shock (very severe)
-  pure subroutine irs_left_blast_wave_test (L, R, star)
+  pure subroutine irs_left_blast_wave_test ( ig, L, R, star )
     implicit none
 
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type(hydro_conserved_t), intent(out) :: L, R
     type(rp_star_region_t), intent(out) :: star
 
@@ -127,8 +140,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d3])
     R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
 
-    e_int_L = 1.d3 / (irs%ig%gamma - 1.d0)
-    e_int_R = 1.d-2 / (irs%ig%gamma - 1.d0)
+    e_int_L = 1.d3 / (ig%gamma - 1.d0)
+    e_int_R = 1.d-2 / (ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -144,9 +157,10 @@ contains
 
   !> Right half of the blast wave problem of Woodward and Colella
   !! a left shock, a contact and a right rarefaction (very severe)
-  pure subroutine irs_right_blast_wave_test (L, R, star)
+  pure subroutine irs_right_blast_wave_test ( ig, L, R, star )
     implicit none
 
+    type ( ideal_gas_t ), intent ( in ) :: ig
     type(hydro_conserved_t), intent(out) :: L, R
     type(rp_star_region_t), intent(out) :: star
 
@@ -156,8 +170,8 @@ contains
     L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
     R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d2])
 
-    e_int_L = 1.d-2 / (irs%ig%gamma - 1.d0)
-    e_int_R = 1.d2 / (irs%ig%gamma - 1.d0)
+    e_int_L = 1.d-2 / (ig%gamma - 1.d0)
+    e_int_R = 1.d2 / (ig%gamma - 1.d0)
 
     call hy_prim_to_cons(L_prim, e_int_L, L)
     call hy_prim_to_cons(R_prim, e_int_R, R)
@@ -174,9 +188,10 @@ contains
   !> Collision of thw stronc shocks emerging from blast waves
   !! a left facing shock (travelling very slowly to the right), a right
   !! travelling contact discontinuity and a right travelling shock wave
-  pure subroutine irs_two_shocks_collision_test (L, R, star)
+  pure subroutine irs_two_shocks_collision_test ( ideal_gas, L, R, star )
     implicit none
 
+    type ( ideal_gas_t ), intent ( in ) :: ideal_gas
     type(hydro_conserved_t), intent(out) :: L, R
     type(rp_star_region_t), intent(out) :: star
 
@@ -186,8 +201,8 @@ contains
     L_prim = hydro_primitive_t([5.99924d0, 19.5975d0, 19.5975d0, 19.5975d0, 460.894d0])
     R_prim = hydro_primitive_t([5.99924d0, -6.19633d0, -6.19633d0, -6.19633d0, 46.0950d0])
 
-    e_int_L = 460.894d0 / (irs%ig%gamma - 1.d0)
-    e_int_R = 46.0950d0 / (irs%ig%gamma - 1.d0)
+    e_int_L = 460.894d0 / (ideal_gas%gamma - 1.d0)
+    e_int_R = 46.0950d0 / (ideal_gas%gamma - 1.d0)
 
     call hy_prim_to_cons (L_prim, e_int_L, L)
     call hy_prim_to_cons (R_prim, e_int_R, R)

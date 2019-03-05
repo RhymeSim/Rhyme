@@ -12,12 +12,12 @@ logical function rhyme_irs_nonlinear_waves_test () result (failed)
 
   p = irs%pressure_floor
 
-  call irs%nonlinear_waves ( rho, p, p_star, prev_f, prev_fprime )
+  call nonlinear_waves( ig, rho, p, p_star, prev_f, prev_fprime )
 
   do i = 1, 800
     p = 2.34d0 * p
 
-    call irs%nonlinear_waves ( rho, p, p_star, f, fprime )
+    call nonlinear_waves( ig, rho, p, p_star, f, fprime )
 
     failed = fprime < 0.0 &
     .or. prev_fprime - fprime > irs%tolerance * fprime &

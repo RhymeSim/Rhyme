@@ -8,49 +8,45 @@ module rhyme_iterative_riemann_solver
   type iterative_riemann_solver_t
     logical :: initialized = .false.
     integer :: n_iteration = 100
-    real(kind=8) :: pressure_floor = 1.d-10
-    real(kind=8) :: tolerance = 1.d-6
-    type ( ideal_gas_t ) :: ig
+    real ( kind=8 ) :: pressure_floor = 1.d-10
+    real ( kind=8 ) :: tolerance = 1.d-6
   contains
     procedure :: init => rhyme_iterative_riemann_solver_init
     procedure :: init_with => rhyme_iterative_riemann_solver_init_with
     procedure :: solve => rhyme_iterative_riemann_solver_solve
-    procedure :: nonlinear_waves => rhyme_iterative_riemann_solver_nonlinear_waves
     procedure :: sampling => rhyme_iterative_riemann_solver_sampling
   end type iterative_riemann_solver_t
 
+  interface nonlinear_waves
+    procedure rhyme_iterative_riemann_solver_nonlinear_waves
+  end interface nonlinear_waves
+
 contains
 
-  subroutine rhyme_iterative_riemann_solver_init_with ( this, ig, niter, tol, pfloor )
+  pure subroutine rhyme_iterative_riemann_solver_init_with ( this, niter, tol, pfloor )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
     integer, intent ( in ) :: niter
-    real ( kind=8 ) :: tol, pfloor
+    real ( kind=8 ), intent ( in ) :: tol, pfloor
 
     if ( this%initialized ) return
 
-    this%ig = ig
     this%n_iteration = niter
     this%tolerance = tol
     this%pressure_floor = pfloor
 
-    call this%init ( ig )
-
+    call this%init
   end subroutine rhyme_iterative_riemann_solver_init_with
 
 
-  subroutine rhyme_iterative_riemann_solver_init ( this, ig )
+  pure subroutine rhyme_iterative_riemann_solver_init ( this )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
-
 
     if ( this%initialized ) return
 
-    this%ig = ig
     this%initialized = .true.
   end subroutine rhyme_iterative_riemann_solver_init
 
@@ -58,26 +54,28 @@ contains
   !! @param[in] L, R <= Left and right conserved hydro states
   !! @param[in] dir <= wave direection
   !! @param[out] star => star region variables (to be filled)
-  pure subroutine rhyme_iterative_riemann_solver_solve ( this, L, R, dir, star )
+  pure subroutine rhyme_iterative_riemann_solver_solve ( this, ig, L, R, dir, star )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
-    type(hydro_conserved_t), intent(in) :: L, R
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( hydro_conserved_t ), intent ( in ) :: L, R
     integer, intent(in) :: dir
-    type(rp_star_region_t), intent(out) :: star
+    type ( rp_star_region_t ), intent ( out ) :: star
 
-    real(kind=8) :: pL, pR, vL, vR, csL, csR, fL, fR, fprimeL, fprimeR
-    real(kind=8) :: p_star__pL, p_star__pR
-    real(kind=8) :: g_m_1__g_p_1, g_p_1__2_g, g_m_1__2_g, gamma_inv
-    real(kind=8) :: p_star, p_star_prev
+    real ( kind=8 ) :: pL, pR, vL, vR, csL, csR, fL, fR, fprimeL, fprimeR
+    real ( kind=8 ) :: p_star__pL, p_star__pR
+    real ( kind=8 ) :: p_star, p_star_prev
 
     integer :: i
 
-    pL = max ( this%ig%p(L), this%pressure_floor )
-    pR = max ( this%ig%p(R), this%pressure_floor )
+    if ( .not. this%initialized ) return
 
-    csL = this%ig%Cs(L)
-    csR = this%ig%Cs(R)
+    pL = max ( ig%p(L), this%pressure_floor )
+    pR = max ( ig%p(R), this%pressure_floor )
+
+    csL = ig%Cs(L)
+    csR = ig%Cs(R)
 
     p_star = ( R%u(hyid%rho) * csR * pL + L%u(hyid%rho) * csL * pR &
       + csR * csL * (L%u(hyid%vel(dir)) - R%u(hyid%vel(dir))) ) &
@@ -91,8 +89,8 @@ contains
     p_star_prev = this%pressure_floor
 
     do i = 1, this%n_iteration
-      call this%nonlinear_waves ( L%u(hyid%rho), pL, p_star, fL, fprimeL )
-      call this%nonlinear_waves ( R%u(hyid%rho), pR, p_star, fR, fprimeR )
+      call nonlinear_waves( ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
+      call nonlinear_waves( ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
 
       p_star = p_star - (fL + fR + (vR - vL)) / (fprimeL + fprimeR)
 
@@ -108,151 +106,178 @@ contains
     p_star__pL = star%p / pL
     p_star__pR = star%p / pR
 
-    g_m_1__g_p_1 = (this%ig%gamma - 1.d0) / (this%ig%gamma + 1.d0)
-    g_p_1__2_g = (this%ig%gamma + 1.d0) / (2.d0 * this%ig%gamma)
-    g_m_1__2_g = (this%ig%gamma - 1.d0) / (2.d0 * this%ig%gamma)
-    gamma_inv = 1.d0 / this%ig%gamma
-
-    if (p_star > pL) then
+    if ( p_star > pL ) then
       star%left%is_shock = .true.
-      star%left%shock%rho = L%u(hyid%rho) * (g_m_1__g_p_1 + p_star__pL) / (g_m_1__g_p_1 * p_star__pL + 1.0)
-      star%left%shock%speed = vL - csL * sqrt(g_p_1__2_g * p_star__pL + g_m_1__2_g)
+      star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + p_star__pL) / (ig%gm1_gp1 * p_star__pL + 1.0)
+      star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * p_star__pL + ig%gm1_2g)
     else
       star%left%is_shock = .false.
-      star%left%fan%rho = L%u(hyid%rho) * p_star__pL**real(gamma_inv, kind=8)
-      star%left%fan%cs = csL * p_star__pL**real(g_m_1__2_g, kind=8)
+      star%left%fan%rho = L%u(hyid%rho) * p_star__pL**real(ig%g_inv, kind=8)
+      star%left%fan%cs = csL * p_star__pL**real(ig%gm1_2g, kind=8)
       star%left%fan%speedH = vL - csL
       star%left%fan%speedT = star%u - star%left%fan%cs
     end if
 
-    if (p_star > pR) then
+    if ( p_star > pR ) then
       star%right%is_shock = .true.
-      star%right%shock%rho = R%u(hyid%rho) * (g_m_1__g_p_1 + p_star__pR) / (g_m_1__g_p_1 * p_star__pR + 1.0)
-      star%right%shock%speed = vR + csR * sqrt(g_p_1__2_g * p_star__pR + g_m_1__2_g)
+      star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + p_star__pR) / (ig%gm1_gp1 * p_star__pR + 1.0)
+      star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * p_star__pR + ig%gm1_2g)
     else
       star%right%is_shock = .false.
-      star%right%fan%rho = R%u(hyid%rho) * p_star__pR**real(gamma_inv, kind=8)
-      star%right%fan%cs = csR * p_star__pR**real(g_m_1__2_g, kind=8)
+      star%right%fan%rho = R%u(hyid%rho) * p_star__pR**real(ig%g_inv, kind=8)
+      star%right%fan%cs = csR * p_star__pR**real(ig%gm1_2g, kind=8)
       star%right%fan%speedH = vR + csR
       star%right%fan%speedT = star%u + star%right%fan%cs
     end if
   end subroutine rhyme_iterative_riemann_solver_solve
 
 
-  pure subroutine rhyme_iterative_riemann_solver_nonlinear_waves ( this, rho, p_k, p, f, fprime)
+  pure subroutine rhyme_iterative_riemann_solver_nonlinear_waves ( ig, rho, p_k, p, f, fprime)
     implicit none
 
-    class ( iterative_riemann_solver_t ), intent ( in ) :: this
-    real(kind=8), intent(in) :: rho, p_k, p
-    real(kind=8), intent(out) :: f, fprime
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    real ( kind=8 ), intent ( in ) :: rho, p_k, p
+    real ( kind=8 ), intent ( out ) :: f, fprime
 
     real(kind=8) :: factor, cs
     real(kind=8) :: Ak, Bk
 
-    Ak = 2.d0 / ((this%ig%gamma + 1.d0) * rho)
-    Bk = (this%ig%gamma - 1.d0) * p_k / (this%ig%gamma + 1.d0)
+    Ak = 2.d0 / ((ig%gamma + 1.d0) * rho)
+    Bk = (ig%gamma - 1.d0) * p_k / (ig%gamma + 1.d0)
 
     if (p > p_k) then
       factor = sqrt(AK / (Bk + p))
       f = (p - p_k) * factor
       fprime = factor * (1.d0 - (p - p_k) / (2.d0 * (Bk + p)))
     else
-      cs = sqrt(this%ig%gamma * p_k / rho)
+      cs = sqrt(ig%gamma * p_k / rho)
 
-      f = 2.d0 * cs / (this%ig%gamma - 1.d0) * ((p / p_k)**real((this%ig%gamma - 1.d0) / (2.d0 * this%ig%gamma), kind=8) - 1.d0)
-      fprime =  1.d0 / (rho * cs) * ((p / p_k)**real(-(this%ig%gamma + 1.d0) / (2.d0 * this%ig%gamma), kind=8))
+      f = 2.d0 * cs / (ig%gamma - 1.d0) * ((p / p_k)**real((ig%gamma - 1.d0) / (2.d0 * ig%gamma), kind=8) - 1.d0)
+      fprime =  1.d0 / (rho * cs) * ((p / p_k)**real(-(ig%gamma + 1.d0) / (2.d0 * ig%gamma), kind=8))
     end if
   end subroutine rhyme_iterative_riemann_solver_nonlinear_waves
 
 
-  subroutine rhyme_iterative_riemann_solver_sampling ( this, L, R, star, dir, dx, dt, U )
+  pure subroutine rhyme_iterative_riemann_solver_sampling ( this, ig, L, R, star, dir, dx, dt, U )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( in ) :: this
-    type(hydro_conserved_t), intent(in) :: L, R
-    type(rp_star_region_t), intent(in) :: star
-    integer, intent(in) :: dir
-    real(kind=8), intent(in) :: dx, dt
-    type(hydro_conserved_t), intent(out) :: U
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( hydro_conserved_t ), intent ( in ) :: L, R
+    type ( rp_star_region_t ), intent ( in ) :: star
+    integer, intent ( in ) :: dir
+    real ( kind=8 ), intent ( in ) :: dx, dt
+    type ( hydro_conserved_t ), intent ( out ) :: U
 
-    real(kind=8) :: g_m_1__g_p_1, g_p_1__2_g, g_m_1__2_g, g_m_1, g_p_1, gamma
-    real(kind=8) :: S
+    if ( .not. this%initialized ) return
 
-    gamma = this%ig%gamma
-    g_m_1 = (this%ig%gamma - 1.d0)
-    g_p_1 = (this%ig%gamma + 1.d0)
-    g_m_1__g_p_1 = (this%ig%gamma - 1.d0) / (this%ig%gamma + 1.d0)
-    g_p_1__2_g = (this%ig%gamma + 1.d0) / (2.d0 * this%ig%gamma)
-    g_m_1__2_g = (this%ig%gamma - 1.d0) / (2.d0 * this%ig%gamma)
-
-    S = dx / dt
-
-    if ( S <= star%u ) then
-      call irs_sampling_left
+    if ( dx/dt <= star%u ) then
+      call irs_sampling_left( L, star, dx/dt, U )
     else
-      call irs_sampling_right
+      call irs_sampling_right( R, star, dx/dt, U )
     end if
 
   contains
 
-    subroutine irs_sampling_right ()
+    pure subroutine irs_sampling_right ( right, star_region, dxdt, state )
       implicit none
 
+      type ( hydro_conserved_t ), intent ( in ) :: right
+      type ( rp_star_region_t ), intent ( in ) :: star_region
+      real ( kind=8 ), intent ( in ) :: dxdt
+      type ( hydro_conserved_t ), intent ( out ) :: state
       real(kind=8) :: factor, vel(3)
 
-      vel = R%u(hyid%rho_u:hyid%rho_w) / R%u(hyid%rho)
+      vel = right%u(hyid%rho_u:hyid%rho_w) / right%u(hyid%rho)
 
-      if ( star%right%is_shock ) then ! Shock
-        if ( star%u <= S .and. S <= star%right%shock%speed ) then
-          vel(dir) = star%u
-          call this%ig%prim_vars_to_cons (star%right%shock%rho, vel(1), vel(2), vel(3), star%p, U)
-        else if ( S >= star%right%shock%speed ) then
-          call hy_copy (R, U)
+      if ( star_region%right%is_shock ) then ! Shock
+
+        if ( star_region%u <= dxdt &
+          .and. dxdt <= star_region%right%shock%speed ) then
+          vel(dir) = star_region%u
+          call ig%prim_vars_to_cons( &
+            star_region%right%shock%rho, &
+            vel(1), vel(2), vel(3), &
+            star_region%p, state &
+          )
+        else if ( dxdt >= star_region%right%shock%speed ) then
+          call hy_copy (right, state)
         end if
+
       else ! Fan
-        if ( star%u <= S .and. S <= star%right%fan%speedT ) then
-          vel(dir) = star%u
-          call this%ig%prim_vars_to_cons (star%right%fan%rho, vel(1), vel(2), vel(3), star%p, U)
-        else if ( star%right%fan%speedT <= S .and. S <= star%right%fan%speedH ) then
-          factor = 2.0 / g_p_1 - g_m_1__g_p_1 / this%ig%Cs(R) * (R%u(hyid%vel(dir)) / R%u(hyid%rho) - S)
-          vel(dir) = 2.0 / g_p_1 * (-this%ig%Cs(R) + g_m_1 / 2.0 * U%u(hyid%vel(dir)) / R%u(hyid%rho) + S)
-          call this%ig%prim_vars_to_cons (R%u(hyid%rho) * factor**(2.0 / g_m_1), &
-          vel(1), vel(2), vel(3), this%ig%p(R) * factor**(2.0 * gamma / g_m_1), U)
-        else if ( S >= star%right%fan%speedH ) then
-          call hy_copy(R, U)
+        if ( star_region%u <= dxdt &
+          .and. dxdt <= star_region%right%fan%speedT ) then
+          vel(dir) = star_region%u
+          call ig%prim_vars_to_cons ( &
+            star_region%right%fan%rho, &
+            vel(1), vel(2), vel(3), &
+            star_region%p, state &
+          )
+        else if ( star_region%right%fan%speedT <= dxdt &
+          .and. dxdt <= star_region%right%fan%speedH ) then
+          factor = 2.0 / ig%gp1 - ig%gm1_gp1 / ig%Cs(right) &
+            * ( right%u(hyid%vel(dir)) / right%u(hyid%rho) - dxdt )
+          vel(dir) = 2.0 / ig%gp1 &
+            * ( -ig%Cs(right) + ig%gm1 / 2.0 * state%u(hyid%vel(dir)) / right%u(hyid%rho) + dxdt )
+          call ig%prim_vars_to_cons ( &
+            right%u(hyid%rho) * factor**(2.0 / ig%gm1), &
+            vel(1), vel(2), vel(3), &
+            ig%p(right) * factor**(2.0 * ig%gamma / ig%gm1), state &
+          )
+        else if ( dxdt >= star_region%right%fan%speedH ) then
+          call hy_copy(right, state)
         end if
       end if
     end subroutine irs_sampling_right
 
 
-    subroutine irs_sampling_left ()
+    pure subroutine irs_sampling_left ( left, star_region, dxdt, state )
       implicit none
 
+      type ( hydro_conserved_t ), intent ( in ) :: left
+      type ( rp_star_region_t ), intent ( in ) :: star_region
+      real ( kind=8 ), intent ( in ) :: dxdt
+      type ( hydro_conserved_t ), intent ( out ) :: state
       real(kind=8) :: factor, vel(3)
 
-      vel = L%u(hyid%rho_u:hyid%rho_w) / L%u(hyid%rho)
+      vel = left%u(hyid%rho_u:hyid%rho_w) / left%u(hyid%rho)
 
-      if ( star%left%is_shock ) then ! Shock
-        if ( star%left%shock%speed <= S .and. S < star%u) then
-          vel(dir) = star%u
-          call this%ig%prim_vars_to_cons (star%left%shock%rho, vel(1), vel(2), vel(3), star%p, U)
-        else if ( S < star%left%shock%speed ) then
-          call hy_copy(L, U)
+      if ( star_region%left%is_shock ) then ! Shock
+        if ( star_region%left%shock%speed <= dxdt &
+          .and. dxdt < star_region%u) then
+          vel(dir) = star_region%u
+          call ig%prim_vars_to_cons( &
+            star_region%left%shock%rho, &
+            vel(1), vel(2), vel(3), &
+            star_region%p, state &
+          )
+        else if ( dxdt < star_region%left%shock%speed ) then
+          call hy_copy(left, state)
         end if
       else ! Fan
-        if ( S <= star%left%fan%speedH ) then
-          call hy_copy(L, U)
-        else if ( star%left%fan%speedH <= S .and. S <= star%left%fan%speedT ) then
-          factor = 2.0 / g_p_1 + g_m_1__g_p_1 / this%ig%Cs(L) * (L%u(hyid%vel(dir)) / L%u(hyid%rho) - S)
-          vel(dir) = 2.0 / g_p_1 * ( this%ig%Cs(L) + g_m_1 / 2.0 * L%u(hyid%vel(dir)) / L%u(hyid%rho) + S)
-          call this%ig%prim_vars_to_cons (L%u(hyid%rho) * factor**(2.0 / g_m_1), &
-          vel(1), vel(2), vel(3), this%ig%p(L) * factor**(2.0 * gamma / g_m_1), U)
-        else if ( star%left%fan%speedT <= S .and. S <= star%u ) then
-          vel(dir) = star%u
-          call this%ig%prim_vars_to_cons (star%left%fan%rho, vel(1), vel(2), vel(3), star%p, U)
+        if ( dxdt <= star_region%left%fan%speedH ) then
+          call hy_copy(left, state)
+        else if ( star_region%left%fan%speedH <= dxdt &
+          .and. dxdt <= star_region%left%fan%speedT ) then
+          factor = 2.0 / ig%gp1 + ig%gm1_gp1 / ig%Cs(left) &
+            * (left%u(hyid%vel(dir)) / left%u(hyid%rho) - dxdt)
+          vel(dir) = 2.0 / ig%gp1 &
+            * ( ig%Cs(left) + ig%gm1 / 2.0 * left%u(hyid%vel(dir)) / left%u(hyid%rho) + dxdt)
+          call ig%prim_vars_to_cons( &
+            left%u(hyid%rho) * factor**(2.0 / ig%gm1), &
+            vel(1), vel(2), vel(3), &
+            ig%p(left) * factor**(2.0 * ig%gamma / ig%gm1), state &
+          )
+        else if ( star_region%left%fan%speedT <= dxdt &
+          .and. dxdt <= star_region%u ) then
+          vel(dir) = star_region%u
+          call ig%prim_vars_to_cons( &
+            star_region%left%fan%rho, &
+            vel(1), vel(2), vel(3), &
+            star_region%p, state &
+          )
         end if
       end if
     end subroutine irs_sampling_left
   end subroutine rhyme_iterative_riemann_solver_sampling
-
 end module rhyme_iterative_riemann_solver
