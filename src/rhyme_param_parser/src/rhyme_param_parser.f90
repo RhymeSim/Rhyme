@@ -66,9 +66,9 @@ contains
         read (1, *) key, op, str
 
         if ( trim(str) .eq. 'rhyme' ) then
-          ic%type = icid%rhyme
+          ic%snapshot_type = icid%rhyme
         else if ( trim(str) .eq. 'r2c_2d' ) then
-          ic%type = icid%r2c_2d
+          ic%snapshot_type = icid%r2c_2d
         else
           call log%err_kw( 'Unknown ic_snapshot_type', 'ic_snapshot_type', str )
         end if

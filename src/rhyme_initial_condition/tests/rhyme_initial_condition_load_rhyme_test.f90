@@ -4,7 +4,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   implicit none
 
-  character ( len=1024 ) :: nickname = 'rhyme_initial_condition_load_rhyme.h5'
+  character ( len=1024 ) :: nickname = 'rhyme_initial_condition_load_rhyme'
   character ( len=1024 ) :: filename
 
   type ( initial_condition_t ) :: ic
@@ -21,6 +21,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   ! Prepare chombo file
   ch%nickname = nickname
+  ch%iteration = samr%levels(0)%iteration
   call ch%filename_generator ( filename )
   call ch%write_samr ( samr )
 

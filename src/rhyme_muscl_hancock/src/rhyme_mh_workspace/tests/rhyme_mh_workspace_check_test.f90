@@ -15,7 +15,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes
-      call ws%check ( l, b, samr%levels(l)%boxes(b) )
+      call ws%check ( samr%levels(l)%boxes(b) )
 
       lb = lbound ( samr%levels(l)%boxes(b)%hydro )
       ub = ubound ( samr%levels(l)%boxes(b)%hydro )

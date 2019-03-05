@@ -27,6 +27,8 @@ module rhyme_muscl_hancock_factory
   real ( kind=8 ), parameter :: pressure_floor = 1.d-10
 
   type ( cfl_t ) :: cfl
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
@@ -48,10 +50,12 @@ contains
     cfl%courant_number = courant_number
 
     ! Initializing Ideal Gas
-    call ig%init_with ( gastype )
+    call chemi%init
+    call thermo%init
+    call ig%init_with( chemi, thermo, gastype )
 
     ! Initializing Iteratice Riemann Solver
-    call irs%init ( ig )
+    call irs%init
 
     ! Initializing Slope Limiter
     sl%type = sltype

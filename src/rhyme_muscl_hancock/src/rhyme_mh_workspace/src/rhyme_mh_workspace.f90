@@ -50,14 +50,17 @@ contains
   end subroutine rhyme_mh_workspace_init
 
 
-  pure subroutine rhyme_mh_workspace_check ( this, l, b, hydro_box )
+  pure subroutine rhyme_mh_workspace_check ( this, hydro_box )
     implicit none
 
     class ( mh_workspace_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: l, b
     type ( samr_box_t ), intent ( in ) :: hydro_box
 
+    integer :: l, b
     integer :: lb(3), ub(3), wslb(4), wsub(4), stat
+
+    l = hydro_box%level
+    b = hydro_box%number
 
     lb = lbound ( hydro_box%hydro )
     ub = ubound ( hydro_box%hydro )

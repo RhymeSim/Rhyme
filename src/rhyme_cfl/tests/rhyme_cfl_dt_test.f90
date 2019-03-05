@@ -15,12 +15,17 @@ logical function rhyme_cfl_dt_test () result (failed)
   ]
 
   type ( cfl_t ) :: cfl
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
 
   real(kind=8) :: dt, dt_expected
 
-  call ig%init_with ( igid%diatomic )
+  call chemi%init
+  call thermo%init
+  call ig%init_with ( chemi, thermo, igid%diatomic )
+
   call rhyme_samr_factory_fill( &
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
 

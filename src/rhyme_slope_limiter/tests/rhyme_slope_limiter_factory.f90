@@ -3,9 +3,6 @@ module rhyme_slope_limiter_factory
 
   implicit none
 
-  type ( cfl_t ) :: cfl
-  type ( ideal_gas_t ), save :: ig
-
   type ( hydro_conserved_t ) :: UL, UM, UR
 
   real(kind=8), parameter :: rho = 1.23d0

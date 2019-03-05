@@ -5,8 +5,14 @@ logical function rhyme_slope_limiter_van_leer_test () result (failed)
 
   type ( slope_limiter_t ) :: sl
   type ( hydro_conserved_t ) :: Delta
+  type ( cfl_t ) :: cfl
+  type ( ideal_gas_t ) :: ig
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
 
-  call ig%init_with ( igid%diatomic )
+  call chemi%init
+  call thermo%init
+  call ig%init_with ( chemi, thermo, igid%diatomic )
 
   UL%u = cons%u
   UR%u = cons%u

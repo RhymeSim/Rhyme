@@ -12,6 +12,17 @@ set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
+find_package ( OpenMP )
+
+if ( OPENMP_FOUND )
+  set ( CMAKE_Fortran_FLAGS
+    "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}" )
+  set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+  set ( CMAKE_EXE_LINKER_FLAGS
+    "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" )
+endif()
+
+
 set ( deps
   rhyme_log
   rhyme_nombre

@@ -5,10 +5,14 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   integer :: i, actual_grid_size(3) = base_grid + ( 2 * ghost_cells )
   type ( samr_t ) :: samr, samr1d, samr_uni
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( log_t ) :: log
 
-  call ig%init_with( igid%monatomic )
+  call chemi%init
+  call thermo%init
+  call ig%init_with( chemi, thermo, igid%monatomic )
 
   ! SAMR test
   call simple%init( samr, ig, log )

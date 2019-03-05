@@ -6,6 +6,8 @@ program rhyme
   use rhyme_samr_bc
   use rhyme_cfl
   use rhyme_ideal_gas
+  use rhyme_chemistry
+  use rhyme_thermo_base
   use rhyme_drawing
   use rhyme_slope_limiter
   use rhyme_iterative_riemann_solver
@@ -20,6 +22,8 @@ program rhyme
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
+  type ( chemistry_t ) :: chemistry
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( drawing_t ) :: draw
   type ( iterative_riemann_solver_t ) :: irs
@@ -52,8 +56,14 @@ program rhyme
   ! Initializing
   call log%set_section( 'init' )
 
+  ! Chemistry
+  call chemistry%init
+
+  ! Thermodynamics
+  call thermo%init
+
   ! Ideal Gas
-  call ig%init
+  call ig%init( chemistry, thermo )
 
   ! Structured AMR
   call ic%init( samr, ig, log )
@@ -65,10 +75,10 @@ program rhyme
   call draw%apply( ig, samr )
 
   ! Iterative Riemann Solver
-  call irs%init( ig )
+  call irs%init
 
   ! MUSCL-Hancock
-  call mh%init_with( cfl, ig, irs, sl, samr )
+  call mh%init( samr )
 
   ! Chombo Output
   call chombo%init( log )
@@ -92,7 +102,12 @@ program rhyme
 
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
-        call mh%solve( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, samr%levels(l)%dt )
+        call mh%solve( &
+          samr%levels(l)%boxes(b), &
+          samr%levels(l)%dx, &
+          samr%levels(l)%dt, &
+          cfl, ig, irs, sl &
+        )
       end do
     end do
     call log%done( 'Hydro solver' )

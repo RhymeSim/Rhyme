@@ -26,12 +26,17 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
 
   integer :: i, j, k, g(3)
 
-  call ig%init_with ( igid%diatomic )
+  call chemi%init
+  call thermo%init
+  call ig%init_with ( chemi, thermo, igid%diatomic )
+
   call rhyme_samr_factory_fill ( &
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
   )

@@ -11,6 +11,8 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
 
   type ( initial_condition_t ) :: ic
   type ( samr_t ) :: samr
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( log_t ) :: log
   type ( rhyme_hdf5_util_t ) :: h5
@@ -29,7 +31,10 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   samr%base_grid(3) = 1 ! Bug in R2C
   samr%ghost_cells(3) = 0
 
-  call ig%init_with( igid%monatomic )
+  call chemi%init
+  call thermo%init
+  call ig%init_with( chemi, thermo, igid%monatomic )
+
   call ic%load_r2c_2d( samr, ig, log )
 
   ! Reading the snapshot

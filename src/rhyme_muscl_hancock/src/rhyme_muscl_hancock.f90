@@ -48,7 +48,7 @@ contains
     real ( kind=8 ), intent ( in ) :: dx(3), dt
     type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( iterative_riemann_solver_t ), intent ( in ) :: irs
+    type ( iterative_riemann_solver_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
 
     integer :: l, b, i, j, k
@@ -63,7 +63,7 @@ contains
     l = box%level
     b = box%number
 
-    call this%ws%check ( l, b, box )
+    call this%ws%check( box )
 
     active_dir = box%dims > 1
     flux_factor = merge ( 1, 0, active_dir )
@@ -126,45 +126,45 @@ contains
       do j = lb(2) + 1, ub(2)
         do i = lb(1) + 1, ub(1)
           if ( active_dir(hyid%x) ) then
-            call irs%solve ( ig, &
+            call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
               hyid%x, star &
             )
-            call irs%sampling ( ig, &
+            call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
               star, hyid%x, 0.d0, dt, evolved_hydro_state &
             )
-            call ig%flux_at ( evolved_hydro_state, hyid%x, &
+            call ig%flux_at( evolved_hydro_state, hyid%x, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
           end if
           if ( active_dir(hyid%y) ) then
-            call irs%solve ( ig, &
+            call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
               hyid%y, star &
             )
-            call irs%sampling ( ig, &
+            call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
               star, hyid%y, 0.d0, dt, evolved_hydro_state &
             )
-            call ig%flux_at ( evolved_hydro_state, hyid%y, &
+            call ig%flux_at( evolved_hydro_state, hyid%y, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
           end if
           if ( active_dir(hyid%z) ) then
-            call irs%solve ( ig, &
+            call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
               hyid%z, star &
             )
-            call irs%sampling ( ig, &
+            call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
               star, hyid%z, 0.d0, dt, evolved_hydro_state &
             )
-            call ig%flux_at ( evolved_hydro_state, hyid%z, &
+            call ig%flux_at( evolved_hydro_state, hyid%z, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z ) )
           end if
         end do
