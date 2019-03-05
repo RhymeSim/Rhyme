@@ -32,7 +32,9 @@ logical function rhyme_samr_init_box_test () result ( failed )
       call samr%init_box( l, b, box_dims, ledge, redge )
 
       failed = &
-      .not. allocated( samr%levels(l)%boxes(b)%hydro ) &
+      samr%levels(l)%boxes(b)%level .ne. l &
+      .or. samr%levels(l)%boxes(b)%number .ne. b &
+      .or. .not. allocated( samr%levels(l)%boxes(b)%hydro ) &
       .or. any( lbound( samr%levels(l)%boxes(b)%hydro ) .ne. - ghost_cells + 1 ) &
       .or. any( ubound( samr%levels(l)%boxes(b)%hydro ) .ne. box_dims + ghost_cells ) &
       .or. .not. allocated ( samr%levels(l)%boxes(b)%flags ) &

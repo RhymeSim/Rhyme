@@ -46,6 +46,9 @@ contains
       box_dims = merge( box_dims, 1, box_dims > 1 )
 
       do b = 1, samr%levels(l)%nboxes
+        samr%levels(l)%boxes(b)%level = l
+        samr%levels(l)%boxes(b)%number = b
+
         lb = -ghost_cells + 1
         ub = box_dims + ghost_cells
 

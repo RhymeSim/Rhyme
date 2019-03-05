@@ -13,8 +13,11 @@ module rhyme_samr
 
 
   type samr_box_t
-    integer :: dims(3)
-    integer :: left_edge(3), right_edge(3)
+    integer :: dims(3) = samrid%unset
+    integer :: level = samrid%unset
+    integer :: number = samrid%unset
+    integer :: left_edge(3) = samrid%unset
+    integer :: right_edge(3) = samrid%unset
     integer, allocatable :: flags (:, :, :)
     type ( hydro_conserved_t ), allocatable :: hydro (:, :, :)
   end type samr_box_t
@@ -22,7 +25,9 @@ module rhyme_samr
 
   type samr_level_t
     integer :: level = samrid%unset
-    integer :: nboxes = 0, max_nboxes = 0, iteration = 0
+    integer :: nboxes = samrid%unset
+    integer :: max_nboxes = samrid%unset
+    integer :: iteration = samrid%unset
     real ( kind=8 ) :: refine_factor
     real ( kind=8 ) :: t = 0.d0
     real ( kind=8 ) :: dt, dx(3)
@@ -55,6 +60,9 @@ contains
     integer, intent ( in ) :: ledges(3), redges(3)
 
     integer :: lb(3), ub(3)
+
+    this%levels(l)%boxes(b)%level = l
+    this%levels(l)%boxes(b)%number = b
 
     lb = -this%ghost_cells + 1
     ub = dims + this%ghost_cells

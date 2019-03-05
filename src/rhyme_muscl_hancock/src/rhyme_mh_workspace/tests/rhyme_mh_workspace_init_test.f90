@@ -9,7 +9,6 @@ logical function rhyme_mh_workspace_init_test () result ( failed )
 
   call rhyme_mh_workspace_factory_init
 
-  ws%type = wsid%memory_intensive
   call ws%init ( samr )
 
   failed = ws%nlevels .ne. samr%nlevels

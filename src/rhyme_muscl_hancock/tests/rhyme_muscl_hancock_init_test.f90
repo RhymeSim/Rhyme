@@ -8,14 +8,7 @@ logical function rhyme_muscl_hancock_init_test () result ( failed )
 
   call rhyme_muscl_hancock_factory_init
 
-  mh%cfl = cfl
-  mh%ig = ig
-  mh%irs = irs
-  mh%sl = sl
-
   call mh%init ( samr )
 
-  failed = &
-  mh%ws%type .ne. wsid%memory_intensive &
-  .or. .not. mh%ws%initialized
+  failed = .not. mh%ws%initialized .or. .not. mh%initialized
 end function rhyme_muscl_hancock_init_test

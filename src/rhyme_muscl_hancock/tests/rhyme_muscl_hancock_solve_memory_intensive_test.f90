@@ -9,17 +9,17 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
 
   call rhyme_muscl_hancock_factory_init
 
-  call mh%init_with ( cfl, ig, irs, sl, samr )
+  call mh%init( samr )
 
   dt = 0.05d0
+  failed = .true.
 
   ! Stupid test
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%nboxes
-      call mh%solve ( l, b, samr%levels(l)%boxes(b), samr%levels(l)%dx, dt )
+      call mh%solve( samr%levels(l)%boxes(b), samr%levels(l)%dx, dt, cfl, ig, irs, sl )
     end do
   end do
 
   failed = .false.
-
 end function rhyme_muscl_hancock_solve_memory_intensive_test
