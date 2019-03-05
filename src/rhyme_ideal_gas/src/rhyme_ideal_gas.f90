@@ -16,14 +16,13 @@ module rhyme_ideal_gas
 
 
   type ideal_gas_t
-    type(nombre_t) :: R, Cv, Cp
-    real(kind=8) :: gamma
-    integer :: type ! monatomic, diatomic or polyatomic
+    type ( nombre_t ) :: R, Cv, Cp
+    real ( kind=8 ) :: gamma
+    real ( kind=8 ) :: gm1, gp1, gm1_gp1, gm1_2g, gp1_2g, g_inv
+    integer :: type
     integer :: beta
-    real(kind=8) :: kB_per_amu ! kB / 1 amu
+    real ( kind=8 ) :: kB_per_amu ! kB / 1 amu
     logical :: initialized = .false.
-    type ( chemistry_t ) :: chemi
-    type ( thermo_base_t ) :: thermo
   contains
     procedure :: init => rhyme_ideal_gas_init
     procedure :: init_with => rhyme_ideal_gas_init_with
@@ -43,10 +42,12 @@ module rhyme_ideal_gas
 
 contains
 
-  subroutine rhyme_ideal_gas_init_with ( this, gastype )
+  subroutine rhyme_ideal_gas_init_with ( this, chemi, thermo, gastype )
     implicit none
 
     class ( ideal_gas_t ), intent ( inout ) :: this
+    type ( chemistry_t ), intent ( in ) :: chemi
+    type ( thermo_base_t ), intent ( in ) :: thermo
     integer :: gastype
 
 
@@ -54,23 +55,22 @@ contains
 
     this%type = gastype
 
-    call rhyme_ideal_gas_init ( this )
+    call rhyme_ideal_gas_init ( this, chemi, thermo )
   end subroutine rhyme_ideal_gas_init_with
 
 
-  subroutine rhyme_ideal_gas_init ( this )
+  subroutine rhyme_ideal_gas_init ( this, chemi, thermo )
     implicit none
 
-    class(ideal_gas_t) :: this
+    class ( ideal_gas_t ), intent ( inout ) :: this
+    type ( chemistry_t ), intent ( in ) :: chemi
+    type ( thermo_base_t ), intent ( in ) :: thermo
 
 
     if ( this%initialized ) return
 
-    call this%chemi%init
-    call this%thermo%init
-
     this%R = nombre_t(8.314d0, kg * (m / s)**2 / mol / Kel)
-    this%kB_per_amu = this%thermo%kB%v / this%chemi%amu%one%v
+    this%kB_per_amu = thermo%kB%v / chemi%amu%one%v
 
     if ( this%type .eq. igid%monatomic ) then
       this%Cv = 3.d0 / 2.d0 * this%R
@@ -87,6 +87,13 @@ contains
     end if
 
     this%gamma = this%Cp%v / this%Cv%v
+
+    this%gm1 = this%gamma - 1.d0
+    this%gp1 = this%gamma + 1.d0
+    this%gm1_gp1 = ( this%gamma - 1.d0 ) / ( this%gamma + 1.d0 )
+    this%gm1_2g = ( this%gamma - 1.d0 ) / ( 2 * this%gamma )
+    this%gp1_2g = ( this%gamma + 1.d0 ) / ( 2 * this%gamma )
+    this%g_inv = 1.d0 / this%gamma
 
     this%initialized = .true.
   end subroutine rhyme_ideal_gas_init

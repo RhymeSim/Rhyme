@@ -3,9 +3,15 @@ logical function rhyme_ideal_gas_primitive_to_conserved_test () result (failed)
 
   implicit none
 
+  type ( ideal_gas_t ) :: ig
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
+
   type(hydro_conserved_t) :: cons_calc
 
-  call ig%init_with ( gas_type )
+  call chemi%init
+  call thermo%init
+  call ig%init_with ( chemi, thermo, gas_type )
 
   call ig%prim_to_cons ( prim, cons_calc )
 

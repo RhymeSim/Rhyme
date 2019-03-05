@@ -3,9 +3,14 @@ logical function rhyme_ideal_gas_t_per_mu_test () result (failed)
 
   implicit none
 
+  type ( ideal_gas_t ) :: ig
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   real(kind=8) :: T__mu
 
-  call ig%init_with ( gas_type )
+  call chemi%init
+  call thermo%init
+  call ig%init_with( chemi, thermo, gas_type )
 
   T__mu = T / mu_
 

@@ -3,9 +3,14 @@ logical function rhyme_ideal_gas_primitive_vars_to_conserved_test () result (fai
 
   implicit none
 
-  type(hydro_conserved_t) :: cons_calc
+  type ( ideal_gas_t ) :: ig
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
+  type ( hydro_conserved_t ) :: cons_calc
 
-  call ig%init_with ( gas_type )
+  call chemi%init
+  call thermo%init
+  call ig%init_with( chemi, thermo, gas_type )
 
   call ig%prim_vars_to_cons ( rho, u, v, w, p, cons_calc )
 

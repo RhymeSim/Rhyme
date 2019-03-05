@@ -3,9 +3,7 @@ module rhyme_ideal_gas_factory
 
   implicit none
 
-  type ( ideal_gas_t ), save :: ig
-
-  integer, parameter :: gas_type = 1 ! igid%monatomic
+  integer, parameter :: gas_type = igid%monatomic
 
   real(kind=8), parameter :: rho = 1.23d0
   real(kind=8), parameter :: u = 2.34d0

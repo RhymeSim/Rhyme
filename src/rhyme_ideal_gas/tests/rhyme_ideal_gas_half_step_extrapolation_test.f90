@@ -3,11 +3,16 @@ logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
 
   implicit none
 
+  type ( ideal_gas_t ) :: ig
+  type ( chemistry_t ) :: chemi
+  type ( thermo_base_t ) :: thermo
   type ( hydro_conserved_t ) :: exp_L, exp_R, Delta, L, R
   type ( hydro_flux_t ) :: FL, FR
   real ( kind=8 ) :: dt, dx
 
-  call ig%init_with ( gas_type )
+  call chemi%init
+  call thermo%init
+  call ig%init_with( chemi, thermo, gas_type )
 
 
   dx = 1.d0 / 1024
