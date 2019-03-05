@@ -25,9 +25,9 @@ module rhyme_samr
 
   type samr_level_t
     integer :: level = samrid%unset
-    integer :: nboxes = samrid%unset
-    integer :: max_nboxes = samrid%unset
-    integer :: iteration = samrid%unset
+    integer :: nboxes = 0
+    integer :: max_nboxes = 0
+    integer :: iteration = 0
     real ( kind=8 ) :: refine_factor
     real ( kind=8 ) :: t = 0.d0
     real ( kind=8 ) :: dt, dx(3)

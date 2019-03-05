@@ -107,6 +107,8 @@ contains
     end do
 
     ! Initializing the first level
+    samr%levels(0)%boxes(1)%level = 0
+    samr%levels(0)%boxes(1)%number = 1
     samr%levels(0)%boxes(1)%dims = samr%base_grid
     samr%levels(0)%boxes(1)%left_edge = 1
     samr%levels(0)%boxes(1)%right_edge = samr%base_grid
@@ -237,6 +239,9 @@ contains
 
       ofs = 0
       do b = 1, nboxes
+        samr%levels(l)%boxes(b)%level = l
+        samr%levels(l)%boxes(b)%number = b
+
         bdims = boxes(4:6, b) - boxes(1:3, b) + 1
         blen = product( bdims )
         ub = bdims

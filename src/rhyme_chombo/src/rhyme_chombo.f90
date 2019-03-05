@@ -86,7 +86,6 @@ contains
     if ( this%iteration .eq. chid%unset ) then
       write ( itr_str, "(I0.5)" ) 0
     else
-      print *, 'iter:', this%iteration
       write ( itr_str, "(I0.5)" ) this%iteration
     end if
 
