@@ -1,6 +1,6 @@
 module rhyme_param_parser
   ! TODO: replace iteration with fortran namelists
-  
+
   use rhyme_log
   use rhyme_initial_condition
   use rhyme_samr_bc
@@ -137,16 +137,16 @@ contains
         ! drawing
       case ( "canvas" )
         read (1, *) key, op, str
-        call log%write_kw( 'canvas_type', str )
+        call log%write_kw( 'canvas (type)', str )
         backspace(1)
 
         if ( trim(str) .eq. 'uniform' ) then
-          draw%type = drid%uniform_bg
           read (1, *) key, op, str, draw%canvas%w(hyid%rho:hyid%p)
-          call log%write_kw1d( 'canvas_uniform', draw%canvas%w )
+          draw%type = drid%uniform_bg
+          call log%write_kw1d( 'canvas (uniform)', draw%canvas%w )
         else if ( trim(str) .eq. 'transparent' ) then
+          read (1, *) key, op, str
           draw%type = drid%transparent_bg
-          call log%write( 'Using transparent canvas' )
         else
           call log%warn_kw( 'Unsuported canvas', 'canvas_type', str )
         end if
