@@ -32,10 +32,19 @@ contains
     integer :: ios
     character(len=1024) :: key, op, str
     type ( shape_t ), pointer :: shape
+    logical :: param_file_was_found
+
 
     call log%set_section( 'params' )
 
-    open (1, file=param_file, action='read', form="formatted")
+    inquire( file=param_file, exist=param_file_was_found )
+
+    if ( param_file_was_found ) then
+      open (1, file=param_file, action='read', form="formatted")
+    else
+      call log%err( 'Parameter file was not found,', 'param_file', ':', [ param_file ] )
+      stop
+    end if
 
     do
       read (1, *, iostat=ios) key

@@ -150,13 +150,11 @@ contains
     call this%set_logo
     call this%set_colored_logo
 
-    if ( len_trim( this%logfile ) < 2 ) then
-      this%logfile = logger_util_const%default_logfile
-    end if
+    write ( this%logfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)" ) &
+      this%t(1),'-',this%t(2),'-',this%t(3),'-', this%t(5),'-',this%t(6),'-',this%t(7),'.log.txt'
 
-    if ( len_trim( this%errfile ) < 2 ) then
-      this%errfile = logger_util_const%default_errfile
-    end if
+    write ( this%errfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)" ) &
+      this%t(1),'-',this%t(2),'-',this%t(3),'-', this%t(5),'-',this%t(6),'-',this%t(7),'.err.txt'
 
     ! Logo
     call this%open_logfile

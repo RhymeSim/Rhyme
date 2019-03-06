@@ -39,15 +39,13 @@ program rhyme
   ! TODO: use getopt to read flag-based additional command line arguments
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
-  call get_command_argument ( 2, log%logfile )
-  call get_command_argument ( 3, log%errfile )
 
 
   call log%start
   call log%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
   call log%log( 'command line argument:', 'param_file', '=', [ param_file ] )
-  call log%log( 'command line argument:', 'log_file', '=', [ log%logfile ] )
-  call log%log( 'command line argument:', 'err_file', '=', [ log%errfile ] )
+  call log%log( '', 'log_file', '=', [ log%logfile ] )
+  call log%log( '', 'err_file', '=', [ log%errfile ] )
 
 
   ! Reading parameters and converting them to code units
