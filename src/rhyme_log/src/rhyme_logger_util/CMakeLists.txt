@@ -26,6 +26,7 @@ endforeach ( dep )
 set ( srcs
   src/rhyme_logger_util.f90
   src/rhyme_logger_util_log.f90
+  src/rhyme_logger_util_warn.f90
 )
 
 add_library ( ${PROJECT_NAME} STATIC ${srcs} )

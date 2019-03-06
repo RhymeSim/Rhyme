@@ -1,6 +1,6 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_log_submodule
+submodule ( rhyme_logger_util ) rhyme_logger_util_warn_submodule
 contains
-  module subroutine rhyme_logger_util_log ( this, message, key, operator, value )
+  module subroutine rhyme_logger_util_warn ( this, message, key, operator, value )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
@@ -33,11 +33,11 @@ contains
     call this%open_logfile
 
     str = trim( message )//' '//trim( k )//' '//tc%ig//trim( op )//tc%nc//' '//trim( v )
-    write( stdout,* ) trim(this%tas(color=tc%gn))//' '//adjustl(trim(str))
+    write( stdout,* ) trim(this%tas(color=tc%yl))//' [WARN] '//' '//adjustl(trim(str))
 
     str = trim( message )//' '//trim( k )//' '//trim( op )//' '//trim( v )
-    write( this%logfile_unit,* ) trim(this%tas())//' '//adjustl(trim(str))
+    write( this%logfile_unit,* ) trim(this%tas())//' [WARN] '//' '//adjustl(trim(str))
 
     call this%close_logfile
-  end subroutine rhyme_logger_util_log
-end submodule rhyme_logger_util_log_submodule
+  end subroutine rhyme_logger_util_warn
+end submodule rhyme_logger_util_warn_submodule

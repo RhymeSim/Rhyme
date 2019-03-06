@@ -47,7 +47,6 @@ module rhyme_logger_util
     procedure :: log => rhyme_logger_util_log
     procedure :: done => rhyme_logger_util_done
     procedure :: warn => rhyme_logger_util_warn
-    procedure :: warn_kw => rhyme_logger_util_warn_kw
     procedure :: err => rhyme_logger_util_err
     procedure :: err_kw => rhyme_logger_util_err_kw
     procedure :: err_kw1d => rhyme_logger_util_err_kw1d
@@ -71,6 +70,13 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ), optional :: operator
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_log
+    module subroutine rhyme_logger_util_warn ( this, message, key, operator, value )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ) :: message
+      class (*), intent ( in ), optional :: key
+      character ( len=* ), intent ( in ), optional :: operator
+      class (*), intent ( in ), optional :: value(:)
+    end subroutine rhyme_logger_util_warn
   end interface
 
 contains
@@ -241,21 +247,6 @@ contains
   end subroutine rhyme_logger_util_done
 
 
-  subroutine rhyme_logger_util_warn ( this, message )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: message
-
-    call this%open_logfile
-
-    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//' [WARN] '//adjustl(trim(message))
-    write ( this%logfile_unit,* ) trim( this%tas() )//' [WARN] '//adjustl(trim(message))
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_warn
-
-
   subroutine rhyme_logger_util_err ( this, message )
     implicit none
 
@@ -269,59 +260,6 @@ contains
 
     call this%close_logfile
   end subroutine rhyme_logger_util_err
-
-
-  subroutine rhyme_logger_util_warn_kw ( this, msg, key, value, operator )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: msg
-    class (*), intent ( in ) :: key, value
-    character ( len=* ), intent ( in ), optional :: operator
-
-    character ( len=512 ) :: message, k, v
-    character ( len=16 ) :: op
-
-    if ( present( operator ) ) then
-      op = trim( operator )
-    else
-      op = ' => '
-    end if
-
-    select type ( ke => key )
-    type is ( character (*) )
-      k = ke
-    type is ( integer )
-      write ( k, logger_util_const%int_fmt ) ke
-    type is ( real( kind=4 ) )
-      write ( k, logger_util_const%real_fmt ) ke
-    type is ( real( kind=8 ) )
-      write ( k, logger_util_const%real8_fmt ) ke
-    end select
-
-    select type ( val => value )
-    type is ( character (*) )
-      v = val
-    type is ( integer )
-      write ( v, logger_util_const%int_fmt ) val
-    type is ( real( kind=4 ) )
-      write ( v, logger_util_const%real_fmt ) val
-    type is ( real( kind=8 ) )
-      write ( v, logger_util_const%real8_fmt ) val
-    end select
-
-    k = adjustl( k )
-    v = adjustl( v )
-
-    call this%open_logfile
-
-    message = ' [WARN] '//adjustl(trim(msg))//', '//trim(k)
-
-    write ( stdout,* ) trim( this%tas( color=tc%yl ) )//trim(message)//tc%ig//' '//trim(op)//' '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//trim(message)//' '//trim(op)//' '//trim(v)
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_warn_kw
 
 
   subroutine rhyme_logger_util_err_kw ( this, msg, key, value, operator )
