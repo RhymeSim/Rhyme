@@ -8,7 +8,7 @@ module rhyme_logger_util
   type logger_util_const_t
     integer :: closed = -10
     character ( len=45 ) :: time_fmt = "(A,I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)"
-    character ( len=6 ) :: int_fmt = "(I512)"
+    character ( len=4 ) :: int_fmt = "(I0)"
     character ( len=7 ) :: real_fmt = "(E16.5)"
     character ( len=7 ) :: real8_fmt = "(E16.7)"
     character ( len=7 ) :: default_logfile = "log.txt"
@@ -44,9 +44,7 @@ module rhyme_logger_util
   contains
     procedure :: init => rhyme_logger_util_init
     procedure :: set_section => rhyme_logger_util_set_section
-    procedure :: write => rhyme_logger_util_write
-    procedure :: write_kw => rhyme_logger_util_write_kw
-    procedure :: write_kw1d => rhyme_logger_util_write_kw1d
+    procedure :: log => rhyme_logger_util_log
     procedure :: done => rhyme_logger_util_done
     procedure :: warn => rhyme_logger_util_warn
     procedure :: warn_kw => rhyme_logger_util_warn_kw
@@ -64,6 +62,16 @@ module rhyme_logger_util
     procedure :: set_logo => rhyme_logger_util_set_logo
     procedure :: set_vivid_logo => rhyme_logger_util_set_vivid_logo
   end type logger_util_t
+
+  interface
+    module subroutine rhyme_logger_util_log ( this, message, key, operator, value )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ) :: message
+      class (*), intent ( in ), optional :: key
+      character ( len=* ), intent ( in ), optional :: operator
+      class (*), intent ( in ), optional :: value(:)
+    end subroutine rhyme_logger_util_log
+  end interface
 
 contains
   subroutine rhyme_logger_util_init ( this )
@@ -98,7 +106,7 @@ contains
 
     ! Start point
     call this%set_section ( 'ツ' )
-    call this%write ( 'Start!' )
+    call this%log ( 'Start!' )
 
     this%initialized = .true.
   end subroutine rhyme_logger_util_init
@@ -121,129 +129,69 @@ contains
   end subroutine rhyme_logger_util_set_section
 
 
-  subroutine rhyme_logger_util_write ( this, info )
+  function to_string ( input ) result ( str )
     implicit none
 
-    class ( logger_util_t ), intent ( inout ) :: this
-    class (*), intent ( in ) :: info
+    class (*), intent ( in ) :: input
+    character ( len=128 ) :: str
 
-    character ( len=512 ) :: i
+    str = ''
 
-    select type ( inf => info )
-    type is ( character(*) )
-      i = inf
+    select type ( inp => input )
     type is ( integer )
-      write ( i, logger_util_const%int_fmt ) inf
+      write ( str, logger_util_const%int_fmt ) inp
     type is ( real( kind=4 ) )
-      write ( i, logger_util_const%real_fmt ) inf
+      write ( str, logger_util_const%real_fmt ) inp
     type is ( real( kind=8 ) )
-      write ( i, logger_util_const%real8_fmt ) inf
+      write ( str, logger_util_const%real8_fmt ) inp
+    type is ( character (*) )
+      str = trim( inp )
     end select
 
-    i = adjustl( i )
-
-    call this%open_logfile
-
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(i)
-    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(i)
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_write
+    str = adjustl( str )
+  end function to_string
 
 
-  subroutine rhyme_logger_util_write_kw ( this, key, value )
+  function array_to_string ( input ) result ( str )
     implicit none
 
-    class ( logger_util_t ), intent ( inout ) :: this
-    class (*), intent ( in ) :: key, value
+    class (*), intent ( in ) :: input(:)
+    character ( len=128 ) :: str
 
-    character ( len=512 ) :: k, v
+    integer :: i, length
+    character ( len=64 ) :: inp_str
 
+    length = size( input )
+    str = ''
 
-    select type ( ke => key )
-    type is ( character (*) )
-      k = ke
+    select type ( inp => input )
     type is ( integer )
-      write ( k, logger_util_const%int_fmt ) ke
-    type is ( real( kind=4 ) )
-      write ( k, logger_util_const%real_fmt ) ke
-    type is ( real( kind=8 ) )
-      write ( k, logger_util_const%real8_fmt ) ke
-    end select
-
-    select type ( val => value )
-    type is ( character (*) )
-      v = val
-    type is ( integer )
-      write ( v, logger_util_const%int_fmt ) val
-    type is ( real( kind=4 ) )
-      write ( v, logger_util_const%real_fmt ) val
-    type is ( real( kind=8 ) )
-      write ( v, logger_util_const%real8_fmt ) val
-    end select
-
-    k = adjustl( k )
-    v = adjustl( v )
-
-    call this%open_logfile
-
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(k)//' => '//trim(v)
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_write_kw
-
-
-  subroutine rhyme_logger_util_write_kw1d ( this, key, value )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    class (*), intent ( in ) :: key
-    class (*), dimension(:), intent ( in ) :: value
-
-    character ( len=512 ) :: k = "", v = ""
-    integer :: i
-
-    select type ( ke => key )
-    type is ( character (*) )
-      k = ke
-    type is ( integer )
-      write ( k, logger_util_const%int_fmt ) ke
-    type is ( real( kind=4 ) )
-      write ( k, logger_util_const%real_fmt ) ke
-    type is ( real( kind=8 ) )
-      write ( k, logger_util_const%real8_fmt ) ke
-    end select
-    k = adjustl( k )
-
-    v = '[ '
-    select type ( val => value )
-    type is ( character (*) )
-      do i = 1, size( val )
-        write ( v, '(A,A,A,A)' ) trim(v), ' ', val(i), ' '
-      end do
-    type is ( integer )
-      do i = 1, size( val )
-        write ( v, '(A,A,I0,A)' ) trim(v), ' ', val(i), ' '
+      do i = 1, length
+        write ( inp_str, logger_util_const%int_fmt ) inp(i)
+        str = trim( str )//'  '//trim(adjustl( inp_str ) )
       end do
     type is ( real( kind=4 ) )
-      do i = 1, size( val )
-        write ( v, '(A,A,E16.5,A)' ) trim(v), ' ', val(i), ' '
+      do i = 1, length
+        write ( inp_str, logger_util_const%real_fmt ) inp(i)
+        str = trim( str )//'  '//trim(adjustl( inp_str ) )
       end do
     type is ( real( kind=8 ) )
-      do i = 1, size( val )
-        write ( v, '(A,A,E16.7,A)' ) trim(v), ' ', val(i), ' '
+      do i = 1, length
+        write ( inp_str, logger_util_const%real8_fmt ) inp(i)
+        str = trim( str )//'  '//trim(adjustl( inp_str ) )
+      end do
+    type is ( character (*) )
+      do i = 1, length
+        str = trim( str )//'  '//trim(adjustl( inp(i) ) )
       end do
     end select
-    v = trim(v)//' ]'
 
-    call this%open_logfile
-
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(k)//tc%ig//' => '//tc%nc//trim(v)
-    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(k)//' => '//trim(v)
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_write_kw1d
+    if ( length > 1 ) then
+      str = '[ '//trim(adjustl( str ) )//' ]'
+    else
+      str = adjustl( str )
+    end if
+  end function array_to_string
 
 
   subroutine rhyme_logger_util_done ( this, msg )
