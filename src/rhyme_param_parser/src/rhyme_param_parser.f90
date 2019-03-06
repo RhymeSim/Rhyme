@@ -88,7 +88,7 @@ contains
       case ( "max_nboxes" )
         ic%max_nboxes = 0
         read (1, *) key, op, ic%max_nboxes( 0:ic%nlevels - 1 )
-        call log%write_kw1d( 'max_nboxes', ic%max_nboxes )
+        call log%write_kw1d( 'max_nboxes', ic%max_nboxes( 0:samrid%max_nlevels ) )
 
         ! Boundary Condition
       case ( "left_bc" )

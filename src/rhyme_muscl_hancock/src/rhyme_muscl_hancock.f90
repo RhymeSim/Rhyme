@@ -40,7 +40,7 @@ contains
   end subroutine rhyme_muscl_hancock_init
 
 
-  pure subroutine rhyme_muscl_hancock_solve_memory_intensive( this, box, dx, dt, cfl, ig, irs, sl )
+  subroutine rhyme_muscl_hancock_solve_memory_intensive( this, box, dx, dt, cfl, ig, irs, sl )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: this

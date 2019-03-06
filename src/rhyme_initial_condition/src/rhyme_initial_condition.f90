@@ -144,7 +144,7 @@ contains
 
     inquire ( file=trim(this%path), exist=exist )
     if ( .not. exist ) then
-      call log%err( 'ic_snap does not exist' )
+      call log%err( 'ic_path does not exist' )
       return
     end if
 
@@ -161,6 +161,8 @@ contains
       call log%err_kw( &
         'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
     end select
+
+    samr%initialized = .true.
   end subroutine rhyme_initial_condition_load_snapshot
 
 

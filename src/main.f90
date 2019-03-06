@@ -113,7 +113,7 @@ program rhyme
     call log%done( 'Hydro solver' )
 
     ! Store a snapshot if necessary
-    if ( modulo(samr%levels(0)%iteration, 2) .eq. 0 ) then
+    if ( modulo(samr%levels(0)%iteration, 10) .eq. 0 ) then
       call chombo%write_samr( samr )
       call log%done( 'Drop an output (chombo) file' )
     end if
