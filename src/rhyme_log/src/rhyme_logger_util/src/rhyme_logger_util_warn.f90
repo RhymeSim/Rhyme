@@ -32,11 +32,11 @@ contains
 
     call this%open_logfile
 
-    str = trim( message )//' '//trim( k )//' '//tc%ig//trim( op )//tc%nc//' '//trim( v )
-    write( stdout,* ) trim(this%tas(color=tc%yl))//' [WARN] '//' '//adjustl(trim(str))
+    str = trim( message )//'   '//trim( k )//' '//tc%ig//trim( op )//tc%nc//' '//trim( v )
+    write( stdout,* ) trim(this%tas(color=tc%yl))//' [WARN] '//adjustl(trim(str))
 
-    str = trim( message )//' '//trim( k )//' '//trim( op )//' '//trim( v )
-    write( this%logfile_unit,* ) trim(this%tas())//' [WARN] '//' '//adjustl(trim(str))
+    str = trim( message )//'   '//trim( k )//' '//trim( op )//' '//trim( v )
+    write( this%logfile_unit,* ) trim(this%tas())//' [WARN] '//adjustl(trim(str))
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn
