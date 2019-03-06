@@ -41,22 +41,27 @@ module rhyme_logger_util
     integer :: errfile_unit = logger_util_const%closed
     integer :: t(8)
   contains
-    procedure :: init => rhyme_logger_util_init
+    procedure :: start => rhyme_logger_util_start
     procedure :: set_section => rhyme_logger_util_set_section
+
     procedure :: log => rhyme_logger_util_log
     procedure :: warn => rhyme_logger_util_warn
     procedure :: err => rhyme_logger_util_err
+
     procedure :: done => rhyme_logger_util_done
+
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
     procedure :: time_and_section => rhyme_logger_util_time_and_section
     procedure :: tas => rhyme_logger_util_time_and_section
+
+    procedure :: set_logo => rhyme_logger_util_set_logo
+    procedure :: set_colored_logo => rhyme_logger_util_set_colored_logo
+
     procedure :: open_logfile => rhyme_logger_util_open_logfile
     procedure :: close_logfile => rhyme_logger_util_close_logfile
     procedure :: open_errfile => rhyme_logger_util_open_errfile
     procedure :: close_errfile => rhyme_logger_util_close_errfile
-    procedure :: set_logo => rhyme_logger_util_set_logo
-    procedure :: set_colored_logo => rhyme_logger_util_set_colored_logo
   end type logger_util_t
 
   interface
@@ -67,6 +72,7 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ), optional :: operator
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_log
+
     module subroutine rhyme_logger_util_warn ( this, message, key, operator, value )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
@@ -74,6 +80,7 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ), optional :: operator
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_warn
+
     module subroutine rhyme_logger_util_err ( this, message, key, operator, value )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
@@ -81,10 +88,56 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ), optional :: operator
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_err
+
+    module subroutine rhyme_logger_util_done ( this, msg )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ) :: msg
+    end subroutine rhyme_logger_util_done
+
+    module subroutine rhyme_logger_util_update_time ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_update_time
+
+    module function rhyme_logger_util_time ( this, color ) result ( time_str )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ), optional :: color
+      character ( len=64 ) :: time_str
+    end function rhyme_logger_util_time
+
+    module function rhyme_logger_util_time_and_section ( this, color ) result ( tas_str )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ), optional :: color
+      character ( len=126 ) :: tas_str
+    end function rhyme_logger_util_time_and_section
+
+    module subroutine rhyme_logger_util_open_logfile ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_open_logfile
+
+    module subroutine rhyme_logger_util_close_logfile ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_close_logfile
+
+    module subroutine rhyme_logger_util_open_errfile ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_open_errfile
+
+    module subroutine rhyme_logger_util_close_errfile ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_close_errfile
+
+    module subroutine rhyme_logger_util_set_colored_logo ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_set_colored_logo
+
+    module subroutine rhyme_logger_util_set_logo ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_set_logo
   end interface
 
 contains
-  subroutine rhyme_logger_util_init ( this )
+
+  subroutine rhyme_logger_util_start ( this )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
@@ -124,7 +177,7 @@ contains
     call this%log ( 'Start!' )
 
     this%initialized = .true.
-  end subroutine rhyme_logger_util_init
+  end subroutine rhyme_logger_util_start
 
 
   subroutine rhyme_logger_util_set_section ( this, section )
@@ -138,7 +191,7 @@ contains
     write ( this%logfile_unit,* ) ""
     call this%close_logfile
 
-    this%sec = trim(section)
+    this%sec = trim( section )
 
     call this%update_time
   end subroutine rhyme_logger_util_set_section
@@ -231,196 +284,4 @@ contains
 
     str = trim( adjustl( str ) )
   end function concat_components
-
-
-  subroutine rhyme_logger_util_done ( this, msg )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: msg
-
-    integer :: delta_t(8), t_new(8)
-    character ( len=64 ) :: time_str
-
-    call date_and_time ( values=t_new )
-
-    delta_t = t_new - this%t
-
-    if ( delta_t(7) < 0 ) then
-      delta_t(7) = delta_t(7) + 60
-      delta_t(6) = delta_t(6) - 1
-    end if
-    if ( delta_t(6) < 0 ) then
-      delta_t(6) = delta_t(6) + 60
-      delta_t(5) = delta_t(5) - 1
-    end if
-    if ( delta_t(5) < 0 ) then
-      delta_t(5) = delta_t(5) + 24
-      delta_t(3) = delta_t(3) - 1
-    end if
-    if ( delta_t(3) > 0 ) then
-      delta_t(5) = 24 * delta_t(3) + delta_t(5)
-    end if
-    if ( delta_t(2) > 0 ) then
-      delta_t(5) = int( 365.25 / 12 * 24 * delta_t(3) ) + delta_t(5) ! TODO: WTF
-    end if
-    if ( delta_t(1) > 0 ) then
-      delta_t(5) = int( 365.25 * 24 * delta_t(3) ) + delta_t(5) ! TODO: WTF
-    end if
-
-    call this%open_logfile
-
-    write ( time_str, '(A,I0,A,I0.2,A,I0.2,A)') &
-      ' [ done in ', delta_t(5), 'h:', delta_t(6), 'm:', delta_t(7), 's ]'
-
-    write ( stdout,* ) trim( this%tas( color=tc%gn ) )//' '//trim(msg)//trim(time_str)
-    write ( this%logfile_unit,* ) trim( this%tas() )//' '//trim(msg)//trim(time_str)
-
-    call this%close_logfile
-  end subroutine rhyme_logger_util_done
-
-
-  subroutine rhyme_logger_util_update_time ( this )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    call date_and_time ( values=this%t )
-  end subroutine rhyme_logger_util_update_time
-
-
-  character ( len=64 ) function rhyme_logger_util_time ( this, color ) result ( time_str )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ), optional :: color
-
-    logical :: colored
-
-    if ( present( color ) ) then
-      colored = .true.
-    else
-      colored = .false.
-    end if
-
-    call this%update_time
-
-    write ( time_str, fmt=logger_util_const%time_fmt ) &
-      '[ ',this%t(1),'-',this%t(2),'-',this%t(3),' | ', &
-      this%t(5),':',this%t(6),':',this%t(7),' ]'
-
-      if ( colored ) then
-        time_str = trim(color)//trim(time_str)//tc%nc
-      end if
-  end function rhyme_logger_util_time
-
-
-  function rhyme_logger_util_time_and_section ( this, color ) result ( tas_str )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ), optional :: color
-    character ( len=126 ) :: tas_str
-
-    if ( present( color ) ) then
-      tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )
-    else
-      tas_str = trim( this%time() )//' '//trim( this%sec )
-    end if
-  end function rhyme_logger_util_time_and_section
-
-
-  subroutine rhyme_logger_util_open_logfile ( this)
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    logical :: opened = .false.
-
-    inquire ( file=this%logfile, number=this%logfile_unit, opened=opened )
-
-    if ( .not. opened ) then
-      open ( newunit=this%logfile_unit, file=this%logfile, encoding='utf-8', position='append' )
-      inquire ( file=this%logfile, number=this%logfile_unit )
-    end if
-  end subroutine rhyme_logger_util_open_logfile
-
-
-  subroutine rhyme_logger_util_close_logfile ( this)
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    logical :: opened = .false.
-
-    inquire ( file=this%logfile, number=this%logfile_unit, opened=opened )
-
-    if ( opened ) close ( this%logfile_unit )
-  end subroutine rhyme_logger_util_close_logfile
-
-
-  subroutine rhyme_logger_util_open_errfile ( this)
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    logical :: opened = .false.
-
-    inquire ( file=this%errfile, number=this%errfile_unit, opened=opened )
-
-    if ( .not. opened ) then
-      open ( newunit=this%errfile_unit, file=this%errfile, encoding='utf-8', position='append' )
-      inquire ( file=this%errfile, number=this%errfile_unit )
-    end if
-  end subroutine rhyme_logger_util_open_errfile
-
-
-  subroutine rhyme_logger_util_close_errfile ( this)
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    logical :: opened = .false.
-
-    inquire ( file=this%errfile, number=this%errfile_unit, opened=opened )
-
-    if ( opened ) close ( this%errfile_unit )
-  end subroutine rhyme_logger_util_close_errfile
-
-
-  subroutine rhyme_logger_util_set_colored_logo ( this )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    this%colored_logo(1) = tc%nc
-    this%colored_logo(2) = tc%rd//"▄"//tc%yl//"▄▄"//tc%gn//"▄▄"//tc%bl//"▄"//tc%vt//             "    ▄"//tc%rd//"▄"//tc%nc
-    this%colored_logo(3) = tc%yl//"█"//tc%gn//"█▀"//tc%bl//"▀▀"//tc%ig//"▀█"//tc%vt//"█"//tc%rd//  "  █"//tc%yl//"█"//tc%nc
-    this%colored_logo(4) = tc%gn//"█"//tc%bl//"█"//tc%vt//           "    █"//tc%rd//"█"//tc%yl//  "  █"//tc%gn//"█▄"//tc%bl//"██"//tc%ig//"██"//tc%vt//"▄"//tc%rd//"  ▀"//tc%yl//"██"//tc%bl//           "  ██"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"██"//tc%yl//"█▄"//tc%gn//"██"//tc%bl//"▄"//tc%vt//           "   ▄█"//tc%rd//"██"//tc%yl//"█▄"//tc%nc
-    this%colored_logo(5) = tc%bl//"█"//tc%ig//"██"//tc%vt//"██"//tc%rd//"██"//tc%gn//             "   █"//tc%bl//"█▀"//tc%vt//           "   █"//tc%rd//"█"//tc%gn//           "   ██"//tc%bl//"▄"//tc%ig//" ██"//tc%rd//           "   █"//tc%yl//"█"//tc%gn//" ██"//tc%bl//" █"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"█▄"//tc%yl//"▄▄"//tc%gn//"▄█"//tc%bl//"█"//tc%nc
-    this%colored_logo(6) = tc%ig//"█"//tc%vt//"█"//tc%rd//"  ▀"//tc%yl//"██"//tc%gn//"▄"//tc%bl//  "  █"//tc%ig//"█"//tc%rd//           "    █"//tc%yl//"█"//tc%bl//           "    █"//tc%ig//"██"//tc%vt//"█▀"//tc%yl//           "   █"//tc%gn//"█"//tc%bl//" ██"//tc%ig//" █"//tc%vt//"█"//tc%rd//"  █"//tc%yl//"█▀"//tc%gn//"▀▀"//tc%bl//"▀▀"//tc%ig//"▀"//tc%nc
-    this%colored_logo(7) = tc%vt//"█"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//  "  █"//tc%vt//"█"//tc%yl//           "    █"//tc%gn//"█"//tc%vt//                      "     ██"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//" ██"//tc%vt//" █"//tc%rd//"█"//tc%yl//"  ▀"//tc%gn//"██"//tc%bl//"▄▄"//tc%ig//"▄▄"//tc%vt//"█"//tc%nc
-    this%colored_logo(8) = tc%rd//"▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//  " ▀"//tc%rd//"▀"//tc%gn//           "    ▀"//tc%bl//"▀"//tc%rd//                      "     ██"//tc%bl//                      "     ▀"//tc%ig//"▀"//tc%vt//" ▀▀"//tc%rd//" ▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//"▀▀"//tc%nc
-    this%colored_logo(9) = tc%rd//                                                                                                                          "                      ██"//tc%yl//"█"//tc%nc//"  © Saeed Sarpas, 2019"//tc%nc
-    this%colored_logo(10) = tc%nc
-  end subroutine rhyme_logger_util_set_colored_logo
-
-
-  subroutine rhyme_logger_util_set_logo ( this )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-
-    this%logo(1) = ""
-    this%logo(2) = "▄▄▄▄▄▄    ▄▄"
-    this%logo(3) = "██▀▀▀▀██  ██"
-    this%logo(4) = "██    ██  ██▄████▄  ▀██  ███  ████▄██▄   ▄████▄"
-    this%logo(5) = "███████   ██▀   ██   ██▄ ██   ██ ██ ██  ██▄▄▄▄██"
-    this%logo(6) = "██  ▀██▄  ██    ██    ████▀   ██ ██ ██  ██▀▀▀▀▀▀"
-    this%logo(7) = "██    ██  ██    ██     ███    ██ ██ ██  ▀██▄▄▄▄█"
-    this%logo(8) = "▀▀    ▀▀▀ ▀▀    ▀▀     ██     ▀▀ ▀▀ ▀▀    ▀▀▀▀▀"
-    this%logo(9) = "                      ▀▀▀  © Saeed Sarpas, 2019"
-    this%logo(10) = ""
-  end subroutine rhyme_logger_util_set_logo
-
 end module rhyme_logger_util

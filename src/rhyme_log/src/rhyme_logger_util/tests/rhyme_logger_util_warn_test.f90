@@ -5,7 +5,7 @@ logical function rhyme_logger_util_warn_test () result ( failed )
 
   type ( logger_util_t ) :: log
 
-  call log%init
+  call log%start
   call log%set_section( 'test' )
   call log%warn( 'message' )
   call log%warn( 'message', 'key' )

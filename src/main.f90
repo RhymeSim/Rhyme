@@ -43,7 +43,7 @@ program rhyme
   call get_command_argument ( 3, log%errfile )
 
 
-  call log%init
+  call log%start
   call log%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
   call log%log( 'command line argument:', 'param_file', '=', [ param_file ] )
   call log%log( 'command line argument:', 'log_file', '=', [ log%logfile ] )

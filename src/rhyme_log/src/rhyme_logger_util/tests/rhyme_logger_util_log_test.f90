@@ -5,7 +5,7 @@ logical function rhyme_logger_util_log_test () result ( failed )
 
   type ( logger_util_t ) :: log
 
-  call log%init
+  call log%start
   call log%set_section( 'test' )
   call log%log( 'message' )
   call log%log( 'message', 'key' )
