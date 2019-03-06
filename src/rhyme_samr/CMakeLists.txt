@@ -1,8 +1,10 @@
 cmake_minimum_required ( VERSION 3.7 )
 
 project ( rhyme_samr )
+
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c17" )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -23,7 +25,13 @@ foreach ( dep ${deps} )
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_samr.f90 )
+set ( srcs
+  src/rhyme_samr.f90
+  src/rhyme_samr_init_box.f90
+)
+
+
+add_library ( ${PROJECT_NAME} STATIC ${srcs} )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
 
 
