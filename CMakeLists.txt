@@ -1,8 +1,10 @@
 cmake_minimum_required ( VERSION 3.7 )
 
 project ( rhyme )
+
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -52,7 +54,11 @@ endforeach ( dep )
 file ( GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90 )
 
 
-add_executable ( rhyme src/main.f90 ${internal_modules} )
+set ( srcs
+  src/main.f90
+)
+
+add_executable ( rhyme ${srcs} ${internal_modules} )
 target_link_libraries ( rhyme ${deps} )
 
 

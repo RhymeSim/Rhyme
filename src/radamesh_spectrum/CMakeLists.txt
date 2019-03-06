@@ -1,8 +1,9 @@
 cmake_minimum_required ( VERSION 3.7 )
 
 project ( radamesh_spectrum )
-enable_language ( C Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+enable_language ( Fortran )
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -24,7 +25,12 @@ foreach ( dep ${deps} )
 endforeach ( dep )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/radamesh_spectrum.f90 )
+set ( srcs
+  src/radamesh_spectrum.f90
+)
+
+
+add_library ( ${PROJECT_NAME} STATIC ${srcs} )
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} )
 
 

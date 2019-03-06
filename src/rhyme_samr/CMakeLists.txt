@@ -4,7 +4,7 @@ project ( rhyme_samr )
 
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra )
-set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c17" )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )

@@ -1,7 +1,9 @@
 project ( rhyme_logger_util_tests )
 
 enable_language ( C Fortran )
-enable_testing ()
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
+set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c17" )
 
 
 file ( GLOB_RECURSE test_files RELATIVE ${PROJECT_SOURCE_DIR} *_test.f90 )
@@ -35,3 +37,6 @@ while ( ${len} GREATER ${idx} )
 
   math ( EXPR idx "${idx} + 1" )
 endwhile ()
+
+
+enable_testing ()

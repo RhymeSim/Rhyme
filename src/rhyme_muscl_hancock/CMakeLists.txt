@@ -1,8 +1,10 @@
 cmake_minimum_required ( VERSION 3.7 )
 
 project ( rhyme_muscl_hancock )
+
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
 set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -39,7 +41,11 @@ endforeach ( dep )
 add_subdirectory ( src/rhyme_mh_workspace )
 
 
-add_library ( ${PROJECT_NAME} STATIC src/rhyme_muscl_hancock.f90 )
+set ( srcs
+  src/rhyme_muscl_hancock.f90
+)
+
+add_library ( ${PROJECT_NAME} STATIC ${srcs} )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} rhyme_mh_workspace )
 
 

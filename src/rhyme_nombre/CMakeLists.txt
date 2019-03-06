@@ -1,8 +1,10 @@
 cmake_minimum_required ( VERSION 3.7 )
 
 project ( rhyme_nombre )
+
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -std=f2008 )
+add_compile_options ( -Wall -Wextra )
+set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
 set ( LIB_DIR "${PROJECT_SOURCE_DIR}/lib" CACHE PATH "lib directory" )
