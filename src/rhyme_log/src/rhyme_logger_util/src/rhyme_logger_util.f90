@@ -1,5 +1,4 @@
 module rhyme_logger_util
-  ! TODO: need a serious refactoring :(
   use, intrinsic :: iso_fortran_env, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
 
   implicit none
@@ -35,7 +34,7 @@ module rhyme_logger_util
     logical :: initialized = .false.
     character ( len=1024 ) :: logfile = logger_util_const%default_logfile
     character ( len=1024 ) :: errfile = logger_util_const%default_errfile
-    character ( len=1024 ), dimension(10) :: vivid_logo = ""
+    character ( len=1024 ), dimension(10) :: colored_logo = ""
     character ( len=1024 ), dimension(10) :: logo = ""
     character ( len=64 ) :: sec = ""
     integer :: logfile_unit = logger_util_const%closed
@@ -45,9 +44,9 @@ module rhyme_logger_util
     procedure :: init => rhyme_logger_util_init
     procedure :: set_section => rhyme_logger_util_set_section
     procedure :: log => rhyme_logger_util_log
-    procedure :: done => rhyme_logger_util_done
     procedure :: warn => rhyme_logger_util_warn
     procedure :: err => rhyme_logger_util_err
+    procedure :: done => rhyme_logger_util_done
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
     procedure :: time_and_section => rhyme_logger_util_time_and_section
@@ -57,7 +56,7 @@ module rhyme_logger_util
     procedure :: open_errfile => rhyme_logger_util_open_errfile
     procedure :: close_errfile => rhyme_logger_util_close_errfile
     procedure :: set_logo => rhyme_logger_util_set_logo
-    procedure :: set_vivid_logo => rhyme_logger_util_set_vivid_logo
+    procedure :: set_colored_logo => rhyme_logger_util_set_colored_logo
   end type logger_util_t
 
   interface
@@ -96,17 +95,22 @@ contains
 
     call this%update_time
     call this%set_logo
-    call this%set_vivid_logo
+    call this%set_colored_logo
 
-    if ( len_trim(this%logfile) < 1 ) this%logfile = logger_util_const%default_logfile
-    if ( len_trim(this%errfile) < 1 ) this%errfile = logger_util_const%default_errfile
+    if ( len_trim( this%logfile ) < 2 ) then
+      this%logfile = logger_util_const%default_logfile
+    end if
+
+    if ( len_trim( this%errfile ) < 2 ) then
+      this%errfile = logger_util_const%default_errfile
+    end if
 
     ! Logo
     call this%open_logfile
     call this%open_errfile
 
     do i = 1, size( this%logo )
-      write ( stdout,* ) trim( this%vivid_logo(i) )
+      write ( stdout,* ) trim( this%colored_logo(i) )
       write ( this%logfile_unit,* ) trim( this%logo(i) )
       write ( this%errfile_unit,* ) trim( this%logo(i) )
     end do
@@ -203,6 +207,30 @@ contains
       str = adjustl( str )
     end if
   end function array_to_string
+
+
+  function concat_components ( msg, key, op, val, color ) result ( str )
+    implicit none
+
+    character ( len=* ), intent ( in ) :: msg, key, op, val
+    character ( len=* ), intent ( in ), optional :: color
+    character ( len=128 ) :: str
+
+    character ( len=16 ) :: clr
+
+    if ( present( color ) ) then
+      clr = color
+    else
+      clr = ''
+    end if
+
+    str = trim(adjustl( msg ))//' ' &
+      //trim( adjustl( key ) )//' ' &
+      //trim( adjustl( clr ) )//trim( adjustl( op ) )//tc%nc//' ' &
+      //trim( adjustl( val ) )
+
+    str = trim( adjustl( str ) )
+  end function concat_components
 
 
   subroutine rhyme_logger_util_done ( this, msg )
@@ -360,22 +388,22 @@ contains
   end subroutine rhyme_logger_util_close_errfile
 
 
-  subroutine rhyme_logger_util_set_vivid_logo ( this )
+  subroutine rhyme_logger_util_set_colored_logo ( this )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
 
-    this%vivid_logo(1) = tc%nc
-    this%vivid_logo(2) = tc%rd//"▄"//tc%yl//"▄▄"//tc%gn//"▄▄"//tc%bl//"▄"//tc%vt//             "    ▄"//tc%rd//"▄"//tc%nc
-    this%vivid_logo(3) = tc%yl//"█"//tc%gn//"█▀"//tc%bl//"▀▀"//tc%ig//"▀█"//tc%vt//"█"//tc%rd//  "  █"//tc%yl//"█"//tc%nc
-    this%vivid_logo(4) = tc%gn//"█"//tc%bl//"█"//tc%vt//           "    █"//tc%rd//"█"//tc%yl//  "  █"//tc%gn//"█▄"//tc%bl//"██"//tc%ig//"██"//tc%vt//"▄"//tc%rd//"  ▀"//tc%yl//"██"//tc%bl//           "  ██"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"██"//tc%yl//"█▄"//tc%gn//"██"//tc%bl//"▄"//tc%vt//           "   ▄█"//tc%rd//"██"//tc%yl//"█▄"//tc%nc
-    this%vivid_logo(5) = tc%bl//"█"//tc%ig//"██"//tc%vt//"██"//tc%rd//"██"//tc%gn//             "   █"//tc%bl//"█▀"//tc%vt//           "   █"//tc%rd//"█"//tc%gn//           "   ██"//tc%bl//"▄"//tc%ig//" ██"//tc%rd//           "   █"//tc%yl//"█"//tc%gn//" ██"//tc%bl//" █"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"█▄"//tc%yl//"▄▄"//tc%gn//"▄█"//tc%bl//"█"//tc%nc
-    this%vivid_logo(6) = tc%ig//"█"//tc%vt//"█"//tc%rd//"  ▀"//tc%yl//"██"//tc%gn//"▄"//tc%bl//  "  █"//tc%ig//"█"//tc%rd//           "    █"//tc%yl//"█"//tc%bl//           "    █"//tc%ig//"██"//tc%vt//"█▀"//tc%yl//           "   █"//tc%gn//"█"//tc%bl//" ██"//tc%ig//" █"//tc%vt//"█"//tc%rd//"  █"//tc%yl//"█▀"//tc%gn//"▀▀"//tc%bl//"▀▀"//tc%ig//"▀"//tc%nc
-    this%vivid_logo(7) = tc%vt//"█"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//  "  █"//tc%vt//"█"//tc%yl//           "    █"//tc%gn//"█"//tc%vt//                      "     ██"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//" ██"//tc%vt//" █"//tc%rd//"█"//tc%yl//"  ▀"//tc%gn//"██"//tc%bl//"▄▄"//tc%ig//"▄▄"//tc%vt//"█"//tc%nc
-    this%vivid_logo(8) = tc%rd//"▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//  " ▀"//tc%rd//"▀"//tc%gn//           "    ▀"//tc%bl//"▀"//tc%rd//                      "     ██"//tc%bl//                      "     ▀"//tc%ig//"▀"//tc%vt//" ▀▀"//tc%rd//" ▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//"▀▀"//tc%nc
-    this%vivid_logo(9) = tc%rd//                                                                                                                          "                      ██"//tc%yl//"█"//tc%nc//"  © Saeed Sarpas, 2019"//tc%nc
-    this%vivid_logo(10) = tc%nc
-  end subroutine rhyme_logger_util_set_vivid_logo
+    this%colored_logo(1) = tc%nc
+    this%colored_logo(2) = tc%rd//"▄"//tc%yl//"▄▄"//tc%gn//"▄▄"//tc%bl//"▄"//tc%vt//             "    ▄"//tc%rd//"▄"//tc%nc
+    this%colored_logo(3) = tc%yl//"█"//tc%gn//"█▀"//tc%bl//"▀▀"//tc%ig//"▀█"//tc%vt//"█"//tc%rd//  "  █"//tc%yl//"█"//tc%nc
+    this%colored_logo(4) = tc%gn//"█"//tc%bl//"█"//tc%vt//           "    █"//tc%rd//"█"//tc%yl//  "  █"//tc%gn//"█▄"//tc%bl//"██"//tc%ig//"██"//tc%vt//"▄"//tc%rd//"  ▀"//tc%yl//"██"//tc%bl//           "  ██"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"██"//tc%yl//"█▄"//tc%gn//"██"//tc%bl//"▄"//tc%vt//           "   ▄█"//tc%rd//"██"//tc%yl//"█▄"//tc%nc
+    this%colored_logo(5) = tc%bl//"█"//tc%ig//"██"//tc%vt//"██"//tc%rd//"██"//tc%gn//             "   █"//tc%bl//"█▀"//tc%vt//           "   █"//tc%rd//"█"//tc%gn//           "   ██"//tc%bl//"▄"//tc%ig//" ██"//tc%rd//           "   █"//tc%yl//"█"//tc%gn//" ██"//tc%bl//" █"//tc%ig//"█"//tc%vt//"  █"//tc%rd//"█▄"//tc%yl//"▄▄"//tc%gn//"▄█"//tc%bl//"█"//tc%nc
+    this%colored_logo(6) = tc%ig//"█"//tc%vt//"█"//tc%rd//"  ▀"//tc%yl//"██"//tc%gn//"▄"//tc%bl//  "  █"//tc%ig//"█"//tc%rd//           "    █"//tc%yl//"█"//tc%bl//           "    █"//tc%ig//"██"//tc%vt//"█▀"//tc%yl//           "   █"//tc%gn//"█"//tc%bl//" ██"//tc%ig//" █"//tc%vt//"█"//tc%rd//"  █"//tc%yl//"█▀"//tc%gn//"▀▀"//tc%bl//"▀▀"//tc%ig//"▀"//tc%nc
+    this%colored_logo(7) = tc%vt//"█"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//  "  █"//tc%vt//"█"//tc%yl//           "    █"//tc%gn//"█"//tc%vt//                      "     ██"//tc%rd//"█"//tc%gn//           "    █"//tc%bl//"█"//tc%ig//" ██"//tc%vt//" █"//tc%rd//"█"//tc%yl//"  ▀"//tc%gn//"██"//tc%bl//"▄▄"//tc%ig//"▄▄"//tc%vt//"█"//tc%nc
+    this%colored_logo(8) = tc%rd//"▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//  " ▀"//tc%rd//"▀"//tc%gn//           "    ▀"//tc%bl//"▀"//tc%rd//                      "     ██"//tc%bl//                      "     ▀"//tc%ig//"▀"//tc%vt//" ▀▀"//tc%rd//" ▀"//tc%yl//"▀"//tc%bl//           "    ▀"//tc%ig//"▀▀"//tc%vt//"▀▀"//tc%nc
+    this%colored_logo(9) = tc%rd//                                                                                                                          "                      ██"//tc%yl//"█"//tc%nc//"  © Saeed Sarpas, 2019"//tc%nc
+    this%colored_logo(10) = tc%nc
+  end subroutine rhyme_logger_util_set_colored_logo
 
 
   subroutine rhyme_logger_util_set_logo ( this )

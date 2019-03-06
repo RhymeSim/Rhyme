@@ -11,12 +11,12 @@ module rhyme_log
 
   type, extends ( logger_util_t ) :: log_t
   contains
-    procedure :: begin_iteration => rhyme_log_start_iteration
+    procedure :: set_iteration_section => rhyme_log_set_iteration_section
   end type log_t
 
 contains
 
-  subroutine rhyme_log_start_iteration ( this, iteration )
+  subroutine rhyme_log_set_iteration_section ( this, iteration )
     implicit none
 
     class ( log_t ), intent ( inout ) :: this
@@ -27,7 +27,7 @@ contains
     write ( sec, '(A,I5)' ) 'iteration ', iteration
 
     call this%set_section( sec )
-    call this%write( 'Start! ツ' )
-  end subroutine rhyme_log_start_iteration
+    call this%log( 'Start! ツ' )
+  end subroutine rhyme_log_set_iteration_section
 
 end module rhyme_log

@@ -60,7 +60,7 @@ contains
     if ( .not. ex ) then
       call log%warn( trim(this%prefix)//' does not exist!')
       call execute_command_line('mkdir -p '//trim(this%prefix) )
-      call log%write( trim(this%prefix)//' has been created' )
+      call log%log( trim(this%prefix)//' has been created' )
     end if
   end subroutine rhyme_chombo_init
 

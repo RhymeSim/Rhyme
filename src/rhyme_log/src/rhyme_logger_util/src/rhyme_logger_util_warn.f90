@@ -32,10 +32,10 @@ contains
 
     call this%open_logfile
 
-    str = trim( message )//'   '//trim( k )//' '//tc%ig//trim( op )//tc%nc//' '//trim( v )
-    write( stdout,* ) trim(this%tas(color=tc%yl))//' [WARN] '//adjustl(trim(str))
+    str = concat_components( message, k, op, v, tc%ig )
+    write( stdout,* ) trim(this%tas(color=tc%yl))//tc%yl//' [WARN] '//tc%nc//adjustl(trim(str))
 
-    str = trim( message )//'   '//trim( k )//' '//trim( op )//' '//trim( v )
+    str = concat_components( message, k, op, v )
     write( this%logfile_unit,* ) trim(this%tas())//' [WARN] '//adjustl(trim(str))
 
     call this%close_logfile

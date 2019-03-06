@@ -19,7 +19,7 @@ contains
     end if
 
     if ( present( operator ) ) then
-      op = trim( operator )
+      op = operator
     else
       op = ''
     end if
@@ -33,10 +33,10 @@ contains
     call this%open_logfile
     call this%open_errfile
 
-    str = trim( message )//'   '//trim( k )//' '//tc%ig//trim( op )//tc%nc//' '//trim( v )
-    write( stdout,* ) trim(this%tas(color=tc%rd))//' [ERROR] '//adjustl(trim(str))
+    str = concat_components( message, k, op, v, tc%ig )
+    write( stdout,* ) trim(this%tas(color=tc%rd))//tc%rd//' [ERROR] '//tc%nc//adjustl(trim(str))
 
-    str = trim( message )//'   '//trim( k )//' '//trim( op )//' '//trim( v )
+    str = concat_components( message, k, op, v )
     write( this%logfile_unit,* ) trim(this%tas())//' [ERROR] '//adjustl(trim(str))
     write( this%errfile_unit,* ) trim(this%tas())//' [ERROR] '//adjustl(trim(str))
 

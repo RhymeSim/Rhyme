@@ -44,10 +44,10 @@ program rhyme
 
 
   call log%init
-  call log%write_kw ( 'exe', exe_filename )
-  call log%write_kw ( 'param_file', param_file )
-  call log%write_kw ( 'log_file', log%logfile )
-  call log%write_kw ( 'err_file', log%errfile )
+  call log%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
+  call log%log( 'command line argument:', 'param_file', '=', [ param_file ] )
+  call log%log( 'command line argument:', 'log_file', '=', [ log%logfile ] )
+  call log%log( 'command line argument:', 'err_file', '=', [ log%errfile ] )
 
 
   ! Reading parameters and converting them to code units
@@ -86,12 +86,12 @@ program rhyme
 
   ! Main loop
   do while ( samr%levels(0)%t < 0.2d0 )
-    call log%begin_iteration( samr%levels(0)%iteration )
+    call log%set_iteration_section( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = cfl%dt( ig, samr )
 
-    call log%write_kw( 't', samr%levels(0)%t )
-    call log%write_kw( 'dt', samr%levels(0)%dt )
+    call log%log( '', 't', '=', [ samr%levels(0)%t ] )
+    call log%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
     call bc%set_base_grid_boundaries( samr )
     call log%done( 'set_base_grid_boundaries' )

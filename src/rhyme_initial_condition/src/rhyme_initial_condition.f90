@@ -56,7 +56,7 @@ contains
     end if
 
     if ( all( this%max_nboxes < 1 ) ) then
-      call log%err_kw1d( 'max_nboxes is not valid', 'max_nboxes', this%max_nboxes )
+      call log%err( 'max_nboxes is not valid', 'max_nboxes', '=', this%max_nboxes )
     end if
 
     if ( this%type .eq. icid%simple ) then
@@ -64,7 +64,7 @@ contains
     else if ( this%type .eq. icid%snapshot ) then
       call this%load_snapshot( samr, ig, log )
     else
-      call log%err_kw( 'Unknown initial condition type', 'ic_type', this%type )
+      call log%err( 'Unknown initial condition type', 'ic_type', '=', [ this%type ] )
       return
     end if
   end subroutine rhyme_initial_condition_init
@@ -158,8 +158,8 @@ contains
     case ( icid%r2c_2d )
       call this%load_r2c_2d( samr, ig, log )
     case default
-      call log%err_kw( &
-        'Unsupported snapshot format', 'snapshot_type', this%snapshot_type )
+      call log%err( 'Unsupported snapshot format', &
+        'snapshot_type', '=', [ this%snapshot_type ] )
     end select
 
     samr%initialized = .true.
@@ -228,8 +228,8 @@ contains
       call ch%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
 
       if ( nboxes > samr%levels(l)%max_nboxes ) then
-        call log%err_kw( 'Number of boxes is less than maximum available', &
-          nboxes, samr%levels(l)%max_nboxes, '>' )
+        call log%err( 'Number of boxes is less than maximum available', &
+          nboxes, '>', [ samr%levels(l)%max_nboxes ] )
         return
       end if
 
@@ -315,8 +315,8 @@ contains
       call ch%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
 
       if ( nboxes > samr%levels(l)%max_nboxes ) then
-        call log%err_kw( 'Number of boxes is less than maximum available', &
-          nboxes, samr%levels(l)%max_nboxes, '>' )
+        call log%err( 'Number of boxes is less than maximum available', &
+          nboxes, '>', [ samr%levels(l)%max_nboxes ] )
         return
       end if
 

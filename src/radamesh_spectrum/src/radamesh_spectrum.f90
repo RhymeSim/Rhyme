@@ -87,7 +87,7 @@ contains
     nbins = 0
 
     region => this%regions
-    if ( .not. associated( region ) ) call log%warn( 'No regions to dispatch')
+    if ( .not. associated( region ) ) call log%warn( 'No regions to dispatch' )
 
 
     do while ( associated( region ) )
@@ -105,9 +105,8 @@ contains
       else if ( region%binning_type .eq. spid%log_space ) then
         call this%dispatch_logarithmic_region( region, log )
       else
-        call log%warn_kw( &
-          'Unknown binning type', 'binning_type', region%binning_type &
-        )
+        call log%warn( 'Unknown binning type', &
+          'binning_type', '=', [ region%binning_type ] )
       end if
 
       region => region%next
@@ -135,9 +134,8 @@ contains
 
       if ( region%spectrum_type .eq. spid%power_law ) then
       else
-        call log%warn_kw( &
-          'Unknown spectrum type', 'spectrum_type', region%spectrum_type &
-        )
+        call log%warn( 'Unknown spectrum type', &
+          'spectrum_type', '=', [ region%spectrum_type ] )
       end if
     end do
   end subroutine radamesh_spectrum_dispatch_linear_region
@@ -163,9 +161,8 @@ contains
       !
       ! if ( region%spectrum_type .eq. spid%power_law ) then
       ! else
-      !   call log%warn_kw( &
-      !     'Unknown spectrum type', 'spectrum_type', region%spectrum_type &
-      !   )
+      !   call log%warn( 'Unknown spectrum type', &
+      !      'spectrum_type', '=', region%spectrum_type )
       ! end if
     end do
   end subroutine radamesh_spectrum_dispatch_logarithmic_region
