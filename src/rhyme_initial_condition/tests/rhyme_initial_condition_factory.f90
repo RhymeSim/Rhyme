@@ -3,7 +3,7 @@ module rhyme_initial_condition_factory
 
   implicit none
 
-  logical :: rhyme_initial_condition_factory_intialized = .false.
+  logical :: ic_fac_intialized = .false.
 
   integer, parameter :: nlevels = 4
   integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
@@ -38,4 +38,24 @@ module rhyme_initial_condition_factory
     icid%simple, icid%unset, nlevels_uni, base_grid_uni, max_nboxes_uni, '' &
   )
 
+  type ( log_t ) :: log
+  type ( ideal_gas_t ) :: ig
+
+contains
+
+  subroutine rhyme_initial_condition_factory_init ()
+    implicit none
+
+    type ( chemistry_t ) :: chemi
+    type ( thermo_base_t ) :: thermo
+
+    if ( ic_fac_intialized ) return
+
+    call chemi%init( log )
+    call thermo%init( log )
+
+    call ig%init_with( chemi, thermo, igid%monatomic, log )
+
+    ic_fac_intialized = .true.
+  end subroutine rhyme_initial_condition_factory_init
 end module rhyme_initial_condition_factory

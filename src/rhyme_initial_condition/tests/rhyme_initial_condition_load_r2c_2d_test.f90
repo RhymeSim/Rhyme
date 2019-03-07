@@ -1,6 +1,6 @@
 logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
-  use rhyme_samr
   use rhyme_initial_condition_factory
+  use rhyme_samr
 
   implicit none
 
@@ -11,15 +11,13 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
 
   type ( initial_condition_t ) :: ic
   type ( samr_t ) :: samr
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
-  type ( ideal_gas_t ) :: ig
-  type ( log_t ) :: log
   type ( rhyme_hdf5_util_t ) :: h5
   real ( kind=8 ) :: rho_b
   real ( kind=8 ) :: data(data_len)
   real ( kind=8 ) :: r2c_data( res, res, 1, 5 )
   integer :: i, lb, ub
+
+  call rhyme_initial_condition_factory_init
 
   ! Running load_header
   ic%type = icid%snapshot
@@ -30,10 +28,6 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   call ic%load_headers( samr )
   samr%base_grid(3) = 1 ! Bug in R2C
   samr%ghost_cells(3) = 0
-
-  call chemi%init
-  call thermo%init
-  call ig%init_with( chemi, thermo, igid%monatomic )
 
   call ic%load_r2c_2d( samr, ig, log )
 

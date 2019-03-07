@@ -1,6 +1,6 @@
 logical function rhyme_initial_condition_load_headers_test () result ( failed )
-  use rhyme_samr_factory
   use rhyme_initial_condition_factory
+  use rhyme_samr_factory
 
   implicit none
 

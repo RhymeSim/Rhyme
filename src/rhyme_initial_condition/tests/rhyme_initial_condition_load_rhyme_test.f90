@@ -1,6 +1,6 @@
 logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
-  use rhyme_samr_factory
   use rhyme_initial_condition_factory
+  use rhyme_samr_factory
 
   implicit none
 
@@ -10,7 +10,6 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
   type ( initial_condition_t ) :: ic
   type ( samr_t ) :: samr, samr_read
   type ( chombo_t ) :: ch
-  type ( log_t ) :: log
 
   integer :: l, b, uid, ub(3)
 
