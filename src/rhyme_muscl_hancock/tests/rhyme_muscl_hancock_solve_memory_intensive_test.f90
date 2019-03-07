@@ -9,7 +9,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
 
   call rhyme_muscl_hancock_factory_init
 
-  call mh%init( samr )
+  call mh%init( samr, log )
 
   dt = 0.05d0
   failed = .true.

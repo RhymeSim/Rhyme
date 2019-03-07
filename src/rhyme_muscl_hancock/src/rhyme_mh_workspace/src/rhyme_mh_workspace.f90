@@ -2,6 +2,7 @@ module rhyme_mh_workspace
   use rhyme_hydro_base
   use rhyme_riemann_problem
   use rhyme_samr
+  use rhyme_log
 
   implicit none
 
@@ -30,14 +31,19 @@ module rhyme_mh_workspace
 
 contains
 
-  pure subroutine rhyme_mh_workspace_init ( this, samr )
+  subroutine rhyme_mh_workspace_init ( this, samr, log )
     implicit none
 
     class ( mh_workspace_t ), intent ( inout ) :: this
     type ( samr_t ), intent ( in ) :: samr
+    type ( log_t ), intent ( inout ) :: log
+
     integer :: l
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize workspace' )
+      return
+    end if
 
     this%nlevels = samr%nlevels
 

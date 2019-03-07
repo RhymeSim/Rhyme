@@ -14,7 +14,8 @@ module rhyme_mh_workspace_factory
     1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  type(samr_t) :: samr
+  type ( samr_t ) :: samr
+  type ( log_t ) :: log
 
 contains
 

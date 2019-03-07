@@ -11,7 +11,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
   call rhyme_mh_workspace_factory_init
 
 
-  call ws%init ( samr )
+  call ws%init( samr, log )
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes

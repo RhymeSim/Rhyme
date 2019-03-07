@@ -18,6 +18,7 @@ set ( deps
   rhyme_hydro_base
   rhyme_riemann_problem
   rhyme_samr
+  rhyme_log
 )
 
 foreach ( dep ${deps} )

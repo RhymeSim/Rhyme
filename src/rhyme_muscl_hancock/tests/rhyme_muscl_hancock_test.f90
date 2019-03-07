@@ -11,7 +11,7 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   failed = mh%initialized
   if ( failed ) return
 
-  call mh%init ( samr )
+  call mh%init( samr, log )
 
   failed = &
   .not. mh%ws%initialized &

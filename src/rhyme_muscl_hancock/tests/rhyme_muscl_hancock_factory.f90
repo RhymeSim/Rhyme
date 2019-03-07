@@ -1,6 +1,6 @@
 module rhyme_muscl_hancock_factory
-  use rhyme_samr_factory
   use rhyme_muscl_hancock
+  use rhyme_samr_factory
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_slope_limiter
@@ -33,6 +33,7 @@ module rhyme_muscl_hancock_factory
   type ( iterative_riemann_solver_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( samr_t ) :: samr
+  type ( log_t ) :: log
 
 contains
 
@@ -50,12 +51,12 @@ contains
     cfl%courant_number = courant_number
 
     ! Initializing Ideal Gas
-    call chemi%init
-    call thermo%init
-    call ig%init_with( chemi, thermo, gastype )
+    call chemi%init( log )
+    call thermo%init( log )
+    call ig%init_with( chemi, thermo, gastype, log )
 
     ! Initializing Iteratice Riemann Solver
-    call irs%init
+    call irs%init( log )
 
     ! Initializing Slope Limiter
     sl%type = sltype

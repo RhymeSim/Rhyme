@@ -17,6 +17,7 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 set ( deps
   rhyme_samr
   rhyme_ideal_gas
+  rhyme_log
 )
 
 foreach ( dep ${deps} )
@@ -29,7 +30,6 @@ endforeach ( dep )
 set ( srcs
   src/rhyme_cfl.f90
 )
-
 
 add_library ( ${PROJECT_NAME} STATIC ${srcs} )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )

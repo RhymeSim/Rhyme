@@ -9,7 +9,7 @@ logical function rhyme_mh_workspace_init_test () result ( failed )
 
   call rhyme_mh_workspace_factory_init
 
-  call ws%init ( samr )
+  call ws%init( samr, log )
 
   failed = ws%nlevels .ne. samr%nlevels
   if ( failed ) return

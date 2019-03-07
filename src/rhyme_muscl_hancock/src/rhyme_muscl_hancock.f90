@@ -4,6 +4,7 @@ module rhyme_muscl_hancock
   use rhyme_ideal_gas
   use rhyme_slope_limiter
   use rhyme_iterative_riemann_solver
+  use rhyme_log
 
   implicit none
 
@@ -25,22 +26,25 @@ module rhyme_muscl_hancock
 
 contains
 
-  pure subroutine rhyme_muscl_hancock_init ( this, samr )
+  subroutine rhyme_muscl_hancock_init ( this, samr, log )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: this
     type ( samr_t ), intent ( in ) :: samr
+    type ( log_t ), intent ( inout ) :: log
 
-    if ( this%initialized ) return
-    if ( this%ws%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize muscl_hancock object' )
+      return
+    end if
 
-    call this%ws%init( samr )
+    call this%ws%init( samr, log )
 
     this%initialized = .true.
   end subroutine rhyme_muscl_hancock_init
 
 
-  subroutine rhyme_muscl_hancock_solve_memory_intensive( this, box, dx, dt, cfl, ig, irs, sl )
+  subroutine rhyme_muscl_hancock_solve_memory_intensive ( this, box, dx, dt, cfl, ig, irs, sl )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: this

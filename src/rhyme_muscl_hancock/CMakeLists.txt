@@ -30,6 +30,7 @@ set ( deps
   rhyme_ideal_gas
   rhyme_slope_limiter
   rhyme_iterative_riemann_solver
+  rhyme_log
 )
 
 foreach ( dep ${deps} )

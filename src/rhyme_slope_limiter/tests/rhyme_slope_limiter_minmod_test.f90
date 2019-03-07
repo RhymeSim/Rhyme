@@ -3,46 +3,43 @@ logical function rhyme_slope_limiter_minmod_test () result (failed)
 
   implicit none
 
-  type ( slope_limiter_t ) :: sl
-  type ( hydro_conserved_t ) :: Delta
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
+  type ( slope_limiter_t ) :: sl
+  type ( hydro_conserved_t ) :: Delta
 
-  call chemi%init
-  call thermo%init
-  call ig%init_with ( chemi, thermo, igid%diatomic )
+  call rhyme_slope_limiter_factory_init
+  call ig%init_with( chemi, thermo, igid%diatomic, log )
 
-  UL%u = cons%u
-  UR%u = cons%u
-
-
-  UM%u = cons%u * 1.23d0
-  call sl%minmod ( cfl, ig, UL, UM, UR, Delta )
-
-  failed = any ( abs ( Delta%u ) > epsilon(0.d0) )
-  if ( failed ) return
+  UL%u = hy%cons%u
+  UR%u = hy%cons%u
 
 
-  UM%u = cons%u * (-2.34)
-  call sl%minmod ( cfl, ig, UL, UM, UR, Delta )
+  UM%u = hy%cons%u * 1.23d0
+  call sl%minmod( cfl, ig, UL, UM, UR, Delta )
 
   failed = any ( abs ( Delta%u ) > epsilon(0.d0) )
   if ( failed ) return
 
 
-  UM%u = cons%u * 1.23d0
-  UR%u = cons%u * 2.34d0
-  call sl%minmod ( cfl, ig, UL, UM, UR, Delta )
+  UM%u = hy%cons%u * (-2.34)
+  call sl%minmod( cfl, ig, UL, UM, UR, Delta )
+
+  failed = any ( abs ( Delta%u ) > epsilon(0.d0) )
+  if ( failed ) return
+
+
+  UM%u = hy%cons%u * 1.23d0
+  UR%u = hy%cons%u * 2.34d0
+  call sl%minmod( cfl, ig, UL, UM, UR, Delta )
 
   failed = any ( abs ( Delta%u ) < epsilon(0.d0) )
   if ( failed ) return
 
 
-  UM%u = cons%u * (-1.23d0)
-  UR%u = cons%u * (-2.34d0)
-  call sl%minmod ( cfl, ig, UL, UM, UR, Delta )
+  UM%u = hy%cons%u * (-1.23d0)
+  UR%u = hy%cons%u * (-2.34d0)
+  call sl%minmod( cfl, ig, UL, UM, UR, Delta )
 
   failed = any ( abs ( Delta%u ) < epsilon(0.d0) )
   if ( failed ) return
