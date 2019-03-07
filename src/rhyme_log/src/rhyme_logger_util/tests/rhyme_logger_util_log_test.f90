@@ -27,5 +27,5 @@ logical function rhyme_logger_util_log_test () result ( failed )
   call log%log( 'done' )
 
   ! To see the output set failed to .true.
-  failed = .true.
+  failed = .false.
 end function rhyme_logger_util_log_test

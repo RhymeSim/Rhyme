@@ -24,7 +24,7 @@ contains
 
     character ( len=128 ) :: sec
 
-    write ( sec, '(A,I5)' ) 'iteration ', iteration
+    write ( sec, '(I5)' ) iteration
 
     call this%set_section( sec )
     call this%log( 'Start! ツ' )

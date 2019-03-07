@@ -36,13 +36,15 @@ contains
     character ( len=126 ) :: tas_str
 
     if ( present( color ) ) then
-      tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )
+      tas_str = trim( this%time( color=color ) )//' '//trim(color)//trim( this%sec )
     else
       tas_str = trim( this%time() )//' '//trim( this%sec )
     end if
 
     if ( len_trim( this%sub_sec ) > 1 ) then
-      tas_str = trim( tas_str )//'|'//trim( adjustl( this%sub_sec ) )
+      tas_str = trim( tas_str )//' § '//trim( adjustl( this%sub_sec ) )
     end if
+
+    tas_str = trim( tas_str )//':'//tc%nc
   end function rhyme_logger_util_time_and_section
 end submodule rhyme_logger_util_time_submoudle

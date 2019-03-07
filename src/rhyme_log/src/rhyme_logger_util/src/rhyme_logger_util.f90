@@ -92,9 +92,10 @@ module rhyme_logger_util
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_err
 
-    module subroutine rhyme_logger_util_start_task ( this, task )
+    module subroutine rhyme_logger_util_start_task ( this, task, msg )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: task
+      character ( len=* ), intent ( in ), optional :: msg
     end subroutine rhyme_logger_util_start_task
 
     module subroutine rhyme_logger_util_done ( this )

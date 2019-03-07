@@ -16,8 +16,10 @@ module rhyme_muscl_hancock
 
 
   type muscl_hancock_t
-    type ( mh_workspace_t ) :: ws
     logical :: initialized = .false.
+    type ( mh_workspace_t ) :: ws
+    logical :: active_axis(3) = .false.
+    integer :: active_flux(3) = 0
   contains
     procedure :: init => rhyme_muscl_hancock_init
     procedure :: solve => rhyme_muscl_hancock_solve_memory_intensive
@@ -40,6 +42,9 @@ contains
 
     call this%ws%init( samr, log )
 
+    this%active_axis = samr%base_grid > 1
+    this%active_flux = merge ( 1, 0, this%active_axis )
+
     this%initialized = .true.
   end subroutine rhyme_muscl_hancock_init
 
@@ -57,9 +62,6 @@ contains
 
     integer :: l, b, i, j, k
     integer :: lb(3), ub(3)
-    integer :: dirs(3)
-    logical :: active_dir(3)
-    integer :: flux_factor(3)
 
     type ( rp_star_region_t ) :: star
     type ( hydro_conserved_t ) :: Delta, evolved_hydro_state
@@ -69,17 +71,13 @@ contains
 
     call this%ws%check( box )
 
-    active_dir = box%dims > 1
-    flux_factor = merge ( 1, 0, active_dir )
-    dirs = [ hyid%x, hyid%y, hyid%z ]
-
-    lb = merge ( lbound( box%hydro ), 0, active_dir )
-    ub = merge ( ubound( box%hydro ), 2, active_dir )
+    lb = merge ( lbound( box%hydro ), 0, this%active_axis )
+    ub = merge ( ubound( box%hydro ), 2, this%active_axis )
 
     do k = lb(3) + 1, ub(3) - 1
       do j = lb(2) + 1, ub(2) - 1
         do i = lb(1) + 1, ub(1) - 1
-          if ( active_dir( hyid%x ) ) then
+          if ( this%active_axis( hyid%x ) ) then
             call sl%run ( cfl, ig, &
               box%hydro( i-1, j, k ), &
               box%hydro( i  , j, k ), &
@@ -92,7 +90,7 @@ contains
               this%ws%levels(l)%boxes(b)%UR( i, j, k, hyid%x ) &
             )
           end if
-          if ( active_dir( hyid%y ) ) then
+          if ( this%active_axis( hyid%y ) ) then
             call sl%run ( cfl, ig, &
               box%hydro( i, j-1, k ), &
               box%hydro( i, j  , k ), &
@@ -105,7 +103,7 @@ contains
               this%ws%levels(l)%boxes(b)%UR( i, j, k, hyid%y ) &
             )
           end if
-          if ( active_dir( hyid%z ) ) then
+          if ( this%active_axis( hyid%z ) ) then
             call sl%run ( cfl, ig, &
               box%hydro( i, j, k-1 ), &
               box%hydro( i, j, k   ), &
@@ -123,13 +121,13 @@ contains
     end do
 
 
-    lb = merge ( lbound( box%hydro ), 0, active_dir )
-    ub = merge ( ubound( box%hydro ), 1, active_dir )
+    lb = merge ( lbound( box%hydro ), 0, this%active_axis )
+    ub = merge ( ubound( box%hydro ), 1, this%active_axis )
 
     do k = lb(3) + 1, ub(3)
       do j = lb(2) + 1, ub(2)
         do i = lb(1) + 1, ub(1)
-          if ( active_dir(hyid%x) ) then
+          if ( this%active_axis(hyid%x) ) then
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
@@ -143,7 +141,7 @@ contains
             call ig%flux_at( evolved_hydro_state, hyid%x, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
           end if
-          if ( active_dir(hyid%y) ) then
+          if ( this%active_axis(hyid%y) ) then
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
@@ -157,7 +155,7 @@ contains
             call ig%flux_at( evolved_hydro_state, hyid%y, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
           end if
-          if ( active_dir(hyid%z) ) then
+          if ( this%active_axis(hyid%z) ) then
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
@@ -182,19 +180,19 @@ contains
             box%hydro(i,j,k)%u &
             + &
             ( &
-              flux_factor( hyid%x ) * dt / dx( hyid%x ) &
+              this%active_flux( hyid%x ) * dt / dx( hyid%x ) &
               * ( &
                 this%ws%levels(l)%boxes(b)%FR( i-1, j, k, hyid%x )%f &
                 - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x )%f &
               ) &
               + &
-              flux_factor( hyid%y ) * dt / dx( hyid%y ) &
+              this%active_flux( hyid%y ) * dt / dx( hyid%y ) &
               * ( &
                 this%ws%levels(l)%boxes(b)%FR( i, j-1, k, hyid%y )%f &
                 - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y )%f &
               ) &
               + &
-              flux_factor( hyid%z ) * dt / dx( hyid%z ) &
+              this%active_flux( hyid%z ) * dt / dx( hyid%z ) &
               * ( &
                 this%ws%levels(l)%boxes(b)%FR( i, j, k-1, hyid%z )%f &
                 - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z )%f &

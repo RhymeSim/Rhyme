@@ -91,13 +91,15 @@ program rhyme
     call log%log( '', 't', '=', [ samr%levels(0)%t ] )
     call log%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
+    call log%start_task( 'BC', 'only base grid boundaries')
     call bc%set_base_grid_boundaries( samr )
-    call log%done( 'set_base_grid_boundaries' )
+    call log%done
 
     ! Update structured AMR
     ! Update workspace
     ! Update ghost cells of boxes
 
+    call log%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call mh%solve( &
@@ -108,12 +110,13 @@ program rhyme
         )
       end do
     end do
-    call log%done( 'Hydro solver' )
+    call log%done
 
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 10) .eq. 0 ) then
+      call log%start_task( 'snapshot', 'Chombo output' )
       call chombo%write_samr( samr )
-      call log%done( 'Drop an output (chombo) file' )
+      call log%done
     end if
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt

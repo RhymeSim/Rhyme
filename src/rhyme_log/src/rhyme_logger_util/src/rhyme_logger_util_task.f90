@@ -1,15 +1,21 @@
 submodule ( rhyme_logger_util ) rhyme_logger_util_task_submodule
 contains
-  module subroutine rhyme_logger_util_start_task ( this, task )
+  module subroutine rhyme_logger_util_start_task ( this, task, msg )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
     character ( len=* ), intent ( in ) :: task
+    character ( len=* ), intent ( in ), optional :: msg
 
     call date_and_time ( values=this%task_t )
 
     call this%set_sub_section( task )
-    call this%log( 'ツ' )
+
+    if ( present( msg ) ) then
+      call this%log( 'ツ '//trim( adjustl( msg ) ) )
+    else
+      call this%log( 'ツ')
+    end if
   end subroutine rhyme_logger_util_start_task
 
   subroutine rhyme_logger_util_done ( this )
