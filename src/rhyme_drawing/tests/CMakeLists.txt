@@ -21,6 +21,7 @@ create_test_sourcelist ( _ main.c ${test_libs} )
 
 
 set ( factories
+  rhyme_hydro_base
   rhyme_samr
 )
 

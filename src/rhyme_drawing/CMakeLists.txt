@@ -18,6 +18,7 @@ set ( deps
   rhyme_samr
   rhyme_hydro_base
   rhyme_ideal_gas
+  rhyme_log
 )
 
 foreach ( dep ${deps} )

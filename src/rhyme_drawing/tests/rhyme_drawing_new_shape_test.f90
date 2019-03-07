@@ -17,9 +17,8 @@ logical function rhyme_drawing_new_shape_test () result (failed)
   .or. shape%fill%type .ne. drid%unset &
   .or. draw%shapes%trans%type .ne. drid%unset &
   .or. shape%trans%type .ne. drid%unset
-
-
   if ( failed ) return
+
 
   shape => draw%new_shape ( drid%rect )
 
