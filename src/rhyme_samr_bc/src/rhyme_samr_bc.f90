@@ -94,7 +94,7 @@ contains
   end subroutine rhyme_samr_bc_init
 
 
-  subroutine rhyme_samr_bc_set_base_grid_boundaries ( this, samr )
+  pure subroutine rhyme_samr_bc_set_base_grid_boundaries ( this, samr )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this
@@ -119,7 +119,7 @@ contains
   end subroutine rhyme_samr_bc_set_base_grid_boundaries
 
 
-  subroutine rhyme_samr_bc_set_base_grid_left_boundary ( this, box )
+  pure subroutine rhyme_samr_bc_set_base_grid_left_boundary ( this, box )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this
@@ -213,7 +213,7 @@ contains
   end subroutine rhyme_samr_bc_set_base_grid_bottom_boundary
 
 
-  subroutine rhyme_samr_bc_set_base_grid_top_boundary ( this, box )
+  pure subroutine rhyme_samr_bc_set_base_grid_top_boundary ( this, box )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this
@@ -245,7 +245,7 @@ contains
   end subroutine rhyme_samr_bc_set_base_grid_top_boundary
 
 
-  subroutine rhyme_samr_bc_set_base_grid_back_boundary ( this, box )
+  pure subroutine rhyme_samr_bc_set_base_grid_back_boundary ( this, box )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this
@@ -277,7 +277,7 @@ contains
   end subroutine rhyme_samr_bc_set_base_grid_back_boundary
 
 
-  subroutine rhyme_samr_bc_set_base_grid_front_boundary ( this, box )
+  pure subroutine rhyme_samr_bc_set_base_grid_front_boundary ( this, box )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this

@@ -3,7 +3,7 @@ logical function rhyme_irs_init_test () result ( failed )
 
   implicit none
 
-  call irs%init
+  call irs%init( log )
 
   failed = .not. irs%initialized
 end function rhyme_irs_init_test

@@ -2,6 +2,7 @@ module rhyme_iterative_riemann_solver
   use rhyme_hydro_base
   use rhyme_ideal_gas
   use rhyme_riemann_problem
+  use rhyme_log
 
   implicit none
 
@@ -23,29 +24,38 @@ module rhyme_iterative_riemann_solver
 
 contains
 
-  pure subroutine rhyme_iterative_riemann_solver_init_with ( this, niter, tol, pfloor )
+  subroutine rhyme_iterative_riemann_solver_init_with ( &
+    this, niter, tol, pfloor, log )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
     integer, intent ( in ) :: niter
     real ( kind=8 ), intent ( in ) :: tol, pfloor
+    type ( log_t ), intent ( inout ) :: log
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize irs object')
+      return
+    end if
 
     this%n_iteration = niter
     this%tolerance = tol
     this%pressure_floor = pfloor
 
-    call this%init
+    call this%init( log )
   end subroutine rhyme_iterative_riemann_solver_init_with
 
 
-  pure subroutine rhyme_iterative_riemann_solver_init ( this )
+  subroutine rhyme_iterative_riemann_solver_init ( this, log )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
+    type ( log_t ), intent ( inout ) :: log
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize irs object')
+      return
+    end if
 
     this%initialized = .true.
   end subroutine rhyme_iterative_riemann_solver_init

@@ -1,8 +1,6 @@
 module rhyme_iterative_riemann_solver_factory
   use rhyme_iterative_riemann_solver
   use rhyme_ideal_gas
-  use rhyme_chemistry
-  use rhyme_thermo_base
 
   implicit none
 
@@ -16,6 +14,7 @@ module rhyme_iterative_riemann_solver_factory
 
   type ( ideal_gas_t ) :: ig
   type ( iterative_riemann_solver_t ) :: irs
+  type ( log_t ) :: log
 
   type irs_accuracy_t
     real ( kind=8 ) :: star_p, star_v, left_rho, right_rho
@@ -47,14 +46,15 @@ contains
 
     if ( irs_factory_initialized ) return
 
-    call chemi%init
-    call thermo%init
-    call ig%init_with ( chemi, thermo, irs_factory_gastype )
+    call chemi%init( log )
+    call thermo%init( log )
+    call ig%init_with ( chemi, thermo, irs_factory_gastype, log )
 
     call irs%init_with ( &
       irs_factory_n_iteration, &
       irs_factory_tolerance, &
-      irs_factory_pressure_floor &
+      irs_factory_pressure_floor, &
+      log &
     )
 
     irs_factory_initialized = .true.

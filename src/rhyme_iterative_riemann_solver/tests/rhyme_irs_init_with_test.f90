@@ -9,7 +9,8 @@ logical function rhyme_irs_init_with_test () result ( failed )
   call irs%init_with ( &
     irs_factory_n_iteration, &
     irs_factory_tolerance, &
-    irs_factory_pressure_floor &
+    irs_factory_pressure_floor, &
+    log &
   )
 
   failed = &
