@@ -4,13 +4,9 @@ logical function rhyme_ideal_gas_bulk_modulus_test () result (failed)
   implicit none
 
   type ( ideal_gas_t ) :: ig
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
 
-  call chemi%init
-  call thermo%init
+  call rhyme_ideal_gas_factory_init
+  call ig%init_with( chemi, thermo, gas_type, log )
 
-  call ig%init_with ( chemi, thermo, gas_type )
-
-  failed = abs ( ig%B(cons) - ig%gamma * p ) > epsilon(0.d0 )
+  failed = abs ( ig%B( hy%cons ) - ig%gamma * hy%p ) > epsilon(0.d0 )
 end function rhyme_ideal_gas_bulk_modulus_test

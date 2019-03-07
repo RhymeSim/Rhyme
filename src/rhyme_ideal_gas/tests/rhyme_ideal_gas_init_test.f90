@@ -4,12 +4,9 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   implicit none
 
   type ( ideal_gas_t ) :: ig_mon, ig_di, ig_poly
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
   type ( unit_t ), pointer :: R_unit
 
-  call chemi%init
-  call thermo%init
+  call rhyme_ideal_gas_factory_init
 
   R_unit => kg * (m / s)**2 / mol / Kel
 
@@ -19,7 +16,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   .or. igid%polyatomic .ne. 3
   if ( failed ) return
 
-  call ig_mon%init_with( chemi, thermo, igid%monatomic )
+  call ig_mon%init_with( chemi, thermo, igid%monatomic, log )
 
   failed = .not. ig_mon%initialized
   if ( failed ) return
@@ -35,7 +32,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   if ( failed ) return
 
 
-  call ig_di%init_with( chemi, thermo, igid%diatomic )
+  call ig_di%init_with( chemi, thermo, igid%diatomic, log )
 
   failed = &
   abs ( ig_di%Cv%v - 5.d0 / 2.d0 * 8.314d0 ) > epsilon(0.d0) &
@@ -46,7 +43,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   if ( failed ) return
 
 
-  call ig_poly%init_with( chemi, thermo, igid%polyatomic )
+  call ig_poly%init_with( chemi, thermo, igid%polyatomic, log )
 
   failed = &
   abs ( ig_poly%Cv%v - 3.d0 * 8.314d0 ) > epsilon(0.d0) &

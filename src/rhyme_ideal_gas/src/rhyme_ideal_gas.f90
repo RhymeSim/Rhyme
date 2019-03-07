@@ -1,7 +1,6 @@
 module rhyme_ideal_gas
-  use rhyme_nombre
-  use rhyme_chemistry
   use rhyme_hydro_base
+  use rhyme_chemistry
   use rhyme_thermo_base
 
   implicit none
@@ -42,32 +41,40 @@ module rhyme_ideal_gas
 
 contains
 
-  subroutine rhyme_ideal_gas_init_with ( this, chemi, thermo, gastype )
+  subroutine rhyme_ideal_gas_init_with ( this, chemi, thermo, gastype, log )
     implicit none
 
     class ( ideal_gas_t ), intent ( inout ) :: this
     type ( chemistry_t ), intent ( in ) :: chemi
     type ( thermo_base_t ), intent ( in ) :: thermo
-    integer :: gastype
+    integer, intent ( in ) :: gastype
+    type ( log_t ), intent ( inout ) :: log
 
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize ideal gas object')
+      return
+    end if
 
     this%type = gastype
 
-    call rhyme_ideal_gas_init ( this, chemi, thermo )
+    call rhyme_ideal_gas_init ( this, chemi, thermo, log )
   end subroutine rhyme_ideal_gas_init_with
 
 
-  subroutine rhyme_ideal_gas_init ( this, chemi, thermo )
+  subroutine rhyme_ideal_gas_init ( this, chemi, thermo, log )
     implicit none
 
     class ( ideal_gas_t ), intent ( inout ) :: this
     type ( chemistry_t ), intent ( in ) :: chemi
     type ( thermo_base_t ), intent ( in ) :: thermo
+    type ( log_t ), intent ( inout ) :: log
 
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize ideal gas object' )
+      return
+    end if
 
     this%R = nombre_t(8.314d0, kg * (m / s)**2 / mol / Kel)
     this%kB_per_amu = thermo%kB%v / chemi%amu%one%v

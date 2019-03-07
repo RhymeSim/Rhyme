@@ -4,12 +4,9 @@ logical function rhyme_ideal_gas_sound_speed_test () result (failed)
   implicit none
 
   type ( ideal_gas_t ) :: ig
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
 
-  call chemi%init
-  call thermo%init
-  call ig%init_with( chemi, thermo, gas_type )
+  call rhyme_ideal_gas_factory_init
+  call ig%init_with( chemi, thermo, gas_type, log )
 
-  failed = abs( ig%Cs(cons) - sqrt(gamma * p / rho) ) > epsilon(0.e0)
+  failed = abs( ig%Cs( hy%cons ) - sqrt( ig%gamma * hy%p / hy%rho) ) > epsilon(0.e0)
 end function rhyme_ideal_gas_sound_speed_test
