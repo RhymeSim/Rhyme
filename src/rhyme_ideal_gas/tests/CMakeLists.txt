@@ -3,7 +3,7 @@ project ( rhyme_ideal_gas_tests )
 enable_language ( C Fortran )
 add_compile_options ( -Wall -Wextra )
 set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
-set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c17" )
+set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11" )
 
 
 file ( GLOB_RECURSE test_files RELATIVE ${PROJECT_SOURCE_DIR} *_test.f90 )
