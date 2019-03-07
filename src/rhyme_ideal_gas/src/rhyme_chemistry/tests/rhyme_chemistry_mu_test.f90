@@ -4,9 +4,10 @@ logical function rhyme_chemistry_mu_test () result (failed)
   implicit none
 
   type ( chemistry_t ) :: chemi
+  type ( log_t ) :: log
   real(kind=8) :: X, Y, f(3)
 
-  call chemi%init
+  call chemi%init( log )
 
   X = .75d0
   Y = .25d0

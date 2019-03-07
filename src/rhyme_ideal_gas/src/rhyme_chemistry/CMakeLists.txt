@@ -16,11 +16,12 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 set ( deps
   rhyme_nombre
+  rhyme_log
 )
 
 foreach ( dep ${deps} )
   if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../../../${dep} ${CMAKE_BINARY_DIR}/${deps} )
+    add_subdirectory ( ../../../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
 
@@ -29,9 +30,8 @@ set ( srcs
   src/rhyme_chemistry.f90
 )
 
-
 add_library ( ${PROJECT_NAME} STATIC ${srcs} )
-target_link_libraries ( ${PROJECT_NAME} ${deps} )
+target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
 
 
 add_subdirectory ( tests )

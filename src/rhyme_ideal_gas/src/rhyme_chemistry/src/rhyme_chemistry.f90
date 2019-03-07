@@ -1,5 +1,6 @@
 module rhyme_chemistry
   use rhyme_nombre
+  use rhyme_log
 
   implicit none
 
@@ -30,12 +31,16 @@ module rhyme_chemistry
 
 contains
 
-  subroutine init_chemistry (this)
+  subroutine init_chemistry ( this, log )
     implicit none
 
-    class ( chemistry_t ) :: this
+    class ( chemistry_t ), intent ( inout ) :: this
+    type ( log_t ), intent ( inout ) :: log
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( 'Try to re-initialize chemistry object')
+      return
+    end if
 
     this%molar%e = 5.48580d-7 .u. kg / mol
     this%molar%H = 1.00794d-3 .u. kg / mol
@@ -59,24 +64,24 @@ contains
   !> @param[in] X Hydrogen mass fraction
   !> @param[in] Y Helium mass fraction
   !> @param[in] f ionization fractions - f = (fHI, fHeI, fHeII)
-  function chemistry_one_over_mu (this, X, Y, f)
+  pure function chemistry_one_over_mu (this, X, Y, f)
     implicit none
 
-    class ( chemistry_t ) :: this
-    real(kind=8), intent(in) :: X, Y, f(3)
-    real(kind=8) :: chemistry_one_over_mu
+    class ( chemistry_t ), intent ( in ) :: this
+    real ( kind=8 ), intent ( in ) :: X, Y, f(3)
+    real ( kind=8 ) :: chemistry_one_over_mu
 
     chemistry_one_over_mu = X * (1.d0 + f(1)) / this%amu%H + &
       Y * (1.d0 + f(2) + 2 * f(3)) / this%amu%He
   end function chemistry_one_over_mu
 
 
-  function chemistry_mu (this, X, Y, f)
+  pure function chemistry_mu (this, X, Y, f)
     implicit none
 
-    class ( chemistry_t ) :: this
-    real(kind=8), intent(in) :: X, Y, f(3)
-    real(kind=8) :: chemistry_mu
+    class ( chemistry_t ), intent ( in ) :: this
+    real ( kind=8 ), intent ( in ) :: X, Y, f(3)
+    real ( kind=8 ) :: chemistry_mu
 
     chemistry_mu = 1.d0 / chemistry_one_over_mu(this, X, Y, f)
   end function chemistry_mu

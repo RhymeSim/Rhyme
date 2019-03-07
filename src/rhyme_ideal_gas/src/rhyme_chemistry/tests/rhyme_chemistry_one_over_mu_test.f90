@@ -4,8 +4,9 @@ logical function rhyme_chemistry_one_over_mu_test () result (failed)
   implicit none
 
   type ( chemistry_t ) :: chemi
+  type ( log_t ) :: log
 
-  call chemi%init
+  call chemi%init( log )
 
   failed = &
   abs ( chemi%one_over_mu(1.d0, 0.d0, [0.d0, 0.d0, 0.d0]) - 1.d0 / chemi%amu%H ) > epsilon(0.d0) &

@@ -4,9 +4,10 @@ logical function rhyme_chemistry_init_test () result (failed)
   implicit none
 
   type ( chemistry_t ) :: chemi
+  type ( log_t ) :: log
   type ( unit_t ), pointer :: kg__mol
 
-  call chemi%init
+  call chemi%init( log )
 
   kg__mol => kg / mol
 
