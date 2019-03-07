@@ -34,20 +34,23 @@ module rhyme_logger_util
     logical :: initialized = .false.
     character ( len=1024 ) :: logfile = logger_util_const%default_logfile
     character ( len=1024 ) :: errfile = logger_util_const%default_errfile
-    character ( len=1024 ), dimension(10) :: colored_logo = ""
-    character ( len=1024 ), dimension(10) :: logo = ""
-    character ( len=64 ) :: sec = ""
+    character ( len=1024 ), dimension(10) :: colored_logo = ''
+    character ( len=1024 ), dimension(10) :: logo = ''
+    character ( len=64 ) :: sec = '', sub_sec = ''
     integer :: logfile_unit = logger_util_const%closed
     integer :: errfile_unit = logger_util_const%closed
     integer :: t(8)
+    integer :: task_t(8)
   contains
     procedure :: start => rhyme_logger_util_start
     procedure :: set_section => rhyme_logger_util_set_section
+    procedure :: set_sub_section => rhyme_logger_util_set_sub_section
 
     procedure :: log => rhyme_logger_util_log
     procedure :: warn => rhyme_logger_util_warn
     procedure :: err => rhyme_logger_util_err
 
+    procedure :: start_task => rhyme_logger_util_start_task
     procedure :: done => rhyme_logger_util_done
 
     procedure :: update_time => rhyme_logger_util_update_time
@@ -89,9 +92,13 @@ module rhyme_logger_util
       class (*), intent ( in ), optional :: value(:)
     end subroutine rhyme_logger_util_err
 
-    module subroutine rhyme_logger_util_done ( this, msg )
+    module subroutine rhyme_logger_util_start_task ( this, task )
       class ( logger_util_t ), intent ( inout ) :: this
-      character ( len=* ), intent ( in ) :: msg
+      character ( len=* ), intent ( in ) :: task
+    end subroutine rhyme_logger_util_start_task
+
+    module subroutine rhyme_logger_util_done ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
     end subroutine rhyme_logger_util_done
 
     module subroutine rhyme_logger_util_update_time ( this )
@@ -193,6 +200,18 @@ contains
 
     call this%update_time
   end subroutine rhyme_logger_util_set_section
+
+
+  subroutine rhyme_logger_util_set_sub_section ( this, sub_section )
+    implicit none
+
+    class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: sub_section
+
+    this%sub_sec = trim( adjustl( sub_section ) )
+
+    call this%update_time
+  end subroutine rhyme_logger_util_set_sub_section
 
 
   function to_string ( input ) result ( str )

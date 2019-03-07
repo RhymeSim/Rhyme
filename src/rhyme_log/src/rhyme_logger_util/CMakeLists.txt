@@ -28,7 +28,7 @@ set ( srcs
   src/rhyme_logger_util_log.f90
   src/rhyme_logger_util_warn.f90
   src/rhyme_logger_util_err.f90
-  src/rhyme_logger_util_done.f90
+  src/rhyme_logger_util_task.f90
   src/rhyme_logger_util_io.f90
   src/rhyme_logger_util_logo.f90
   src/rhyme_logger_util_time.f90

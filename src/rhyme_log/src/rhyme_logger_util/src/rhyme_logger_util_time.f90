@@ -5,7 +5,7 @@ contains
 
     class ( logger_util_t ), intent ( inout ) :: this
 
-    call date_and_time ( values=this%t )
+    call date_and_time( values=this%t )
   end subroutine rhyme_logger_util_update_time
 
 
@@ -39,6 +39,10 @@ contains
       tas_str = trim( this%time( color=color ) )//' '//trim( this%sec )
     else
       tas_str = trim( this%time() )//' '//trim( this%sec )
+    end if
+
+    if ( len_trim( this%sub_sec ) > 1 ) then
+      tas_str = trim( tas_str )//'|'//trim( adjustl( this%sub_sec ) )
     end if
   end function rhyme_logger_util_time_and_section
 end submodule rhyme_logger_util_time_submoudle
