@@ -55,28 +55,28 @@ program rhyme
   call log%set_section( 'init' )
 
   ! Chemistry
-  call chemistry%init
+  call chemistry%init( log )
 
   ! Thermodynamics
-  call thermo%init
+  call thermo%init( log )
 
   ! Ideal Gas
-  call ig%init( chemistry, thermo )
+  call ig%init( chemistry, thermo, log )
 
   ! Structured AMR
   call ic%init( samr, ig, log )
 
   ! Boundary Conditions
-  call bc%init( samr )
+  call bc%init( samr, log )
 
   ! Initial Condition
   call draw%apply( ig, samr )
 
   ! Iterative Riemann Solver
-  call irs%init
+  call irs%init( log )
 
   ! MUSCL-Hancock
-  call mh%init( samr )
+  call mh%init( samr, log )
 
   ! Chombo Output
   call chombo%init( log )
