@@ -1,5 +1,6 @@
 module rhyme_samr_bc
   use rhyme_samr
+  use rhyme_log
 
   implicit none
 
@@ -33,32 +34,40 @@ module rhyme_samr_bc
 contains
 
   ! @param[in] bc_types Boundary conditions types (left, right, bottom, top, back, front)
-  subroutine rhyme_samr_bc_init_with ( this, samr, bc_types )
+  subroutine rhyme_samr_bc_init_with ( this, samr, bc_types, log )
     implicit none
 
     class (samr_bc_t), intent(inout) :: this
     type (samr_t), intent(inout) :: samr
     integer, intent(in) :: bc_types(6)
+    type ( log_t ), intent ( inout ) :: log
 
-    if ( .not. samr%initialized ) return
+    if ( .not. samr%initialized ) then
+      call log%err( 'SAMR object need to be initialized before initializing samr_bc' )
+      return
+    end if
 
     this%types(:) = bc_types(:)
 
-    call rhyme_samr_bc_init ( this, samr )
+    call rhyme_samr_bc_init ( this, samr, log )
 
   end subroutine rhyme_samr_bc_init_with
 
   ! Initializing boundary condition object
   ! @param[in] samr Initialized structred AMR object
-  subroutine rhyme_samr_bc_init ( this, samr )
+  subroutine rhyme_samr_bc_init ( this, samr, log )
     implicit none
 
     class (samr_bc_t), intent(inout) :: this
     type (samr_t), intent(inout) :: samr
+    type ( log_t ), intent ( inout ) :: log
 
     integer :: i, j, k, lb(3), ub(3)
 
-    if ( .not. samr%initialized ) return
+    if ( .not. samr%initialized ) then
+      call log%warn( 'Trying to re-initialize samr_bc object' )
+      return
+    end if
 
     this%ghost_cells(:) = samr%ghost_cells(:)
 
@@ -85,7 +94,7 @@ contains
   end subroutine rhyme_samr_bc_init
 
 
-  subroutine rhyme_samr_bc_set_base_grid_boundaries (this, samr)
+  subroutine rhyme_samr_bc_set_base_grid_boundaries ( this, samr )
     implicit none
 
     class ( samr_bc_t ), intent ( in ) :: this

@@ -4,6 +4,8 @@ module rhyme_samr_bc_factory
 
   implicit none
 
+  logical :: samr_bc_fac_initialized = .false.
+
   integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
   integer, parameter :: nlevels = 3
   integer, parameter :: nboxes = 11
@@ -23,15 +25,20 @@ module rhyme_samr_bc_factory
     bcid%outflow, &
     bcid%periodic ]
 
-  type(samr_t) :: samr
+  type ( samr_t ) :: samr
+  type ( log_t ) :: log
 
 contains
 
   subroutine rhyme_samr_bc_factory_init ()
     implicit none
 
+    if ( samr_bc_fac_initialized ) return
+
     call rhyme_samr_factory_fill ( &
       nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
     )
+
+    samr_bc_fac_initialized = .true.
   end subroutine rhyme_samr_bc_factory_init
 end module rhyme_samr_bc_factory

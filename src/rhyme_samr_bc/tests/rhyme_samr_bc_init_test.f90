@@ -9,7 +9,7 @@ logical function rhyme_samr_bc_init_test () result (failed)
   call rhyme_samr_bc_factory_init
 
   bc%types = bc_types
-  call bc%init ( samr )
+  call bc%init ( samr, log )
 
   failed = &
   .not. bc%initialized &
