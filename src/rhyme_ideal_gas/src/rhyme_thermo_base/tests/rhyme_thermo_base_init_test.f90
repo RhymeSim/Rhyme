@@ -4,13 +4,14 @@ logical function rhyme_thermo_base_init_test () result ( failed )
   implicit none
 
   type ( thermo_base_t ) :: th
+  type ( log_t ) :: log
 
   type ( unit_t ), pointer :: u_Kb
 
   failed = th%initialized
   if ( failed ) return
 
-  call th%init
+  call th%init( log )
 
   u_Kb => m**2 * kg * s**(-2) / Kel
 

@@ -16,6 +16,7 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 set ( deps
   rhyme_nombre
+  rhyme_log
 )
 
 foreach ( dep ${deps} )
@@ -28,7 +29,6 @@ endforeach ( dep )
 set ( srcs
   src/rhyme_thermo_base.f90
 )
-
 
 add_library ( ${PROJECT_NAME} STATIC ${srcs} )
 target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )

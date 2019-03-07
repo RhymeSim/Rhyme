@@ -1,5 +1,6 @@
 module rhyme_thermo_base
   use rhyme_nombre
+  use rhyme_log
 
   implicit none
 
@@ -12,13 +13,17 @@ module rhyme_thermo_base
 
 contains
 
-  subroutine rhyme_thermo_base_init ( this )
+  subroutine rhyme_thermo_base_init ( this, log )
     implicit none
 
     class ( thermo_base_t ), intent ( inout ) :: this
+    type ( log_t ), intent ( inout ) :: log
 
 
-    if ( this%initialized ) return
+    if ( this%initialized ) then
+      call log%warn( "Try to re-initialize thermo object" )
+      return
+    end if
 
     this%kB = 1.38064852d-23 .u. m**2 * kg / ( s**2 * Kel )
 
