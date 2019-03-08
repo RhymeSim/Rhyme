@@ -85,8 +85,8 @@ contains
         call log%log( '', 'ic_snapshot_type', '=', [ str ] )
 
       case ( 'ic_snapshot_path')
-        read (1, *) key, op, ic%path
-        call log%log( '', 'ic_snapshot_path', '=', [ ic%path ] )
+        read (1, *) key, op, ic%snapshot_path
+        call log%log( '', 'ic_snapshot_path', '=', [ ic%snapshot_path ] )
 
       case ( "ic_grid" )
         read (1, *) key, op, ic%base_grid(1:3)

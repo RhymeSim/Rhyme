@@ -24,7 +24,7 @@ logical function rhyme_initial_condition_load_headers_test () result ( failed )
   ! Running load_header
   ic%type = icid%snapshot
   ic%snapshot_type = icid%rhyme
-  ic%path = filename
+  ic%snapshot_path = filename
 
   call ic%load_headers( samr_read )
 

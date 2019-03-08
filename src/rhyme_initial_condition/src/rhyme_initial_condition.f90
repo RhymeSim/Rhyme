@@ -25,7 +25,7 @@ module rhyme_initial_condition
     integer :: nlevels = icid%unset
     integer :: base_grid(3) = icid%unset
     integer :: max_nboxes(0:samrid%max_nlevels) = 0
-    character ( len=1024 ) :: path = ''
+    character ( len=1024 ) :: snapshot_path = ''
   contains
     procedure :: init => rhyme_initial_condition_init
     procedure :: init_simple => rhyme_initial_condition_init_simple
@@ -142,9 +142,9 @@ contains
 
     logical :: exist
 
-    inquire ( file=trim(this%path), exist=exist )
+    inquire ( file=trim(this%snapshot_path), exist=exist )
     if ( .not. exist ) then
-      call log%err( 'ic_path does not exist' )
+      call log%err( 'Snapshot does not exist', 'snapshot_path', '=', [ this%snapshot_path ] )
       return
     end if
 
@@ -175,7 +175,7 @@ contains
     type ( chombo_t ) :: ch
     integer :: l, prob_domain(3)
 
-    call ch%open( this%path )
+    call ch%open( this%snapshot_path )
 
     call ch%read_group_attr( '/', 'num_levels', samr%nlevels )
     call ch%read_group_attr( '/', 'iteration', samr%levels(0)%iteration )
@@ -215,7 +215,7 @@ contains
     integer, allocatable :: boxes(:,:)
     real ( kind=8 ), allocatable :: data(:)
 
-    call ch%open( this%path )
+    call ch%open( this%snapshot_path )
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
@@ -299,7 +299,7 @@ contains
     samr%base_grid(3) = 1
     samr%ghost_cells(3) = 0
 
-    call ch%open( this%path )
+    call ch%open( this%snapshot_path )
 
     call ch%read_group_attr( '/', 'MeanBarDen', rho_b )
     call ch%read_group_attr( '/', 'num_components', ncomp )

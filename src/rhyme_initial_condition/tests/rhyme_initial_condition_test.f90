@@ -19,5 +19,5 @@ logical function rhyme_initial_condition_test () result ( failed )
   .or. any( ic%base_grid .ne. icid%unset ) &
   .or. ic%nlevels .ne. icid%unset &
   .or. any( ic%max_nboxes .ne. 0 ) &
-  .or. trim(ic%path) .ne. ''
+  .or. trim(ic%snapshot_path) .ne. ''
 end function rhyme_initial_condition_test

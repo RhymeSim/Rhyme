@@ -22,7 +22,7 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   ! Running load_header
   ic%type = icid%snapshot
   ic%snapshot_type = icid%r2c_2d
-  ic%path = filename
+  ic%snapshot_path = filename
   ic%max_nboxes = max_nboxes_uni
 
   call ic%load_headers( samr )
