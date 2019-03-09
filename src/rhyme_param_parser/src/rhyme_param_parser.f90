@@ -19,15 +19,15 @@ contains
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
-    type ( log_t ), intent ( out ) :: log
-    type ( initial_condition_t ), intent ( out ) :: ic
-    type ( samr_bc_t ), intent ( out ) :: bc
-    type ( cfl_t ), intent ( out ) :: cfl
-    type ( ideal_gas_t ), intent ( out ) :: ig
-    type ( drawing_t ), intent ( out ) :: draw
-    type ( iterative_riemann_solver_t ), intent ( out ) :: irs
-    type ( slope_limiter_t ), intent ( out ) :: sl
-    type ( chombo_t ), intent ( out ) :: chombo
+    type ( log_t ), intent ( inout ) :: log
+    type ( initial_condition_t ), intent ( inout ) :: ic
+    type ( samr_bc_t ), intent ( inout ) :: bc
+    type ( cfl_t ), intent ( inout ) :: cfl
+    type ( ideal_gas_t ), intent ( inout ) :: ig
+    type ( drawing_t ), intent ( inout ) :: draw
+    type ( iterative_riemann_solver_t ), intent ( inout ) :: irs
+    type ( slope_limiter_t ), intent ( inout ) :: sl
+    type ( chombo_t ), intent ( inout ) :: chombo
 
     integer :: ios
     character(len=1024) :: key, op, str
