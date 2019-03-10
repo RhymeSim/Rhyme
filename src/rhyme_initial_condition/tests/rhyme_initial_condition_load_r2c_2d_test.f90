@@ -15,7 +15,7 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   real ( kind=8 ) :: rho_b
   real ( kind=8 ) :: data(data_len)
   real ( kind=8 ) :: r2c_data( res, res, 1, 5 )
-  integer :: i, lb, ub
+  integer :: i, j, lb, ub
 
   call rhyme_initial_condition_factory_init
 
@@ -88,4 +88,15 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   any( abs( samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%e_tot) &
     - r2c_data(:,:,:,e) ) / r2c_data(:,:,:,e) > 3d-5 )
   if ( failed ) return
+
+
+  ! Test pressure after loading the snapshot
+  do j = 1, samr%levels(0)%boxes(1)%dims(2)
+    do i = 1, samr%levels(0)%boxes(1)%dims(1)
+      failed = abs( &
+        ig%p(samr%levels(0)%boxes(1)%hydro(i,j,1)) - r2c_data(i,j,1,p) &
+      ) > 1.3e-5
+      if ( failed ) return
+    end do
+  end do
 end function rhyme_initial_condition_load_r2c_2d_test
