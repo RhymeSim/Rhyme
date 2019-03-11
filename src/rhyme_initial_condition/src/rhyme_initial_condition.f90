@@ -347,7 +347,7 @@ contains
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
           reshape( &
-            0.d5 * rho_b * data( 1:blen ) * ( &
+            .5d0 * rho_b * data( 1:blen ) * ( &
               data( 1*blen+1:2*blen )**2 + data( 2*blen+1:3*blen )**2 &
             ) + data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ), &
           bdims )

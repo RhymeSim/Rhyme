@@ -81,12 +81,15 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
 
   ! Test e_tot
   r2c_data(:,:,:,e) = &
-  .5d0 * rho_b * r2c_data(:,:,:,rho) * ( r2c_data(:,:,:,u)**2 + r2c_data(:,:,:,v)**2 ) & ! e_kin
-  + r2c_data(:,:,:,p) / ( ig%gamma - 1.d0 ) ! e_int
+  .5d0 * rho_b * r2c_data(:,:,:,rho) &
+  * ( r2c_data(:,:,:,u)**2 + r2c_data(:,:,:,v)**2 ) &
+  + r2c_data(:,:,:,p) / ( ig%gamma - 1.d0 ) ! + e_int
 
   failed = &
-  any( abs( samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%e_tot) &
-    - r2c_data(:,:,:,e) ) / r2c_data(:,:,:,e) > 3d-5 )
+  any( abs( &
+    ( samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%e_tot) - r2c_data(:,:,:,e) ) &
+    / r2c_data(:,:,:,e) &
+  ) > epsilon(0.d0) )
   if ( failed ) return
 
 
@@ -94,8 +97,9 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   do j = 1, samr%levels(0)%boxes(1)%dims(2)
     do i = 1, samr%levels(0)%boxes(1)%dims(1)
       failed = abs( &
-        ig%p(samr%levels(0)%boxes(1)%hydro(i,j,1)) - r2c_data(i,j,1,p) &
-      ) > 1.3e-5
+        ( ig%p(samr%levels(0)%boxes(1)%hydro(i,j,1)) - r2c_data(i,j,1,p) ) &
+        / r2c_data(i,j,1,p) &
+      ) > epsilon(0.e0)
       if ( failed ) return
     end do
   end do
