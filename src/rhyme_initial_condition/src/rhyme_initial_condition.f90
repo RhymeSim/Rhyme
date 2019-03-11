@@ -293,6 +293,7 @@ contains
     integer, allocatable :: boxes(:,:)
     real ( kind=8 ), allocatable :: data(:)
     real ( kind=8 ) :: rho_b
+    real ( kind=8 ) :: scale_l, scale_t, scale_d, scale_p
     integer:: ncomp
 
     ! Fix wrong grid dimension (buf in R2C)
@@ -302,7 +303,15 @@ contains
     call ch%open( this%snapshot_path )
 
     call ch%read_group_attr( '/', 'MeanBarDen', rho_b )
+    call ch%read_group_attr( '/', 'scale_l', scale_l )
+    call ch%read_group_attr( '/', 'scale_t', scale_t )
+    call ch%read_group_attr( '/', 'scale_d', scale_d )
     call ch%read_group_attr( '/', 'num_components', ncomp )
+
+    scale_d = rho_b * 0.34d-28
+    scale_t = 1.0d14
+    scale_l = 3.086d21
+    scale_p = 3.24d-14
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
@@ -335,25 +344,26 @@ contains
         call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
-          reshape( rho_b * data( 1:product(bdims) ), bdims )
+          reshape( scale_d * data( 1:product(bdims) ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
-          reshape( rho_b * data( 1:blen ) * data( 1*blen+1:2*blen ), bdims )
+          reshape( scale_d * data( 1:blen ) * scale_l / scale_t * data( 1*blen+1:2*blen ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
-          reshape( rho_b * data( 1:blen ) * data( 2*blen+1:3*blen ), bdims )
+          reshape( scale_d * data( 1:blen ) * scale_l / scale_t * data( 2*blen+1:3*blen ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_w) = 0.d0
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
           reshape( &
-            .5d0 * rho_b * data( 1:blen ) * ( &
+            .5d0 * scale_d * data( 1:blen ) * (scale_l / scale_t)**2 * ( &
               data( 1*blen+1:2*blen )**2 + data( 2*blen+1:3*blen )**2 &
-            ) + data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ), &
+            ) + scale_p * data( 3*blen+1:4*blen ) / ( ig%gamma - 1.d0 ), &
           bdims )
 
         ofs = ofs + ncomp * blen
       end do
+      print *, scale_d * (scale_l / scale_t)**2, scale_p
 
       deallocate( data )
       deallocate( boxes )
