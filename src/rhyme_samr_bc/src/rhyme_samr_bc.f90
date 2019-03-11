@@ -125,7 +125,7 @@ contains
     class ( samr_bc_t ), intent ( in ) :: this
     type ( samr_box_t ), intent ( inout ) :: box
 
-    integer :: i, d_ref, lb, dim1
+    integer :: i, j, k, d_ref
 
     select case ( this%types( bcid%left ) )
     case ( bcid%reflective )
@@ -142,11 +142,13 @@ contains
       end do
 
     case ( bcid%periodic )
-      lb = - this%ghost_cells(1) + 1
-      dim1 = box%dims(1)
-      box%hydro( lb:0,1:box%dims(2),1:box%dims(3) ) = box%hydro( dim1+lb:dim1,1:box%dims(2),1:box%dims(3) )
+      do k = 1, box%dims(3)
+        do j = 1, box%dims(2)
+          box%hydro( 0,j,k)%u = box%hydro(box%dims(1)-0,j,k)%u
+          box%hydro(-1,j,k)%u = box%hydro(box%dims(1)-1,j,k)%u
+        end do
+      end do
     end select
-
   end subroutine rhyme_samr_bc_set_base_grid_left_boundary
 
 
@@ -156,7 +158,7 @@ contains
     class ( samr_bc_t ), intent ( in ) :: this
     type(samr_box_t), intent ( inout ) :: box
 
-    integer :: i, d_ref, dim1, gcell1
+    integer :: i, j, k, d_ref, dim1, gcell1
 
     dim1 = box%dims(1)
     gcell1 = this%ghost_cells(1)
@@ -176,9 +178,13 @@ contains
       end do
 
     case ( bcid%periodic )
-      box%hydro( dim1+1:dim1+gcell1,1:box%dims(2),1:box%dims(3) ) = box%hydro( 1:gcell1,1:box%dims(2),1:box%dims(3) )
+      do k = 1, box%dims(3)
+        do j = 1, box%dims(2)
+          box%hydro(box%dims(1)+1,j,k)%u = box%hydro(1,j,k)%u
+          box%hydro(box%dims(1)+2,j,k)%u = box%hydro(2,j,k)%u
+        end do
+      end do
     end select
-
   end subroutine rhyme_samr_bc_set_base_grid_right_boundary
 
 
@@ -188,7 +194,7 @@ contains
     class ( samr_bc_t ), intent ( in ) :: this
     type ( samr_box_t ), intent ( inout ) :: box
 
-    integer :: i, d_ref, dim2, gcell2
+    integer :: i, d_ref, dim2, gcell2, uid
 
     select case ( this%types ( bcid%bottom ) )
     case ( bcid%reflective )
@@ -201,7 +207,9 @@ contains
     case ( bcid%outflow )
       do i = 1, this%ghost_cells(2)
         d_ref = i - int( 2.d0 * (real(i) - .5) )
-        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1),i,1:box%dims(3) )
+        do uid = hyid%rho, hyid%e_tot
+          box%hydro(1:box%dims(1),d_ref,1:box%dims(3))%u(uid) = box%hydro(1:box%dims(1),i,1:box%dims(3))%u(uid)
+        end do
       end do
 
     case ( bcid%periodic )
@@ -219,7 +227,7 @@ contains
     class ( samr_bc_t ), intent ( in ) :: this
     type ( samr_box_t ), intent ( inout ) :: box
 
-    integer :: i, d_ref, dim2, gcell2
+    integer :: i, d_ref, dim2, gcell2, uid
 
     dim2 = box%dims(2)
     gcell2 = this%ghost_cells(2)
@@ -235,7 +243,9 @@ contains
     case ( bcid%outflow )
       do i = dim2 - gcell2 + 1, dim2
         d_ref = i + int( 2.d0 * ( (real(dim2) + .5) - real(i) ) )
-        box%hydro( 1:box%dims(1),d_ref,1:box%dims(3) ) = box%hydro( 1:box%dims(1),i,1:box%dims(3) )
+        do uid = hyid%rho, hyid%e_tot
+          box%hydro(1:box%dims(1),d_ref,1:box%dims(3))%u(uid) = box%hydro(1:box%dims(1),i,1:box%dims(3))%u(uid)
+        end do
       end do
 
     case ( bcid%periodic )

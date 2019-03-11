@@ -200,11 +200,11 @@ contains
 
     real(kind=8) :: rho, u, v, w, p
 
-    rho = max ( prim%w(hyid%rho), epsilon(0.d0) )
+    rho = prim%w(hyid%rho)
     u = prim%w(hyid%u)
     v = prim%w(hyid%v)
     w = prim%w(hyid%w)
-    p = max ( prim%w(hyid%p), epsilon(0.d0) )
+    p = prim%w(hyid%p)
 
     call this%prim_vars_to_cons(rho, u, v, w, p, cons)
   end subroutine rhyme_ideal_gas_primitive_to_conserved
@@ -217,7 +217,7 @@ contains
     real(kind=8), intent(in) :: rho, u, v, w, p
     type(hydro_conserved_t), intent(out) :: cons
 
-    cons%u(hyid%rho) = max ( rho, epsilon(0.d0) )
+    cons%u(hyid%rho) = rho
     cons%u(hyid%rho_u) = cons%u(hyid%rho) * u
     cons%u(hyid%rho_v) = cons%u(hyid%rho) * v
     cons%u(hyid%rho_w) = cons%u(hyid%rho) * w
@@ -232,11 +232,11 @@ contains
     type(hydro_conserved_t), intent(in) :: cons
     type(hydro_primitive_t), intent(out) :: prim
 
-    prim%w(hyid%rho) = max ( cons%u(hyid%rho), epsilon(0.d0) )
+    prim%w(hyid%rho) = cons%u(hyid%rho)
     prim%w(hyid%u) = cons%u(hyid%rho_u) / prim%w(hyid%rho)
     prim%w(hyid%v) = cons%u(hyid%rho_v) / prim%w(hyid%rho)
     prim%w(hyid%w) = cons%u(hyid%rho_w) / prim%w(hyid%rho)
-    prim%w(hyid%p) = max ( this%p(cons), epsilon(0.d0) )
+    prim%w(hyid%p) = this%p(cons)
   end subroutine rhyme_ideal_gas_conserved_to_primitive
 
 
@@ -278,9 +278,5 @@ contains
 
     L%u = L%u + .5d0 * dt / dx * dF%f
     R%u = R%u + .5d0 * dt / dx * dF%f
-
-    ! Avoiding absolute vacuum
-    L%u(hyid%rho) = max ( L%u(hyid%rho), epsilon(0.d0) )
-    R%u(hyid%rho) = max ( R%u(hyid%rho), epsilon(0.d0) )
   end subroutine rhyme_ideal_gas_half_step_extrapolation
 end module rhyme_ideal_gas

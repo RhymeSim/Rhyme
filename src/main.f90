@@ -99,6 +99,14 @@ program rhyme
     ! Update workspace
     ! Update ghost cells of boxes
 
+    ! Store a snapshot if necessary
+    if ( modulo(samr%levels(0)%iteration, 2) .eq. 0 ) then
+      call log%start_task( 'snapshot', 'Chombo output' )
+      call chombo%write_samr( samr )
+      call log%done
+    end if
+
+
     call log%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
@@ -111,13 +119,6 @@ program rhyme
       end do
     end do
     call log%done
-
-    ! Store a snapshot if necessary
-    if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
-      call log%start_task( 'snapshot', 'Chombo output' )
-      call chombo%write_samr( samr )
-      call log%done
-    end if
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1

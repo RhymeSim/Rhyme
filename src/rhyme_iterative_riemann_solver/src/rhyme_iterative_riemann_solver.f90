@@ -81,8 +81,8 @@ contains
 
     if ( .not. this%initialized ) return
 
-    pL = max ( ig%p(L), this%pressure_floor )
-    pR = max ( ig%p(R), this%pressure_floor )
+    pL = ig%p(L)
+    pR = ig%p(R)
 
     csL = ig%Cs(L)
     csR = ig%Cs(R)
@@ -91,7 +91,7 @@ contains
       + csR * csL * (L%u(hyid%vel(dir)) - R%u(hyid%vel(dir))) ) &
       / (R%u(hyid%rho) * csR + L%u(hyid%rho) * csL)
 
-    p_star = max( p_star, this%pressure_floor )
+    p_star = p_star
 
     vL = L%u(hyid%rho_vel(dir)) / L%u(hyid%rho)
     vR = R%u(hyid%rho_vel(dir)) / R%u(hyid%rho)
@@ -107,8 +107,6 @@ contains
       if ( abs(p_star - p_star_prev) / (0.5d0 * (p_star + p_star_prev)) < this%tolerance) exit
       p_star_prev = p_star
     end do
-
-    p_star = max (p_star, this%pressure_floor)
 
     star%p = p_star
     star%u = 0.5d0 * ((vR + vL) + (fR - fL))

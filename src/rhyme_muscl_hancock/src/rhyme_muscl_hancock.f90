@@ -60,8 +60,9 @@ contains
     type ( iterative_riemann_solver_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
 
-    integer :: l, b, i, j, k
+    integer :: l, b, i, j, k, uid
     integer :: lb(3), ub(3)
+    type ( hydro_flux_t ) :: dF( hyid%x:hyid%z )
 
     type ( rp_star_region_t ) :: star
     type ( hydro_conserved_t ) :: Delta, evolved_hydro_state
@@ -176,28 +177,23 @@ contains
     do k = 1, box%dims(3)
       do j = 1, box%dims(2)
         do i = 1, box%dims(1)
-          box%hydro(i,j,k)%u = &
-            box%hydro(i,j,k)%u &
-            + &
-            ( &
-              this%active_flux( hyid%x ) * dt / dx( hyid%x ) &
-              * ( &
-                this%ws%levels(l)%boxes(b)%FR( i-1, j, k, hyid%x )%f &
-                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x )%f &
-              ) &
-              + &
-              this%active_flux( hyid%y ) * dt / dx( hyid%y ) &
-              * ( &
-                this%ws%levels(l)%boxes(b)%FR( i, j-1, k, hyid%y )%f &
-                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y )%f &
-              ) &
-              + &
-              this%active_flux( hyid%z ) * dt / dx( hyid%z ) &
-              * ( &
-                this%ws%levels(l)%boxes(b)%FR( i, j, k-1, hyid%z )%f &
-                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z )%f &
-              ) &
-            )
+
+          do uid = hyid%rho, hyid%e_tot
+            dF%f(uid) = this%ws%levels(l)%boxes(b)%FR( i-1,j,k,:)%f(uid) &
+              - this%ws%levels(l)%boxes(b)%FR(i,j,k,:)%f(uid)
+          end do
+
+          if ( this%active_axis( hyid%x ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + dt / dx(hyid%x) * dF(hyid%x)%f
+          end if
+
+          if ( this%active_axis( hyid%y ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + dt / dx(hyid%y) * dF(hyid%y)%f
+          end if
+
+          if ( this%active_axis( hyid%z ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + dt / dx(hyid%z) * dF(hyid%z)%f
+          end if
         end do
       end do
     end do
