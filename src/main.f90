@@ -113,7 +113,7 @@ program rhyme
     call log%done
 
     ! Store a snapshot if necessary
-    if ( modulo(samr%levels(0)%iteration, 10) .eq. 0 ) then
+    if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
       call log%start_task( 'snapshot', 'Chombo output' )
       call chombo%write_samr( samr )
       call log%done

@@ -48,11 +48,7 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
     r2c_data(:, :, :, i+1) = reshape( data(lb:ub), [ res, res, 1 ] )
   end do
 
-  scale_d = rho_b * 0.34d-28
-  scale_t = 1.0d14
-  scale_l = 3.086d21
-  scale_p = 3.24d-14
-
+  scale_p = scale_d * ( scale_l / scale_t )**2
 
   ! Test rho
   failed = &

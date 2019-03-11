@@ -308,10 +308,7 @@ contains
     call ch%read_group_attr( '/', 'scale_d', scale_d )
     call ch%read_group_attr( '/', 'num_components', ncomp )
 
-    scale_d = rho_b * 0.34d-28
-    scale_t = 1.0d14
-    scale_l = 3.086d21
-    scale_p = 3.24d-14
+    scale_p = scale_d * ( scale_l / scale_t )**2
 
     do l = 0, samr%nlevels - 1
       write ( level_name, '(A7,I0)') "/level_", l
@@ -363,7 +360,6 @@ contains
 
         ofs = ofs + ncomp * blen
       end do
-      print *, scale_d * (scale_l / scale_t)**2, scale_p
 
       deallocate( data )
       deallocate( boxes )
