@@ -152,8 +152,8 @@ contains
     real(kind=8) :: factor, cs
     real(kind=8) :: Ak, Bk
 
-    Ak = 2.d0 / ((ig%gamma + 1.d0) * rho)
-    Bk = (ig%gamma - 1.d0) * p_k / (ig%gamma + 1.d0)
+    Ak = 2.d0 / (ig%gp1 * rho)
+    Bk = ig%gm1 * p_k / ig%gp1
 
     if (p > p_k) then
       factor = sqrt(AK / (Bk + p))
@@ -162,8 +162,8 @@ contains
     else
       cs = sqrt(ig%gamma * p_k / rho)
 
-      f = 2.d0 * cs / (ig%gamma - 1.d0) * ((p / p_k)**real((ig%gamma - 1.d0) / (2.d0 * ig%gamma), kind=8) - 1.d0)
-      fprime =  1.d0 / (rho * cs) * ((p / p_k)**real(-(ig%gamma + 1.d0) / (2.d0 * ig%gamma), kind=8))
+      f = 2.d0 * cs / ig%gm1 * ((p / p_k)**ig%gm1_2g - 1.d0)
+      fprime =  1.d0 / (rho * cs) * (p / p_k)**(-ig%gp1_2g)
     end if
   end subroutine rhyme_iterative_riemann_solver_nonlinear_waves
 
@@ -234,7 +234,7 @@ contains
           call ig%prim_vars_to_cons ( &
             R%u(hyid%rho) * factor**(2.0 / ig%gm1), &
             vel(1), vel(2), vel(3), &
-            ig%p(R) * factor**(2.0 * ig%gamma / ig%gm1), state &
+            ig%p(R) * factor**(1.d0 / ig%gm1_2g), state &
           )
         else if ( dxdt >= star%right%fan%speedH ) then
           call hy_copy( R, state )
@@ -275,7 +275,7 @@ contains
           call ig%prim_vars_to_cons( &
             L%u(hyid%rho) * factor**(2.0 / ig%gm1), &
             vel(1), vel(2), vel(3), &
-            ig%p(L) * factor**(2.0 * ig%gamma / ig%gm1), state &
+            ig%p(L) * factor**(1.d0 / ig%gm1_2g), state &
           )
         else if ( star%left%fan%speedT <= dxdt &
           .and. dxdt <= star%u ) then

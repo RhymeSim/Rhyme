@@ -185,7 +185,7 @@ contains
   end subroutine irs_right_blast_wave_test
 
 
-  !> Collision of thw stronc shocks emerging from blast waves
+  !> Collision of the strong shocks emerging from blast waves
   !! a left facing shock (travelling very slowly to the right), a right
   !! travelling contact discontinuity and a right travelling shock wave
   pure subroutine irs_two_shocks_collision_test ( ideal_gas, L, R, star )
