@@ -18,18 +18,18 @@ logical function rhyme_chombo_write_headers_test () result ( failed )
 
 
   ch%nickname = nickname
-  ch%iteration = samr%levels(0)%iteration
+  ch%iteration = chombo_fac_samr%levels(0)%iteration
 
   call ch%filename_generator( filename )
   call ch%create_chombo
 
-  call ch%write_headers( samr )
+  call ch%write_headers( chombo_fac_samr )
 
   call ch%close
 
   failed = &
-  any( ch%level_ids(0:samr%nlevels-1) .eq. chid%unset ) &
-  .or. any( ch%level_ids(samr%nlevels:) .ne. chid%unset ) &
+  any( ch%level_ids(0:chombo_fac_samr%nlevels-1) .eq. chid%unset ) &
+  .or. any( ch%level_ids(chombo_fac_samr%nlevels:) .ne. chid%unset ) &
   .or. ch%chombo_global_id .eq. chid%unset
   if ( failed ) return
 

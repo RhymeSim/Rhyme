@@ -1,6 +1,6 @@
 logical function rhyme_samr_bc_set_base_grid_right_boundary_test () result ( failed )
-  use rhyme_hydro_base
   use rhyme_samr_bc_factory
+  use rhyme_hydro_base
 
   implicit none
 
@@ -16,10 +16,10 @@ logical function rhyme_samr_bc_set_base_grid_right_boundary_test () result ( fai
   ! Reflective
   bc%types( bcid%right ) = bcid%reflective
 
-  call bc%set_base_grid_right_boundary ( samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_right_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
 
-  d = samr%levels(0)%boxes(1)%dims
-  b = samr%levels(0)%boxes(1)
+  d = samr_bc_fac_samr%levels(0)%boxes(1)%dims
+  b = samr_bc_fac_samr%levels(0)%boxes(1)
 
   failed = &
        any ( abs( b%hydro( d(1),  1:d(2),1:d(3) )%u(1) - b%hydro( d(1)+1,1:d(2),1:d(3) )%u(1) ) > e ) &
@@ -38,9 +38,9 @@ logical function rhyme_samr_bc_set_base_grid_right_boundary_test () result ( fai
   ! Outflow
   bc%types( bcid%right ) = bcid%outflow
 
-  call bc%set_base_grid_right_boundary ( samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_right_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
 
-  b = samr%levels(0)%boxes(1)
+  b = samr_bc_fac_samr%levels(0)%boxes(1)
 
   failed = &
        any ( abs( b%hydro( d(1),  1:d(2),1:d(3) )%u(1) - b%hydro( d(1)+1,1:d(2),1:d(3) )%u(1) ) > e ) &
@@ -59,9 +59,9 @@ logical function rhyme_samr_bc_set_base_grid_right_boundary_test () result ( fai
   ! Periodic
   bc%types( bcid%right ) = bcid%periodic
 
-  call bc%set_base_grid_right_boundary ( samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_right_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
 
-  b = samr%levels(0)%boxes(1)
+  b = samr_bc_fac_samr%levels(0)%boxes(1)
 
   failed = &
        any ( abs( b%hydro( d(1)+1,1:d(2),1:d(3) )%u(1) - b%hydro( 1,1:d(2),1:d(3) )%u(1) ) > e ) &

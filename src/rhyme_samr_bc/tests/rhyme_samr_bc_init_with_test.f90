@@ -8,6 +8,6 @@ logical function rhyme_samr_bc_init_with_test () result ( failed )
 
   call rhyme_samr_bc_factory_init
 
-  call bc%init_with ( samr , bc_types, log )
-  failed = any ( bc%types .ne. bc_types)
+  call bc%init_with ( samr_bc_fac_samr , samr_bc_fac_bc_types, samr_bc_fac_log )
+  failed = any ( bc%types .ne. samr_bc_fac_bc_types)
 end function rhyme_samr_bc_init_with_test

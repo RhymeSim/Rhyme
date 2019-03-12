@@ -14,6 +14,7 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   integer :: l, b, length, bdims(3), offset, lb, ub
   character ( len=32 ) :: level_data_name
   real ( kind=8 ), allocatable :: data(:), expected_data(:)
+  type ( samr_box_t ) :: box
 
 
   call rhyme_chombo_factory_init
@@ -21,14 +22,14 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
   ! Crete chombo file
   ch%nickname = nickname
-  ch%iteration = samr%levels(0)%iteration
+  ch%iteration = chombo_fac_samr%levels(0)%iteration
   call ch%filename_generator ( filename )
 
   call ch%create_chombo
-  call ch%write_headers ( samr )
+  call ch%write_headers ( chombo_fac_samr )
 
-  do l = 0, samr%nlevels - 1
-    call ch%write_level_data ( samr%levels(l) )
+  do l = 0, chombo_fac_samr%nlevels - 1
+    call ch%write_level_data ( chombo_fac_samr%levels(l) )
   end do
 
   call ch%close
@@ -37,12 +38,12 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   ! Tests
   call ch%open ( filename )
 
-  do l = 0, samr%nlevels - 1
+  do l = 0, chombo_fac_samr%nlevels - 1
     write ( level_data_name, '(A7,I1,A)') "/level_", l, "/data:datatype=0"
 
     length = 0
-    do b = 1, samr%levels(l)%nboxes
-      length = length + product ( samr%levels(l)%boxes(b)%dims )
+    do b = 1, chombo_fac_samr%levels(l)%nboxes
+      length = length + product ( chombo_fac_samr%levels(l)%boxes(b)%dims )
     end do
 
     allocate ( data( 5 * length ) )
@@ -51,15 +52,16 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
     call ch%read_1d_dataset ( level_data_name, data )
 
     offset = 1
-    do b = 1, samr%levels(l)%nboxes
-      bdims = samr%levels(l)%boxes(b)%dims
+    do b = 1, chombo_fac_samr%levels(l)%nboxes
+      bdims = chombo_fac_samr%levels(l)%boxes(b)%dims
+      box = chombo_fac_samr%levels(l)%boxes(b)
 
       ! Rho
       lb = offset
       ub = lb + product( bdims ) - 1
 
       expected_data(lb:ub) = reshape( &
-        samr%levels(l)%boxes(b)%hydro(1:bdims(1),1:bdims(2),1:bdims(3))%u(hyid%rho), &
+        box%hydro(1:bdims(1),1:bdims(2),1:bdims(3))%u(hyid%rho), &
         [ product( bdims ) ] &
       )
 
@@ -71,7 +73,7 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
       ub = lb + product( bdims ) - 1
 
       expected_data(lb:ub) = reshape( &
-        samr%levels(l)%boxes(b)%hydro(1:bdims(1),1:bdims(2),1:bdims(3))%u(hyid%e_tot), &
+        box%hydro(1:bdims(1),1:bdims(2),1:bdims(3))%u(hyid%e_tot), &
         [ product( bdims ) ] &
       )
 

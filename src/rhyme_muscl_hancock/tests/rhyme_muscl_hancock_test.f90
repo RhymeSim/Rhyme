@@ -14,7 +14,7 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   .or. any( mh%active_flux .ne. 0 )
   if ( failed ) return
 
-  call mh%init( samr, log )
+  call mh%init( mh_fac_samr, mh_fac_log )
 
   failed = &
   .not. mh%ws%initialized &

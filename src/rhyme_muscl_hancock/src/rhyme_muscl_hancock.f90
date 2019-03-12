@@ -72,12 +72,12 @@ contains
 
     call this%ws%check( box )
 
-    lb = merge ( lbound( box%hydro ), 0, this%active_axis )
-    ub = merge ( ubound( box%hydro ), 2, this%active_axis )
+    lb = merge ( 0, 1, this%active_axis )
+    ub = merge ( box%dims + 1, 1, this%active_axis )
 
-    do k = lb(3) + 1, ub(3) - 1
-      do j = lb(2) + 1, ub(2) - 1
-        do i = lb(1) + 1, ub(1) - 1
+    do k = lb(3), ub(3)
+      do j = lb(2), ub(2)
+        do i = lb(1), ub(1)
           if ( this%active_axis( hyid%x ) ) then
             call sl%run ( cfl, ig, &
               box%hydro( i-1, j, k ), &
@@ -122,12 +122,12 @@ contains
     end do
 
 
-    lb = merge ( lbound( box%hydro ), 0, this%active_axis )
-    ub = merge ( ubound( box%hydro ), 1, this%active_axis )
+    lb = merge ( 0, 1, this%active_axis )
+    ub = merge ( box%dims, 1, this%active_axis )
 
-    do k = lb(3) + 1, ub(3)
-      do j = lb(2) + 1, ub(2)
-        do i = lb(1) + 1, ub(1)
+    do k = lb(3), ub(3)
+      do j = lb(2), ub(2)
+        do i = lb(1), ub(1)
           if ( this%active_axis(hyid%x) ) then
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
@@ -179,7 +179,7 @@ contains
         do i = 1, box%dims(1)
 
           do uid = hyid%rho, hyid%e_tot
-            dF%f(uid) = this%ws%levels(l)%boxes(b)%FR( i-1,j,k,:)%f(uid) &
+            dF(:)%f(uid) = this%ws%levels(l)%boxes(b)%FR( i-1,j,k,:)%f(uid) &
               - this%ws%levels(l)%boxes(b)%FR(i,j,k,:)%f(uid)
           end do
 

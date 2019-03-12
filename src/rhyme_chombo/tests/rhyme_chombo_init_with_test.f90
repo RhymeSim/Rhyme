@@ -4,16 +4,16 @@ logical function rhyme_chombo_init_with_test () result ( failed )
 
   implicit none
 
-  type ( chombo_t ) :: chombo
+  type ( chombo_t ) :: ch
   type ( log_t ) :: log
 
-  character ( len=1024 ), parameter :: rhyme_chombo_factory_prefix = "prefix"
-  character ( len=1024 ), parameter :: rhyme_chombo_factory_nickname = "nickname"
+  character ( len=1024 ), parameter :: chombo_fac_prefix = "prefix"
+  character ( len=1024 ), parameter :: chombo_fac_nickname = "nickname"
 
 
-  call chombo%init_with ( rhyme_chombo_factory_prefix, rhyme_chombo_factory_nickname, log )
+  call ch%init_with ( chombo_fac_prefix, chombo_fac_nickname, log )
 
   failed = &
-  chombo%prefix .ne. rhyme_chombo_factory_prefix &
-  .or. chombo%nickname .ne. rhyme_chombo_factory_nickname
+  ch%prefix .ne. chombo_fac_prefix &
+  .or. ch%nickname .ne. chombo_fac_nickname
 end function rhyme_chombo_init_with_test

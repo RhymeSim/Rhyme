@@ -21,28 +21,21 @@ contains
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(in) :: samr
 
-    integer :: level, l, b, i, j, k
+    integer :: i, j, k
     real(kind=8) :: max_cs
 
-    level = 0
-    max_cs = ig%cs ( samr%levels(0)%boxes(1)%hydro(1,1,1) )
+    max_cs = 0.d0
 
-    do l = 0, samr%nlevels - 1
-      do b = 1, samr%levels(l)%nboxes
-        do k = 1, samr%levels(l)%boxes(b)%dims(3)
-          do j = 1, samr%levels(l)%boxes(b)%dims(2)
-            do i = 1, samr%levels(l)%boxes(b)%dims(1)
-              if ( ig%cs( samr%levels(l)%boxes(b)%hydro(i, j, k) ) > max_cs ) then
-                max_cs = ig%cs ( samr%levels(l)%boxes(b)%hydro(i, j, k) )
-                level = l
-              end if
-            end do
-          end do
+    do k = 1, samr%levels(0)%boxes(1)%dims(3)
+      do j = 1, samr%levels(0)%boxes(1)%dims(2)
+        do i = 1, samr%levels(0)%boxes(1)%dims(1)
+          if ( ig%Cs( samr%levels(0)%boxes(1)%hydro(i, j, k) ) > max_cs ) then
+            max_cs = ig%Cs( samr%levels(0)%boxes(1)%hydro(i, j, k) )
+          end if
         end do
       end do
     end do
 
-    max_cs = max_cs * 2.d0**level ! Updating dt for the base level
-    dt = this%courant_number * minval ( samr%levels(0)%dx ) / max_cs
+    dt = this%courant_number * minval( samr%levels(0)%dx ) / max_cs
   end function calculate_time_step
 end module rhyme_cfl

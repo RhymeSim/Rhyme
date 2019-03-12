@@ -6,18 +6,18 @@ module rhyme_samr_bc_factory
 
   logical :: samr_bc_fac_initialized = .false.
 
-  integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
-  integer, parameter :: nlevels = 3
-  integer, parameter :: nboxes = 11
-  integer, parameter :: ghost_cells(3) = [ 2, 2, 2 ]
-  integer, parameter :: max_nboxes( 0:samrid%max_nlevels ) = [ &
+  integer, parameter :: samr_bc_fac_base_grid(3) = [ 16, 8, 4 ]
+  integer, parameter :: samr_bc_fac_nlevels = 3
+  integer, parameter :: samr_bc_fac_nboxes = 11
+  integer, parameter :: samr_bc_fac_ghost_cells(3) = [ 2, 2, 2 ]
+  integer, parameter :: samr_bc_fac_max_nboxes( 0:samrid%max_nlevels ) = [ &
     1, 10, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
-  integer, parameter :: init_nboxes( 0:samrid%max_nlevels ) = [ &
+  integer, parameter :: samr_bc_fac_init_nboxes( 0:samrid%max_nlevels ) = [ &
     1, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  integer :: bc_types(6) = [ &
+  integer :: samr_bc_fac_bc_types(6) = [ &
     bcid%reflective, &
     bcid%outflow, &
     bcid%periodic, &
@@ -25,8 +25,8 @@ module rhyme_samr_bc_factory
     bcid%outflow, &
     bcid%periodic ]
 
-  type ( samr_t ) :: samr
-  type ( log_t ) :: log
+  type ( samr_t ) :: samr_bc_fac_samr
+  type ( log_t ) :: samr_bc_fac_log
 
 contains
 
@@ -36,7 +36,12 @@ contains
     if ( samr_bc_fac_initialized ) return
 
     call rhyme_samr_factory_fill ( &
-      nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
+      samr_bc_fac_nlevels, &
+      samr_bc_fac_base_grid, &
+      samr_bc_fac_ghost_cells, &
+      samr_bc_fac_max_nboxes, &
+      samr_bc_fac_init_nboxes, &
+      samr_bc_fac_samr &
     )
 
     samr_bc_fac_initialized = .true.

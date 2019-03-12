@@ -42,6 +42,11 @@ contains
     do l = 0, samr%nlevels - 1
       allocate ( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
+      samr%levels(l)%iteration = 0
+      samr%levels(l)%dx = 1.d0 / samr%base_grid / 2.d0**l
+      samr%levels(l)%dt = 0.d0
+      samr%levels(l)%t = 0.d0
+
       box_dims = floor( base_grid / real( init_nboxes(l) ) )
       box_dims = merge( box_dims, 1, box_dims > 1 )
 
