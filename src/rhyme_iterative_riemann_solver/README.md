@@ -243,9 +243,9 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   **Vacuum right state**
   ```math
   W(x, 0) = \begin{cases}
-    W_L \mathrlap{\,/}{=} W_0 & \text{if} x < 0 \\
+    W_L \mathrlap{\,/}{=} W_0 & \text{if}\quad x < 0 \\
     &  \\
-    W_0 \text{(vacuum)} & \text{if} x > 0
+    W_0 \text{(vacuum)} & \text{if}\quad x > 0
   \end{cases}
   ```
 
@@ -260,8 +260,8 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   with following conditions,
   ```math
-  p(0) = 0 \text{, } p^\prime(0) = 0 \text{, } p^\prime(\rho) > 0 \text{, }
-  p^{\prime \prime}(\rho) > 0
+  p(0) = 0 \text{,}\quad p^\prime(0) = 0 \text{,}\quad
+  p^\prime(\rho) > 0 \text{,}\quad p^{\prime \prime}(\rho) > 0
   ```
 
   Considering the generalised Riemann invariant to connec a point on the left
@@ -283,20 +283,20 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   ```math
   W_{L0}(x, t) = \begin{cases}
-    W_L & \text{if} \frac{x}{t} \leq u_L - a_L \\
+    W_L & \text{if}\quad \frac{x}{t} \leq u_L - a_L \\
     & \\
-    W_{L\text{fan}} & \text{if} u_L - a_L \le \frac{x}{t} \le S_{*L}\\
+    W_{L\text{fan}} & \text{if}\quad u_L - a_L < \frac{x}{t} < S_{*L}\\
     & \\
-    W_0 & \text{if} \frac{x}{t} \geq S_{*L}
+    W_0 & \text{if}\quad \frac{x}{t} \geq S_{*L}
   \end{cases}
   ```
 
   **Vacuum left state**
   ```math
   W(x, 0) = \begin{cases}
-    W_0 \text{(vacuum)} & \text{if} x < 0 \\
+    W_0 \text{(vacuum)} & \text{if}\quad x < 0 \\
     &  \\
-    W_L \mathrlap{\,/}{=} W_0 & \text{if} x > 0
+    W_L \mathrlap{\,/}{=} W_0 & \text{if}\quad x > 0
   \end{cases}
   ```
 
@@ -311,18 +311,18 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   ```math
   W_{R0}(x, t) = \begin{cases}
-    W_0 & \text{if} \frac{x}{t} \leq S_{*R} \\
+    W_0 & \text{if}\quad \frac{x}{t} \leq S_{*R} \\
     & \\
-    W_{R\text{fan}} & \text{if} S_{*R} < \frac{x}{t} < u_R + a_R
+    W_{R\text{fan}} & \text{if}\quad S_{*R} < \frac{x}{t} < u_R + a_R \\
     & \\
-    W_R & \text{if} \frac{x}{t} \geq u_R + a_R
+    W_R & \text{if}\quad \frac{x}{t} \geq u_R + a_R
   \end{cases}
   ```
 
 #### Generation of Vacuum
-  The pressure positivity condition helps us to find situations which generate
-  vacuum. In order to have a non-vacuum, positive solution, the value of
-  $`\Delta u`$ must be bigger than a critical value,
+  The **pressure positivity condition** helps us to find situations which
+  generate vacuum. In order to have a non-vacuum, positive solution, the
+  value of $`\Delta u`$ must be bigger than a critical value,
 
   ```math
   (\Delta u)_{\text{crit}} \equiv \frac{2a_L}{\gamma - 1}
@@ -335,11 +335,11 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   ```math
   W(x, t) = \begin{cases}
-    W_{L0}(x,t) & \text{if} \frac{x}{t} \leq S_{*L} \\
+    W_{L0}(x,t) & \text{if}\quad \frac{x}{t} \leq S_{*L} \\
     & \\
-    W_0 \text{(vacuum)} & \text{if} S_{*L} < \frac{x}{t} < S_{*R}
+    W_0 \text{(vacuum)} & \text{if}\quad S_{*L} < \frac{x}{t} < S_{*R}
     & \\
-    W_{R0}(x,t) & \text{if} \frac{x}{t} \geq S_{*R}
+    W_{R0}(x,t) & \text{if}\quad \frac{x}{t} \geq S_{*R}
   \end{cases}
   ```
 
