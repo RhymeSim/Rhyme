@@ -233,6 +233,123 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   S_{HR} = u_R - c_s^R, S_{TR} = u_* - c_s^{*R}
   ```
 
+#### Left or Right Vacuum state
+  In the presence of vacuum the structure of the solution of the Riemann
+  problem is different from that of the conventional cases. An important
+  observation in this case is that **a shock wave cannot be adjacent to a
+  vacuum region**. Also the star region does not longer exists in this case,
+  however, a contact discontinuity can be adjacent to the vacuum region.
+
+  **Vacuum right state**
+  ```math
+  W(x, 0) = \begin{cases}
+    W_L \mathrlap{\,/}{=} W_0 & \text{if} x < 0 \\
+    &  \\
+    W_0 \text{(vacuum)} & \text{if} x > 0
+  \end{cases}
+  ```
+
+  where $`W_0 = (0, u_0, 0)`$.
+
+  Assuming an isentropic-type equation of state and that this is valid all
+  the way up to the boundary separating material, the EOS can be written,
+
+  ```math
+  p = p(\rho)
+  ```
+
+  with following conditions,
+  ```math
+  p(0) = 0 \text{, } p^\prime(0) = 0 \text{, } p^\prime(\rho) > 0 \text{, }
+  p^{\prime \prime}(\rho) > 0
+  ```
+
+  Considering the generalised Riemann invariant to connec a point on the left
+  data state with a point along the contact gives,
+
+  ```math
+  u_0 + \frac{2 a_0}{\gamma - 1} = u_L + \frac{2 a_L}{\gamma - 1}
+  ```
+  based on the EOS we are using here, the sound speed vanished along the
+  contact, $`a_0 = 0`$, and accordingly it gives us the speed of the front as,
+
+  ```math
+  S_{*L} \equiv u_0 = u_L + \frac{2 a_L}{\gamma - 1}
+  ```
+
+  Note the value of $`a_0`$ depends on the EOS we choose.
+
+  The complete solution can now be written as,
+
+  ```math
+  W_{L0}(x, t) = \begin{cases}
+    W_L & \text{if} \frac{x}{t} \leq u_L - a_L \\
+    & \\
+    W_{L\text{fan}} & \text{if} u_L - a_L \le \frac{x}{t} \le S_{*L}\\
+    & \\
+    W_0 & \text{if} \frac{x}{t} \geq S_{*L}
+  \end{cases}
+  ```
+
+  **Vacuum left state**
+  ```math
+  W(x, 0) = \begin{cases}
+    W_0 \text{(vacuum)} & \text{if} x < 0 \\
+    &  \\
+    W_L \mathrlap{\,/}{=} W_0 & \text{if} x > 0
+  \end{cases}
+  ```
+
+  based on the EOS we are using here, the sound speed vanished along the
+  contact, $`a_0 = 0`$, and accordingly it gives us the speed of the front as,
+
+  ```math
+  S_{*R} = u_R - \frac{2 a_R}{\gamma - 1}
+  ```
+
+  The complete solution can now be written as,
+
+  ```math
+  W_{R0}(x, t) = \begin{cases}
+    W_0 & \text{if} \frac{x}{t} \leq S_{*R} \\
+    & \\
+    W_{R\text{fan}} & \text{if} S_{*R} < \frac{x}{t} < u_R + a_R
+    & \\
+    W_R & \text{if} \frac{x}{t} \geq u_R + a_R
+  \end{cases}
+  ```
+
+#### Generation of Vacuum
+  The pressure positivity condition helps us to find situations which generate
+  vacuum. In order to have a non-vacuum, positive solution, the value of
+  $`\Delta u`$ must be bigger than a critical value,
+
+  ```math
+  (\Delta u)_{\text{crit}} \equiv \frac{2a_L}{\gamma - 1}
+  + \frac{2a_R}{\gamma - 1} > u_R - u_L
+  ```
+
+  This means, if the critical value is less than or equal to $`\Delta u`$,
+  we end up generating vacuum in between of two rarefaction waves. In this case
+  the full solution can be written as,
+
+  ```math
+  W(x, t) = \begin{cases}
+    W_{L0}(x,t) & \text{if} \frac{x}{t} \leq S_{*L} \\
+    & \\
+    W_0 \text{(vacuum)} & \text{if} S_{*L} < \frac{x}{t} < S_{*R}
+    & \\
+    W_{R0}(x,t) & \text{if} \frac{x}{t} \geq S_{*R}
+  \end{cases}
+  ```
+
+  where the speeds $`S_{*L}`$ and $`S_{*R}`$ are given by,
+
+  ```math
+  S_{*L} = u_L + \frac{2a_L}{\gamma - 1} \text{,} \quad
+  S_{*R} = u_R - \frac{2a_R}{\gamma - 1}
+  ```
+
 ## Test cases
   **Sod's test**
   A left rarefaction, a contact discontinuity and a right shock
