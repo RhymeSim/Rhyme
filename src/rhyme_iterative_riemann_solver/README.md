@@ -2,61 +2,15 @@
 Iterative Riemann solver (based on Newton-Raphson iteration method)
 
 ## Background
-  The Riemann problem for the one-dimensional time-dependent Euler equations
-  is an Initial Value Problem (IVP) for conservation laws,
-
-  ```math
-  \partial_t U + \partial_x F(U) = 0
-  ```
-
-  $`U`$ is the vector of conservative variables and $`F(U)`$ is the vector of
-  the fluxes. In 1D, one can write the conservative variables as:
-
-  ```math
-  U = \begin{bmatrix}
-  \rho \\
-  \rho u \\
-  E
-  \end{bmatrix}, F(U) = \begin{bmatrix}
-  \rho u \\
-  \rho u^2 + p \\
-  u (E + p)
-  \end{bmatrix}
-
-  ```
-
-  where $`E = \frac 1 2 \rho u^2 + e_{int}`$ and $`e_{int}`$ is the internal
-  energy.
-
-  The solution of this Riemann problem directly depends on the $`x/t`$ ratio
-  and consists of three types of waves; two nonlinear, shocks or rarefactions,
-  and one linearly degenerate, the contact discontinuity.
-
-  Contact discontinuities are surfaces that separate zones of different density
-  and temperature at fixed pressure. By definition such a surface is in pressure
-  equilibrium, and no gas flows across it. Usually, when the tangential
-  component of velocity on one side differs considerably from that of the gas
-  on the other side, the surface is called a slip discontinuity. The boundary
-  of a supersonic jet and the ambient gas is an example of a slip discontinuity.
-
-  The other two types of nonlinear waves arise from abrupt changes in pressure.
-  Shock fronts accompany compression of the medium and rarefactions accompany
-  expansion of the medium.
-
-  These waves are separating four constant states where the conservative
-  vector $`U`$ acquires from the left to the right the following values,
-  $`U_L`$, $`U_{L^*}`$, $`U_{R^*}`$ and $`U_R`$.
-  The symbol $`*`$ identify points located in the star region between the
-  nonlinear waves.
-
   The following two equations help us to solve a Riemann problem,
 
   ```math
-  f_L(p_*, U_L) + f_R(p_*, U_R) + \Delta u = 0
-  ```
-
-  ```math
-  u^* = \frac 1 2 (u_L + u_R) + \frac 1 2 \left[ f_R(p_*, U_R) - f_L(p_*, U_L) \right]
+  \begin{aligned}
+  & f_L(p_*, U_L) + f_R(p_*, U_R) + \Delta u = 0 \\
+  & u^* = \frac 1 2 (u_L + u_R) + \frac 1 2 \left[
+    f_R(p_*, U_R) - f_L(p_*, U_L)
+  \right]
+  \end{aligned}
   ```
 
   The functions $`f_L`$ and $`f_R`$ represent relations across the left and the
@@ -64,11 +18,13 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   ```math
   f_K \left(p_*, U_K\right) = \begin{cases}
-    (p_* - p_K) \sqrt{(\frac{A_K}{p_* + B_K})} & \text{if } p_* \geq p_K \\
-      \\
+    (p_* - p_K) ( \frac{ A_K }{ p_* + B_K } )^{1/2}
+    & \text{if } p_* \geq p_K \\
+    & \\
     \frac{2 c_s^K}{\gamma - 1} \left[
-      \left( \frac{p_*}{p_K} \right)^{\frac{\gamma - 1}{2 \gamma}}
-      - 1 \right] & \text{if } p_* < p_K
+      \left( \frac{p_*}{p_K} \right)^{\frac{\gamma - 1}{2 \gamma}} - 1
+    \right]
+    & \text{if } p_* < p_K
   \end{cases}
   ```
 
@@ -76,7 +32,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   $`B_K = \frac{\gamma - 1}{\gamma + 1} p_K`$. $`p_*`$ can be solved by an
   iterative scheme using the first solution equation. Note that $`p_*`$ is
   a function of five variables, $`p_* (\Delta u, \rho_L, p_L, \rho_R, p_R)`$.
-  After finding $`p_*`$, $`u*`$ can easily be calculated by the second
+  After finding $`p_*`$, $`u*`$ can also be calculated by the second
   solution equation. The remaining unknowns are found by the means of standard
   gas dynamic relations.
 
@@ -87,7 +43,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ![x-t-Riemann-Solver](assets/x-t-Riemann-Solver.jpg)
 
   The unknown region between $`u_L`$ and $`u_R`$ is the star region. Note that
-  the middle wave is always a contact discontinuity while the left and right
+  the middle wave is the contact discontinuity while the left and the right
   nonlinear waves are either shock or rarefaction waves. Therefore, according
   to the type of the nonlinear waves, there can be four possible wave
   configurations,
@@ -98,28 +54,28 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   waves are constant, while the density takes on the two constant values
   $`\rho_{*L}`$ and $`\rho_{*R}`$.
 
-  So far, using an iterative scheme, we can find $`p_*`$ and $`u_*`$.
-
-
 ### Finding $`p_*`$ iteratively
-  Our aim is to minimize or cancel the residual, $`R(p)`$, of the following
-  formula using an iterative scheme (here the Newton-Raphson iteration method):
+  Our aim here is to minimise or cancel the residual, $`R(p)`$, of the following
+  equation using an iterative scheme (here the Newton-Raphson iteration method):
 
   ```math
   f_L(p, U_L) + f_R(p, U_R) + \Delta u = R(p)
   ```
 
-  Newton-Raphson method requires the value of the function and its derivatives. Derivatives can be calculated as:
+  Newton-Raphson method requires the value of the function and its derivatives.
+  We can analytically calculate the derivatives,
 
   ```math
   f_K^\prime \left(p_*, U_K\right) =
   \begin{cases}
-    \sqrt{(\frac{A_K}{p + B_K})} \left( 1 - \frac{p - p_K}{2 (B_k + p)} \right)
-      & \text{if } p \geq p_K \\
+    \sqrt{(\frac{A_K}{p + B_K})} \left(
+      1 - \frac{p - p_K}{2 (B_k + p)}
+    \right)
+    & \text{if } p \geq p_K \\
     &  \\
     \frac{1}{\rho_K c_s^K}
-      \left( \frac{p}{p_K} \right)^{\frac{- (\gamma + 1)}{2 \gamma}}
-      & \text{if } p < p_K
+    \left( \frac{p}{p_K} \right)^{\frac{- (\gamma + 1)}{2 \gamma}}
+    & \text{if } p < p_K
   \end{cases}
   ```
 
@@ -134,13 +90,14 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```
 
 ### Calculating $`u_*`$ based on a given $`p_*`$
-  When we find $`p_*`$, we are ready to calculate the velocity in the star
-  region,
+  Having $`p_*`$ in hand, we are ready to calculate the particle velocity
+  in the star region,
 
   ```math
   u_* = \frac 1 2 \left( u_R - u_L \right) + \frac 1 2 \left(f_R - f_L \right)
   ```
-### Sampling the Solution
+
+### The Complete Solution and Sampling
   By identifying types of the left and the right nonlinear waves, we are able
   to compute $`\rho_{*L}`$ and $`\rho_{*R}`$. In order to specify the type of
   a nonlinear wave, we should compare the star region pressure, $`p_*`$, with
@@ -153,7 +110,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   for the head and the tail of the wave and the full solution inside
   the rarefaction region.
 
-  Here we go through different types of nonlinear waves:
+  Following, we go through different types of nonlinear waves.
 
 #### Left shock wave ( $`p_* > p_L`$ )
   **density**
@@ -268,13 +225,13 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   data state with a point along the contact gives,
 
   ```math
-  u_0 + \frac{2 a_0}{\gamma - 1} = u_L + \frac{2 a_L}{\gamma - 1}
+  u_0 + \frac{2 c_{s0}}{\gamma - 1} = u_L + \frac{2 c_{sL}}{\gamma - 1}
   ```
   based on the EOS we are using here, the sound speed vanished along the
-  contact, $`a_0 = 0`$, and accordingly it gives us the speed of the front as,
+  contact, $`c_{s0} = 0`$, and accordingly it gives us the speed of the front as,
 
   ```math
-  S_{*L} \equiv u_0 = u_L + \frac{2 a_L}{\gamma - 1}
+  S_{*L} \equiv u_0 = u_L + \frac{2 c_{sL}}{\gamma - 1}
   ```
 
   Note the value of $`a_0`$ depends on the EOS we choose.
@@ -283,9 +240,9 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   ```math
   W_{L0}(x, t) = \begin{cases}
-    W_L & \text{if}\quad \frac{x}{t} \leq u_L - a_L \\
+    W_L & \text{if}\quad \frac{x}{t} \leq u_L - c_{sL} \\
     & \\
-    W_{L\text{fan}} & \text{if}\quad u_L - a_L < \frac{x}{t} < S_{*L}\\
+    W_{L\text{fan}} & \text{if}\quad u_L - c_{sL} < \frac{x}{t} < S_{*L}\\
     & \\
     W_0 & \text{if}\quad \frac{x}{t} \geq S_{*L}
   \end{cases}
@@ -301,10 +258,10 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```
 
   based on the EOS we are using here, the sound speed vanished along the
-  contact, $`a_0 = 0`$, and accordingly it gives us the speed of the front as,
+  contact, $`c_{s0} = 0`$, and accordingly it gives us the speed of the front as,
 
   ```math
-  S_{*R} = u_R - \frac{2 a_R}{\gamma - 1}
+  S_{*R} = u_R - \frac{2 c_{sR}}{\gamma - 1}
   ```
 
   The complete solution can now be written as,
@@ -313,9 +270,9 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   W_{R0}(x, t) = \begin{cases}
     W_0 & \text{if}\quad \frac{x}{t} \leq S_{*R} \\
     & \\
-    W_{R\text{fan}} & \text{if}\quad S_{*R} < \frac{x}{t} < u_R + a_R \\
+    W_{R\text{fan}} & \text{if}\quad S_{*R} < \frac{x}{t} < u_R + c_{sR} \\
     & \\
-    W_R & \text{if}\quad \frac{x}{t} \geq u_R + a_R
+    W_R & \text{if}\quad \frac{x}{t} \geq u_R + c_{sR}
   \end{cases}
   ```
 
@@ -325,8 +282,8 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   value of $`\Delta u`$ must be bigger than a critical value,
 
   ```math
-  (\Delta u)_{\text{crit}} \equiv \frac{2a_L}{\gamma - 1}
-  + \frac{2a_R}{\gamma - 1} > u_R - u_L
+  (\Delta u)_{\text{crit}} \equiv \frac{2 c_{sL}}{\gamma - 1}
+  + \frac{2 c_{sR}}{\gamma - 1} > u_R - u_L
   ```
 
   This means, if the critical value is less than or equal to $`\Delta u`$,
@@ -337,7 +294,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   W(x, t) = \begin{cases}
     W_{L0}(x,t) & \text{if}\quad \frac{x}{t} \leq S_{*L} \\
     & \\
-    W_0 \text{(vacuum)} & \text{if}\quad S_{*L} < \frac{x}{t} < S_{*R}
+    W_0 \text{(vacuum)} & \text{if}\quad S_{*L} < \frac{x}{t} < S_{*R} \\
     & \\
     W_{R0}(x,t) & \text{if}\quad \frac{x}{t} \geq S_{*R}
   \end{cases}

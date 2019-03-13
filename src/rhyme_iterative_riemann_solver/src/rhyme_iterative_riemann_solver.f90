@@ -18,10 +18,6 @@ module rhyme_iterative_riemann_solver
     procedure :: sampling => rhyme_iterative_riemann_solver_sampling
   end type iterative_riemann_solver_t
 
-  interface nonlinear_waves
-    procedure rhyme_iterative_riemann_solver_nonlinear_waves
-  end interface nonlinear_waves
-
 contains
 
   subroutine rhyme_iterative_riemann_solver_init_with ( &
@@ -74,12 +70,10 @@ contains
     type ( rp_star_region_t ), intent ( out ) :: star
 
     real ( kind=8 ) :: pL, pR, vL, vR, csL, csR, fL, fR, fprimeL, fprimeR
-    real ( kind=8 ) :: p_star__pL, p_star__pR
+    real ( kind=8 ) :: ps_pL, ps_pR
     real ( kind=8 ) :: p_star, p_star_prev
 
     integer :: i
-
-    if ( .not. this%initialized ) return
 
     pL = ig%p(L)
     pR = ig%p(R)
@@ -87,20 +81,19 @@ contains
     csL = ig%Cs(L)
     csR = ig%Cs(R)
 
-    p_star = ( R%u(hyid%rho) * csR * pL + L%u(hyid%rho) * csL * pR &
-      + csR * csL * (L%u(hyid%vel(dir)) - R%u(hyid%vel(dir))) ) &
-      / (R%u(hyid%rho) * csR + L%u(hyid%rho) * csL)
+    vL = L%u( hyid%rho_vel(dir) ) / L%u(hyid%rho)
+    vR = R%u( hyid%rho_vel(dir) ) / R%u(hyid%rho)
 
-    p_star = p_star
+    p_star = max( &
+      rhyme_iterative_riemann_solver_guess_p_star( &
+        R%u(hyid%rho), csR, vR, pR, L%u(hyid%rho), csL, vL, pL &
+      ), this%tolerance )
 
-    vL = L%u(hyid%rho_vel(dir)) / L%u(hyid%rho)
-    vR = R%u(hyid%rho_vel(dir)) / R%u(hyid%rho)
-
-    p_star_prev = this%pressure_floor
+    p_star_prev = p_star
 
     do i = 1, this%n_iteration
-      call nonlinear_waves( ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
-      call nonlinear_waves( ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
+      call rhyme_iterative_riemann_solver_nonlinear_waves( ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
+      call rhyme_iterative_riemann_solver_nonlinear_waves( ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
 
       p_star = p_star - (fL + fR + (vR - vL)) / (fprimeL + fprimeR)
 
@@ -109,35 +102,49 @@ contains
     end do
 
     star%p = p_star
-    star%u = 0.5d0 * ((vR + vL) + (fR - fL))
+    star%u = 0.5d0 * ( (vR + vL) + (fR - fL) )
 
-    p_star__pL = star%p / pL
-    p_star__pR = star%p / pR
+    ps_pL = star%p / pL
+    ps_pR = star%p / pR
+
 
     if ( p_star > pL ) then
       star%left%is_shock = .true.
-      star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + p_star__pL) / (ig%gm1_gp1 * p_star__pL + 1.0)
-      star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * p_star__pL + ig%gm1_2g)
+      star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
+      star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
     else
       star%left%is_shock = .false.
-      star%left%fan%rho = L%u(hyid%rho) * p_star__pL**real(ig%g_inv, kind=8)
-      star%left%fan%cs = csL * p_star__pL**real(ig%gm1_2g, kind=8)
+      star%left%fan%rho = L%u(hyid%rho) * ps_pL**real(ig%g_inv, kind=8)
+      star%left%fan%cs = csL * ps_pL**real(ig%gm1_2g, kind=8)
       star%left%fan%speedH = vL - csL
       star%left%fan%speedT = star%u - star%left%fan%cs
     end if
 
     if ( p_star > pR ) then
       star%right%is_shock = .true.
-      star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + p_star__pR) / (ig%gm1_gp1 * p_star__pR + 1.0)
-      star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * p_star__pR + ig%gm1_2g)
+      star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
+      star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
     else
       star%right%is_shock = .false.
-      star%right%fan%rho = R%u(hyid%rho) * p_star__pR**real(ig%g_inv, kind=8)
-      star%right%fan%cs = csR * p_star__pR**real(ig%gm1_2g, kind=8)
+      star%right%fan%rho = R%u(hyid%rho) * ps_pR**real(ig%g_inv, kind=8)
+      star%right%fan%cs = csR * ps_pR**real(ig%gm1_2g, kind=8)
       star%right%fan%speedH = vR + csR
       star%right%fan%speedT = star%u + star%right%fan%cs
     end if
   end subroutine rhyme_iterative_riemann_solver_solve
+
+
+  pure function rhyme_iterative_riemann_solver_guess_p_star ( &
+    rhor, csr, ur, pr, rhol, csl, ul, pl ) result ( p_star )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: rhor, csr, ur, pr, rhol, csl, ul, pl
+    real ( kind=8 ) :: p_star
+
+    p_star = ( &
+      rhor * csr * pl + rhol * csl * pr + csr * csl * ( rhol * ul - rhor * ur ) &
+    ) / ( rhor * csr + rhol * csl )
+  end function rhyme_iterative_riemann_solver_guess_p_star
 
 
   pure subroutine rhyme_iterative_riemann_solver_nonlinear_waves ( ig, rho, p_k, p, f, fprime)
@@ -178,8 +185,6 @@ contains
     type ( hydro_conserved_t ), intent ( out ) :: U
 
     real ( kind=8 ) :: dxdt
-
-    if ( .not. this%initialized ) return
 
     dxdt = dx / dt
 
