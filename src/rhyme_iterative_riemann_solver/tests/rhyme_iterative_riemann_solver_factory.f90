@@ -4,13 +4,13 @@ module rhyme_iterative_riemann_solver_factory
 
   implicit none
 
-  logical :: irs_factory_initialized = .false.
+  logical :: irs_fac_initialized = .false.
 
-  integer, parameter :: irs_factory_n_iteration = 101
-  integer, parameter :: irs_factory_gastype = igid%diatomic
+  integer, parameter :: irs_fac_n_iteration = 101
+  integer, parameter :: irs_fac_gastype = igid%diatomic
 
-  real ( kind=8 ), parameter :: irs_factory_pressure_floor = 1.01d-10
-  real ( kind=8 ), parameter :: irs_factory_tolerance = 1.01d-6
+  real ( kind=8 ), parameter :: irs_fac_pressure_floor = 1.01d-10
+  real ( kind=8 ), parameter :: irs_fac_tolerance = 1.01d-6
 
   type ( ideal_gas_t ) :: ig
   type ( iterative_riemann_solver_t ) :: irs
@@ -44,20 +44,20 @@ contains
     type ( chemistry_t ) :: chemi
     type ( thermo_base_t ) :: thermo
 
-    if ( irs_factory_initialized ) return
+    if ( irs_fac_initialized ) return
 
     call chemi%init( log )
     call thermo%init( log )
-    call ig%init_with ( chemi, thermo, irs_factory_gastype, log )
+    call ig%init_with ( chemi, thermo, irs_fac_gastype, log )
 
     call irs%init_with ( &
-      irs_factory_n_iteration, &
-      irs_factory_tolerance, &
-      irs_factory_pressure_floor, &
+      irs_fac_n_iteration, &
+      irs_fac_tolerance, &
+      irs_fac_pressure_floor, &
       log &
     )
 
-    irs_factory_initialized = .true.
+    irs_fac_initialized = .true.
   end subroutine rhyme_iterative_riemann_solver_factory_init
 
   !> Sod test (very mild test)

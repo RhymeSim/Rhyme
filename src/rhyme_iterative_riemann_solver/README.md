@@ -7,7 +7,8 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \begin{aligned}
   & f_L(p_*, U_L) + f_R(p_*, U_R) + \Delta u = 0 \\
-  & u^* = \frac 1 2 (u_L + u_R) + \frac 1 2 \left[
+  & u^* = \frac 1 2 (u_L + u_R) + \frac 1 2
+  \left[
     f_R(p_*, U_R) - f_L(p_*, U_L)
   \right]
   \end{aligned}
@@ -17,19 +18,21 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   right nonlinear waves and are given by:
 
   ```math
-  f_K \left(p_*, U_K\right) = \begin{cases}
+  f_K (p_*, U_K) = \begin{cases}
     (p_* - p_K) ( \frac{ A_K }{ p_* + B_K } )^{1/2}
-    & \text{if } p_* \geq p_K \\
+    & \text{if}\quad p_* \geq p_K \\
     & \\
-    \frac{2 c_s^K}{\gamma - 1} \left[
-      \left( \frac{p_*}{p_K} \right)^{\frac{\gamma - 1}{2 \gamma}} - 1
+    \frac{2 c_s^K}{\gamma - 1}
+    \left[
+      \left( \frac{p_*}{p_K} \right)^{ \frac{\gamma - 1}{2 \gamma} } - 1
     \right]
-    & \text{if } p_* < p_K
+    & \text{if}\quad p_* < p_K
   \end{cases}
   ```
 
   where $`A_K = \frac{2}{(\gamma + 1) \rho_K}`$ and
-  $`B_K = \frac{\gamma - 1}{\gamma + 1} p_K`$. $`p_*`$ can be solved by an
+  $`B_K = \frac{\gamma - 1}{\gamma + 1} p_K`$. The star region pressure
+  can be solved by an
   iterative scheme using the first solution equation. Note that $`p_*`$ is
   a function of five variables, $`p_* (\Delta u, \rho_L, p_L, \rho_R, p_R)`$.
   After finding $`p_*`$, $`u*`$ can also be calculated by the second
@@ -66,9 +69,10 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   We can analytically calculate the derivatives,
 
   ```math
-  f_K^\prime \left(p_*, U_K\right) =
+  f_K^\prime (p_*, U_K) =
   \begin{cases}
-    \sqrt{(\frac{A_K}{p + B_K})} \left(
+    \sqrt{(\frac{A_K}{p + B_K})}
+    \left(
       1 - \frac{p - p_K}{2 (B_k + p)}
     \right)
     & \text{if } p \geq p_K \\
@@ -94,7 +98,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   in the star region,
 
   ```math
-  u_* = \frac 1 2 \left( u_R - u_L \right) + \frac 1 2 \left(f_R - f_L \right)
+  u_* = \frac 1 2 ( u_R - u_L ) + \frac 1 2 ( f_R - f_L )
   ```
 
 ### The Complete Solution and Sampling
@@ -113,81 +117,223 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   Following, we go through different types of nonlinear waves.
 
 #### Left shock wave ( $`p_* > p_L`$ )
-  **density**
+  **Star region density ($`\rho_{*L}`$)**
   ```math
-  \rho_{*L} = \rho_L \left[
-    \frac{\frac{p_*}{p_L} + \frac{\gamma - 1}{\gamma + 1}}
-      {\frac{\gamma - 1}{\gamma + 1}\frac{p_*}{p_L} + 1}
+  \rho_{*L} = \rho_L
+  \left[
+    \frac
+    {
+      \frac{ p_* }{ p_L } + \frac{ \gamma - 1 }{ \gamma + 1 }
+    }
+    {
+      \frac{ \gamma - 1 }{ \gamma + 1 } \frac{ p_* }{ p_L } + 1
+    }
   \right]
   ```
 
-  **shock speed**
+  **Shock speed ($`S_L`$)**
   ```math
-  S_L = u_L - Q_L / \rho_L, \quad Q_L = \left[ \frac{p_* + B_L}{A_L} \right]^{\frac 1 2}
+  S_L = u_L - c_{sL}
+  \left[
+    \frac{ \gamma + 1 }{ 2 \gamma } \frac{ p_* }{ p_L }
+    + \frac{ \gamma - 1 }{ 2 \gamma }
+  \right]^{ \frac 1 2 }
   ```
 
-  Therefore, $`S_L`$ can be written as,
-
+  **Sampling ($`\mathbf{W}(x, t)`$)**
   ```math
-  S_L = u_L - c_s^L \left[
-    \frac{\gamma + 1}{2\gamma} \frac{p_*}{p_L} + \frac{\gamma - 1}{2\gamma}
-    \right]^{\frac 1 2}
+  \mathbf{W}(x, t) =
+  \begin{cases}
+    \mathbf{W}_{*L}^{\text{shock}} \quad
+    &\text{if} \quad S_L \leq \frac x t \leq u_* \\
+    &\\
+    \mathbf{W}_L \quad &\text{if} \quad \frac x t \leq S_L
+  \end{cases}
   ```
 
 #### Left Rarefaction wave ( $`p_* \leq p_L`$ )
-  **density** follows the isentropic law,
+  **Star region density ($`\rho_{*L}`$)** follows the isentropic law,
   ```math
-  \rho_{*L} = \rho_L \left( \frac{p_*}{p_L} \right)^{\frac{1}{\gamma}}
+  \rho_{*L} = \rho_L
+  \left(
+    \frac{ p_* }{ p_L }
+  \right)^{ \frac 1 \gamma }
   ```
 
-  **sound speed behind the rarefaction**
+  **Sound speed behind the rarefaction ($`c_{s*L}`$)**
   ```math
-  c_s^{*L} = c_s^L \left( \frac{p_*}{p_L} \right)^{\frac{\gamma - 1}{2\gamma}}
-
+  c_{s*L} = c_s^L
+  \left(
+    \frac{ p_* }{ p_L }
+  \right)^{ \frac{ \gamma - 1 }{ 2 \gamma } }
   ```
 
-  **head and tail speeds**
+  **Rarefaction head and tail speeds ($`S_{HL}, S_{TL}`$)**
   ```math
-  S_{HL} = u_L - c_s^L, S_{TL} = u_* - c_s^{*L}
+  S_{HL} = u_L - c_s^L, \quad S_{TL} = u_* - c_s^{*L}
+  ```
+
+  **Solution inside the rarefaction ($`\mathbf{W}_{L\text{fan}}`)**
+  ```math
+  \mathbf{W}_{L\text{fan}} =
+  \begin{cases}
+    &\rho = \rho_L
+    \left[
+      \frac{2}{\gamma + 1} + \frac{\gamma - 1}{(\gamma + 1)\c_{sl}}
+      \left(
+        u_L - frac x t
+      \right)
+    \right]^{\frac{2}{\gamma - 1}}\\
+    &\\
+    &u = frac{2}{\gamma + 1}
+    \left[
+      c_{sL} + \frac{\gamma - 1}{2} u_L + \frac x t
+    \right] \\
+    &\\
+    &p = p_L
+    \left[
+      \frac{2}{\gamma + 1} + \frac{\gamma - 1}{(\gamma + 1)c_{sL}}
+      \left(
+        u_L - \frac x t
+      \right)
+    \right]^{\frac{2\gamma}{\gamma - 1}}
+  \end{cases}
+  ```
+
+  **Sampling ($`\mathbf{W}(x,t)`)**
+  ```math
+  \mathbf{W}(x,t) =
+  \begin{cases}
+    \mathbf{W}_{*L} \quad
+    &\text{if} \quad \frac x t \leq S_{HL} \\
+    &\\
+    \mathbf{W}_{L\text{fan}} \quad
+    &\text{if} \quad S_{HL} \leq \frac x t \leq S_{TL} \\
+    &\\
+    \mathbf{W}_{*L}^{\text{fan}} \quad
+    &\text{if} \quad S_{TL} \leq \frac x t \leq u_*
+  \end{cases}
+  ```
+
+  where $`\mathbf{W}_{*L}^{\text{fan}}`$ in $`x`$-direction is,
+
+  ```math
+  \mathbf{W}_{*L}^{\text{fan}} =
+  \begin{cases}
+    (rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad frac x t < u_* \\
+    &\\
+    (rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad frac x t > u_* \\
+  \end{case}
   ```
 
 #### Right shock wave ( $`p_* > p_R`$ )
-  **density**
+  **Star region density ($`\rho_{*R}`)**
   ```math
-  \rho_{*R} = \rho_R \left[
-    \frac{\frac{p_*}{p_R} + \frac{\gamma - 1}{\gamma + 1}}
-      {\frac{\gamma - 1}{\gamma + 1}\frac{p_*}{p_R} + 1}
+  \rho_{*R} = \rho_R
+  \left[
+    \frac
+    {
+      \frac{ p_* }{ p_R } + \frac{ \gamma - 1 }{ \gamma + 1 }
+    }
+    {
+      \frac{ \gamma - 1 }{ \gamma + 1 } \frac{ p_* }{ p_R } + 1
+    }
   \right]
   ```
 
-  **shock speed**
+  **Shock speed ($`S_R`$)**
   ```math
-  S_R = u_R + Q_R / \rho_R, \quad Q_R = \left[ \frac{p_* + B_R}{A_R} \right]^{\frac 1 2}
+  S_R = u_R - c_{sR}
+  \left[
+    \frac{ \gamma + 1 }{ 2 \gamma } \frac{ p_* }{ p_R }
+    + \frac{ \gamma - 1 }{ 2 \gamma }
+  \right]^{ \frac 1 2 }
   ```
 
-  Therefore, $`S_R`$ can be written as,
-
+  **Sampling ($`\mathbf{W}(x,t)`$)**
   ```math
-  S_R = u_R - c_s^R \left[
-    \frac{\gamma + 1}{2\gamma} \frac{p_*}{p_R} + \frac{\gamma - 1}{2\gamma}
-    \right]^{\frac 1 2}
+  \mathbf{W}(x,t) =
+  \begin{cases}
+    \mathbf{W}_{*R}^{\text{sho}} \quad
+    &\text{if} \quad u_* \leq \frac x t \leq S_R \\
+    &\\
+    \mathbf{W}_R \quad &\text{if} \quad \frac x t \geq S_R
+  \end{cases}
   ```
 
 #### Right Rarefaction wave ( $`p_* \leq p_R`$ )
-  **density** follows the isentropic law,
+  **Star region density ($`\rho_{*R}`$)** follows the isentropic law,
   ```math
-  \rho_{*R} = \rho_R \left( \frac{p_*}{p_L} \right)^{\frac{1}{\gamma}}
+  \rho_{*R} = \rho_R
+  \left(
+    \frac{ p_* }{ p_L }
+  \right)^{ \frac 1 \gamma }
   ```
 
-  **sound speed behind the rarefaction**
+  **Sound speed behind the rarefaction ($`c_{s*R}`$)**
   ```math
-  c_s^{*R} = c_s^R \left( \frac{p_*}{p_L} \right)^{\frac{\gamma - 1}{2\gamma}}
-
+  c_{s*R} = c_s^R
+  \left(
+    \frac{ p_* }{ p_L }
+  \right)^{ \frac{ \gamma - 1 }{ 2 \gamma } }
   ```
 
-  **head and tail speeds**
+  **Rarefaction head and tail speeds ($`S_{HR}, S_{TR}`$)**
   ```math
-  S_{HR} = u_R - c_s^R, S_{TR} = u_* - c_s^{*R}
+  S_{HR} = u_R - c_s^R, \quad S_{TR} = u_* - c_s^{*R}
+  ```
+
+  **Solution inside the rarefaction ($`\mathbf{W}_{R\text{fan}}`$)**
+  ```math
+  \mathbf{W}_{R\text{fan}} =
+  \begin{cases}
+    &\rho = \rho_R
+    \left[
+      \frac{2}{\gamma + 1} - \frac{\gamma - 1}{(\gamma + 1)c_{sR}}
+      \left(
+        u_R - \frac x t
+      \right)
+    \right]^{ \frac{2}{\gamma - 1} } \\
+    &\\
+    &u = \frac{2}{\gamma + 1}
+    \left[
+      -c_{sR} + \frac{\gamma - 1}{2} u_R + frac x t
+    \right] \\
+    &\\
+    &p = p_R
+    \left[
+      \frac{2}{\gamma + 1} - \frac{\gamma - 1}{(\gamma + 1)c_{sR}}
+      \left(
+        u_R - \frac x t
+      \right)
+    \right]^{ \frac{2 \gamma}{\gamma - 1} }
+  \end{cases}
+  ```
+
+  **Sampling ($`\mathbf{W}(x, t)`$)**
+  ```math
+  \mathbf{W}(x,t) =
+  \begin{cases}
+    \mathbf{W}_{*R}^{\text{fan}} \quad
+    &\text{if} \quad u_* \leq \frac x t \leq S_{TR} \\
+    &\\
+    \mathbf{W}_{R\text{fan}} \quad
+    &\text{if} \quad S_{TR} \leq \frac x t \leq S_{HR} \\
+    &\\
+    \mathbf{W}_R \quad
+    &\text{if} \quad \frac x t \geq S_{HR}
+  \end{cases}
+  ```
+
+  where $`\mathbf{W}_{*R}^{\text{fan}}`$ in $`x`$-direction is,
+
+  ```math
+  \mathbf{W}_{*R}^{\text{fan}} =
+  \begin{cases}
+    (rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad frac x t < u_* \\
+    &\\
+    (rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad frac x t > u_* \\
+  \end{case}
   ```
 
 #### Left or Right Vacuum state
@@ -199,14 +345,17 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   **Vacuum right state**
   ```math
-  W(x, 0) = \begin{cases}
-    W_L \mathrlap{\,/}{=} W_0 & \text{if}\quad x < 0 \\
-    &  \\
-    W_0 \text{(vacuum)} & \text{if}\quad x > 0
+  \mathbf{W}(x, 0) =
+  \begin{cases}
+    \mathbf{W}_L \mathrlap{\,/}{=} \mathbf{W}_0 \quad
+    &\text{if} \quad x < 0 \\
+    &\\
+    \mathbf{W}_0 \text{(vacuum)} \quad
+    &\text{if} \quad x > 0
   \end{cases}
   ```
 
-  where $`W_0 = (0, u_0, 0)`$.
+  where $`\mathbf{W}_0 = (0, u_0, 0)`$.
 
   Assuming an isentropic-type equation of state and that this is valid all
   the way up to the boundary separating material, the EOS can be written,
@@ -217,16 +366,19 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   with following conditions,
   ```math
-  p(0) = 0 \text{,}\quad p^\prime(0) = 0 \text{,}\quad
-  p^\prime(\rho) > 0 \text{,}\quad p^{\prime \prime}(\rho) > 0
+  p(0) = 0, \quad
+  p^{\prime}(0) = 0, \quad
+  p^{\prime}(\rho) > 0, \quad
+  p^{\prime\prime}(\rho) > 0
   ```
 
-  Considering the generalised Riemann invariant to connec a point on the left
+  Considering the generalised Riemann invariant to connect a point on the left
   data state with a point along the contact gives,
 
   ```math
-  u_0 + \frac{2 c_{s0}}{\gamma - 1} = u_L + \frac{2 c_{sL}}{\gamma - 1}
+  u_0 + \frac{ 2 c_{s0} }{ \gamma - 1 } = u_L + \frac{ 2 c_{sL} }{ \gamma - 1 }
   ```
+
   based on the EOS we are using here, the sound speed vanished along the
   contact, $`c_{s0} = 0`$, and accordingly it gives us the speed of the front as,
 
@@ -239,21 +391,28 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   The complete solution can now be written as,
 
   ```math
-  W_{L0}(x, t) = \begin{cases}
-    W_L & \text{if}\quad \frac{x}{t} \leq u_L - c_{sL} \\
+  \mathbf{W}_{L0}(x, t) =
+  \begin{cases}
+    \mathbf{W}_L \quad
+    &\text{if} \quad \frac x t \leq u_L - c_{sL} \\
     & \\
-    W_{L\text{fan}} & \text{if}\quad u_L - c_{sL} < \frac{x}{t} < S_{*L}\\
+    \mathbf{W}_{L\text{fan}} \quad
+    &\text{if} \quad u_L - c_{sL} < \frac x t < S_{*L} \\
     & \\
-    W_0 & \text{if}\quad \frac{x}{t} \geq S_{*L}
+    \mathbf{W}_0 \quad
+    &\text{if} \quad \frac x t \geq S_{*L}
   \end{cases}
   ```
 
   **Vacuum left state**
   ```math
-  W(x, 0) = \begin{cases}
-    W_0 \text{(vacuum)} & \text{if}\quad x < 0 \\
-    &  \\
-    W_L \mathrlap{\,/}{=} W_0 & \text{if}\quad x > 0
+  \mathbf{W}(x, 0) =
+  \begin{cases}
+    \mathbf{W}_0 \text{(vacuum)} \quad
+    &\text{if} \quad x < 0 \\
+    & \\
+    \mathbf{W}_L \mathrlap{\,/}{=} \mathbf{W}_0 \quad
+    &\text{if} \quad x > 0
   \end{cases}
   ```
 
@@ -261,18 +420,22 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   contact, $`c_{s0} = 0`$, and accordingly it gives us the speed of the front as,
 
   ```math
-  S_{*R} = u_R - \frac{2 c_{sR}}{\gamma - 1}
+  S_{*R} = u_R - \frac{ 2 c_{sR} }{ \gamma - 1 }
   ```
 
   The complete solution can now be written as,
 
   ```math
-  W_{R0}(x, t) = \begin{cases}
-    W_0 & \text{if}\quad \frac{x}{t} \leq S_{*R} \\
+  \mathbf{W}_{R0}(x, t) =
+  \begin{cases}
+    \mathbf{W}_0 \quad
+    &\text{if} \quad \frac x t \leq S_{*R} \\
     & \\
-    W_{R\text{fan}} & \text{if}\quad S_{*R} < \frac{x}{t} < u_R + c_{sR} \\
+    \mathbf{W}_{R\text{fan}} \quad
+    &\text{if} \quad S_{*R} < \frac x t < u_R + c_{sR} \\
     & \\
-    W_R & \text{if}\quad \frac{x}{t} \geq u_R + c_{sR}
+    \mathbf{W}_R \quad
+    &\text{if} \quad \frac x t \geq u_R + c_{sR}
   \end{cases}
   ```
 
@@ -291,20 +454,24 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   the full solution can be written as,
 
   ```math
-  W(x, t) = \begin{cases}
-    W_{L0}(x,t) & \text{if}\quad \frac{x}{t} \leq S_{*L} \\
+  \mathbf{W}(x, t) =
+  \begin{cases}
+    \mathbf{W}_{L0}(x,t) \quad
+    &\text{if} \quad \frac x t \leq S_{*L} \\
     & \\
-    W_0 \text{(vacuum)} & \text{if}\quad S_{*L} < \frac{x}{t} < S_{*R} \\
+    \mathbf{W}_0 \text{(vacuum)} \quad
+    &\text{if} \quad S_{*L} < \frac x t < S_{*R} \\
     & \\
-    W_{R0}(x,t) & \text{if}\quad \frac{x}{t} \geq S_{*R}
+    \mathbf{W}_{R0}(x,t) \quad
+    &\text{if} \quad \frac x t \geq S_{*R}
   \end{cases}
   ```
 
   where the speeds $`S_{*L}`$ and $`S_{*R}`$ are given by,
 
   ```math
-  S_{*L} = u_L + \frac{2a_L}{\gamma - 1} \text{,} \quad
-  S_{*R} = u_R - \frac{2a_R}{\gamma - 1}
+  S_{*L} = u_L + \frac{ 2a_L }{ \gamma - 1 }, \quad
+  S_{*R} = u_R - \frac{ 2a_R }{ \gamma - 1 }
   ```
 
 ## Test cases

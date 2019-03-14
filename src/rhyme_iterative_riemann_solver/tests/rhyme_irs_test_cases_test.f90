@@ -7,21 +7,20 @@ logical function rhyme_irs_test_cases_test () result (failed)
 
   call rhyme_iterative_riemann_solver_factory_init
 
-  call irs_test_cases( irs_Sod_test, ig, "Sod", irs_sod_acc, failed_sod )
-  call irs_test_cases( irs_123_test, ig, "123 test", irs_123_acc, failed_123 )
-  call irs_test_cases( irs_left_blast_wave_test, ig, "left blast wave", irs_lblast_acc, failed_left )
-  call irs_test_cases( irs_right_blast_wave_test, ig, "right blast wave", irs_rblast_acc, failed_right )
-  call irs_test_cases( irs_two_shocks_collision_test, ig, "two shock collision", irs_two_shocks_acc, failed_shocks )
+  call irs_test_cases( irs_Sod_test, "Sod", irs_sod_acc, failed_sod )
+  call irs_test_cases( irs_123_test, "123 test", irs_123_acc, failed_123 )
+  call irs_test_cases( irs_left_blast_wave_test, "left blast wave", irs_lblast_acc, failed_left )
+  call irs_test_cases( irs_right_blast_wave_test, "right blast wave", irs_rblast_acc, failed_right )
+  call irs_test_cases( irs_two_shocks_collision_test, "two shock collision", irs_two_shocks_acc, failed_shocks )
 
   failed = failed_sod .or. failed_123 .or. failed_left .or. failed_right .or. failed_shocks
 
 contains
 
-  subroutine irs_test_cases ( func, ig, test_name, acc, failed )
+  subroutine irs_test_cases ( func, test_name, acc, failed )
     implicit none
 
     external :: func
-    type ( ideal_gas_t ), intent ( in ) :: ig
     character(len=*) :: test_name
     type ( irs_accuracy_t ) :: acc
     logical :: failed

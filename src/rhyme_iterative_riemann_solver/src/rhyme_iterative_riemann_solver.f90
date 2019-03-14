@@ -92,12 +92,15 @@ contains
     p_star_prev = p_star
 
     do i = 1, this%n_iteration
-      call rhyme_iterative_riemann_solver_nonlinear_waves( ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
-      call rhyme_iterative_riemann_solver_nonlinear_waves( ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
+      call rhyme_iterative_riemann_solver_nonlinear_waves( &
+        ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
+      call rhyme_iterative_riemann_solver_nonlinear_waves( &
+        ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
 
-      p_star = p_star - (fL + fR + (vR - vL)) / (fprimeL + fprimeR)
+      p_star = p_star - ( fL + fR + (vR - vL) ) / ( fprimeL + fprimeR )
 
-      if ( abs(p_star - p_star_prev) / (0.5d0 * (p_star + p_star_prev)) < this%tolerance) exit
+      if ( abs( p_star - p_star_prev ) &
+        / ( .5d0 * (p_star + p_star_prev) ) < this%tolerance ) exit
       p_star_prev = p_star
     end do
 

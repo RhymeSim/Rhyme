@@ -111,127 +111,32 @@
   ```math
   f_K \left(p, W_K\right) = \begin{cases}
     (p - p_K) \sqrt{(\frac{A_K}{p + B_K})}
-    & \text{if}\quad p > p_K \text{shock} \\
+    & \text{if}\quad p > p_K \quad \text{shock} \\
     & \\
     \frac{2 c_{sK}}{\gamma - 1} \left[
       \left( \frac{p}{p_K} \right)^{\frac{\gamma - 1}{2 \gamma}} - 1
     \right]
-    & \text{if}\quad p < p_K \text{rarefaction}
+    & \text{if}\quad p < p_K \quad \text{rarefaction}
   \end{cases}
   ```
 
-  and represent relations across the left and the right nonlinear waves[^1] and
+  and represent relations across the left and the right nonlinear waves and
 
   ```math
-  A_K = \frac{2}{(\gamma + 1) \rho_K, \quad
+  A_K = \frac{2}{(\gamma + 1) \rho_K}, \quad
   B_K = \frac{\gamma - 1}{\gamma + 1} p_K
   ```
 
   The solution for particle velocity $`u_*`$ in the star region is,
 
   ```math
-  u^* = \frac 1 2 (u_L + u_R) + \frac 1 2 \left[ f_R(p_*) - f_L(p_*) \right]
+  u_* = \frac 1 2 (u_L + u_R) + \frac 1 2 \left[ f_R(p_*) - f_L(p_*) \right]
   ```
 
   The remaining unknowns are found by using standard gas dynamics relations.
 
-  **Behaviour of the Pressure Function**
-  In order to investigate the behaviour of the pressure function at a given
-  data ($`u_L = (\rho_L, u_L, p_L)^T`$ and $`u_R = (\rho_R, u_R, p_R)^T`$), we
-  need to calculate the first and the second derivative of the function w.r.t
-  $`p`$. Based on the first derivative,
-
-  ```math
-  f_K^\prime =
-  \begin{cases}
-    (\frac{A_K}{p + B_K})^{1/2}
-    \left(
-      1 - \frac{p - p_K}{2 (B_k + p)}
-    \right) & \text{if}\quad p > p_K \text{shock} \\
-    & \\
-    \frac{1}{\rho_K c_s^K}
-    \left(
-      \frac{p}{p_K}
-    \right)^{\frac{- (\gamma + 1)}{2 \gamma}}
-    & \text{if}\quad p \leq p_K \text{rarefaction}
-  \end{cases}
-  ```
-
-  as $`f^\prime = f_l^\prime + f_r^\prime`$ and $`f_k^\prime > 0`$, we can
-  see that the pressure function is monotone.
-
-  Considering the second derivative
-
-  ```math
-  f_K^\prime\prime =
-  \begin{cases}
-  \frac 1 4 \left( \frac{ A_K }{ p + B_K } \right)^{1/2}
-  \left[
-    \frac{ 4B_K + 3p + p_K }{ ( B_K + p )^2 }
-  \right]
-  & \text{if}\quad p > p_K \text{shock} \\
-  & \\
-  - \frac{ (\gamma - 1) c_{sK} }{ 2 \gamma^2 p_K^2 }
-  \left(
-    \frac{ p }{ p_K }
-  \right)^{ - ( 3\gamma + 1 ) / 2\gamma }
-  & \text{if}\quad p \leq p_K \text{rarefaction}
-  \end{cases}
-  ```
-
-  since $`f^\prime\prime = f_l^\prime\prime + f_r^\prime\prime`$
-  and $`f_k^\prime\prime < 0`$, the pressure function is concave down.
-
-  The following figure shows the behaviour of the pressure function in the
-  solution of the Riemann problem,
-
-  ![pressure-function](assets/pressure-function.png)
-
-  In the figure above, we define,
-
-  ```math
-  \begin{aligned}
-    & p_{text{min}} = \text{min}(p_L, p_R) \\
-    & p_{text{max}} = \text{max}(p_L, p_R) \\
-    & f_{text{min}} = f(p_{\text{min}}) \\
-    & f_{text{max}} = f(p_{\text{max}})
-  \end{aligned}
-  ```
-
-  For given $`p_L`$ and $`p_R`$, it is the velocity differece $`\Delta u`$
-  which determines the value of $`p_*`$. Three intervals $`I_1`$, $`I_2`$ and
-  $`I_3`$ can be identified:
-
-  ```math
-  \begin{aligned}
-    p_*\quad\text{lies in}I_1 = (0, p_{\text{min}})\quad
-    \text{if}\quad f_{\text{min}} > 0\quad\text{and}\quad f_{\text{max}} > 0\\
-    p_*\quad\text{lies in}I_2 = [p_{\text{min}}, p_{\text{max}}]\quad
-    \text{if}\quad f_{\text{min}} \leq 0\quad\text{and}\quad f_{\text{max}} \geq 0\\
-    p_*\quad\text{lies in}I_3 = (p_{\text{max}}, \infty)\quad
-    \text{if}\quad f_{\text{min}} < 0\quad\text{and}\quad f_{\text{max}} < 0
-  \end{aligned}
-  ```
-
-  For suficiently large $`\Delta u`$ as in $`(\Delta u)_1`$, the value of
-  $`p_*`$ lies in the $`I_1`$ region and since the root of the pressure
-  function is less than $`p_L`$ and $`p_R`$, we end up having two rarefactions.
-  We can follow the same logic to explain $`(\Delta u)_2`$ and $`(\Delta u)_3`$.
-
-  For a positive solution for pressure $`p_*`$ we require $`f(0) < 0`$. This
-  leads to the pressure positivity condition,
-
-  ```math
-  (\Delta u)_{\text{crit}}
-    \equiv \frac{2 c_{sL}}{\gamma -1} + \frac{2 c_{sR}}{\gamma -1}
-    > u_R - u_L
-  ```
-
-  Note that vacuum is created by the nonlinear waves if this condition
-  is violated.
-
-
-  [^1]: In order to find $`f_K`$ for a shock wave, we move to a frame of
+  **Deriving relations for nonlinear waves**
+  In order to find $`f_K`$ for a shock wave, we move to a frame of
   reference moving at the shock velocity and we introduce the relative
   velocities as,
 
@@ -249,7 +154,7 @@
   \end{aligned}
   ```
 
-  we derive the relation for a shock $`f_K`$.\\
+  we derive the relation for a shock $`f_K`$.
 
   In the case of a rarefaction wave, $`f_K`$ can be derived by assuming the
   isentropic relation
@@ -280,8 +185,104 @@
   ```
 
   where,
+
   ```math
   c_{s*K} = c_{sK} \left(
     frac{p_*}{p_K}
   \right)^{frac{\gamma - 1}{2 \gamma}}
   ```
+
+  **Behaviour of the Pressure Function**
+  In order to investigate the behaviour of the pressure function at a given
+  data ($`u_L = (\rho_L, u_L, p_L)^T`$ and $`u_R = (\rho_R, u_R, p_R)^T`$), we
+  need to calculate the first and the second derivative of the function w.r.t
+  $`p`$. Based on the first derivative,
+
+  ```math
+  f^{\prime}_K =
+  \begin{cases}
+    (\frac{A_K}{p + B_K})^{1/2}
+    \left(
+      1 - \frac{p - p_K}{2 (B_k + p)}
+    \right) & \text{if}\quad p > p_K \quad \text{shock} \\
+    & \\
+    \frac{1}{\rho_K c_s^K}
+    \left(
+      \frac{p}{p_K}
+    \right)^{\frac{- (\gamma + 1)}{2 \gamma}}
+    & \text{if}\quad p \leq p_K \quad \text{rarefaction}
+  \end{cases}
+  ```
+
+  as $`f^\prime = f_l^\prime + f_r^\prime`$ and $`f_k^\prime > 0`$, we can
+  see that the pressure function is monotone.
+
+  Considering the second derivative
+
+  ```math
+  f^{\prime\prime}_K =
+  \begin{cases}
+  \frac 1 4 \left( \frac{ A_K }{ p + B_K } \right)^{1/2}
+  \left[
+    \frac{ 4B_K + 3p + p_K }{ ( B_K + p )^2 }
+  \right]
+  & \text{if}\quad p > p_K \quad \text{shock} \\
+  & \\
+  - \frac{ (\gamma - 1) c_{sK} }{ 2 \gamma^2 p_K^2 }
+  \left(
+    \frac{ p }{ p_K }
+  \right)^{ - ( 3\gamma + 1 ) / 2\gamma }
+  & \text{if}\quad p \leq p_K \quad \text{rarefaction}
+  \end{cases}
+  ```
+
+  since $`f^{\prime\prime} = f_l^{\prime\prime} + f_r^{\prime\prime}`$
+  and $`f_k^{\prime\prime} < 0`$, the pressure function is concave down.
+
+  The following figure shows the behaviour of the pressure function in the
+  solution of the Riemann problem,
+
+  ![pressure-function](assets/pressure-function.png)
+
+  In the figure above, we define,
+
+  ```math
+  \begin{aligned}
+    & p_{\text{min}} = \text{min}(p_L, p_R) \\
+    & p_{\text{max}} = \text{max}(p_L, p_R) \\
+    & f_{\text{min}} = f(p_{\text{min}}) \\
+    & f_{\text{max}} = f(p_{\text{max}})
+  \end{aligned}
+  ```
+
+  For given $`p_L`$ and $`p_R`$, it is the velocity differece $`\Delta u`$
+  which determines the value of $`p_*`$. Three intervals $`I_1`$, $`I_2`$ and
+  $`I_3`$ can be identified:
+
+  ```math
+  \begin{aligned}
+    & p_*\quad\text{lies in}\quad I_1 = (0, p_{\text{min}})\quad
+    &\text{if}\quad f_{\text{min}} > 0\quad\text{and}\quad f_{\text{max}} > 0\\
+    & p_*\quad\text{lies in}\quad I_2 = [p_{\text{min}}, p_{\text{max}}]\quad
+    &\text{if}\quad f_{\text{min}} \leq 0\quad\text{and}\quad f_{\text{max}} \geq 0\\
+    & p_*\quad\text{lies in}\quad I_3 = (p_{\text{max}}, \infty)\quad
+    &\text{if}\quad f_{\text{min}} < 0\quad\text{and}\quad f_{\text{max}} < 0
+  \end{aligned}
+  ```
+
+  For suficiently large $`\Delta u`$ as in $`(\Delta u)_1`$, the value of
+  $`p_*`$ lies in the $`I_1`$ region and since the root of the pressure
+  function is less than $`p_L`$ and $`p_R`$, we end up having two rarefactions.
+  We can follow the same logic to explain $`(\Delta u)_2`$ and $`(\Delta u)_3`$.
+
+  For a positive solution for pressure $`p_*`$ we require $`f(0) < 0`$. This
+  leads to the pressure positivity condition,
+
+  ```math
+  (\Delta u)_{\text{crit}}
+    \equiv \frac{2 c_{sL}}{\gamma -1} + \frac{2 c_{sR}}{\gamma -1}
+    > u_R - u_L
+  ```
+
+  Note that vacuum is created by the nonlinear waves if this condition
+  is violated.
