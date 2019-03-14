@@ -5,13 +5,13 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   The following two equations help us to solve a Riemann problem,
 
   ```math
-  \begin{aligned}
+  \begin{cases}
   & f_L(p_*, U_L) + f_R(p_*, U_R) + \Delta u = 0 \\
   & u^* = \frac 1 2 (u_L + u_R) + \frac 1 2
   \left[
     f_R(p_*, U_R) - f_L(p_*, U_L)
   \right]
-  \end{aligned}
+  \end{cases}
   ```
 
   The functions $`f_L`$ and $`f_R`$ represent relations across the left and the
@@ -173,7 +173,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   S_{HL} = u_L - c_s^L, \quad S_{TL} = u_* - c_s^{*L}
   ```
 
-  **Solution inside the rarefaction ($`\mathbf{W}_{L\text{fan}}`)**
+  **Solution inside the rarefaction ($`\mathbf{W}_{L\text{fan}}`$)**
   ```math
   \mathbf{W}_{L\text{fan}} =
   \begin{cases}
@@ -200,7 +200,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \end{cases}
   ```
 
-  **Sampling ($`\mathbf{W}(x,t)`)**
+  **Sampling ($`\mathbf{W}(x,t)`$)**
   ```math
   \mathbf{W}(x,t) =
   \begin{cases}
@@ -220,14 +220,14 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \mathbf{W}_{*L}^{\text{fan}} =
   \begin{cases}
-    (rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad frac x t < u_* \\
+    (rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
     &\\
-    (rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad frac x t > u_* \\
+    (rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
   \end{case}
   ```
 
 #### Right shock wave ( $`p_* > p_R`$ )
-  **Star region density ($`\rho_{*R}`)**
+  **Star region density ($`\rho_{*R}`$)**
   ```math
   \rho_{*R} = \rho_R
   \left[
@@ -316,10 +316,10 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \begin{cases}
     \mathbf{W}_{*R}^{\text{fan}} \quad
     &\text{if} \quad u_* \leq \frac x t \leq S_{TR} \\
-    &\\
+    & \\
     \mathbf{W}_{R\text{fan}} \quad
     &\text{if} \quad S_{TR} \leq \frac x t \leq S_{HR} \\
-    &\\
+    & \\
     \mathbf{W}_R \quad
     &\text{if} \quad \frac x t \geq S_{HR}
   \end{cases}
@@ -330,9 +330,9 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \mathbf{W}_{*R}^{\text{fan}} =
   \begin{cases}
-    (rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad frac x t < u_* \\
-    &\\
-    (rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad frac x t > u_* \\
+    (rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
+    & \\
+    (rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
   \end{case}
   ```
 
