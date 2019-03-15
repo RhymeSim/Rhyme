@@ -30,6 +30,10 @@ endforeach ( dep )
 
 set ( srcs
   src/rhyme_iterative_riemann_solver.f90
+  src/rhyme_iterative_riemann_solver_solve.f90
+  src/rhyme_iterative_riemann_solver_sampling.f90
+  src/rhyme_iterative_riemann_solver_nonlinear_waves.f90
+  src/rhyme_iterative_riemann_solver_guess_p_star.f90
 )
 
 

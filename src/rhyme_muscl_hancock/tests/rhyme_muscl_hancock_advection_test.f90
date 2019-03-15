@@ -74,7 +74,7 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   bc%types(bcid%back) = bcid%outflow
   bc%types(bcid%front) = bcid%outflow
 
-  do step = 1, 170
+  do step = 1, 0
     samr_2d%levels(0)%dt = cfl%dt( ig, samr_2d )
 
     call ch%write_samr( samr_2d )

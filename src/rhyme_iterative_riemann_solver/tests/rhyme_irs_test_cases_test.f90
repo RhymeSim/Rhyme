@@ -35,7 +35,7 @@ contains
     ex_p = expected_solution%star%p
     ex_u = expected_solution%star%u
 
-    call irs_fac%solve( irs_fac_ig, L, R, hyid%x, solution )
+    call rhyme_iterative_riemann_solver_solve( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
 
     if ( expected_solution%star%left%is_shock ) then
       ex_left_rho = expected_solution%star%left%shock%rho
