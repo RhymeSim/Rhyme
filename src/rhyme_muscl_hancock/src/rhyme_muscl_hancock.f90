@@ -64,7 +64,7 @@ contains
     integer :: lb(3), ub(3)
     type ( hydro_flux_t ) :: dF( hyid%x:hyid%z )
 
-    type ( rp_star_region_t ) :: star
+    type ( riemann_problem_solution_t ) :: solution
     type ( hydro_conserved_t ) :: Delta, evolved_hydro_state
 
     l = box%level
@@ -132,12 +132,12 @@ contains
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
-              hyid%x, star &
+              hyid%x, solution &
             )
             call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
-              star, hyid%x, 0.d0, dt, evolved_hydro_state &
+              solution, hyid%x, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%x, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
@@ -146,12 +146,12 @@ contains
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
-              hyid%y, star &
+              hyid%y, solution &
             )
             call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
-              star, hyid%y, 0.d0, dt, evolved_hydro_state &
+              solution, hyid%y, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%y, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
@@ -160,12 +160,12 @@ contains
             call irs%solve( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
-              hyid%z, star &
+              hyid%z, solution &
             )
             call irs%sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
-              star, hyid%z, 0.d0, dt, evolved_hydro_state &
+              solution, hyid%z, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%z, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z ) )
