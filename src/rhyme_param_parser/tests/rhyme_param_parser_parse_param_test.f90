@@ -9,7 +9,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
   type ( drawing_t ) :: draw
-  type ( iterative_riemann_solver_t ) :: irs
+  type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( chombo_t ) :: chombo
 

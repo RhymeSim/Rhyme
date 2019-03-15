@@ -10,7 +10,7 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( chemistry_t ) :: chemi
   type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
-  type ( iterative_riemann_solver_t ) :: irs
+  type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( samr_bc_t ) :: bc
   type ( chombo_t ) :: ch

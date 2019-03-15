@@ -1,5 +1,5 @@
 logical function rhyme_irs_sampling_test () result ( failed )
-  use rhyme_iterative_riemann_solver_factory
+  use rhyme_irs_factory
 
   implicit none
 
@@ -9,12 +9,12 @@ logical function rhyme_irs_sampling_test () result ( failed )
   integer :: i
   real ( kind=8 ) :: x, rho_, v, p, e_int
 
-  call rhyme_iterative_riemann_solver_factory_init
+  call rhyme_irs_factory_init
 
   failed = .true.
 
   call irs_Sod_test( irs_fac_ig, L, R, solution )
-  call rhyme_iterative_riemann_solver_solve( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
+  call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
 
   open ( unit=1, file="./sod_shock_tube_t_0_2_analytical.txt", action='read', form='formatted' )
   do i = 1, 12
@@ -25,7 +25,7 @@ logical function rhyme_irs_sampling_test () result ( failed )
     read (1, *) x, rho_, v, p
     e_int = p / 0.4d0
 
-    call rhyme_iterative_riemann_solver_sampling( irs_fac_ig, L, R, &
+    call rhyme_irs_sampling( irs_fac_ig, L, R, &
       solution, hyid%x, -.5d0 + real(i - 1, kind=8) / 499.d0, .2d0, U )
 
     failed = &

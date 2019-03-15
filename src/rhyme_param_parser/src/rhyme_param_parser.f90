@@ -7,7 +7,7 @@ module rhyme_param_parser
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_drawing
-  use rhyme_iterative_riemann_solver
+  use rhyme_irs
   use rhyme_slope_limiter
   use rhyme_chombo
 
@@ -25,7 +25,7 @@ contains
     type ( cfl_t ), intent ( inout ) :: cfl
     type ( ideal_gas_t ), intent ( inout ) :: ig
     type ( drawing_t ), intent ( inout ) :: draw
-    type ( iterative_riemann_solver_t ), intent ( inout ) :: irs
+    type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( inout ) :: sl
     type ( chombo_t ), intent ( inout ) :: chombo
 

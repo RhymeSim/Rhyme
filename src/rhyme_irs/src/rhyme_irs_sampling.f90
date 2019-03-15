@@ -1,6 +1,6 @@
-submodule ( rhyme_iterative_riemann_solver ) irs_sampling_submodule
+submodule ( rhyme_irs ) irs_sampling_submodule
 contains
-  pure module subroutine rhyme_iterative_riemann_solver_sampling ( ig, L, R, solution, dir, dx, dt, U )
+  pure module subroutine rhyme_irs_sampling ( ig, L, R, solution, dir, dx, dt, U )
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
@@ -117,5 +117,5 @@ contains
         end if
       end if
     end subroutine irs_sampling_left
-  end subroutine rhyme_iterative_riemann_solver_sampling
+  end subroutine rhyme_irs_sampling
 end submodule irs_sampling_submodule

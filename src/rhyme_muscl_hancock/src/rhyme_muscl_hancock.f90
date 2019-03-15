@@ -3,7 +3,7 @@ module rhyme_muscl_hancock
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_slope_limiter
-  use rhyme_iterative_riemann_solver
+  use rhyme_irs
   use rhyme_log
 
   implicit none
@@ -57,7 +57,7 @@ contains
     real ( kind=8 ), intent ( in ) :: dx(3), dt
     type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( iterative_riemann_solver_t ), intent ( inout ) :: irs
+    type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
 
     integer :: l, b, i, j, k, uid
@@ -129,12 +129,12 @@ contains
       do j = lb(2), ub(2)
         do i = lb(1), ub(1)
           if ( this%active_axis(hyid%x) ) then
-            call rhyme_iterative_riemann_solver_solve( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
               hyid%x, solution &
             )
-            call rhyme_iterative_riemann_solver_sampling( ig, &
+            call rhyme_irs_sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
               solution, hyid%x, 0.d0, dt, evolved_hydro_state &
@@ -143,12 +143,12 @@ contains
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
           end if
           if ( this%active_axis(hyid%y) ) then
-            call rhyme_iterative_riemann_solver_solve( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
               hyid%y, solution &
             )
-            call rhyme_iterative_riemann_solver_sampling( ig, &
+            call rhyme_irs_sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
               solution, hyid%y, 0.d0, dt, evolved_hydro_state &
@@ -157,12 +157,12 @@ contains
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
           end if
           if ( this%active_axis(hyid%z) ) then
-            call rhyme_iterative_riemann_solver_solve( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
               hyid%z, solution &
             )
-            call rhyme_iterative_riemann_solver_sampling( ig, &
+            call rhyme_irs_sampling( ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
               solution, hyid%z, 0.d0, dt, evolved_hydro_state &

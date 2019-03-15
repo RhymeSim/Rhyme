@@ -1,11 +1,11 @@
 logical function rhyme_irs_test_cases_test () result (failed)
-  use rhyme_iterative_riemann_solver_factory
+  use rhyme_irs_factory
 
   implicit none
 
   logical :: failed_sod, failed_123, failed_left, failed_right, failed_shocks
 
-  call rhyme_iterative_riemann_solver_factory_init
+  call rhyme_irs_factory_init
 
   call irs_test_cases( irs_Sod_test, "Sod", irs_sod_acc, failed_sod )
   call irs_test_cases( irs_123_test, "123 test", irs_123_acc, failed_123 )
@@ -35,7 +35,7 @@ contains
     ex_p = expected_solution%star%p
     ex_u = expected_solution%star%u
 
-    call rhyme_iterative_riemann_solver_solve( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
+    call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
 
     if ( expected_solution%star%left%is_shock ) then
       ex_left_rho = expected_solution%star%left%shock%rho

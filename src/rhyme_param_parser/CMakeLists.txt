@@ -20,7 +20,7 @@ set ( deps
   rhyme_cfl
   rhyme_ideal_gas
   rhyme_drawing
-  rhyme_iterative_riemann_solver
+  rhyme_irs
   rhyme_slope_limiter
   rhyme_chombo
   rhyme_initial_condition

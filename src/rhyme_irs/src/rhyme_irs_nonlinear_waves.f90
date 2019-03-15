@@ -1,6 +1,6 @@
-submodule ( rhyme_iterative_riemann_solver ) irs_nonlinear_waves_submodule
+submodule ( rhyme_irs ) irs_nonlinear_waves_submodule
 contains
-  pure subroutine rhyme_iterative_riemann_solver_nonlinear_waves ( ig, rho, p_k, p, f, fprime)
+  pure subroutine rhyme_irs_nonlinear_waves ( ig, rho, p_k, p, f, fprime)
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
@@ -23,5 +23,5 @@ contains
       f = 2.d0 * cs / ig%gm1 * ((p / p_k)**ig%gm1_2g - 1.d0)
       fprime =  1.d0 / (rho * cs) * (p / p_k)**(-ig%gp1_2g)
     end if
-  end subroutine rhyme_iterative_riemann_solver_nonlinear_waves
+  end subroutine rhyme_irs_nonlinear_waves
 end submodule  irs_nonlinear_waves_submodule

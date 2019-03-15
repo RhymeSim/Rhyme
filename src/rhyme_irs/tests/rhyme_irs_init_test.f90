@@ -1,5 +1,5 @@
 logical function rhyme_irs_init_test () result ( failed )
-  use rhyme_iterative_riemann_solver_factory
+  use rhyme_irs_factory
 
   implicit none
 

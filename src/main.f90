@@ -10,7 +10,7 @@ program rhyme
   use rhyme_thermo_base
   use rhyme_drawing
   use rhyme_slope_limiter
-  use rhyme_iterative_riemann_solver
+  use rhyme_irs
   use rhyme_muscl_hancock
   use rhyme_param_parser
   use rhyme_chombo
@@ -26,7 +26,7 @@ program rhyme
   type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( drawing_t ) :: draw
-  type ( iterative_riemann_solver_t ) :: irs
+  type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( muscl_hancock_t ) :: mh
   type ( chombo_t ) :: chombo

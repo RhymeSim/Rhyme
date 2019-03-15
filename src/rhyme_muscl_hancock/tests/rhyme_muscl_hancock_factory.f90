@@ -30,7 +30,7 @@ module rhyme_muscl_hancock_factory
   type ( chemistry_t ) :: mh_fac_chemi
   type ( thermo_base_t ) :: mh_fac_thermo
   type ( ideal_gas_t ) :: mh_fac_ig
-  type ( iterative_riemann_solver_t ) :: mh_fac_irs
+  type ( irs_t ) :: mh_fac_irs
   type ( slope_limiter_t ) :: mh_fac_sl
   type ( samr_t ) :: mh_fac_samr
   type ( log_t ) :: mh_fac_log

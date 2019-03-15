@@ -1,4 +1,4 @@
-project ( rhyme_iterative_riemann_solver_tests )
+project ( rhyme_irs_tests )
 
 enable_language ( C Fortran )
 add_compile_options ( -Wall -Wextra )
@@ -25,7 +25,7 @@ create_test_sourcelist ( _ main.c ${test_libs} )
 
 add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} )
 add_executable ( ${PROJECT_NAME} main.c )
-target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_iterative_riemann_solver )
+target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_irs )
 
 
 set ( idx 0 )

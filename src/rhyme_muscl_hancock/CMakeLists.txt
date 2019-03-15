@@ -29,7 +29,7 @@ set ( deps
   rhyme_cfl
   rhyme_ideal_gas
   rhyme_slope_limiter
-  rhyme_iterative_riemann_solver
+  rhyme_irs
   rhyme_log
 )
 

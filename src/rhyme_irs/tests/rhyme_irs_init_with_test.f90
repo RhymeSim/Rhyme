@@ -1,10 +1,10 @@
 logical function rhyme_irs_init_with_test () result ( failed )
-  use rhyme_iterative_riemann_solver_factory
+  use rhyme_irs_factory
 
   implicit none
 
 
-  call rhyme_iterative_riemann_solver_factory_init
+  call rhyme_irs_factory_init
 
   call irs_fac%init_with ( &
     irs_fac_n_iteration, &

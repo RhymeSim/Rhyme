@@ -1,5 +1,5 @@
-module rhyme_iterative_riemann_solver_factory
-  use rhyme_iterative_riemann_solver
+module rhyme_irs_factory
+  use rhyme_irs
   use rhyme_ideal_gas
 
   implicit none
@@ -13,7 +13,7 @@ module rhyme_iterative_riemann_solver_factory
   real ( kind=8 ), parameter :: irs_fac_tolerance = 1.01d-6
 
   type ( ideal_gas_t ) :: irs_fac_ig
-  type ( iterative_riemann_solver_t ) :: irs_fac
+  type ( irs_t ) :: irs_fac
   type ( log_t ) :: irs_fac_log
 
   type irs_accuracy_t
@@ -38,7 +38,7 @@ module rhyme_iterative_riemann_solver_factory
 
 contains
 
-  subroutine rhyme_iterative_riemann_solver_factory_init ()
+  subroutine rhyme_irs_factory_init ()
     implicit none
 
     type ( chemistry_t ) :: chemi
@@ -58,7 +58,7 @@ contains
     )
 
     irs_fac_initialized = .true.
-  end subroutine rhyme_iterative_riemann_solver_factory_init
+  end subroutine rhyme_irs_factory_init
 
   !> Sod test (very mild test)
   !! a left rarefacton, a contact discontinuity and a right shock
@@ -214,4 +214,4 @@ contains
     solution%star%right%is_shock = .true.
     solution%star%right%shock%rho = 31.0426d0
   end subroutine irs_two_shocks_collision_test
-end module rhyme_iterative_riemann_solver_factory
+end module rhyme_irs_factory

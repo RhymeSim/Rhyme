@@ -35,7 +35,7 @@ set ( deps
   rhyme_ideal_gas
   rhyme_drawing
   rhyme_slope_limiter
-  rhyme_iterative_riemann_solver
+  rhyme_irs
   rhyme_muscl_hancock
   rhyme_param_parser
   rhyme_muscl_hancock

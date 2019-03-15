@@ -1,9 +1,9 @@
-submodule ( rhyme_iterative_riemann_solver ) irs_solve_submodule
+submodule ( rhyme_irs ) irs_solve_submodule
 contains
-  pure module subroutine rhyme_iterative_riemann_solver_solve ( cfg, ig, L, R, dir, solution )
+  pure module subroutine rhyme_irs_solve ( cfg, ig, L, R, dir, solution )
     implicit none
 
-    class ( iterative_riemann_solver_t ), intent ( in ) :: cfg
+    class ( irs_t ), intent ( in ) :: cfg
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( hydro_conserved_t ), intent ( in ) :: L, R
     integer, intent ( in ) :: dir
@@ -25,16 +25,16 @@ contains
     vR = R%u( hyid%rho_vel(dir) ) / R%u(hyid%rho)
 
     p_star = max( &
-      rhyme_iterative_riemann_solver_guess_p_star( &
+      rhyme_irs_guess_p_star( &
         R%u(hyid%rho), csR, vR, pR, L%u(hyid%rho), csL, vL, pL &
       ), cfg%tolerance )
 
     p_star_prev = p_star
 
     do i = 1, cfg%n_iteration
-      call rhyme_iterative_riemann_solver_nonlinear_waves( &
+      call rhyme_irs_nonlinear_waves( &
         ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
-      call rhyme_iterative_riemann_solver_nonlinear_waves( &
+      call rhyme_irs_nonlinear_waves( &
         ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
 
       p_star = p_star - ( fL + fR + (vR - vL) ) / ( fprimeL + fprimeR )
@@ -74,5 +74,5 @@ contains
       solution%star%right%fan%speedH = vR + csR
       solution%star%right%fan%speedT = solution%star%u + solution%star%right%fan%cs
     end if
-  end subroutine rhyme_iterative_riemann_solver_solve
+  end subroutine rhyme_irs_solve
 end submodule irs_solve_submodule

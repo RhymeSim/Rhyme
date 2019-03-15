@@ -1,6 +1,6 @@
 cmake_minimum_required ( VERSION 3.7 )
 
-project ( rhyme_iterative_riemann_solver )
+project ( rhyme_irs )
 
 enable_language ( Fortran )
 add_compile_options ( -Wall -Wextra )
@@ -29,11 +29,11 @@ endforeach ( dep )
 
 
 set ( srcs
-  src/rhyme_iterative_riemann_solver.f90
-  src/rhyme_iterative_riemann_solver_solve.f90
-  src/rhyme_iterative_riemann_solver_sampling.f90
-  src/rhyme_iterative_riemann_solver_nonlinear_waves.f90
-  src/rhyme_iterative_riemann_solver_guess_p_star.f90
+  src/rhyme_irs.f90
+  src/rhyme_irs_solve.f90
+  src/rhyme_irs_sampling.f90
+  src/rhyme_irs_nonlinear_waves.f90
+  src/rhyme_irs_guess_p_star.f90
 )
 
 
