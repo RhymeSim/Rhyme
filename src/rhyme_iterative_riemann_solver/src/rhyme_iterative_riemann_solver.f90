@@ -56,18 +56,15 @@ contains
     this%initialized = .true.
   end subroutine rhyme_iterative_riemann_solver_init
 
-  !> calculate star region variables based on Newton-Rhapson iteration method
-  !! @param[in] L, R <= Left and right conserved hydro states
-  !! @param[in] dir <= wave direection
-  !! @param[out] star => star region variables (to be filled)
-  pure subroutine rhyme_iterative_riemann_solver_solve ( this, ig, L, R, dir, star )
+
+  pure subroutine rhyme_iterative_riemann_solver_solve ( this, ig, L, R, dir, solution )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( inout ) :: this
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( hydro_conserved_t ), intent ( in ) :: L, R
     integer, intent ( in ) :: dir
-    type ( rp_star_region_t ), intent ( out ) :: star
+    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
     real ( kind=8 ) :: pL, pR, vL, vR, csL, csR, fL, fR, fprimeL, fprimeR
     real ( kind=8 ) :: ps_pL, ps_pR
@@ -104,35 +101,35 @@ contains
       p_star_prev = p_star
     end do
 
-    star%p = p_star
-    star%u = 0.5d0 * ( (vR + vL) + (fR - fL) )
+    solution%star%p = p_star
+    solution%star%u = 0.5d0 * ( (vR + vL) + (fR - fL) )
 
-    ps_pL = star%p / pL
-    ps_pR = star%p / pR
+    ps_pL = solution%star%p / pL
+    ps_pR = solution%star%p / pR
 
 
     if ( p_star > pL ) then
-      star%left%is_shock = .true.
-      star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
-      star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
+      solution%star%left%is_shock = .true.
+      solution%star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
+      solution%star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
     else
-      star%left%is_shock = .false.
-      star%left%fan%rho = L%u(hyid%rho) * ps_pL**real(ig%g_inv, kind=8)
-      star%left%fan%cs = csL * ps_pL**real(ig%gm1_2g, kind=8)
-      star%left%fan%speedH = vL - csL
-      star%left%fan%speedT = star%u - star%left%fan%cs
+      solution%star%left%is_shock = .false.
+      solution%star%left%fan%rho = L%u(hyid%rho) * ps_pL**real(ig%g_inv, kind=8)
+      solution%star%left%fan%cs = csL * ps_pL**real(ig%gm1_2g, kind=8)
+      solution%star%left%fan%speedH = vL - csL
+      solution%star%left%fan%speedT = solution%star%u - solution%star%left%fan%cs
     end if
 
     if ( p_star > pR ) then
-      star%right%is_shock = .true.
-      star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
-      star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
+      solution%star%right%is_shock = .true.
+      solution%star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
+      solution%star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
     else
-      star%right%is_shock = .false.
-      star%right%fan%rho = R%u(hyid%rho) * ps_pR**real(ig%g_inv, kind=8)
-      star%right%fan%cs = csR * ps_pR**real(ig%gm1_2g, kind=8)
-      star%right%fan%speedH = vR + csR
-      star%right%fan%speedT = star%u + star%right%fan%cs
+      solution%star%right%is_shock = .false.
+      solution%star%right%fan%rho = R%u(hyid%rho) * ps_pR**real(ig%g_inv, kind=8)
+      solution%star%right%fan%cs = csR * ps_pR**real(ig%gm1_2g, kind=8)
+      solution%star%right%fan%speedH = vR + csR
+      solution%star%right%fan%speedT = solution%star%u + solution%star%right%fan%cs
     end if
   end subroutine rhyme_iterative_riemann_solver_solve
 
@@ -176,13 +173,13 @@ contains
   end subroutine rhyme_iterative_riemann_solver_nonlinear_waves
 
 
-  pure subroutine rhyme_iterative_riemann_solver_sampling ( this, ig, L, R, star, dir, dx, dt, U )
+  pure subroutine rhyme_iterative_riemann_solver_sampling ( this, ig, L, R, solution, dir, dx, dt, U )
     implicit none
 
     class ( iterative_riemann_solver_t ), intent ( in ) :: this
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( hydro_conserved_t ), intent ( in ) :: L, R
-    type ( rp_star_region_t ), intent ( in ) :: star
+    type ( riemann_problem_solution_t ), intent ( in ) :: solution
     integer, intent ( in ) :: dir
     real ( kind=8 ), intent ( in ) :: dx, dt
     type ( hydro_conserved_t ), intent ( out ) :: U
@@ -191,7 +188,7 @@ contains
 
     dxdt = dx / dt
 
-    if ( dxdt <= star%u ) then
+    if ( dxdt <= solution%star%u ) then
       call irs_sampling_left( U )
     else
       call irs_sampling_right( U )
@@ -208,31 +205,31 @@ contains
 
       vel = R%u(hyid%rho_u:hyid%rho_w) / R%u(hyid%rho)
 
-      if ( star%right%is_shock ) then ! Shock
+      if ( solution%star%right%is_shock ) then ! Shock
 
-        if ( star%u <= dxdt &
-          .and. dxdt <= star%right%shock%speed ) then
-          vel(dir) = star%u
+        if ( solution%star%u <= dxdt &
+          .and. dxdt <= solution%star%right%shock%speed ) then
+          vel(dir) = solution%star%u
           call ig%prim_vars_to_cons( &
-            star%right%shock%rho, &
+            solution%star%right%shock%rho, &
             vel(1), vel(2), vel(3), &
-            star%p, state &
+            solution%star%p, state &
           )
-        else if ( dxdt >= star%right%shock%speed ) then
+        else if ( dxdt >= solution%star%right%shock%speed ) then
           call hy_copy( R, state )
         end if
 
       else ! Fan
-        if ( star%u <= dxdt &
-          .and. dxdt <= star%right%fan%speedT ) then
-          vel(dir) = star%u
+        if ( solution%star%u <= dxdt &
+          .and. dxdt <= solution%star%right%fan%speedT ) then
+          vel(dir) = solution%star%u
           call ig%prim_vars_to_cons ( &
-            star%right%fan%rho, &
+            solution%star%right%fan%rho, &
             vel(1), vel(2), vel(3), &
-            star%p, state &
+            solution%star%p, state &
           )
-        else if ( star%right%fan%speedT <= dxdt &
-          .and. dxdt <= star%right%fan%speedH ) then
+        else if ( solution%star%right%fan%speedT <= dxdt &
+          .and. dxdt <= solution%star%right%fan%speedH ) then
           factor = 2.0 / ig%gp1 - ig%gm1_gp1 / ig%Cs(R) &
             * ( R%u(hyid%vel(dir)) / R%u(hyid%rho) - dxdt )
           vel(dir) = 2.0 / ig%gp1 &
@@ -242,7 +239,7 @@ contains
             vel(1), vel(2), vel(3), &
             ig%p(R) * factor**(1.d0 / ig%gm1_2g), state &
           )
-        else if ( dxdt >= star%right%fan%speedH ) then
+        else if ( dxdt >= solution%star%right%fan%speedH ) then
           call hy_copy( R, state )
         end if
       end if
@@ -257,23 +254,23 @@ contains
 
       vel = L%u(hyid%rho_u:hyid%rho_w) / L%u(hyid%rho)
 
-      if ( star%left%is_shock ) then ! Shock
-        if ( star%left%shock%speed <= dxdt &
-          .and. dxdt < star%u) then
-          vel(dir) = star%u
+      if ( solution%star%left%is_shock ) then ! Shock
+        if ( solution%star%left%shock%speed <= dxdt &
+          .and. dxdt < solution%star%u) then
+          vel(dir) = solution%star%u
           call ig%prim_vars_to_cons( &
-            star%left%shock%rho, &
+            solution%star%left%shock%rho, &
             vel(1), vel(2), vel(3), &
-            star%p, state &
+            solution%star%p, state &
           )
-        else if ( dxdt < star%left%shock%speed ) then
+        else if ( dxdt < solution%star%left%shock%speed ) then
           call hy_copy( L, state )
         end if
       else ! Fan
-        if ( dxdt <= star%left%fan%speedH ) then
+        if ( dxdt <= solution%star%left%fan%speedH ) then
           call hy_copy( L, state )
-        else if ( star%left%fan%speedH <= dxdt &
-          .and. dxdt <= star%left%fan%speedT ) then
+        else if ( solution%star%left%fan%speedH <= dxdt &
+          .and. dxdt <= solution%star%left%fan%speedT ) then
           factor = 2.0 / ig%gp1 + ig%gm1_gp1 / ig%Cs(L) &
             * (L%u(hyid%vel(dir)) / L%u(hyid%rho) - dxdt)
           vel(dir) = 2.0 / ig%gp1 &
@@ -283,13 +280,13 @@ contains
             vel(1), vel(2), vel(3), &
             ig%p(L) * factor**(1.d0 / ig%gm1_2g), state &
           )
-        else if ( star%left%fan%speedT <= dxdt &
-          .and. dxdt <= star%u ) then
-          vel(dir) = star%u
+        else if ( solution%star%left%fan%speedT <= dxdt &
+          .and. dxdt <= solution%star%u ) then
+          vel(dir) = solution%star%u
           call ig%prim_vars_to_cons( &
-            star%left%fan%rho, &
+            solution%star%left%fan%rho, &
             vel(1), vel(2), vel(3), &
-            star%p, state &
+            solution%star%p, state &
           )
         end if
       end if

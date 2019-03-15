@@ -179,13 +179,13 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \begin{cases}
     &\rho = \rho_L
     \left[
-      \frac{2}{\gamma + 1} + \frac{\gamma - 1}{(\gamma + 1)\c_{sl}}
+      \frac{2}{\gamma + 1} + \frac{\gamma - 1}{(\gamma + 1) c_{sL}}
       \left(
-        u_L - frac x t
+        u_L - \frac x t
       \right)
     \right]^{\frac{2}{\gamma - 1}}\\
     &\\
-    &u = frac{2}{\gamma + 1}
+    &u = \frac{2}{\gamma + 1}
     \left[
       c_{sL} + \frac{\gamma - 1}{2} u_L + \frac x t
     \right] \\
@@ -221,9 +221,9 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \mathbf{W}_{*L}^{\text{fan}} =
   \begin{cases}
     (rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
-    &\\
+    & \\
     (rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
-  \end{case}
+  \end{cases}
   ```
 
 #### Right shock wave ( $`p_* > p_R`$ )
@@ -333,7 +333,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
     (rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
     & \\
     (rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
-  \end{case}
+  \end{cases}
   ```
 
 #### Left or Right Vacuum state

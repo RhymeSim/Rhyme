@@ -26,51 +26,51 @@ contains
     logical :: failed
 
     type ( hydro_conserved_t ) :: L, R
-    type ( rp_star_region_t ) :: expected_star, star
+    type ( riemann_problem_solution_t ) :: expected_solution, solution
     real(kind=8) :: ex_p, ex_u, ex_left_rho, ex_right_rho
     real(kind=8) :: star_left_rho, star_right_rho
     logical :: failed_p, failed_v, failed_lshock, failed_rshock, failed_lrho, failed_rrho
 
-    call func( ig, L, R, expected_star )
-    ex_p = expected_star%p
-    ex_u = expected_star%u
+    call func( irs_fac_ig, L, R, expected_solution )
+    ex_p = expected_solution%star%p
+    ex_u = expected_solution%star%u
 
-    call irs%solve( ig, L, R, hyid%x, star )
+    call irs_fac%solve( irs_fac_ig, L, R, hyid%x, solution )
 
-    if ( expected_star%left%is_shock ) then
-      ex_left_rho = expected_star%left%shock%rho
-      star_left_rho = star%left%shock%rho
+    if ( expected_solution%star%left%is_shock ) then
+      ex_left_rho = expected_solution%star%left%shock%rho
+      star_left_rho = solution%star%left%shock%rho
     else
-      ex_left_rho = expected_star%left%fan%rho
-      star_left_rho = star%left%fan%rho
+      ex_left_rho = expected_solution%star%left%fan%rho
+      star_left_rho = solution%star%left%fan%rho
     end if
 
-    if ( expected_star%right%is_shock ) then
-      ex_right_rho = expected_star%right%shock%rho
-      star_right_rho = star%right%shock%rho
+    if ( expected_solution%star%right%is_shock ) then
+      ex_right_rho = expected_solution%star%right%shock%rho
+      star_right_rho = solution%star%right%shock%rho
     else
-      ex_right_rho = expected_star%right%fan%rho
-      star_right_rho = star%right%fan%rho
+      ex_right_rho = expected_solution%star%right%fan%rho
+      star_right_rho = solution%star%right%fan%rho
     end if
 
 
-    failed_p = abs ( ( star%p - ex_p ) / ex_p ) > acc%star_p
+    failed_p = abs ( ( solution%star%p - ex_p ) / ex_p ) > acc%star_p
 
     if ( failed_p ) then
       print *, test_name // " star region pressure"
-      print *, "  - accuracy: ", abs ( ( star%p - ex_p ) / ex_p ), "  - expected: ", acc%star_p
+      print *, "  - accuracy: ", abs ( ( solution%star%p - ex_p ) / ex_p ), "  - expected: ", acc%star_p
     end if
 
 
-    failed_v = abs ( ( star%u - ex_u ) / ex_u ) > acc%star_v
+    failed_v = abs ( ( solution%star%u - ex_u ) / ex_u ) > acc%star_v
 
     if ( failed_v ) then
       print *, test_name // " star region velocity"
-      print *, "  - accuracy: ", abs ( ( star%u - ex_u ) / ex_u ), "  - expected: ", acc%star_v
+      print *, "  - accuracy: ", abs ( ( solution%star%u - ex_u ) / ex_u ), "  - expected: ", acc%star_v
     end if
 
 
-    failed_lshock = .not. star%left%is_shock .eqv. expected_star%left%is_shock
+    failed_lshock = .not. solution%star%left%is_shock .eqv. expected_solution%star%left%is_shock
     if ( failed_lshock ) print *, test_name // " left shock test has failed"
 
 
@@ -83,7 +83,7 @@ contains
     end if
 
 
-    failed_rshock = .not. star%right%is_shock .eqv. expected_star%right%is_shock
+    failed_rshock = .not. solution%star%right%is_shock .eqv. expected_solution%star%right%is_shock
     if ( failed_rshock ) print *, test_name // " right shock test has failed"
 
 
