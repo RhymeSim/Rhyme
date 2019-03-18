@@ -30,7 +30,7 @@ endforeach ( dep )
 
 set ( srcs
   src/rhyme_irs.f90
-  src/rhyme_irs_solve.f90
+  src/rhyme_irs_iterate.f90
   src/rhyme_irs_sampling.f90
   src/rhyme_irs_nonlinear_wave_function.f90
   src/rhyme_irs_guess_p_star.f90

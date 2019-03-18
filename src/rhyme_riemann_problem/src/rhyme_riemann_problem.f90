@@ -2,14 +2,12 @@ module rhyme_riemann_problem
   implicit none
 
   type rp_shock_t
-    real ( kind=8 ) :: rho = 0.d0, v(3) = 0.d0, cs = 0.d0
-    real ( kind=8 ) :: speed = 0.d0
+    real ( kind=8 ) :: rho = 0.d0, speed = 0.d0
   end type rp_shock_t
 
 
   type rp_fan_t
-    real ( kind=8 ) :: rho = 0.d0, v(3) = 0.d0, cs = 0.d0
-    real ( kind=8 ) :: speedH = 0.d0, speedT = 0.d0
+    real ( kind=8 ) :: rho = 0.d0, cs = 0.d0, speedH = 0.d0, speedT = 0.d0
   end type rp_fan_t
 
 

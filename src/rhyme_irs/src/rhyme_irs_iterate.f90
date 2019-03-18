@@ -1,6 +1,6 @@
-submodule ( rhyme_irs ) rhyme_irs_solve_submodule
+submodule ( rhyme_irs ) rhyme_irs_iterate_submodule
 contains
-  pure module subroutine rhyme_irs_solve ( cfg, ig, L, R, dir, solution )
+  pure module subroutine rhyme_irs_iterate ( cfg, ig, L, R, dir, solution )
     implicit none
 
     class ( irs_t ), intent ( in ) :: cfg
@@ -42,15 +42,21 @@ contains
         ig, solution%right, solution%star%p, solution%star%right )
 
       solution%star%p = solution%star%p - ( &
-        solution%star%left%f + solution%star%right%f + ( solution%right%v(dir) - solution%left%v(dir) ) &
+        solution%star%left%f &
+        + solution%star%right%f &
+        + ( solution%right%v(dir) - solution%left%v(dir) ) &
       ) / ( solution%star%left%fprime + solution%star%right%fprime )
 
-      if ( abs( solution%star%p - p_star_prev ) &
-        / ( .5d0 * (solution%star%p + p_star_prev) ) < cfg%tolerance ) exit
+      if ( 2 * abs( solution%star%p - p_star_prev ) &
+        / ( solution%star%p + p_star_prev ) < cfg%tolerance ) exit
+
       p_star_prev = solution%star%p
     end do
 
-    solution%star%u = 0.5d0 * ( (solution%right%v(dir) + solution%left%v(dir)) + (solution%star%right%f - solution%star%left%f) )
+    solution%star%u = 0.5d0 * ( &
+      ( solution%right%v(dir) + solution%left%v(dir) ) &
+      + ( solution%star%right%f - solution%star%left%f ) &
+    )
 
     ps_pL = solution%star%p / solution%left%p
     ps_pR = solution%star%p / solution%right%p
@@ -79,5 +85,5 @@ contains
       solution%star%right%fan%speedH = solution%right%v(dir) + solution%right%cs
       solution%star%right%fan%speedT = solution%star%u + solution%star%right%fan%cs
     end if
-  end subroutine rhyme_irs_solve
-end submodule rhyme_irs_solve_submodule
+  end subroutine rhyme_irs_iterate
+end submodule rhyme_irs_iterate_submodule

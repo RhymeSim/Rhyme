@@ -20,36 +20,22 @@ logical function rhyme_riemann_problem_test () result (failed)
 
   solution%star%left%is_shock = .false.
   solution%star%left%fan%rho = rho
-  solution%star%left%fan%v(1) = u
-  solution%star%left%fan%v(2) = v
-  solution%star%left%fan%v(3) = w
   solution%star%left%fan%cs = cs
   solution%star%left%fan%speedH = speedH
   solution%star%left%fan%speedT = speedT
 
   solution%star%left%is_shock = .true.
   solution%star%left%shock%rho = rho
-  solution%star%left%shock%v(1) = u
-  solution%star%left%shock%v(2) = v
-  solution%star%left%shock%v(3) = w
-  solution%star%left%shock%cs = cs
   solution%star%left%shock%speed = speed
 
   solution%star%right%is_shock = .false.
   solution%star%right%fan%rho = rho
-  solution%star%right%fan%v(1) = u
-  solution%star%right%fan%v(2) = v
-  solution%star%right%fan%v(3) = w
   solution%star%right%fan%cs = cs
   solution%star%right%fan%speedH = speedH
   solution%star%right%fan%speedT = speedT
 
   solution%star%right%is_shock = .true.
   solution%star%right%shock%rho = rho
-  solution%star%right%shock%v(1) = u
-  solution%star%right%shock%v(2) = v
-  solution%star%right%shock%v(3) = w
-  solution%star%right%shock%cs = cs
   solution%star%right%shock%speed = speed
 
   failed = abs ( solution%star%left%fan%rho - rho ) > epsilon(0.d0)
