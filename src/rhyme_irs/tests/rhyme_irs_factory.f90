@@ -12,7 +12,10 @@ module rhyme_irs_factory
   real ( kind=8 ), parameter :: irs_fac_pressure_floor = 1.01d-10
   real ( kind=8 ), parameter :: irs_fac_tolerance = 1.01d-6
 
+  type ( chemistry_t ) :: irs_fac_chemi
+  type ( thermo_base_t ) :: irs_fac_thermo
   type ( ideal_gas_t ) :: irs_fac_ig
+  type ( ideal_gas_t ) :: irs_fac_ig_mon
   type ( irs_t ) :: irs_fac
   type ( log_t ) :: irs_fac_log
 
@@ -41,14 +44,23 @@ contains
   subroutine rhyme_irs_factory_init ()
     implicit none
 
-    type ( chemistry_t ) :: chemi
-    type ( thermo_base_t ) :: thermo
-
     if ( irs_fac_initialized ) return
 
-    call chemi%init( irs_fac_log )
-    call thermo%init( irs_fac_log )
-    call irs_fac_ig%init_with ( chemi, thermo, irs_fac_gastype, irs_fac_log )
+    call irs_fac_chemi%init( irs_fac_log )
+    call irs_fac_thermo%init( irs_fac_log )
+    call irs_fac_ig%init_with ( &
+      irs_fac_chemi, &
+      irs_fac_thermo, &
+      irs_fac_gastype, &
+      irs_fac_log &
+    )
+
+    call irs_fac_ig_mon%init_with( &
+      irs_fac_chemi, &
+      irs_fac_thermo, &
+      igid%monatomic, &
+      irs_fac_log &
+    )
 
     call irs_fac%init_with ( &
       irs_fac_n_iteration, &

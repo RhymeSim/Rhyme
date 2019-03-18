@@ -215,7 +215,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \mathbf{W}(x,t) =
   \begin{cases}
-    \mathbf{W}_{*L} \quad
+    \mathbf{W}_{L} \quad
     &\text{if} \quad \frac x t \leq S_{HL} \\
     &\\
     \mathbf{W}_{L\text{fan}} \quad
@@ -234,7 +234,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
     (\rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
     & \\
     (\rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
-  \end{cases
+  \end{cases}
   ```
 
 #### Right shock wave ( $`p_* > p_R`$ )

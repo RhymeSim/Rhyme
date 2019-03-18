@@ -12,8 +12,6 @@ file ( GLOB_RECURSE factory_files RELATIVE ${PROJECT_SOURCE_DIR} *_factory.f90 )
 configure_file ( "sod_shock_tube_t_0_2_analytical.txt" "sod_shock_tube_t_0_2_analytical.txt" COPYONLY )
 
 
-set ( test_libs )
-
 foreach ( test_file ${test_files} )
   get_filename_component ( test_lib ${test_file} NAME_WE )
   list ( APPEND test_libs ${test_lib}_ )
@@ -23,7 +21,25 @@ endforeach(test_file)
 create_test_sourcelist ( _ main.c ${test_libs} )
 
 
-add_library ( ${PROJECT_NAME}_fortran ${test_files} ${factory_files} )
+set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
+set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
+
+
+set ( factories
+  rhyme_hydro_base
+)
+
+foreach ( factory ${factories} )
+  list ( APPEND factory_files ../../${factory}/tests/${factory}_factory.f90 )
+
+  if ( NOT TARGET ${factory} )
+    add_subdirectory ( ../../${factory} ${CMAKE_BINARY_DIR}/${factory} )
+  endif ()
+endforeach ( factory )
+
+add_library ( ${PROJECT_NAME}_fortran STATIC ${test_files} ${factory_files} )
+add_dependencies( ${PROJECT_NAME}_fortran ${factories} rhyme_irs )
+
 add_executable ( ${PROJECT_NAME} main.c )
 target_link_libraries ( ${PROJECT_NAME} ${PROJECT_NAME}_fortran rhyme_irs )
 

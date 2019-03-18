@@ -38,5 +38,19 @@ logical function rhyme_riemann_problem_test () result (failed)
   solution%star%right%shock%rho = rho
   solution%star%right%shock%speed = speed
 
+  solution%left%rho = rho
+  solution%left%v(1) = u
+  solution%left%v(2) = v
+  solution%left%v(3) = w
+  solution%left%p = p
+  solution%left%cs = cs
+
+  solution%right%rho = rho
+  solution%right%v(1) = u
+  solution%right%v(2) = v
+  solution%right%v(3) = w
+  solution%right%p = p
+  solution%right%cs = cs
+
   failed = abs ( solution%star%left%fan%rho - rho ) > epsilon(0.d0)
 end function rhyme_riemann_problem_test

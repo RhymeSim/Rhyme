@@ -64,11 +64,11 @@ contains
 
     if ( solution%star%p > solution%left%p ) then
       solution%star%left%is_shock = .true.
-      solution%star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
+      solution%star%left%shock%rho = solution%left%rho * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
       solution%star%left%shock%speed = solution%left%v(dir) - solution%left%cs * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
     else
       solution%star%left%is_shock = .false.
-      solution%star%left%fan%rho = L%u(hyid%rho) * ps_pL**real(ig%g_inv, kind=8)
+      solution%star%left%fan%rho = solution%left%rho * ps_pL**real(ig%g_inv, kind=8)
       solution%star%left%fan%cs = solution%left%cs * ps_pL**real(ig%gm1_2g, kind=8)
       solution%star%left%fan%speedH = solution%left%v(dir) - solution%left%cs
       solution%star%left%fan%speedT = solution%star%u - solution%star%left%fan%cs
@@ -76,11 +76,11 @@ contains
 
     if ( solution%star%p > solution%right%p ) then
       solution%star%right%is_shock = .true.
-      solution%star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
+      solution%star%right%shock%rho = solution%right%rho * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
       solution%star%right%shock%speed = solution%right%v(dir) + solution%right%cs * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
     else
       solution%star%right%is_shock = .false.
-      solution%star%right%fan%rho = R%u(hyid%rho) * ps_pR**real(ig%g_inv, kind=8)
+      solution%star%right%fan%rho = solution%right%rho * ps_pR**real(ig%g_inv, kind=8)
       solution%star%right%fan%cs = solution%right%cs * ps_pR**real(ig%gm1_2g, kind=8)
       solution%star%right%fan%speedH = solution%right%v(dir) + solution%right%cs
       solution%star%right%fan%speedT = solution%star%u + solution%star%right%fan%cs

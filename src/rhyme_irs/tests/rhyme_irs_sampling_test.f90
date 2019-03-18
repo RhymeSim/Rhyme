@@ -25,8 +25,8 @@ logical function rhyme_irs_sampling_test () result ( failed )
     read (1, *) x, rho_, v, p
     e_int = p / 0.4d0
 
-    call rhyme_irs_sampling( irs_fac_ig, L, R, &
-      solution, hyid%x, -.5d0 + real(i - 1, kind=8) / 499.d0, .2d0, U )
+    call rhyme_irs_sampling( irs_fac_ig, solution, hyid%x, &
+      -.5d0 + real(i - 1, kind=8) / 499.d0, .2d0, U )
 
     failed = &
     abs( rho_ - u%u(hyid%rho) ) > epsilon(0.e0) &

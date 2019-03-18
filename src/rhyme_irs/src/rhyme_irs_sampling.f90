@@ -1,10 +1,9 @@
 submodule ( rhyme_irs ) rhyme_irs_sampling_submodule
 contains
-  pure module subroutine rhyme_irs_sampling ( ig, L, R, solution, dir, dx, dt, U )
+  pure module subroutine rhyme_irs_sampling ( ig, solution, dir, dx, dt, U )
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( in ) :: L, R
     type ( riemann_problem_solution_t ), intent ( in ) :: solution
     integer, intent ( in ) :: dir
     real ( kind=8 ), intent ( in ) :: dx, dt
@@ -14,108 +13,149 @@ contains
 
     dxdt = dx / dt
 
-    if ( dxdt <= solution%star%u ) then
-      call irs_sampling_left( U )
+    if ( dxdt > solution%star%u ) then                                 ! Right side
+      if ( solution%star%right%is_shock ) then                         !- Right shock
+        if ( dxdt > solution%star%right%shock%speed ) then             !---- W_R
+          U = irs_w_k( ig, solution%right )
+        else                                                           !---- W_*R^sho
+          U = irs_w_starR_sho( ig, solution, dir )
+        end if
+      else                                                             !- Right rarefaction
+        if ( dxdt > solution%star%right%fan%speedH ) then              !---- W_R
+          U = irs_w_k( ig, solution%right )
+        else if ( dxdt > solution%star%right%fan%speedT ) then         !---- W_Rfan
+          U = irs_w_kfan( ig, solution%right, dxdt, dir, is_right=.true. )
+        else                                                           !---- W_*R^fan
+          U = irs_w_starR_fan( ig, solution, dir )
+        end if
+      end if
+    else                                                               ! Left side
+      if ( solution%star%left%is_shock ) then                          !- Left shock
+        if ( dxdt > solution%star%left%shock%speed ) then              !---- W_*L^sho
+          U = irs_w_starL_sho( ig, solution, dir )
+        else                                                           !---- W_L
+          U = irs_w_k( ig, solution%left )
+        end if
+      else                                                             !- Left rarefaction
+        if ( dxdt > solution%star%left%fan%speedT ) then               !---- W_*L^fan
+          U = irs_w_starL_fan( ig, solution, dir )
+        else if ( dxdt > solution%star%left%fan%speedH ) then          !---- W_Lfan
+          U = irs_w_kfan( ig, solution%left, dxdt, dir, is_right=.false. )
+        else                                                           !---- W_L
+          U = irs_w_k( ig, solution%left )
+        end if
+      end if
+    end if
+  end subroutine rhyme_irs_sampling
+
+
+  type ( hydro_conserved_t ) pure module function irs_w_k ( ig, s ) result ( U )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( rp_side_t ), intent ( in ) :: s
+
+    call ig%prim_vars_to_cons( s%rho, s%v(1), s%v(2), s%v(3), s%p, U )
+  end function irs_w_k
+
+
+  type ( hydro_conserved_t ) pure module function irs_w_starL_sho ( &
+    ig, s, dir ) result ( U )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( riemann_problem_solution_t ), intent ( in ) :: s
+    integer, intent ( in ) :: dir
+
+    real ( kind=8 ) :: v(3)
+
+    v(:) = s%left%v(:)
+    v(dir) = s%star%u
+
+    call ig%prim_vars_to_cons( s%star%left%shock%rho, v(1), v(2), v(3), s%star%p, U )
+  end function irs_w_starL_sho
+
+
+  type ( hydro_conserved_t ) pure module function irs_w_starR_sho ( &
+    ig, s, dir ) result ( U )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( riemann_problem_solution_t ), intent ( in ) :: s
+    integer, intent ( in ) :: dir
+
+    real ( kind=8 ) :: v(3)
+
+    v = s%right%v
+    v(dir) = s%star%u
+
+    call ig%prim_vars_to_cons( s%star%right%shock%rho, v(1), v(2), v(3), s%star%p, U )
+  end function irs_w_starR_sho
+
+
+  type ( hydro_conserved_t ) pure module function irs_w_kfan ( &
+    ig, s, dxdt, dir, is_right ) result ( U )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( rp_side_t ), intent ( in ) :: s
+    real ( kind=8 ), intent ( in ) :: dxdt
+    integer, intent ( in ) :: dir
+    logical, intent ( in ) :: is_right
+
+    real ( kind=8 ) :: rho, v(3), p, cs
+
+    if ( is_right ) then
+      cs = - s%cs
     else
-      call irs_sampling_right( U )
+      cs = s%cs
     end if
 
-  contains
+    rho = s%rho * ( &
+      2.d0 / ig%gp1 + ig%gm1_gp1 / cs * ( s%v(dir) - dxdt ) &
+    )**real( 2.d0 / ig%gm1, kind=8 )
 
-    pure subroutine irs_sampling_right ( state )
-      implicit none
+    v = s%v
+    v(dir) = 2.d0 / ig%gp1 * ( cs + ig%gm1 / 2.d0 * s%v(dir) + dxdt )
 
-      type ( hydro_conserved_t ), intent ( out ) :: state
+    p = s%p * ( &
+      2.d0 / ig%gp1 + ig%gm1_gp1 / cs * ( s%v(dir) - dxdt ) &
+    )**real( 1.d0 / ig%gm1_2g, kind=8 )
 
-      real(kind=8) :: factor, vel(3)
-
-      vel = R%u(hyid%rho_u:hyid%rho_w) / R%u(hyid%rho)
-
-      if ( solution%star%right%is_shock ) then ! Shock
-
-        if ( solution%star%u <= dxdt &
-          .and. dxdt <= solution%star%right%shock%speed ) then
-          vel(dir) = solution%star%u
-          call ig%prim_vars_to_cons( &
-            solution%star%right%shock%rho, &
-            vel(1), vel(2), vel(3), &
-            solution%star%p, state &
-          )
-        else if ( dxdt >= solution%star%right%shock%speed ) then
-          call hy_copy( R, state )
-        end if
-
-      else ! Fan
-        if ( solution%star%u <= dxdt &
-          .and. dxdt <= solution%star%right%fan%speedT ) then
-          vel(dir) = solution%star%u
-          call ig%prim_vars_to_cons ( &
-            solution%star%right%fan%rho, &
-            vel(1), vel(2), vel(3), &
-            solution%star%p, state &
-          )
-        else if ( solution%star%right%fan%speedT <= dxdt &
-          .and. dxdt <= solution%star%right%fan%speedH ) then
-          factor = 2.0 / ig%gp1 - ig%gm1_gp1 / ig%Cs(R) &
-            * ( R%u(hyid%vel(dir)) / R%u(hyid%rho) - dxdt )
-          vel(dir) = 2.0 / ig%gp1 &
-            * ( -ig%Cs(R) + ig%gm1 / 2.0 * state%u(hyid%vel(dir)) / R%u(hyid%rho) + dxdt )
-          call ig%prim_vars_to_cons ( &
-            R%u(hyid%rho) * factor**(2.0 / ig%gm1), &
-            vel(1), vel(2), vel(3), &
-            ig%p(R) * factor**(1.d0 / ig%gm1_2g), state &
-          )
-        else if ( dxdt >= solution%star%right%fan%speedH ) then
-          call hy_copy( R, state )
-        end if
-      end if
-    end subroutine irs_sampling_right
+    call ig%prim_vars_to_cons( rho, v(1), v(2), v(3), p, U )
+  end function irs_w_kfan
 
 
-    pure subroutine irs_sampling_left ( state )
-      implicit none
+  type ( hydro_conserved_t ) pure function irs_w_starL_fan ( &
+    ig, s, dir ) result ( U )
+    implicit none
 
-      type ( hydro_conserved_t ), intent ( out ) :: state
-      real(kind=8) :: factor, vel(3)
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( riemann_problem_solution_t ), intent ( in ) :: s
+    integer, intent ( in ) :: dir
 
-      vel = L%u(hyid%rho_u:hyid%rho_w) / L%u(hyid%rho)
+    real ( kind=8 ) :: v(3)
 
-      if ( solution%star%left%is_shock ) then ! Shock
-        if ( solution%star%left%shock%speed <= dxdt &
-          .and. dxdt < solution%star%u) then
-          vel(dir) = solution%star%u
-          call ig%prim_vars_to_cons( &
-            solution%star%left%shock%rho, &
-            vel(1), vel(2), vel(3), &
-            solution%star%p, state &
-          )
-        else if ( dxdt < solution%star%left%shock%speed ) then
-          call hy_copy( L, state )
-        end if
-      else ! Fan
-        if ( dxdt <= solution%star%left%fan%speedH ) then
-          call hy_copy( L, state )
-        else if ( solution%star%left%fan%speedH <= dxdt &
-          .and. dxdt <= solution%star%left%fan%speedT ) then
-          factor = 2.0 / ig%gp1 + ig%gm1_gp1 / ig%Cs(L) &
-            * (L%u(hyid%vel(dir)) / L%u(hyid%rho) - dxdt)
-          vel(dir) = 2.0 / ig%gp1 &
-            * ( ig%Cs(L) + ig%gm1 / 2.0 * L%u(hyid%vel(dir)) / L%u(hyid%rho) + dxdt)
-          call ig%prim_vars_to_cons( &
-            L%u(hyid%rho) * factor**(2.0 / ig%gm1), &
-            vel(1), vel(2), vel(3), &
-            ig%p(L) * factor**(1.d0 / ig%gm1_2g), state &
-          )
-        else if ( solution%star%left%fan%speedT <= dxdt &
-          .and. dxdt <= solution%star%u ) then
-          vel(dir) = solution%star%u
-          call ig%prim_vars_to_cons( &
-            solution%star%left%fan%rho, &
-            vel(1), vel(2), vel(3), &
-            solution%star%p, state &
-          )
-        end if
-      end if
-    end subroutine irs_sampling_left
-  end subroutine rhyme_irs_sampling
+    v = s%left%v
+    v(dir) = s%star%u
+
+    call ig%prim_vars_to_cons( s%star%left%fan%rho, v(1), v(2), v(3), s%star%p, U )
+  end function irs_w_starL_fan
+
+
+  type ( hydro_conserved_t ) pure module function irs_w_starR_fan ( &
+    ig, s, dir ) result ( U )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( riemann_problem_solution_t ), intent ( in ) :: s
+    integer, intent ( in ) :: dir
+
+    real ( kind=8 ) :: v(3)
+
+    v = s%right%v
+    v(dir) = s%star%u
+
+    call ig%prim_vars_to_cons( s%star%right%fan%rho, v(1), v(2), v(3), s%star%p, U )
+  end function irs_w_starR_fan
 end submodule rhyme_irs_sampling_submodule

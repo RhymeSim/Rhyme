@@ -135,8 +135,6 @@ contains
               hyid%x, solution &
             )
             call rhyme_irs_sampling( ig, &
-              this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
-              this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
               solution, hyid%x, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%x, &
@@ -149,8 +147,6 @@ contains
               hyid%y, solution &
             )
             call rhyme_irs_sampling( ig, &
-              this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
-              this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
               solution, hyid%y, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%y, &
@@ -163,8 +159,6 @@ contains
               hyid%z, solution &
             )
             call rhyme_irs_sampling( ig, &
-              this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
-              this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
               solution, hyid%z, 0.d0, dt, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%z, &

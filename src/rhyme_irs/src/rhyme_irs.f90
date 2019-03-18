@@ -17,9 +17,8 @@ module rhyme_irs
   end type irs_t
 
   interface
-    pure module subroutine rhyme_irs_sampling ( ig, L, R, solution, dir, dx, dt, U )
+    pure module subroutine rhyme_irs_sampling ( ig, solution, dir, dx, dt, U )
       type ( ideal_gas_t ), intent ( in ) :: ig
-      type ( hydro_conserved_t ), intent ( in ) :: L, R
       type ( riemann_problem_solution_t ), intent ( in ) :: solution
       integer, intent ( in ) :: dir
       real ( kind=8 ), intent ( in ) :: dx, dt
@@ -46,6 +45,43 @@ module rhyme_irs
       integer, intent ( in ) :: dir
       real ( kind=8 ) :: p_star
     end function rhyme_irs_guess_p_star
+
+    type ( hydro_conserved_t ) pure module function irs_w_k ( ig, s ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( rp_side_t ), intent ( in ) :: s
+    end function irs_w_k
+
+    type ( hydro_conserved_t ) pure module function irs_w_starL_sho ( ig, s, dir ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( riemann_problem_solution_t ), intent ( in ) :: s
+      integer, intent ( in ) :: dir
+    end function irs_w_starL_sho
+
+    type ( hydro_conserved_t ) pure module function irs_w_starR_sho ( ig, s, dir ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( riemann_problem_solution_t ), intent ( in ) :: s
+      integer, intent ( in ) :: dir
+    end function irs_w_starR_sho
+
+    type ( hydro_conserved_t ) pure module function irs_w_kfan ( ig, s, dxdt, dir, is_right ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( rp_side_t ), intent ( in ) :: s
+      real ( kind=8 ), intent ( in ) :: dxdt
+      integer, intent ( in ) :: dir
+      logical, intent ( in ) :: is_right
+    end function irs_w_kfan
+
+    type ( hydro_conserved_t ) pure module function irs_w_starL_fan ( ig, s, dir ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( riemann_problem_solution_t ), intent ( in ) :: s
+      integer, intent ( in ) :: dir
+    end function irs_w_starL_fan
+
+    type ( hydro_conserved_t ) pure module function irs_w_starR_fan ( ig, s, dir ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( riemann_problem_solution_t ), intent ( in ) :: s
+      integer, intent ( in ) :: dir
+    end function irs_w_starR_fan
   end interface
 
 contains
