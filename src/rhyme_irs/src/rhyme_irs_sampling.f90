@@ -1,4 +1,4 @@
-submodule ( rhyme_irs ) irs_sampling_submodule
+submodule ( rhyme_irs ) rhyme_irs_sampling_submodule
 contains
   pure module subroutine rhyme_irs_sampling ( ig, L, R, solution, dir, dx, dt, U )
     implicit none
@@ -118,4 +118,4 @@ contains
       end if
     end subroutine irs_sampling_left
   end subroutine rhyme_irs_sampling
-end submodule irs_sampling_submodule
+end submodule rhyme_irs_sampling_submodule

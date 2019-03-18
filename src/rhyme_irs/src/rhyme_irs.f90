@@ -34,15 +34,16 @@ module rhyme_irs
       type ( riemann_problem_solution_t ), intent ( out ) :: solution
     end subroutine rhyme_irs_solve
 
-    pure module subroutine rhyme_irs_nonlinear_waves ( ig, rho, p_k, p, f, fprime)
+    pure module subroutine rhyme_irs_nonlinear_wave_function ( ig, state, p, star )
       type ( ideal_gas_t ), intent ( in ) :: ig
-      real ( kind=8 ), intent ( in ) :: rho, p_k, p
-      real ( kind=8 ), intent ( out ) :: f, fprime
-    end subroutine rhyme_irs_nonlinear_waves
+      type ( rp_side_t ), intent ( in ) :: state
+      real ( kind=8 ), intent ( in ) :: p
+      type ( rp_star_side_t ), intent ( inout ) :: star
+    end subroutine rhyme_irs_nonlinear_wave_function
 
-    pure module function rhyme_irs_guess_p_star ( &
-      rhor, csr, ur, pr, rhol, csl, ul, pl ) result ( p_star )
-      real ( kind=8 ), intent ( in ) :: rhor, csr, ur, pr, rhol, csl, ul, pl
+    pure module function rhyme_irs_guess_p_star ( L, R, dir ) result ( p_star )
+      type ( rp_side_t ), intent ( in ) :: L, R
+      integer, intent ( in ) :: dir
       real ( kind=8 ) :: p_star
     end function rhyme_irs_guess_p_star
   end interface

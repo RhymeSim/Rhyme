@@ -7,7 +7,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \begin{cases}
   & f_L(p_*, U_L) + f_R(p_*, U_R) + \Delta u = 0 \\
-  & u^* = \frac 1 2 (u_L + u_R) + \frac 1 2
+  & u_* = \frac 1 2 (u_L + u_R) + \frac 1 2
   \left[
     f_R(p_*, U_R) - f_L(p_*, U_L)
   \right]
@@ -144,10 +144,21 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \mathbf{W}(x, t) =
   \begin{cases}
-    \mathbf{W}_{*L}^{\text{shock}} \quad
+    \mathbf{W}_{*L}^{\text{sho}} \quad
     &\text{if} \quad S_L \leq \frac x t \leq u_* \\
     &\\
     \mathbf{W}_L \quad &\text{if} \quad \frac x t \leq S_L
+  \end{cases}
+  ```
+
+  where $`\mathbf{w}_{*l}^{\text{sho}}`$ in $`x`$-direction is given by,
+
+  ```math
+  \mathbf{w}_{*L}^{\text{sho}} =
+  \begin{cases}
+    (\rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
+    & \\
+    (\rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
   \end{cases}
   ```
 
@@ -162,7 +173,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   **Sound speed behind the rarefaction ($`c_{s*L}`$)**
   ```math
-  c_{s*L} = c_s^L
+  c_{s*L} = c_{sL}
   \left(
     \frac{ p_* }{ p_L }
   \right)^{ \frac{ \gamma - 1 }{ 2 \gamma } }
@@ -170,7 +181,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   **Rarefaction head and tail speeds ($`S_{HL}, S_{TL}`$)**
   ```math
-  S_{HL} = u_L - c_s^L, \quad S_{TL} = u_* - c_s^{*L}
+  S_{HL} = u_L - c_{sL}, \quad S_{TL} = u_* - c_{s*L}
   ```
 
   **Solution inside the rarefaction ($`\mathbf{W}_{L\text{fan}}`$)**
@@ -215,15 +226,15 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \end{cases}
   ```
 
-  where $`\mathbf{W}_{*L}^{\text{fan}}`$ in $`x`$-direction is,
+  where $`\mathbf{W}_{*L}^{\text{fan}}`$ in $`x`$-direction is given by,
 
   ```math
   \mathbf{W}_{*L}^{\text{fan}} =
   \begin{cases}
-    (rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
+    (\rho_{*L}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
     & \\
-    (rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
-  \end{cases}
+    (\rho_{*L}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
+  \end{cases
   ```
 
 #### Right shock wave ( $`p_* > p_R`$ )
@@ -261,6 +272,17 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   \end{cases}
   ```
 
+  where $`\mathbf{w}_{*R}^{\text{sho}}`$ in $`x`$-direction is given by,
+
+  ```math
+  \mathbf{w}_{*R}^{\text{sho}} =
+  \begin{cases}
+    (\rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
+    & \\
+    (\rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
+  \end{cases}
+  ```
+
 #### Right Rarefaction wave ( $`p_* \leq p_R`$ )
   **Star region density ($`\rho_{*R}`$)** follows the isentropic law,
   ```math
@@ -272,7 +294,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   **Sound speed behind the rarefaction ($`c_{s*R}`$)**
   ```math
-  c_{s*R} = c_s^R
+  c_{s*R} = c_{sR}
   \left(
     \frac{ p_* }{ p_L }
   \right)^{ \frac{ \gamma - 1 }{ 2 \gamma } }
@@ -280,7 +302,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
 
   **Rarefaction head and tail speeds ($`S_{HR}, S_{TR}`$)**
   ```math
-  S_{HR} = u_R - c_s^R, \quad S_{TR} = u_* - c_s^{*R}
+  S_{HR} = u_R - c_{sR}, \quad S_{TR} = u_* - c_{s*R}
   ```
 
   **Solution inside the rarefaction ($`\mathbf{W}_{R\text{fan}}`$)**
@@ -297,7 +319,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
     &\\
     &u = \frac{2}{\gamma + 1}
     \left[
-      -c_{sR} + \frac{\gamma - 1}{2} u_R + frac x t
+      -c_{sR} + \frac{\gamma - 1}{2} u_R + \frac x t
     \right] \\
     &\\
     &p = p_R
@@ -330,14 +352,14 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   ```math
   \mathbf{W}_{*R}^{\text{fan}} =
   \begin{cases}
-    (rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
+    (\rho_{*R}, u_*, v_L, w_L, p_*) \quad &\text{if} \quad \frac x t < u_* \\
     & \\
-    (rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
+    (\rho_{*R}, u_*, v_R, w_R, p_*) \quad &\text{if} \quad \frac x t > u_* \\
   \end{cases}
   ```
 
 #### Left or Right Vacuum state
-  In the presence of vacuum the structure of the solution of the Riemann
+  In the presence of vacuum, the structure of the solution of the Riemann
   problem is different from that of the conventional cases. An important
   observation in this case is that **a shock wave cannot be adjacent to a
   vacuum region**. Also the star region does not longer exists in this case,
@@ -386,7 +408,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   S_{*L} \equiv u_0 = u_L + \frac{2 c_{sL}}{\gamma - 1}
   ```
 
-  Note the value of $`a_0`$ depends on the EOS we choose.
+  Note the value of $`c_{s0}`$ depends on the EOS we choose.
 
   The complete solution can now be written as,
 
@@ -492,7 +514,7 @@ Iterative Riemann solver (based on Newton-Raphson iteration method)
   A left facing shock (travelling very slowly to the right), a right
   travelling contact discontinuity and a right travelling shock wave
 
-  **degeneracy in the solution of a Riemann problem** ( need to be implemented )
+  **Degeneracy in the solution of a Riemann problem** ( need to be implemented )
   Consider the following dimensionless parameters,
 
   ```math

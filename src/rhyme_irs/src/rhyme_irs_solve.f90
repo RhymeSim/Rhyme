@@ -1,4 +1,4 @@
-submodule ( rhyme_irs ) irs_solve_submodule
+submodule ( rhyme_irs ) rhyme_irs_solve_submodule
 contains
   pure module subroutine rhyme_irs_solve ( cfg, ig, L, R, dir, solution )
     implicit none
@@ -9,70 +9,75 @@ contains
     integer, intent ( in ) :: dir
     type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    real ( kind=8 ) :: pL, pR, vL, vR, csL, csR, fL, fR, fprimeL, fprimeR
     real ( kind=8 ) :: ps_pL, ps_pR
-    real ( kind=8 ) :: p_star, p_star_prev
+    real ( kind=8 ) :: p_star_prev
 
     integer :: i
 
-    pL = ig%p(L)
-    pR = ig%p(R)
+    ! Filling left and right states
+    solution%left%rho = L%u(hyid%rho)
+    solution%right%rho = R%u(hyid%rho)
 
-    csL = ig%Cs(L)
-    csR = ig%Cs(R)
+    solution%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
+    solution%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
 
-    vL = L%u( hyid%rho_vel(dir) ) / L%u(hyid%rho)
-    vR = R%u( hyid%rho_vel(dir) ) / R%u(hyid%rho)
+    solution%left%p = ig%p(L)
+    solution%right%p = ig%p(R)
 
-    p_star = max( &
-      rhyme_irs_guess_p_star( &
-        R%u(hyid%rho), csR, vR, pR, L%u(hyid%rho), csL, vL, pL &
-      ), cfg%tolerance )
+    solution%left%cs = ig%Cs(L)
+    solution%right%cs = ig%Cs(R)
 
-    p_star_prev = p_star
+
+    solution%star%p = max( &
+      rhyme_irs_guess_p_star( solution%left, solution%right, dir ), &
+      cfg%tolerance &
+    )
+
+    p_star_prev = solution%star%p
 
     do i = 1, cfg%n_iteration
-      call rhyme_irs_nonlinear_waves( &
-        ig, L%u(hyid%rho), pL, p_star, fL, fprimeL )
-      call rhyme_irs_nonlinear_waves( &
-        ig, R%u(hyid%rho), pR, p_star, fR, fprimeR )
+      call rhyme_irs_nonlinear_wave_function( &
+        ig, solution%left, solution%star%p, solution%star%left )
+      call rhyme_irs_nonlinear_wave_function( &
+        ig, solution%right, solution%star%p, solution%star%right )
 
-      p_star = p_star - ( fL + fR + (vR - vL) ) / ( fprimeL + fprimeR )
+      solution%star%p = solution%star%p - ( &
+        solution%star%left%f + solution%star%right%f + ( solution%right%v(dir) - solution%left%v(dir) ) &
+      ) / ( solution%star%left%fprime + solution%star%right%fprime )
 
-      if ( abs( p_star - p_star_prev ) &
-        / ( .5d0 * (p_star + p_star_prev) ) < cfg%tolerance ) exit
-      p_star_prev = p_star
+      if ( abs( solution%star%p - p_star_prev ) &
+        / ( .5d0 * (solution%star%p + p_star_prev) ) < cfg%tolerance ) exit
+      p_star_prev = solution%star%p
     end do
 
-    solution%star%p = p_star
-    solution%star%u = 0.5d0 * ( (vR + vL) + (fR - fL) )
+    solution%star%u = 0.5d0 * ( (solution%right%v(dir) + solution%left%v(dir)) + (solution%star%right%f - solution%star%left%f) )
 
-    ps_pL = solution%star%p / pL
-    ps_pR = solution%star%p / pR
+    ps_pL = solution%star%p / solution%left%p
+    ps_pR = solution%star%p / solution%right%p
 
 
-    if ( p_star > pL ) then
+    if ( solution%star%p > solution%left%p ) then
       solution%star%left%is_shock = .true.
       solution%star%left%shock%rho = L%u(hyid%rho) * (ig%gm1_gp1 + ps_pL) / (ig%gm1_gp1 * ps_pL + 1.0)
-      solution%star%left%shock%speed = vL - csL * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
+      solution%star%left%shock%speed = solution%left%v(dir) - solution%left%cs * sqrt(ig%gp1_2g * ps_pL + ig%gm1_2g)
     else
       solution%star%left%is_shock = .false.
       solution%star%left%fan%rho = L%u(hyid%rho) * ps_pL**real(ig%g_inv, kind=8)
-      solution%star%left%fan%cs = csL * ps_pL**real(ig%gm1_2g, kind=8)
-      solution%star%left%fan%speedH = vL - csL
+      solution%star%left%fan%cs = solution%left%cs * ps_pL**real(ig%gm1_2g, kind=8)
+      solution%star%left%fan%speedH = solution%left%v(dir) - solution%left%cs
       solution%star%left%fan%speedT = solution%star%u - solution%star%left%fan%cs
     end if
 
-    if ( p_star > pR ) then
+    if ( solution%star%p > solution%right%p ) then
       solution%star%right%is_shock = .true.
       solution%star%right%shock%rho = R%u(hyid%rho) * (ig%gm1_gp1 + ps_pR) / (ig%gm1_gp1 * ps_pR + 1.0)
-      solution%star%right%shock%speed = vR + csR * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
+      solution%star%right%shock%speed = solution%right%v(dir) + solution%right%cs * sqrt(ig%gp1_2g * ps_pR + ig%gm1_2g)
     else
       solution%star%right%is_shock = .false.
       solution%star%right%fan%rho = R%u(hyid%rho) * ps_pR**real(ig%g_inv, kind=8)
-      solution%star%right%fan%cs = csR * ps_pR**real(ig%gm1_2g, kind=8)
-      solution%star%right%fan%speedH = vR + csR
+      solution%star%right%fan%cs = solution%right%cs * ps_pR**real(ig%gm1_2g, kind=8)
+      solution%star%right%fan%speedH = solution%right%v(dir) + solution%right%cs
       solution%star%right%fan%speedT = solution%star%u + solution%star%right%fan%cs
     end if
   end subroutine rhyme_irs_solve
-end submodule irs_solve_submodule
+end submodule rhyme_irs_solve_submodule
