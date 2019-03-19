@@ -15,7 +15,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
-  rhyme_riemann_problem
   rhyme_hydro_base
   rhyme_ideal_gas
   rhyme_log
@@ -26,6 +25,17 @@ foreach ( dep ${deps} )
     add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
+
+
+set ( internal_deps
+  rhyme_riemann_problem
+)
+
+foreach ( i_dep ${internal_deps} )
+  if ( NOT TARGET ${i_dep} )
+    add_subdirectory ( src/${i_dep} )
+  endif ()
+endforeach ( i_dep )
 
 
 set ( srcs
@@ -46,7 +56,7 @@ set ( srcs
 
 
 add_library ( ${PROJECT_NAME} STATIC ${srcs} )
-target_link_libraries ( ${PROJECT_NAME} ${deps} )
+target_link_libraries ( ${PROJECT_NAME} ${deps} ${internal_deps} )
 
 
 add_subdirectory (tests)

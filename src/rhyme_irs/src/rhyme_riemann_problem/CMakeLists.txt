@@ -19,7 +19,7 @@ set ( deps
 
 foreach ( dep ${deps} )
   if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
+    add_subdirectory ( ../../../${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif ()
 endforeach ( dep )
 
