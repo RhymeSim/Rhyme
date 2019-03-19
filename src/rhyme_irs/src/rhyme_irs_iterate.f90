@@ -1,32 +1,17 @@
 submodule ( rhyme_irs ) rhyme_irs_iterate_submodule
 contains
-  pure module subroutine rhyme_irs_iterate ( cfg, ig, L, R, dir, solution )
+  pure module subroutine rhyme_irs_iterate ( cfg, ig, solution, dir )
     implicit none
 
     class ( irs_t ), intent ( in ) :: cfg
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( in ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( inout ) :: solution
     integer, intent ( in ) :: dir
-    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
     real ( kind=8 ) :: ps_pL, ps_pR
     real ( kind=8 ) :: p_star_prev
 
     integer :: i
-
-    ! Filling left and right states
-    solution%left%rho = L%u(hyid%rho)
-    solution%right%rho = R%u(hyid%rho)
-
-    solution%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
-    solution%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
-
-    solution%left%p = ig%p(L)
-    solution%right%p = ig%p(R)
-
-    solution%left%cs = ig%Cs(L)
-    solution%right%cs = ig%Cs(R)
-
 
     solution%star%p = max( &
       rhyme_irs_guess_p_star( solution%left, solution%right, dir ), &

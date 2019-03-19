@@ -17,6 +17,15 @@ module rhyme_irs
   end type irs_t
 
   interface
+    pure module subroutine rhyme_irs_solve ( cfg, ig, L, R, dx, dt, dir, U )
+      type ( irs_t ), intent ( in ) :: cfg
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( hydro_conserved_t ), intent ( in ) :: L, R
+      real ( kind=8 ), intent ( in ) :: dx, dt
+      integer, intent ( in ) :: dir
+      type ( hydro_conserved_t ), intent ( inout ) :: U
+    end subroutine rhyme_irs_solve
+
     pure module subroutine rhyme_irs_sampling ( ig, solution, dir, dx, dt, U )
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( riemann_problem_solution_t ), intent ( in ) :: solution
@@ -25,12 +34,11 @@ module rhyme_irs
       type ( hydro_conserved_t ), intent ( out ) :: U
     end subroutine rhyme_irs_sampling
 
-    pure module subroutine rhyme_irs_iterate ( cfg, ig, L, R, dir, solution )
+    pure module subroutine rhyme_irs_iterate ( cfg, ig, solution, dir )
       class ( irs_t ), intent ( in ) :: cfg
       type ( ideal_gas_t ), intent ( in ) :: ig
-      type ( hydro_conserved_t ), intent ( in ) :: L, R
+      type ( riemann_problem_solution_t ), intent ( inout ) :: solution
       integer, intent ( in ) :: dir
-      type ( riemann_problem_solution_t ), intent ( out ) :: solution
     end subroutine rhyme_irs_iterate
 
     pure module subroutine rhyme_irs_nonlinear_wave_function ( ig, state, p, star )
@@ -82,6 +90,11 @@ module rhyme_irs
       type ( riemann_problem_solution_t ), intent ( in ) :: s
       integer, intent ( in ) :: dir
     end function irs_w_starR_fan
+
+    type ( hydro_conserved_t ) pure module function irs_rp_side_to_cons ( ig, s ) result ( U )
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( rp_side_t ), intent ( in ) :: s
+    end function irs_rp_side_to_cons
   end interface
 
 contains

@@ -1,4 +1,4 @@
-logical function rhyme_irs_test_cases_test () result (failed)
+logical function rhyme_irs_iterate_test () result (failed)
   use rhyme_irs_factory
 
   implicit none
@@ -7,35 +7,36 @@ logical function rhyme_irs_test_cases_test () result (failed)
 
   call rhyme_irs_factory_init
 
-  call irs_test_cases( irs_Sod_test, "Sod", irs_sod_acc, failed_sod )
-  call irs_test_cases( irs_123_test, "123 test", irs_123_acc, failed_123 )
-  call irs_test_cases( irs_left_blast_wave_test, "left blast wave", irs_lblast_acc, failed_left )
-  call irs_test_cases( irs_right_blast_wave_test, "right blast wave", irs_rblast_acc, failed_right )
-  call irs_test_cases( irs_two_shocks_collision_test, "two shock collision", irs_two_shocks_acc, failed_shocks )
+  call irs_iterate_test_cases( irs_Sod_test, "Sod", irs_sod_acc, failed_sod )
+  call irs_iterate_test_cases( irs_123_test, "123 test", irs_123_acc, failed_123 )
+  call irs_iterate_test_cases( irs_left_blast_wave_test, "left blast wave", irs_lblast_acc, failed_left )
+  call irs_iterate_test_cases( irs_right_blast_wave_test, "right blast wave", irs_rblast_acc, failed_right )
+  call irs_iterate_test_cases( irs_two_shocks_collision_test, "two shock collision", irs_two_shocks_acc, failed_shocks )
 
   failed = failed_sod .or. failed_123 .or. failed_left .or. failed_right .or. failed_shocks
 
 contains
-
-  subroutine irs_test_cases ( func, test_name, acc, failed )
+  subroutine irs_iterate_test_cases ( func, test_name, acc, failed )
     implicit none
 
     external :: func
-    character(len=*) :: test_name
+    character ( len=* ) :: test_name
     type ( irs_accuracy_t ) :: acc
     logical :: failed
 
     type ( hydro_conserved_t ) :: L, R
     type ( riemann_problem_solution_t ) :: expected_solution, solution
-    real(kind=8) :: ex_p, ex_u, ex_left_rho, ex_right_rho
-    real(kind=8) :: star_left_rho, star_right_rho
+    real ( kind=8 ) :: ex_p, ex_u, ex_left_rho, ex_right_rho
+    real ( kind=8 ) :: star_left_rho, star_right_rho
     logical :: failed_p, failed_v, failed_lshock, failed_rshock, failed_lrho, failed_rrho
 
     call func( irs_fac_ig, L, R, expected_solution )
+    call rhyme_irs_factory_set_sides( irs_fac_ig, L, R, solution )
+
     ex_p = expected_solution%star%p
     ex_u = expected_solution%star%u
 
-    call rhyme_irs_iterate( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
+    call rhyme_irs_iterate( irs_fac, irs_fac_ig, solution, hyid%x )
 
     if ( expected_solution%star%left%is_shock ) then
       ex_left_rho = expected_solution%star%left%shock%rho
@@ -96,5 +97,5 @@ contains
     end if
 
     failed = failed_p .or. failed_v .or. failed_lshock .or. failed_lrho .or. failed_rshock .or. failed_rrho
-  end subroutine irs_test_cases
-end function rhyme_irs_test_cases_test
+  end subroutine irs_iterate_test_cases
+end function rhyme_irs_iterate_test

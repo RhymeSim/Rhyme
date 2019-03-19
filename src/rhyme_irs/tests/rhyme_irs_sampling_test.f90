@@ -14,7 +14,7 @@ logical function rhyme_irs_sampling_test () result ( failed )
   failed = .true.
 
   call irs_Sod_test( irs_fac_ig, L, R, solution )
-  call rhyme_irs_iterate( irs_fac, irs_fac_ig, L, R, hyid%x, solution )
+  call rhyme_irs_iterate( irs_fac, irs_fac_ig, solution, hyid%x )
 
   open ( unit=1, file="./sod_shock_tube_t_0_2_analytical.txt", action='read', form='formatted' )
   do i = 1, 12

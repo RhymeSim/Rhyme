@@ -64,7 +64,6 @@ contains
     integer :: lb(3), ub(3)
     type ( hydro_flux_t ) :: dF( hyid%x:hyid%z )
 
-    type ( riemann_problem_solution_t ) :: solution
     type ( hydro_conserved_t ) :: Delta, evolved_hydro_state
 
     l = box%level
@@ -129,37 +128,28 @@ contains
       do j = lb(2), ub(2)
         do i = lb(1), ub(1)
           if ( this%active_axis(hyid%x) ) then
-            call rhyme_irs_iterate( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i  , j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
-              hyid%x, solution &
-            )
-            call rhyme_irs_sampling( ig, &
-              solution, hyid%x, 0.d0, dt, evolved_hydro_state &
+              0.d0, dt, hyid%x, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%x, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
           end if
           if ( this%active_axis(hyid%y) ) then
-            call rhyme_irs_iterate( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j  , k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
-              hyid%y, solution &
-            )
-            call rhyme_irs_sampling( ig, &
-              solution, hyid%y, 0.d0, dt, evolved_hydro_state &
+              0.d0, dt, hyid%y, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%y, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
           end if
           if ( this%active_axis(hyid%z) ) then
-            call rhyme_irs_iterate( irs, ig, &
+            call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k  , hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
-              hyid%z, solution &
-            )
-            call rhyme_irs_sampling( ig, &
-              solution, hyid%z, 0.d0, dt, evolved_hydro_state &
+              0.d0, dt, hyid%z, evolved_hydro_state &
             )
             call ig%flux_at( evolved_hydro_state, hyid%z, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z ) )

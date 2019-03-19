@@ -78,22 +78,23 @@ contains
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type(hydro_conserved_t), intent(out) :: L, R
-    type(riemann_problem_solution_t), intent(out) :: solution
+    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type(hydro_primitive_t) :: L_prim, R_prim
-    real(kind=8) :: e_int_L, e_int_R
+    type ( hydro_primitive_t ) :: L_prim, R_prim
+    real ( kind=8 ) :: e_int_L, e_int_R
 
 
-    L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d0])
-    R_prim = hydro_primitive_t([.125d0, 0.d0, 0.d0, 0.d0, .1d0])
+    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+    R_prim = hydro_primitive_t( [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
 
-    e_int_L = 1.d0 / (ig%gamma - 1.d0)
-    e_int_R = .1d0 / (ig%gamma - 1.d0)
+    e_int_L = 1.d0 / ( ig%gamma - 1.d0 )
+    e_int_R = .1d0 / ( ig%gamma - 1.d0 )
 
-    call hy_prim_to_cons(L_prim, e_int_L, L)
-    call hy_prim_to_cons(R_prim, e_int_R, R)
+    call hy_prim_to_cons( L_prim, e_int_L, L )
+    call hy_prim_to_cons( R_prim, e_int_R, R )
 
+    call rhyme_irs_factory_set_sides( ig, L, R, solution )
 
     solution%star%p = 0.30313d0
     solution%star%u = 0.92745d0
@@ -111,21 +112,23 @@ contains
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type(hydro_conserved_t), intent(out) :: L, R
-    type(riemann_problem_solution_t), intent(out) :: solution
+    type ( hydro_conserved_t ), intent(out) :: L, R
+    type ( riemann_problem_solution_t ), intent(out) :: solution
 
-    type(hydro_primitive_t) :: L_prim, R_prim
-    real(kind=8) :: e_int_L, e_int_R
+    type ( hydro_primitive_t ) :: L_prim, R_prim
+    real ( kind=8 ) :: e_int_L, e_int_R
 
 
-    L_prim = hydro_primitive_t([1.d0, -2.d0, -2.d0, -2.d0, .4d0])
-    R_prim = hydro_primitive_t([1.d0, 2.d0, 2.d0, 2.d0, .4d0])
+    L_prim = hydro_primitive_t( [ 1.d0, -2.d0, 0.d0, 0.d0, .4d0 ] )
+    R_prim = hydro_primitive_t( [ 1.d0, 2.d0, 0.d0, 0.d0, .4d0 ] )
 
-    e_int_L = .4d0 / (ig%gamma - 1.d0)
-    e_int_R = .4d0 / (ig%gamma - 1.d0)
+    e_int_L = .4d0 / ( ig%gamma - 1.d0 )
+    e_int_R = .4d0 / ( ig%gamma - 1.d0 )
 
-    call hy_prim_to_cons(L_prim, e_int_L, L)
-    call hy_prim_to_cons(R_prim, e_int_R, R)
+    call hy_prim_to_cons( L_prim, e_int_L, L )
+    call hy_prim_to_cons( R_prim, e_int_R, R )
+
+    call rhyme_irs_factory_set_sides( ig, L, R, solution )
 
     solution%star%p = 0.00189d0
     solution%star%u = 0.d0
@@ -142,21 +145,23 @@ contains
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type(hydro_conserved_t), intent(out) :: L, R
-    type(riemann_problem_solution_t), intent(out) :: solution
+    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type(hydro_primitive_t) :: L_prim, R_prim
-    real(kind=8) :: e_int_L, e_int_R
+    type ( hydro_primitive_t ) :: L_prim, R_prim
+    real ( kind=8 ) :: e_int_L, e_int_R
 
 
-    L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d3])
-    R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
+    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d3 ] )
+    R_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d-2 ] )
 
-    e_int_L = 1.d3 / (ig%gamma - 1.d0)
-    e_int_R = 1.d-2 / (ig%gamma - 1.d0)
+    e_int_L = 1.d3 / ( ig%gamma - 1.d0 )
+    e_int_R = 1.d-2 / ( ig%gamma - 1.d0 )
 
-    call hy_prim_to_cons(L_prim, e_int_L, L)
-    call hy_prim_to_cons(R_prim, e_int_R, R)
+    call hy_prim_to_cons( L_prim, e_int_L, L )
+    call hy_prim_to_cons( R_prim, e_int_R, R )
+
+    call rhyme_irs_factory_set_sides( ig, L, R, solution )
 
     solution%star%p = 460.894d0
     solution%star%u = 19.5975d0
@@ -173,20 +178,22 @@ contains
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type(hydro_conserved_t), intent(out) :: L, R
-    type(riemann_problem_solution_t), intent(out) :: solution
+    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type(hydro_primitive_t) :: L_prim, R_prim
-    real(kind=8) :: e_int_L, e_int_R
+    type ( hydro_primitive_t ) :: L_prim, R_prim
+    real ( kind=8 ) :: e_int_L, e_int_R
 
-    L_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d-2])
-    R_prim = hydro_primitive_t([1.d0, 0.d0, 0.d0, 0.d0, 1.d2])
+    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d-2 ] )
+    R_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d2 ] )
 
-    e_int_L = 1.d-2 / (ig%gamma - 1.d0)
-    e_int_R = 1.d2 / (ig%gamma - 1.d0)
+    e_int_L = 1.d-2 / ( ig%gamma - 1.d0 )
+    e_int_R = 1.d2 / ( ig%gamma - 1.d0 )
 
-    call hy_prim_to_cons(L_prim, e_int_L, L)
-    call hy_prim_to_cons(R_prim, e_int_R, R)
+    call hy_prim_to_cons( L_prim, e_int_L, L )
+    call hy_prim_to_cons( R_prim, e_int_R, R )
+
+    call rhyme_irs_factory_set_sides( ig, L, R, solution )
 
     solution%star%p = 46.0950d0
     solution%star%u = -6.19633d0
@@ -204,20 +211,22 @@ contains
     implicit none
 
     type ( ideal_gas_t ), intent ( in ) :: ig
-    type(hydro_conserved_t), intent(out) :: L, R
-    type(riemann_problem_solution_t), intent(out) :: solution
+    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type(hydro_primitive_t) :: L_prim, R_prim
-    real(kind=8) :: e_int_L, e_int_R
+    type ( hydro_primitive_t ) :: L_prim, R_prim
+    real ( kind=8 ) :: e_int_L, e_int_R
 
-    L_prim = hydro_primitive_t([5.99924d0, 19.5975d0, 19.5975d0, 19.5975d0, 460.894d0])
-    R_prim = hydro_primitive_t([5.99924d0, -6.19633d0, -6.19633d0, -6.19633d0, 46.0950d0])
+    L_prim = hydro_primitive_t( [ 5.99924d0, 19.5975d0, 0.d0, 0.d0, 460.894d0 ] )
+    R_prim = hydro_primitive_t( [ 5.99924d0, -6.19633d0, 0.d0, 0.d0, 46.0950d0 ] )
 
-    e_int_L = 460.894d0 / (ig%gamma - 1.d0)
-    e_int_R = 46.0950d0 / (ig%gamma - 1.d0)
+    e_int_L = 460.894d0 / ( ig%gamma - 1.d0 )
+    e_int_R = 46.0950d0 / ( ig%gamma - 1.d0 )
 
-    call hy_prim_to_cons (L_prim, e_int_L, L)
-    call hy_prim_to_cons (R_prim, e_int_R, R)
+    call hy_prim_to_cons( L_prim, e_int_L, L )
+    call hy_prim_to_cons( R_prim, e_int_R, R )
+
+    call rhyme_irs_factory_set_sides( ig, L, R, solution )
 
     solution%star%p = 1691.64d0
     solution%star%u = 8.68975d0
@@ -226,4 +235,25 @@ contains
     solution%star%right%is_shock = .true.
     solution%star%right%shock%rho = 31.0426d0
   end subroutine irs_two_shocks_collision_test
+
+
+  pure subroutine rhyme_irs_factory_set_sides ( ig, L, R, s )
+    implicit none
+
+    type ( ideal_gas_t ), intent ( in ) :: ig
+    type ( hydro_conserved_t ), intent ( in ) :: L, R
+    type ( riemann_problem_solution_t ), intent ( inout ) :: s
+
+    s%left%rho = L%u( hyid%rho )
+    s%right%rho = R%u( hyid%rho )
+
+    s%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
+    s%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
+
+    s%left%p = ig%p(L)
+    s%right%p = ig%p(R)
+
+    s%left%cs = ig%cs(L)
+    s%right%cs = ig%cs(R)
+  end subroutine rhyme_irs_factory_set_sides
 end module rhyme_irs_factory
