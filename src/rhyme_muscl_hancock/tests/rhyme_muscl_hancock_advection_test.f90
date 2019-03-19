@@ -91,4 +91,6 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
     samr_2d%levels(0)%t = samr_2d%levels(0)%t + samr_2d%levels(0)%dt
     samr_2d%levels(0)%iteration = samr_2d%levels(0)%iteration + 1
   end do
+
+  failed = .false.
 end function rhyme_muscl_hancock_advection_test
