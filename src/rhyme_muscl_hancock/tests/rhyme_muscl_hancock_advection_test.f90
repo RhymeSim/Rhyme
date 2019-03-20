@@ -17,7 +17,7 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( log_t ) :: log
 
   integer, parameter :: nlevels = 1
-  integer, parameter :: ngrids = 32
+  integer, parameter :: ngrids = 8
   integer, parameter :: base_grid_2d(3) = [ ngrids, ngrids, 1 ]
   integer, parameter :: ghost_cells_2d(3) = [ 2, 2, 0 ]
   integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
@@ -34,6 +34,15 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
 
   call rhyme_samr_factory_fill( &
     nlevels, base_grid_2d, ghost_cells_2d, max_nboxes, init_nboxes, samr_2d )
+
+  bc%types(bcid%left) = bcid%periodic
+  bc%types(bcid%right) = bcid%periodic
+  bc%types(bcid%bottom) = bcid%outflow
+  bc%types(bcid%top) = bcid%outflow
+  bc%types(bcid%back) = bcid%outflow
+  bc%types(bcid%front) = bcid%outflow
+
+  call bc%init( samr_2d, log )
 
   cfl%courant_number = 0.2d0
 
@@ -68,17 +77,11 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
     end do
   end do
 
-  bc%types(bcid%left) = bcid%periodic
-  bc%types(bcid%right) = bcid%periodic
-  bc%types(bcid%bottom) = bcid%outflow
-  bc%types(bcid%top) = bcid%outflow
-  bc%types(bcid%back) = bcid%outflow
-  bc%types(bcid%front) = bcid%outflow
-
   do step = 1, ngrids
-    samr_2d%levels(0)%dt = cfl%dt( ig, samr_2d )
+    ! Force timestep
+    samr_2d%levels(0)%dt = dt
 
-    ! call ch%write_samr( samr_2d )
+    call ch%write_samr( samr_2d )
 
     call bc%set_base_grid_boundaries( samr_2d )
 

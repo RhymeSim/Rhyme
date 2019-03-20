@@ -261,14 +261,15 @@ contains
   end subroutine rhyme_ideal_gas_flux_at
 
 
-  pure subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
+  pure subroutine rhyme_ideal_gas_half_step_extrapolation ( &
+    this, U, Delta, dir, dx, dt, L, R )
     implicit none
 
     class ( ideal_gas_t ), intent ( in ) :: this
     type ( hydro_conserved_t ), intent ( in ) :: U, Delta
     integer, intent ( in ) :: dir
     real ( kind=8 ), intent ( in ) :: dx, dt
-    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    type ( hydro_conserved_t ), intent ( inout ) :: L, R
 
     type ( hydro_flux_t ) :: FL, FR, dF
 

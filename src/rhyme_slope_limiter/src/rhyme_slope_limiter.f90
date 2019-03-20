@@ -30,36 +30,36 @@ module rhyme_slope_limiter
 
 contains
 
-  pure subroutine slope_limter_run ( this, cfl, ig, UL, U, UR, Delta )
+  pure subroutine slope_limter_run ( this, cfl, ig, UL, U, UR, delta )
     implicit none
 
     class ( slope_limiter_t ), intent(in) :: this
     type ( cfl_t ), intent(in) :: cfl
     type ( ideal_gas_t ), intent(in) :: ig
     type ( hydro_conserved_t ), intent(in) :: UL, U, UR
-    type ( hydro_conserved_t ), intent(out) :: Delta
+    type ( hydro_conserved_t ), intent(out) :: delta
 
     select case ( this%type )
     case ( slid%van_Leer )
-      call this%van_leer ( cfl, ig, UL, U, UR, Delta )
+      call this%van_leer( cfl, ig, UL, U, UR, delta )
     case ( slid%minmod )
-      call this%minmod ( cfl, ig, UL, U, UR, Delta )
+      call this%minmod( cfl, ig, UL, U, UR, delta )
     case ( slid%van_albada )
-      call this%van_albada ( cfl, ig, UL, U, UR, Delta )
+      call this%van_albada( cfl, ig, UL, U, UR, delta )
     case ( slid%superbee )
-      call this%superbee ( cfl, ig, UL, U, UR, Delta )
+      call this%superbee( cfl, ig, UL, U, UR, delta )
     end select
 
   end subroutine slope_limter_run
 
-  pure subroutine van_leer_slope_limiter ( this, cfl, ig, UL, U, UR, Delta )
+  pure subroutine van_leer_slope_limiter ( this, cfl, ig, UL, U, UR, delta )
     implicit none
 
     class ( slope_limiter_t ), intent(in) :: this
     type ( cfl_t ), intent(in) :: cfl
     type ( ideal_gas_t ), intent(in) :: ig
     type ( hydro_conserved_t ), intent(in) :: UL, U, UR
-    type ( hydro_conserved_t ), intent(out) :: Delta
+    type ( hydro_conserved_t ), intent(out) :: delta
 
     real(kind=8), dimension(hyid%rho:hyid%e_tot) :: d_L, d_R, d, r
     integer :: i
@@ -73,23 +73,23 @@ contains
 
     do i = hyid%rho, hyid%e_tot
       if ( r(i) > 0.d0 ) then
-        Delta%u(i) = min ( 2.d0 * r(i) / (1.d0 + r(i)), this%xi_R ( cfl, r(i) ) ) * d(i)
+        delta%u(i) = min ( 2.d0 * r(i) / (1.d0 + r(i)), this%xi_R ( cfl, r(i) ) ) * d(i)
       else
-        Delta%u(i) = 0.d0
+        delta%u(i) = 0.d0
       end if
     end do
 
   end subroutine van_leer_slope_limiter
 
 
-  pure subroutine minmod_slope_limiter ( this, cfl, ig, UL, U, UR, Delta )
+  pure subroutine minmod_slope_limiter ( this, cfl, ig, UL, U, UR, delta )
     implicit none
 
     class ( slope_limiter_t ), intent(in) :: this
     type ( cfl_t ), intent(in) :: cfl
     type ( ideal_gas_t ), intent(in) :: ig
     type ( hydro_conserved_t ), intent(in) :: UL, U, UR
-    type ( hydro_conserved_t ), intent(out) :: Delta
+    type ( hydro_conserved_t ), intent(out) :: delta
 
     real(kind=8), dimension(hyid%rho:hyid%e_tot) :: d_L, d_R, d, r
     integer :: i
@@ -103,25 +103,25 @@ contains
 
     do i = hyid%rho, hyid%e_tot
       if ( r(i) > 1.d0 ) then
-        Delta%u(i) = min ( 1.d0, this%xi_R ( cfl, r(i) ) ) * d(i)
+        delta%u(i) = min( 1.d0, this%xi_R( cfl, r(i) ) ) * d(i)
       else if ( r(i) > 0.d0 ) then
-        Delta%u(i) = r(i) * d(i)
+        delta%u(i) = r(i) * d(i)
       else
-        Delta%u(i) = 0.d0
+        delta%u(i) = 0.d0
       end if
     end do
 
   end subroutine minmod_slope_limiter
 
 
-  pure subroutine van_albada_slope_limiter ( this, cfl, ig, UL, U, UR, Delta )
+  pure subroutine van_albada_slope_limiter ( this, cfl, ig, UL, U, UR, delta )
     implicit none
 
     class ( slope_limiter_t ), intent(in) :: this
     type ( cfl_t ), intent(in) :: cfl
     type ( ideal_gas_t ), intent(in) :: ig
     type ( hydro_conserved_t ), intent(in) :: UL, U, UR
-    type ( hydro_conserved_t ), intent(out) :: Delta
+    type ( hydro_conserved_t ), intent(out) :: delta
 
     real(kind=8), dimension(hyid%rho:hyid%e_tot) :: d_L, d_R, d, r
     integer :: i
@@ -135,26 +135,26 @@ contains
 
     do i = hyid%rho, hyid%e_tot
       if ( r(i) > 0.d0 ) then
-        Delta%u(i) = min ( &
+        delta%u(i) = min ( &
           r(i) * ( 1.d0 + r(i) ) / ( 1.d0 + r(i)**2.d0 ), &
           this%xi_R ( cfl, r(i) ) &
         ) * d(i)
       else
-        Delta%u(i) = 0.d0
+        delta%u(i) = 0.d0
       end if
     end do
 
   end subroutine van_albada_slope_limiter
 
 
-  pure subroutine superbee_slope_limiter ( this, cfl, ig, UL, U, UR, Delta )
+  pure subroutine superbee_slope_limiter ( this, cfl, ig, UL, U, UR, delta )
     implicit none
 
     class ( slope_limiter_t ), intent(in) :: this
     type ( cfl_t ), intent(in) :: cfl
     type ( ideal_gas_t ), intent(in) :: ig
     type ( hydro_conserved_t ), intent(in) :: UL, U, UR
-    type ( hydro_conserved_t ), intent(out) :: Delta
+    type ( hydro_conserved_t ), intent(out) :: delta
 
     real(kind=8), dimension(hyid%rho:hyid%e_tot) :: d_L, d_R, d, r
     integer :: i
@@ -168,13 +168,13 @@ contains
 
     do i = hyid%rho, hyid%e_tot
       if ( r(i) > 1.d0 ) then
-        Delta%u(i) = min ( r(i), this%xi_R ( cfl, r(i) ), 2.d0 ) * d(i)
+        delta%u(i) = min ( r(i), this%xi_R ( cfl, r(i) ), 2.d0 ) * d(i)
       else if ( r(i) > .5d0 ) then
-        Delta%u(i) = d(i)
+        delta%u(i) = d(i)
       else if ( r(i) > 0.d0 ) then
-        Delta%u(i) = 2.d0 * r(i) * d(i)
+        delta%u(i) = 2.d0 * r(i) * d(i)
       else
-        Delta%u(i) = 0.d0
+        delta%u(i) = 0.d0
       end if
     end do
 
