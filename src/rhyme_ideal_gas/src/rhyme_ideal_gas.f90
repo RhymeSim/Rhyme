@@ -248,31 +248,35 @@ contains
     integer, intent(in) :: dir
     type(hydro_flux_t), intent(out) :: F
 
-    F%f(hyid%rho) = U%u(hyid%rho_vel(dir))
-
-    F%f(hyid%rho_u:hyid%rho_w) = U%u(hyid%rho_vel(dir)) * U%u(hyid%rho_u:hyid%rho_w) / U%u(hyid%rho)
-    F%f(hyid%vel(dir)) = F%f(hyid%vel(dir)) + this%p(U)
-
-    F%f(hyid%e_tot) = U%u(hyid%rho_vel(dir)) / U%u(hyid%rho) * ( U%u(hyid%e_tot) + this%p(U) )
+    if ( U%u( hyid%rho ) < tiny(0.d0) ) then
+      F%f = 0.d0
+    else
+      F%f( hyid%rho ) = U%u( hyid%rho_vel(dir) )
+      F%f( hyid%rho_u:hyid%rho_w ) = U%u( hyid%rho_vel(dir) ) &
+        * U%u( hyid%rho_u:hyid%rho_w ) / U%u( hyid%rho )
+      F%f( hyid%rho_vel(dir) ) = F%f( hyid%rho_vel(dir) ) + this%p(U)
+      F%f( hyid%e_tot ) = U%u( hyid%rho_vel(dir) ) / U%u( hyid%rho ) &
+        * ( U%u( hyid%e_tot ) + this%p(U) )
+    end if
   end subroutine rhyme_ideal_gas_flux_at
 
 
   pure subroutine rhyme_ideal_gas_half_step_extrapolation (this, U, Delta, dir, dx, dt, L, R)
     implicit none
 
-    class ( ideal_gas_t ), intent(in) :: this
-    type ( hydro_conserved_t ), intent(in) :: U, Delta
-    integer, intent(in) :: dir
-    real(kind=8), intent(in) :: dx, dt
-    type ( hydro_conserved_t ), intent(out) :: L, R
+    class ( ideal_gas_t ), intent ( in ) :: this
+    type ( hydro_conserved_t ), intent ( in ) :: U, Delta
+    integer, intent ( in ) :: dir
+    real ( kind=8 ), intent ( in ) :: dx, dt
+    type ( hydro_conserved_t ), intent ( out ) :: L, R
 
     type ( hydro_flux_t ) :: FL, FR, dF
 
     L%u = U%u - .5d0 * Delta%u
     R%u = U%u + .5d0 * Delta%u
 
-    call this%flux_at ( L, dir, FL )
-    call this%flux_at ( R, dir, FR )
+    call this%flux_at( L, dir, FL )
+    call this%flux_at( R, dir, FR )
 
     dF%f = FL%f - FR%f
 

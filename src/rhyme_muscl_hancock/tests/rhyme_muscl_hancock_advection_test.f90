@@ -17,7 +17,8 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( log_t ) :: log
 
   integer, parameter :: nlevels = 1
-  integer, parameter :: base_grid_2d(3) = [ 64, 64, 1 ]
+  integer, parameter :: ngrids = 32
+  integer, parameter :: base_grid_2d(3) = [ ngrids, ngrids, 1 ]
   integer, parameter :: ghost_cells_2d(3) = [ 2, 2, 0 ]
   integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
@@ -74,10 +75,10 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   bc%types(bcid%back) = bcid%outflow
   bc%types(bcid%front) = bcid%outflow
 
-  do step = 1, 0
+  do step = 1, ngrids
     samr_2d%levels(0)%dt = cfl%dt( ig, samr_2d )
 
-    call ch%write_samr( samr_2d )
+    ! call ch%write_samr( samr_2d )
 
     call bc%set_base_grid_boundaries( samr_2d )
 

@@ -100,7 +100,6 @@ contains
     class ( samr_bc_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
 
-    if ( .not. this%initialized ) return
 
     if ( samr%ghost_cells(1) > 0 ) then
       call this%set_base_grid_left_boundary( samr%levels(0)%boxes(1) )
