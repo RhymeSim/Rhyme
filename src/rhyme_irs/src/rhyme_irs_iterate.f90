@@ -27,8 +27,7 @@ contains
         ig, solution%right, solution%star%p, solution%star%right )
 
       solution%star%p = solution%star%p - ( &
-        solution%star%left%f &
-        + solution%star%right%f &
+        solution%star%left%f + solution%star%right%f &
         + ( solution%right%v(dir) - solution%left%v(dir) ) &
       ) / ( solution%star%left%fprime + solution%star%right%fprime )
 

@@ -28,7 +28,7 @@ contains
 
     if ( vacuum_right ) then
 
-      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
+      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u( hyid%rho )
       sol%left%p = ig%p(L)
       sol%left%cs = ig%Cs(L)
       sol%right%v = 0.d0
@@ -50,7 +50,7 @@ contains
       sol%left%v = 0.d0
       sol%left%p = 0.d0
       sol%left%cs = 0.d0
-      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
+      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u( hyid%rho )
       sol%right%p = ig%p(R)
       sol%right%cs = ig%Cs(R)
 
@@ -65,13 +65,13 @@ contains
       end if
 
     else if ( vacuum_both_sides ) then
-        U%u = 0.d0
+      U%u = 0.d0
     else                                                                ! Non-vacuum cases
 
-      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
+      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u( hyid%rho )
       sol%left%p = ig%p(L)
       sol%left%cs = ig%Cs(L)
-      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
+      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u( hyid%rho )
       sol%right%p = ig%p(R)
       sol%right%cs = ig%Cs(R)
 

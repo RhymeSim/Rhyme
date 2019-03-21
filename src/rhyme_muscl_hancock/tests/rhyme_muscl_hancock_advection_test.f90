@@ -17,8 +17,9 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( log_t ) :: log
 
   integer, parameter :: nlevels = 1
-  integer, parameter :: ngrids = 8
+  integer, parameter :: ngrids = 32
   integer, parameter :: base_grid_2d(3) = [ ngrids, ngrids, 1 ]
+  integer, parameter :: d(3) = base_grid_2d
   integer, parameter :: ghost_cells_2d(3) = [ 2, 2, 0 ]
   integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
@@ -29,8 +30,9 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( samr_t ) :: samr_2d
 
   integer :: i, j, step
-  real ( kind=8 ) :: rhol, rhor, v , p, dx, dt
-  type ( hydro_conserved_t ) :: left, right
+  real ( kind=8 ) :: rho_bg, rho_slab, v , p, dx, dt
+  type ( hydro_conserved_t ) :: bg, slab
+  type ( samr_box_t ) :: box
 
   call rhyme_samr_factory_fill( &
     nlevels, base_grid_2d, ghost_cells_2d, max_nboxes, init_nboxes, samr_2d )
@@ -57,31 +59,35 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   call mh%init( samr_2d, log )
 
 
-  rhol = .125d0
-  rhor = 1.d0
+  rho_bg = .125d0
+  rho_slab = 1.d0
   p = .1d0
-  dt = cfl%courant_number * minval( samr_2d%levels(0)%dx ) / sqrt( ig%gamma *  p / rhol )
+  dt = cfl%courant_number * minval( samr_2d%levels(0)%dx ) / sqrt( ig%gamma *  p / rho_bg )
   dx = 1.d0 / base_grid_2d(1)
   v = dx / dt
 
-  call ig%prim_vars_to_cons( rhol, v, 0.d0, 0.d0, p, left )
-  call ig%prim_vars_to_cons( rhor, v, 0.d0, 0.d0, p, right )
+  call ig%prim_vars_to_cons( rho_bg, 0.d0, 0.d0, 0.d0, p, bg )
+  call ig%prim_vars_to_cons( rho_slab, v, 0.d0, 0.d0, p, slab )
 
   do j = 1, samr_2d%levels(0)%boxes(1)%dims(2)
-    do i = 1, samr_2d%levels(0)%boxes(1)%dims(1)
-      if ( i <= samr_2d%levels(0)%boxes(1)%dims(1) / 2 ) then
-        samr_2d%levels(0)%boxes(1)%hydro(i,j,1)%u = left%u
-      else
-        samr_2d%levels(0)%boxes(1)%hydro(i,j,1)%u = right%u
-      end if
-    end do
+    if ( j > samr_2d%levels(0)%boxes(1)%dims(2) / 4 &
+      .and. j <= samr_2d%levels(0)%boxes(1)%dims(2) * 3 / 4 ) then
+      do i = 1, samr_2d%levels(0)%boxes(1)%dims(1)
+        samr_2d%levels(0)%boxes(1)%hydro(i,j,1)%u = slab%u
+      end do
+    else
+      do i = 1, samr_2d%levels(0)%boxes(1)%dims(1)
+        samr_2d%levels(0)%boxes(1)%hydro(i,j,1)%u = bg%u
+      end do
+    end if
   end do
 
-  do step = 1, ngrids
-    ! Force timestep
+  do step = 1, 10 * ngrids
     samr_2d%levels(0)%dt = dt
 
     call ch%write_samr( samr_2d )
+    failed = abs( dt - cfl%dt( ig, samr_2d ) ) > epsilon(0.d0)
+    if ( failed ) return
 
     call bc%set_base_grid_boundaries( samr_2d )
 
@@ -94,7 +100,18 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
 
     samr_2d%levels(0)%t = samr_2d%levels(0)%t + samr_2d%levels(0)%dt
     samr_2d%levels(0)%iteration = samr_2d%levels(0)%iteration + 1
+
+    box = samr_2d%levels(0)%boxes(1)
+
+    failed = &
+    any( abs( box%hydro( 1:d(1), 1:d(2)/4, 1:d(3) )%u( hyid%rho ) - rho_bg ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), d(2)/4+1:3*d(2)/4, 1:d(3) )%u( hyid%rho ) - rho_slab ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), 3*d(2)/4+1:d(2), 1:d(3) )%u( hyid%rho ) - rho_bg ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), 1:d(2)/4, 1:d(3) )%u( hyid%rho_u ) ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), d(2)/4+1:3*d(2)/4, 1:d(3) )%u( hyid%rho_u ) - v ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), 3*d(2)/4+1:d(2), 1:d(3) )%u( hyid%rho_u ) ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), 2:d(2), 3:d(3) )%u( hyid%rho_v ) ) > epsilon(0.d0) ) &
+    .or. any( abs( box%hydro( 1:d(1), 2:d(2), 3:d(3) )%u( hyid%rho_w ) ) > epsilon(0.d0) )
   end do
 
-  failed = .false.
 end function rhyme_muscl_hancock_advection_test

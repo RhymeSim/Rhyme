@@ -17,7 +17,7 @@ contains
     if ( p > state%p ) then
       factor = sqrt( AK / (Bk + p) )
       star%f = ( p - state%p ) * factor
-      star%fprime = factor * ( 1.d0 - (p - state%p) / (2.d0 * (Bk + p)) )
+      star%fprime = factor * ( 1.d0 - ( p - state%p ) / ( 2.d0 * (Bk + p) ) )
     else
       star%f = 2.d0 * state%cs / ig%gm1 * ( (p / state%p)**ig%gm1_2g - 1.d0 )
       star%fprime =  1.d0 / ( state%rho * state%cs ) * ( p / state%p )**( -ig%gp1_2g )

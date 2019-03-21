@@ -15,7 +15,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set ( deps
-  rhyme_hydro_base
   rhyme_samr
   rhyme_log
 )
@@ -28,6 +27,7 @@ endforeach ( dep )
 
 
 set ( srcs
+  src/rhyme_samr_bc_set_base_grid_boundaries.f90
   src/rhyme_samr_bc.f90
 )
 
