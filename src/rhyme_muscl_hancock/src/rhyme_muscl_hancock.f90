@@ -24,6 +24,7 @@ module rhyme_muscl_hancock
     procedure :: init => rhyme_muscl_hancock_init
     procedure :: solve => rhyme_muscl_hancock_solve_cpu_intensive
     procedure :: solve_memory_intensive => rhyme_muscl_hancock_solve_memory_intensive
+    procedure :: solve_cpu_intensive => rhyme_muscl_hancock_solve_cpu_intensive
   end type muscl_hancock_t
 
 contains
@@ -187,14 +188,15 @@ contains
     type ( slope_limiter_t ), intent ( in ) :: sl
 
     integer :: l, b, i, j, k
+    integer :: axis, idx
+    integer :: li(3), ci(3), ri(3) ! left neighbor, center cell and right neighbor indices
+    integer, parameter :: axes(3) = [ hyid%x, hyid%y, hyid%z ]
 
     type ( hydro_conserved_t ) :: delta( -1:1, hyid%x:hyid%z )
     type ( hydro_conserved_t ) :: half_step_left( -1:1, hyid%x:hyid%z )
     type ( hydro_conserved_t ) :: half_step_right( -1:1, hyid%x:hyid%z )
-    type ( hydro_conserved_t ) :: left_edge_state( hyid%x:hyid%z )
-    type ( hydro_conserved_t ) :: right_edge_state( hyid%x:hyid%z )
-    type ( hydro_flux_t ) :: left_flux( hyid%x:hyid%z )
-    type ( hydro_flux_t ) :: right_flux( hyid%x:hyid%z )
+    type ( hydro_conserved_t ) :: edge_state( -1:0, hyid%x:hyid%z )
+    type ( hydro_flux_t ) :: flux( -1:0, hyid%x:hyid%z )
     type ( hydro_flux_t ) :: dF( hyid%x:hyid%z )
 
     l = box%level
@@ -202,57 +204,51 @@ contains
 
     call this%ws%check( box )
 
+
     do k = 1, box%dims(3)
       do j = 1, box%dims(2)
         do i = 1, box%dims(1)
-          if ( this%active_axis( hyid%x ) ) then
-            call sl%run( cfl, ig, &
-              box%hydro( i-2, j, k ), &
-              box%hydro( i-1, j, k ), &
-              box%hydro( i  , j, k ), &
-              delta( -1, hyid%x ) )
 
-            call ig%half_step_extrapolation( box%hydro( i-1, j, k ), &
-              delta( -1, hyid%x ), hyid%x, dx( hyid%x ), dt, &
-              half_step_left( -1, hyid%x ), half_step_right( -1, hyid% x) )
+          this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u = box%hydro( i, j, k )%u
 
-            call sl%run( cfl, ig, &
-              box%hydro( i-1, j, k ), &
-              box%hydro( i  , j, k ), &
-              box%hydro( i+1, j, k ), &
-              delta( 0, hyid%x ) )
+          do axis = hyid%x, hyid%z
 
-            call ig%half_step_extrapolation( box%hydro( i, j, k ), &
-              delta( 0, hyid%x ), hyid%x, dx( hyid%x ), dt, &
-              half_step_left( 0, hyid%x ), half_step_right( 0, hyid% x) )
+            if ( .not. this%active_axis( axis ) ) cycle
 
-            call sl%run( cfl, ig, &
-              box%hydro( i  , j, k ), &
-              box%hydro( i+1, j, k ), &
-              box%hydro( i+2, j, k ), &
-              delta( 1, hyid%x ) )
+            do idx = -1, 1
+              li = merge( [i, j, k] + idx - 1, [i, j, k], axes .eq. axis )
+              ci = merge( [i, j, k] + idx    , [i, j, k], axes .eq. axis )
+              ri = merge( [i, j, k] + idx + 1, [i, j, k], axes .eq. axis )
 
-            call ig%half_step_extrapolation( box%hydro( i+1, j, k ), &
-              delta( 1, hyid%x ), hyid%x, dx( hyid%x ), dt, &
-              half_step_left( 1, hyid%x ), half_step_right( 1, hyid% x) )
+              call sl%run( cfl, ig, &
+                box%hydro( li(1), li(2), li(3) ), &
+                box%hydro( ci(1), ci(2), ci(3) ), &
+                box%hydro( ri(1), ri(2), ri(3) ), &
+                delta( idx, axis ) )
 
-            call rhyme_irs_solve( irs, ig, &
-              half_step_right( -1, hyid%x ), half_step_left( 0, hyid%x ), &
-              dx( hyid%x ), dt, hyid%x, left_edge_state( hyid%x ) )
+              call ig%half_step_extrapolation( &
+                box%hydro( ci(1), ci(2), ci(3) ), &
+                delta( idx, axis ), axis, dx( axis ), dt, &
+                half_step_left( idx, axis ), half_step_right( idx, axis ) )
+            end do
 
-            call ig%flux_at( left_edge_state( hyid%x ), hyid%x, left_flux( hyid%x ) )
+            do idx = -1, 0
+              call rhyme_irs_solve( irs, ig, &
+                half_step_right( idx, axis ), &
+                half_step_left( idx+1, axis ), &
+                dx( axis ), dt, axis, &
+                edge_state( idx, axis ) )
 
-            call rhyme_irs_solve( irs, ig, &
-              half_step_right( 0, hyid%x ), half_step_left( 1, hyid%x ), &
-              dx( hyid%x ), dt, hyid%x, right_edge_state( hyid%x ) )
+              call ig%flux_at( edge_state( idx, axis ), axis, flux( idx, axis ) )
+            end do
 
-            call ig%flux_at( right_edge_state( hyid%x ), hyid%x, right_flux( hyid%x ) )
-
-            dF( hyid%x )%f = left_flux( hyid%x )%f - right_flux( hyid%x )%f
+            dF( axis )%f = flux( -1, axis )%f - flux( 0, axis )%f
 
             this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u = &
-              box%hydro( i, j, k )%u + dt / dx( hyid%x ) * dF( hyid%x )%f
-          end if
+              this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u &
+              + dt / dx( axis ) * dF( axis )%f
+          end do
+
         end do
       end do
     end do

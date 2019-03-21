@@ -91,17 +91,16 @@ program rhyme
     call log%log( '', 't', '=', [ samr%levels(0)%t ] )
     call log%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
-    call log%start_task( 'BC', 'only base grid boundaries')
+    call log%start_task( 'boundary-condition' )
     call bc%set_base_grid_boundaries( samr )
     call log%done
 
     ! Update structured AMR
-    ! Update workspace
     ! Update ghost cells of boxes
 
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 2) .eq. 0 ) then
-      call log%start_task( 'snapshot', 'Chombo output' )
+      call log%start_task( 'storing-snapshot')
       call chombo%write_samr( samr )
       call log%done
     end if

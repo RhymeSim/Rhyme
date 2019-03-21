@@ -12,9 +12,9 @@ contains
     call this%set_sub_section( task )
 
     if ( present( msg ) ) then
-      call this%log( 'ツ '//trim( adjustl( msg ) ) )
+      call this%log( 'Start '//trim( adjustl( msg ) ) )
     else
-      call this%log( 'ツ')
+      call this%log( 'Start')
     end if
   end subroutine rhyme_logger_util_start_task
 

@@ -43,7 +43,12 @@ contains
     type ( log_t ), intent ( inout ) :: log
 
     if ( .not. samr%initialized ) then
-      call log%err( 'SAMR object need to be initialized before initializing samr_bc' )
+      call log%err( 'SAMR object need to be initialized before initializing SAMR_BC' )
+      return
+    end if
+
+    if ( this%initialized ) then
+      call log%warn( 'Trying to re-initialize SAMR_BC object' )
       return
     end if
 
@@ -65,7 +70,12 @@ contains
     integer :: i, j, k, lb(3), ub(3)
 
     if ( .not. samr%initialized ) then
-      call log%warn( 'Trying to re-initialize samr_bc object' )
+      call log%err( 'SAMR object need to be initialized before initializing SAMR_BC' )
+      return
+    end if
+
+    if ( this%initialized ) then
+      call log%warn( 'Trying to re-initialize SAMR_BC object' )
       return
     end if
 

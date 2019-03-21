@@ -5,7 +5,7 @@ module rhyme_cfl
   implicit none
 
   type cfl_t
-    real(kind=8) :: courant_number = .8d0
+    real ( kind=8 ) :: courant_number = .8d0
   contains
     procedure :: dt => calculate_time_step
   end type cfl_t
@@ -22,7 +22,7 @@ contains
     type ( samr_t ), intent(in) :: samr
 
     integer :: i, j, k
-    real(kind=8) :: max_cs
+    real ( kind=8 ) :: max_cs
 
     max_cs = 0.d0
 
