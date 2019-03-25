@@ -13,10 +13,7 @@ contains
 
     integer :: i
 
-    solution%star%p = max( &
-      rhyme_irs_guess_p_star( solution%left, solution%right, dir ), &
-      cfg%tolerance &
-    )
+    solution%star%p = rhyme_irs_guess_p_star( solution%left, solution%right, dir )
 
     p_star_prev = solution%star%p
 

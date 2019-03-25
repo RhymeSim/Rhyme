@@ -12,5 +12,7 @@ contains
       + L%rho * L%cs * R%p &
       + R%cs * L%cs * ( L%rho * L%v(dir) - R%rho * R%v(dir) ) &
     ) / ( R%rho * R%cs + L%rho * L%cs )
+
+    p_star = max( p_star, tiny(0.d0) )
   end function rhyme_irs_guess_p_star
 end submodule rhyme_irs_guess_p_star_submodule
