@@ -15,7 +15,7 @@ contains
 
     solution%star%p = rhyme_irs_guess_p_star( solution%left, solution%right, dir )
 
-    p_star_prev = solution%star%p
+    p_star_prev = tiny(0.d0)
 
     do i = 1, cfg%n_iteration
       call rhyme_irs_nonlinear_wave_function( &

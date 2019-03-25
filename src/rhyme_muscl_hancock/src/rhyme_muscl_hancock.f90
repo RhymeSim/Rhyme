@@ -22,7 +22,7 @@ module rhyme_muscl_hancock
     integer :: active_flux(3) = 0
   contains
     procedure :: init => rhyme_muscl_hancock_init
-    procedure :: solve => rhyme_muscl_hancock_solve_cpu_intensive
+    procedure :: solve => rhyme_muscl_hancock_solve_memory_intensive
     procedure :: solve_memory_intensive => rhyme_muscl_hancock_solve_memory_intensive
     procedure :: solve_cpu_intensive => rhyme_muscl_hancock_solve_cpu_intensive
   end type muscl_hancock_t
@@ -121,7 +121,7 @@ contains
             call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k, hyid%x ), &
               this%ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
-              dx( hyid%x ), dt, hyid%x, evolved_state )
+              0.d0, dt, hyid%x, evolved_state )
             call ig%flux_at( evolved_state, hyid%x, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
           end if
@@ -130,7 +130,7 @@ contains
             call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k, hyid%y ), &
               this%ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
-              dx( hyid%y ), dt, hyid%y, evolved_state )
+              0.d0, dt, hyid%y, evolved_state )
             call ig%flux_at( evolved_state, hyid%y, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
           end if
@@ -139,7 +139,7 @@ contains
             call rhyme_irs_solve( irs, ig, &
               this%ws%levels(l)%boxes(b)%UR( i, j, k, hyid%z ), &
               this%ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
-              dx( hyid%z ), dt, hyid%z, evolved_state )
+              0.d0, dt, hyid%z, evolved_state )
             call ig%flux_at( evolved_state, hyid%z, &
               this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z ) )
           end if
@@ -151,24 +151,28 @@ contains
     do k = 1, box%dims(3)
       do j = 1, box%dims(2)
         do i = 1, box%dims(1)
-
-          do axis = hyid%x, hyid%z
-            dF(axis)%f = this%ws%levels(l)%boxes(b)%FR( i-1, j, k, axis )%f &
-              - this%ws%levels(l)%boxes(b)%FR( i, j, k, axis )%f
-          end do
-
-          if ( this%active_axis( hyid%x ) ) then
-            box%hydro( i, j, k )%u = box%hydro( i, j, k )%u + dt / dx( hyid%x ) * dF( hyid%x )%f
-          end if
-
-          if ( this%active_axis( hyid%y ) ) then
-            box%hydro( i, j, k )%u = box%hydro( i, j, k )%u + dt / dx( hyid%y ) * dF( hyid%y )%f
-          end if
-
-          if ( this%active_axis( hyid%z ) ) then
-            box%hydro( i, j, k )%u = box%hydro( i, j, k )%u + dt / dx( hyid%z ) * dF( hyid%z )%f
-          end if
-
+          box%hydro(i,j,k)%u = &
+            box%hydro(i,j,k)%u &
+            + &
+            ( &
+              this%active_flux( hyid%x ) * dt / dx( hyid%x ) &
+              * ( &
+                this%ws%levels(l)%boxes(b)%FR( i-1, j, k, hyid%x )%f &
+                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x )%f &
+              ) &
+              + &
+              this%active_flux( hyid%y ) * dt / dx( hyid%y ) &
+              * ( &
+                this%ws%levels(l)%boxes(b)%FR( i, j-1, k, hyid%y )%f &
+                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y )%f &
+              ) &
+              + &
+              this%active_flux( hyid%z ) * dt / dx( hyid%z ) &
+              * ( &
+                this%ws%levels(l)%boxes(b)%FR( i, j, k-1, hyid%z )%f &
+                - this%ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z )%f &
+              ) &
+            )
         end do
       end do
     end do
@@ -236,7 +240,7 @@ contains
               call rhyme_irs_solve( irs, ig, &
                 half_step_right( idx, axis ), &
                 half_step_left( idx+1, axis ), &
-                dx( axis ), dt, axis, &
+                0.d0, dt, axis, &
                 edge_state( idx, axis ) )
 
               call ig%flux_at( edge_state( idx, axis ), axis, flux( idx, axis ) )
