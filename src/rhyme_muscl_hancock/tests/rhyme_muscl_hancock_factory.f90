@@ -42,7 +42,6 @@ contains
 
     if ( mh_fac_initialized ) return
 
-
     ! Initializing SAMR
     call rhyme_samr_factory_fill( &
       mh_fac_nlevels, &
@@ -74,4 +73,5 @@ contains
 
     mh_fac_initialized = .true.
   end subroutine rhyme_muscl_hancock_factory_init
+
 end module rhyme_muscl_hancock_factory

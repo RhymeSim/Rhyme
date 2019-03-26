@@ -43,6 +43,8 @@ add_subdirectory ( src/rhyme_mh_workspace )
 
 
 set ( srcs
+  src/rhyme_muscl_hancock_solve_memory_intensive.f90
+  src/rhyme_muscl_hancock_solve_cpu_intensive.f90
   src/rhyme_muscl_hancock.f90
 )
 

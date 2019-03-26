@@ -17,7 +17,7 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
   type ( log_t ) :: log
 
   integer, parameter :: nlevels = 1
-  integer, parameter :: ngrids = 32
+  integer, parameter :: ngrids = 8
   integer, parameter :: base_grid_2d(3) = [ ngrids, ngrids, 1 ]
   integer, parameter :: d(3) = base_grid_2d
   integer, parameter :: ghost_cells_2d(3) = [ 2, 2, 0 ]
@@ -84,17 +84,16 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
     end if
   end do
 
-  do step = 1, 2 * ngrids
+  do step = 1, 79 * ngrids
     ! TODO: Test for other directions
 
     ! NB: It should be much more stable
     eps = epsilon(0.e0)
 
+    ! Forcing dt
     samr_2d%levels(0)%dt = dt
 
-    call ch%write_samr( samr_2d )
-    failed = abs( dt - cfl%dt( ig, samr_2d ) ) > eps
-    if ( failed ) return
+    ! call ch%write_samr( samr_2d )
 
     call bc%set_base_grid_boundaries( samr_2d )
 
@@ -119,6 +118,7 @@ logical function rhyme_muscl_hancock_advection_test () result ( failed )
     .or. any( abs( box%hydro( 1:d(1), 3*d(2)/4+1:d(2), 1:d(3) )%u( hyid%rho_u ) ) > eps ) &
     .or. any( abs( box%hydro( 1:d(1), 2:d(2), 3:d(3) )%u( hyid%rho_v ) ) > eps ) &
     .or. any( abs( box%hydro( 1:d(1), 2:d(2), 3:d(3) )%u( hyid%rho_w ) ) > eps )
+    if ( failed ) return
   end do
 
 end function rhyme_muscl_hancock_advection_test
