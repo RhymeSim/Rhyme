@@ -9,30 +9,40 @@ contains
     integer, intent ( in ) :: dir
 
     real ( kind=8 ) :: ps_pL, ps_pR
-    real ( kind=8 ) :: p_star_prev
+    real ( kind=8 ) :: p_star_prev, guessed_p(5)
 
-    integer :: i
+    integer :: i, guess_id
 
-    solution%star%p = rhyme_irs_guess_p_star( solution%left, solution%right, dir )
+    guessed_p = rhyme_irs_guess_p_star( ig, solution%left, solution%right, &
+      dir, cfg%tolerance )
 
-    p_star_prev = tiny(0.d0)
+    do guess_id = 1, size( guessed_p )
+      solution%star%p = guessed_p( guess_id )
+      p_star_prev = tiny(0.d0)
 
-    do i = 1, cfg%n_iteration
-      call rhyme_irs_nonlinear_wave_function( &
-        ig, solution%left, solution%star%p, solution%star%left )
-      call rhyme_irs_nonlinear_wave_function( &
-        ig, solution%right, solution%star%p, solution%star%right )
+      do i = 1, cfg%n_iteration
+        call rhyme_irs_nonlinear_wave_function( &
+          ig, solution%left, solution%star%p, solution%star%left )
+        call rhyme_irs_nonlinear_wave_function( &
+          ig, solution%right, solution%star%p, solution%star%right )
 
-      solution%star%p = solution%star%p - ( &
-        solution%star%left%f + solution%star%right%f &
-        + ( solution%right%v(dir) - solution%left%v(dir) ) &
-      ) / ( solution%star%left%fprime + solution%star%right%fprime )
+        solution%star%p = solution%star%p - ( &
+          solution%star%left%f + solution%star%right%f &
+          + ( solution%right%v(dir) - solution%left%v(dir) ) &
+        ) / ( solution%star%left%fprime + solution%star%right%fprime )
 
-      if ( 2 * abs( solution%star%p - p_star_prev ) &
-        / ( solution%star%p + p_star_prev ) < cfg%tolerance ) exit
+        if ( solution%star%p < 0.d0 ) exit
 
-      p_star_prev = solution%star%p
+        if ( 2 * abs( solution%star%p - p_star_prev ) &
+          / ( solution%star%p + p_star_prev ) < cfg%tolerance ) exit
+
+        p_star_prev = solution%star%p
+      end do
+
+      if ( solution%star%p > 0.d0 ) exit
     end do
+
+    if ( solution%star%p < 0.d0 ) solution%star%p = cfg%tolerance
 
     solution%star%u = 0.5d0 * ( &
       ( solution%right%v(dir) + solution%left%v(dir) ) &

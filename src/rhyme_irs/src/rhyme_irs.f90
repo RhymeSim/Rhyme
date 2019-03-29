@@ -48,10 +48,12 @@ module rhyme_irs
       type ( rp_star_side_t ), intent ( inout ) :: star
     end subroutine rhyme_irs_nonlinear_wave_function
 
-    pure module function rhyme_irs_guess_p_star ( L, R, dir ) result ( p_star )
+    pure module function rhyme_irs_guess_p_star ( ig, L, R, dir, tol ) result ( p_star )
+      type ( ideal_gas_t ), intent ( in ) :: ig
       type ( rp_side_t ), intent ( in ) :: L, R
       integer, intent ( in ) :: dir
-      real ( kind=8 ) :: p_star
+      real ( kind=8 ), intent ( in ) :: tol
+      real ( kind=8 ) :: p_star(5)
     end function rhyme_irs_guess_p_star
 
     type ( hydro_conserved_t ) pure module function irs_w_k ( ig, s ) result ( U )
