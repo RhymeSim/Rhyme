@@ -21,6 +21,5 @@ logical function rhyme_samr_bc_init_test () result (failed)
   .or. box%flags(box%dims(1), 1, 1) .eq. samrid%ghost &
   .or. box%flags(1, -samr_bc_fac_ghost_cells(2) + 1, 1) .ne. samrid%ghost &
   .or. box%flags(1, box%dims(2) + samr_bc_fac_ghost_cells(2), 1) .ne. samrid%ghost &
-  .or. box%flags(1, box%dims(2), 1) .eq. samrid%ghost &
-  .or. any ( bc%ghost_cells .ne. samr_bc_fac_samr%ghost_cells )
+  .or. box%flags(1, box%dims(2), 1) .eq. samrid%ghost
 end function rhyme_samr_bc_init_test

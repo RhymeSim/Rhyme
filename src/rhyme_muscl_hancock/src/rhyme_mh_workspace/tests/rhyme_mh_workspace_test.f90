@@ -3,11 +3,10 @@ logical function rhyme_mh_workspace_test () result ( failed )
 
   implicit none
 
-  type ( mh_workspace_t ) :: ws
-
+  type ( mh_workspace_t ) :: mhws
 
   failed = &
-  ws%initialized &
-  .or. lbound ( ws%levels, 1 ) .ne. 0 &
-  .or. ubound ( ws%levels, 1 ) .ne. samrid%max_nlevels
+  mhws%type .ne. mhwsid%memory_intensive &
+  .or. lbound ( mhws%levels, 1 ) .ne. 0 &
+  .or. ubound ( mhws%levels, 1 ) .ne. samrid%max_nlevels
 end function rhyme_mh_workspace_test

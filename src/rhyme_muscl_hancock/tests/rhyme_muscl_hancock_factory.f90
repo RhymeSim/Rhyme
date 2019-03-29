@@ -18,9 +18,16 @@ module rhyme_muscl_hancock_factory
   integer, parameter :: mh_fac_init_nboxes ( 0:samrid%max_nlevels ) = [ &
     1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
+  integer, parameter :: mh_fac_max_nboxes_uni ( 0:samrid%max_nlevels ) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
+  integer, parameter :: mh_fac_init_nboxes_uni ( 0:samrid%max_nlevels ) = [ &
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
+  ]
 
   real ( kind=8 ), parameter :: mh_fac_courant_number = 0.23
   integer, parameter :: mh_fac_gastype = igid%monatomic
+  real ( kind=8 ), parameter :: mh_fac_gamma = 5.d0 / 3.d0
   integer, parameter :: mh_fac_sltype = slid%minmod
   integer, parameter :: mh_fac_n_iteration = 100
   real ( kind=8 ), parameter :: mh_fac_tolerance = 1.d-6

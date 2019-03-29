@@ -17,7 +17,6 @@ module rhyme_samr_bc
 
   type samr_bc_t
     integer :: types(6) = bcid%reflective
-    integer :: ghost_cells(3)
     logical :: initialized = .false.
   contains
     procedure :: init_with => rhyme_samr_bc_init_with
@@ -69,8 +68,8 @@ contains
   subroutine rhyme_samr_bc_init ( this, samr, log )
     implicit none
 
-    class (samr_bc_t), intent(inout) :: this
-    type (samr_t), intent(inout) :: samr
+    class ( samr_bc_t ), intent ( inout ) :: this
+    type ( samr_t ), intent ( inout ) :: samr
     type ( log_t ), intent ( inout ) :: log
 
     integer :: i, j, k, lb(3), ub(3)
@@ -84,8 +83,6 @@ contains
       call log%warn( 'Trying to re-initialize SAMR_BC object' )
       return
     end if
-
-    this%ghost_cells(:) = samr%ghost_cells(:)
 
     lb = - samr%ghost_cells + 1
     ub = samr%base_grid + samr%ghost_cells

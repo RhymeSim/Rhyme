@@ -9,16 +9,13 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   call rhyme_muscl_hancock_factory_init
 
   failed = &
-  mh%initialized &
-  .or. any( mh%active_axis .eqv. .true. ) &
+  any( mh%active_axis .eqv. .true. ) &
   .or. any( mh%active_flux .ne. 0 )
   if ( failed ) return
 
   call mh%init( mh_fac_samr, mh_fac_log )
 
   failed = &
-  .not. mh%ws%initialized &
-  .or. .not. mh%initialized &
-  .or. any( mh%active_axis .neqv. [ .true., .true., .false. ] ) &
+  any( mh%active_axis .neqv. [ .true., .true., .false. ] ) &
   .or. any( mh%active_flux .ne. [ 1, 1, 0 ] )
 end function rhyme_muscl_hancock_test

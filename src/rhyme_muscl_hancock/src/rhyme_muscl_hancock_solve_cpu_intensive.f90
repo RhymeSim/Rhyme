@@ -1,16 +1,17 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_cpu_intensive_submodule
 contains
-  pure module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
-    this, box, dx, dt, cfl, ig, irs, sl )
+  module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
+    cfg, box, dx, dt, cfl, ig, irs, sl, ws )
     implicit none
 
-    class ( muscl_hancock_t ), intent ( inout ) :: this
+    class ( muscl_hancock_t ), intent ( inout ) :: cfg
     type ( samr_box_t ), intent ( inout ) :: box
     real ( kind=8 ), intent ( in ) :: dx(3), dt
     type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
+    type ( mh_workspace_t ), intent ( inout ) :: ws
 
     type ( hydro_conserved_t ) :: delta( -1:1, hyid%x:hyid%z )
     type ( hydro_conserved_t ) :: half_step_left( -1:1, hyid%x:hyid%z )
@@ -28,18 +29,17 @@ contains
     l = box%level
     b = box%number
 
-    call this%ws%check( box )
-
+    call rhyme_mh_workspace_check( ws, box )
 
     do k = 1, box%dims(3)
       do j = 1, box%dims(2)
         do i = 1, box%dims(1)
 
-          this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u = box%hydro( i, j, k )%u
+          ws%levels(l)%boxes(b)%U( i, j, k )%u = box%hydro( i, j, k )%u
 
           do axis = hyid%x, hyid%z
 
-            if ( .not. this%active_axis( axis ) ) cycle
+            if ( .not. cfg%active_axis( axis ) ) cycle
 
             do idx = -1, 1
               li = merge( [i, j, k] + idx - 1, [i, j, k], axes .eq. axis )
@@ -70,8 +70,8 @@ contains
 
             dF( axis )%f = flux( -1, axis )%f - flux( 0, axis )%f
 
-            this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u = &
-              this%ws%levels(l)%boxes(b)%UR( i, j, k, 1 )%u &
+            ws%levels(l)%boxes(b)%U( i, j, k )%u = &
+              ws%levels(l)%boxes(b)%U( i, j, k )%u &
               + dt / dx( axis ) * dF( axis )%f
           end do
 
@@ -80,8 +80,8 @@ contains
     end do
 
     ub = box%dims
-    box%hydro(1:ub(1),1:ub(2),1:ub(3)) = &
-      this%ws%levels(l)%boxes(b)%UR(1:ub(1),1:ub(2),1:ub(3),1)
+
+    box%hydro(1:ub(1),1:ub(2),1:ub(3)) = ws%levels(l)%boxes(b)%U(1:ub(1),1:ub(2),1:ub(3))
   end subroutine rhyme_muscl_hancock_solve_cpu_intensive
 
 end submodule rhyme_mh_solve_cpu_intensive_submodule

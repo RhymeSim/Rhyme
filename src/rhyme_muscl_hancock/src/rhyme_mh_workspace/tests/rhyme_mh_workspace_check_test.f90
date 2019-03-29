@@ -15,7 +15,9 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes
-      call ws%check ( samr%levels(l)%boxes(b) )
+      ! Check memory_intensive
+      ws%type = mhwsid%memory_intensive
+      call rhyme_mh_workspace_check( ws, samr%levels(l)%boxes(b) )
 
       lb = lbound ( samr%levels(l)%boxes(b)%hydro )
       ub = ubound ( samr%levels(l)%boxes(b)%hydro )
@@ -34,6 +36,20 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
       .or. size ( ws%levels(l)%boxes(b)%FR ) .ne. product ( dims ) * 3 &
       .or. any ( lb .ne. lbws(:3) ) &
       .or. any ( ub .ne. ubws(:3) )
+
+      ! Check cpu_intensive
+      ws%type = mhwsid%cpu_intensive
+      call rhyme_mh_workspace_check( ws, samr%levels(l)%boxes(b) )
+
+      dims = samr%levels(l)%boxes(b)%dims
+      lb = lbound( ws%levels(l)%boxes(b)%U )
+      ub = ubound( ws%levels(l)%boxes(b)%U )
+
+      failed = &
+      .not. allocated ( ws%levels(l)%boxes(b)%U ) &
+      .or. size ( ws%levels(l)%boxes(b)%U ) .ne. product( dims ) &
+      .or. any ( lb .ne. 1 ) &
+      .or. any ( ub .ne. dims )
     end do
   end do
 end function rhyme_mh_workspace_check_test

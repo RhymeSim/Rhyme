@@ -10,7 +10,6 @@ logical function rhyme_samr_bc_set_base_grid_left_boundary_test () result ( fail
   real ( kind=8 ), parameter :: e = epsilon(0.d0)
 
   call rhyme_samr_bc_factory_init
-  bc%ghost_cells = [ 2, 0, 0 ]
 
 
   ! Reflective

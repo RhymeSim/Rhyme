@@ -99,7 +99,7 @@ program rhyme
     ! Update ghost cells of boxes
 
     ! Store a snapshot if necessary
-    if ( modulo(samr%levels(0)%iteration, 2) .eq. 0 ) then
+    if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
       call log%start_task( 'storing-snapshot')
       call chombo%write_samr( samr )
       call log%done

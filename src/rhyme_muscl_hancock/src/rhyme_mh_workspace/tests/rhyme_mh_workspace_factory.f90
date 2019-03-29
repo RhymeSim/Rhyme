@@ -1,6 +1,6 @@
 module rhyme_mh_workspace_factory
-  use rhyme_samr_factory
   use rhyme_mh_workspace
+  use rhyme_samr_factory
 
   implicit none
 

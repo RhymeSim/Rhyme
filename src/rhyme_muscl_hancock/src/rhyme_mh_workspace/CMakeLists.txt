@@ -16,7 +16,6 @@ set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 set ( deps
   rhyme_hydro_base
-  rhyme_riemann_problem
   rhyme_samr
   rhyme_log
 )
@@ -29,6 +28,7 @@ endforeach ( dep )
 
 
 set ( srcs
+  src/rhyme_mh_workspace_check.f90
   src/rhyme_mh_workspace.f90
 )
 
