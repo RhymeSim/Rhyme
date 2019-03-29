@@ -29,6 +29,7 @@ module rhyme_mh_workspace
   type mh_workspace_t
     integer :: nlevels
     integer :: type = mhwsid%memory_intensive
+    logical :: initialized = .false.
     type ( mh_workspace_level_t ) :: levels( 0:samrid%max_nlevels )
     type ( samr_t ), pointer :: samr
   contains
@@ -53,6 +54,11 @@ contains
 
     integer :: l
 
+    if ( this%initialized ) then
+      call log%warn( 'Trying to re-initialize mh_workspace object' )
+      return
+    end if
+
     this%nlevels = samr%nlevels
 
     do l = 0, samr%nlevels - 1
@@ -60,7 +66,10 @@ contains
       this%levels(l)%max_nboxes = samr%levels(l)%max_nboxes
     end do
 
-    call log%log( 'mh_workspace object has been initialized' )
+    call log%log( 'mh_workspace object has been initialized', &
+      'type', '=', [ this%type ] )
+
+    this%initialized = .true.
   end subroutine rhyme_mh_workspace_init
 
 end module rhyme_mh_workspace

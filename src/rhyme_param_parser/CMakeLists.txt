@@ -22,6 +22,7 @@ set ( deps
   rhyme_drawing
   rhyme_irs
   rhyme_slope_limiter
+  rhyme_muscl_hancock
   rhyme_chombo
   rhyme_initial_condition
 )

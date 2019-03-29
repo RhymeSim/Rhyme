@@ -1,6 +1,6 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_cpu_intensive_submodule
 contains
-  module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
+  pure module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
     cfg, box, dx, dt, cfl, ig, irs, sl, ws )
     implicit none
 

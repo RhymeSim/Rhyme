@@ -11,12 +11,13 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   type ( drawing_t ) :: draw
   type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
+  type ( muscl_hancock_t ) :: mh
   type ( chombo_t ) :: chombo
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
 
-  call parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
+  call parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Structured AMR
   failed = &
@@ -73,6 +74,10 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   failed = &
   abs ( sl%w - 1.23d0 ) > epsilon(0.d0) &
   .or. sl%type .ne. slid%van_Leer
+  if ( failed ) return
+
+  ! MUSCL-Hancock solver
+  failed = mh%solver_type .ne. mhid%cpu_intensive
   if ( failed ) return
 
   ! CFL

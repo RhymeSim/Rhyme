@@ -7,7 +7,11 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
 
   mhws%type = mhwsid%memory_intensive
 
-  call rhyme_muscl_hancock_advection_x_test( &
-    rhyme_muscl_hancock_solve_memory_intensive, mhws, failed )
+  call rhyme_muscl_hancock_advection_test( &
+    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%x, failed )
+  call rhyme_muscl_hancock_advection_test( &
+    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%y, failed )
+  call rhyme_muscl_hancock_advection_test( &
+    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%z, failed )
 
 end function rhyme_muscl_hancock_solve_memory_intensive_test

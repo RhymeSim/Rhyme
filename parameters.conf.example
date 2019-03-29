@@ -63,6 +63,11 @@ front_bc = periodic
 ideal_gas_type = diatomic
 
 
+# **CFL**
+
+courant_number = .81d0
+
+
 # **Iterative Riemann Solver**
 
 pressure_floor = 1.d-10
@@ -78,9 +83,11 @@ limiter = van_leer
 limiter_omega = 1.23d0
 
 
-# **CFL**
+# **MUSCL-Hancock solver**
+# Implemented solvers:
+# - memory_intensive, cpu_intensive
 
-courant_number = .81d0
+solver_type = cpu_intensive
 
 
 # **Drawing**

@@ -9,13 +9,14 @@ module rhyme_param_parser
   use rhyme_drawing
   use rhyme_irs
   use rhyme_slope_limiter
+  use rhyme_muscl_hancock
   use rhyme_chombo
 
   implicit none
 
 contains
 
-  subroutine parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
+  subroutine parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
@@ -27,6 +28,7 @@ contains
     type ( drawing_t ), intent ( inout ) :: draw
     type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( inout ) :: sl
+    type ( muscl_hancock_t ), intent ( inout ) :: mh
     type ( chombo_t ), intent ( inout ) :: chombo
 
     integer :: ios
@@ -248,6 +250,19 @@ contains
       case ( "limiter_omega" )
         read (1, *) key, op, sl%w
         call log%log( '', 'slope_limiter_omega (w)', '=', [ sl%w ] )
+
+        ! MUSCL-Hancock solver
+      case ( 'solver_type' )
+        read (1, *) key, op, str
+        call log%log( '', 'solver_type', '=', [ str ] )
+
+        if ( trim(str) .eq. 'memory_intensive' ) then
+          mh%solver_type = mhid%memory_intensive
+        else if ( trim(str) .eq. 'cpu_intensive' ) then
+          mh%solver_type = mhid%cpu_intensive
+        else
+          call log%err( 'Unknown solver_type' )
+        end if
 
         ! Chombo
       case ( "prefix" )

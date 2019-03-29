@@ -26,8 +26,8 @@ module rhyme_muscl_hancock_factory
   ]
 
   real ( kind=8 ), parameter :: mh_fac_courant_number = 0.23
-  integer, parameter :: mh_fac_gastype = igid%monatomic
-  real ( kind=8 ), parameter :: mh_fac_gamma = 5.d0 / 3.d0
+  integer, parameter :: mh_fac_gastype = igid%diatomic
+  real ( kind=8 ), parameter :: mh_fac_gamma = 7.d0 / 5.d0
   integer, parameter :: mh_fac_sltype = slid%minmod
   integer, parameter :: mh_fac_n_iteration = 100
   real ( kind=8 ), parameter :: mh_fac_tolerance = 1.d-6

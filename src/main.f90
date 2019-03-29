@@ -29,6 +29,7 @@ program rhyme
   type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( muscl_hancock_t ) :: mh
+  type ( mh_workspace_t ) :: mhws
   type ( chombo_t ) :: chombo
   type ( initial_condition_t ) :: ic
 
@@ -49,7 +50,7 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call parse_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, chombo )
+  call parse_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Initializing
   call log%set_section( 'init' )
@@ -76,7 +77,8 @@ program rhyme
   call irs%init( log )
 
   ! MUSCL-Hancock
-  call mh%init( samr, log )
+  mhws%type = mh%solver_type
+  call mh%init( samr, mhws, log )
 
   ! Chombo Output
   call chombo%init( log )
@@ -109,12 +111,8 @@ program rhyme
     call log%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
-        call mh%solve( &
-          samr%levels(l)%boxes(b), &
-          samr%levels(l)%dx, &
-          samr%levels(l)%dt, &
-          cfl, ig, irs, sl &
-        )
+        call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
+          samr%levels(l)%dx, samr%levels(l)%dt, cfl, ig, irs, sl, mhws, log )
       end do
     end do
     call log%done

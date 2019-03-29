@@ -4,6 +4,7 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   implicit none
 
   type ( muscl_hancock_t ) :: mh
+  type ( mh_workspace_t ) :: mhws
 
 
   call rhyme_muscl_hancock_factory_init
@@ -13,7 +14,7 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   .or. any( mh%active_flux .ne. 0 )
   if ( failed ) return
 
-  call mh%init( mh_fac_samr, mh_fac_log )
+  call mh%init( mh_fac_samr, mhws, mh_fac_log )
 
   failed = &
   any( mh%active_axis .neqv. [ .true., .true., .false. ] ) &
