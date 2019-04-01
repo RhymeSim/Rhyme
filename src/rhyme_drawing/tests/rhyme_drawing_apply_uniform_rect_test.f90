@@ -44,6 +44,7 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
           .or. abs ( samr%levels(0)%boxes(1)%hydro(i,j,k)%u(hyid%rho_w) &
             - delta * hy%rho * hy%w) > epsilon(0.d0)
 
+          print *, i, j, k, '1', failed
           if ( failed ) return
         else
           failed = &
@@ -58,6 +59,7 @@ logical function rhyme_drawing_apply_uniform_rect_test () result (failed)
           .or. any ( abs ( samr%levels(0)%boxes(1)%hydro(1:g(1),1:g(2),1:g(3))%u(hyid%e_tot) &
             - hy%e_tot ) > epsilon(0.d0) )
 
+          print *, i, j, k, '2', failed
           if ( failed ) return
         end if
 

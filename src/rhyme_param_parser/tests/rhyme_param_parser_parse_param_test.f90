@@ -48,19 +48,28 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. draw%type .ne. drid%uniform_bg &
   .or. draw%shapes%type .ne. drid%rect &
   .or. any ( draw%shapes%xl .ne. 1 ) &
-  .or. any ( draw%shapes%length .ne. [ 64, 128, 1 ] ) &
+  .or. any ( draw%shapes%length .ne. [ 56, 128, 1 ] ) &
   .or. draw%shapes%trans%type .ne. drid%linear &
   .or. abs ( draw%shapes%trans%width_px - 0.d0 ) > epsilon(0.d0) &
   .or. draw%shapes%fill%type .ne. drid%uniform &
   .or. any ( abs ( draw%shapes%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%next%type .ne. drid%circle &
-  .or. any ( abs ( draw%shapes%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
-  .or. abs ( draw%shapes%next%r - 2.34d0 ) > epsilon(0.d0) &
-  .or. draw%shapes%next%trans%type .ne. drid%cubic &
-  .or. abs ( draw%shapes%next%trans%width_px - 3.d0 ) > epsilon(0.d0) &
-  .or. draw%shapes%next%fill%type .ne. drid%grad_y &
-  .or. any ( abs ( draw%shapes%next%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. any ( abs ( draw%shapes%next%fill%states(2)%w - [ 2.d0, 3.d0, 4.d0, 5.d0, 6.d0 ] ) > epsilon(0.d0) )
+  .or. draw%shapes%next%type .ne. drid%triangle &
+  .or. any ( abs ( draw%shapes%next%vertices(1,:) - [ 56, 1, 1 ] ) > epsilon(0.d0) ) &
+  .or. any ( abs ( draw%shapes%next%vertices(2,:) - [ 56, 128, 1 ] ) > epsilon(0.d0) ) &
+  .or. any ( abs ( draw%shapes%next%vertices(3,:) - [ 72, 1, 1 ] ) > epsilon(0.d0) ) &
+  .or. abs ( draw%shapes%next%thickness - 1 ) > epsilon(0.d0) &
+  .or. draw%shapes%next%trans%type .ne. drid%linear &
+  .or. abs ( draw%shapes%next%trans%width_px - 0.d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%fill%type .ne. drid%uniform &
+  .or. any ( abs ( draw%shapes%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. draw%shapes%next%next%type .ne. drid%circle &
+  .or. any ( abs ( draw%shapes%next%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
+  .or. abs ( draw%shapes%next%next%r - 2.34d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%next%next%trans%type .ne. drid%cubic &
+  .or. abs ( draw%shapes%next%next%trans%width_px - 3.d0 ) > epsilon(0.d0) &
+  .or. draw%shapes%next%next%fill%type .ne. drid%grad_y &
+  .or. any ( abs ( draw%shapes%next%next%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. any ( abs ( draw%shapes%next%next%fill%states(2)%w - [ 2.d0, 3.d0, 4.d0, 5.d0, 6.d0 ] ) > epsilon(0.d0) )
   if ( failed ) return
 
   ! Iterative Riemann Solver

@@ -172,10 +172,18 @@ contains
         backspace (1)
 
         if ( trim(str) .eq. "rect" ) then
-          shape => draw%new_shape ( drid%rect )
+          shape => draw%new_shape( drid%rect )
           read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
-          call log%log( '', 'rect_left_edge', '=', shape%xl )
-          call log%log( '', 'rect_length', '=', shape%length )
+          call log%log( '', 'shape (rect, left_edge)', '=', shape%xl )
+          call log%log( '', 'shape (rect, length)', '=', shape%length )
+        else if ( trim(str) .eq. 'triangle' ) then
+          shape => draw%new_shape( drid%triangle )
+          read (1, *) key, op, str, shape%vertices(1,:), shape%vertices(2,:), &
+            shape%vertices(3,:), shape%thickness
+          call log%log( '', 'shape (triangle, vertice_1)', '=', shape%vertices(1,:) )
+          call log%log( '', 'shape (triangle, vertice_2)', '=', shape%vertices(2,:) )
+          call log%log( '', 'shape (triangle, vertice_3)', '=', shape%vertices(3,:) )
+          call log%log( '', 'shape (triangle, tickness)', '=', [ shape%thickness ] )
         else if ( trim(str) .eq. "circle" ) then
           shape => draw%new_shape ( drid%circle )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
