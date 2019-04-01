@@ -1,6 +1,4 @@
 logical function rhyme_drawing_uniform_rectangle_test () result (failed)
-  ! TODO: test it agains a real AMR
-
   use rhyme_drawing_factory
 
   implicit none

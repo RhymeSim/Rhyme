@@ -68,6 +68,12 @@ module rhyme_drawing
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: sphere
     end subroutine rhyme_drawing_uniform_sphere
+
+    module subroutine rhyme_drawing_uniform_triangle ( samr, ig, tri )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( shape_t ), intent ( in ) :: tri
+    end subroutine rhyme_drawing_uniform_triangle
   end interface
 
 contains
@@ -108,8 +114,6 @@ contains
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(inout) :: samr
 
-    integer :: i, j, k
-    type ( hydro_conserved_t ) :: h(2)
     type ( shape_t ), pointer :: shape
 
 
@@ -121,93 +125,26 @@ contains
     shape => this%shapes
 
     do while ( associated(shape) )
-      call ig%prim_to_cons ( shape%fill%states(1), h(1))
-      call ig%prim_to_cons ( shape%fill%states(2), h(2))
-
-      if ( shape%type .eq. drid%rect ) then
+      select case ( shape%type )
+      case ( drid%rect )
         if ( shape%fill%type .eq. drid%uniform) then
           call rhyme_drawing_uniform_rectangle( samr, ig, shape )
         end if
-      else if ( shape%type .eq. drid%sphere ) then
-        if ( shape%fill%type .eq. drid%uniform ) then
 
+      case ( drid%sphere )
+        if ( shape%fill%type .eq. drid%uniform ) then
           call rhyme_drawing_uniform_sphere( samr, ig, shape )
         end if
-      else if ( shape%type .eq. drid%triangle ) then
+
+      case ( drid%triangle )
         if ( shape%fill%type .eq. drid%uniform) then
-
-          do k = 1, samr%base_grid(3)
-            do j = 1, samr%base_grid(2)
-              do i = 1, samr%base_grid(1)
-                if ( is_inside_triangle( [i, j, k], shape ) ) then
-                  samr%levels(0)%boxes(1)%hydro(i,j,k)%u = h(1)%u
-                end if
-              end do
-            end do
-          end do
-
+          call rhyme_drawing_uniform_triangle( samr, ig, shape )
         end if
-      end if
+
+      end select
 
       shape => shape%next
     end do
-  contains
 
-
-    logical function is_inside_triangle ( point, trian ) result ( is_inside )
-      implicit none
-
-      integer, intent ( in ) :: point(3)
-      type ( shape_t ), intent ( in ) :: trian
-
-      real ( kind=8 ) :: p0(3), vec_p0(3), len_vec_p0
-      real ( kind=8 ) :: proj_p(3), vec_proj_p(3), len_vec_proj_p
-      real ( kind=8 ) :: a(3), b(3), n(3), len_n
-      real ( kind=8 ) :: p_1(3), len_p_1, p_2(3), len_p_2, p_3(3), len_p_3
-      real ( kind=8 ) :: theta, dis
-      real ( kind=8 ), parameter :: pi = 3.1415926535897932_8
-
-      p0 = real( point, kind=8 )
-      vec_p0 = p0 - trian%vertices(1, :)
-      len_vec_p0 = sqrt( sum( vec_p0**2 ) )
-
-      a = trian%vertices(2, :) - trian%vertices(1, :)
-      b = trian%vertices(3, :) - trian%vertices(1, :)
-
-      n(1) = a(2) * b(3) - a(3) * b(2)
-      n(2) = a(3) * b(1) - a(1) * b(3)
-      n(3) = a(1) * b(2) - a(2) * b(1)
-      len_n = sqrt( sum( n**2 ) )
-
-      theta = acos( sum( n * vec_p0 ) / ( len_n * len_vec_p0 ) )
-      dis = len_vec_p0 * sin( theta - pi / 2 )
-
-      if ( dis > trian%thickness / 2 ) then
-        is_inside = .false.
-        return
-      end if
-
-      proj_p = p0 - dis * n / len_n
-      vec_proj_p = proj_p - trian%vertices(1, :)
-      len_vec_proj_p = sqrt( sum( vec_proj_p**2 ) )
-
-      theta = 0
-      p_1 = proj_p - trian%vertices(1, :)
-      len_p_1 = sqrt( sum( p_1**2 ) )
-      p_2 = proj_p - trian%vertices(2, :)
-      len_p_2 = sqrt( sum( p_2**2 ) )
-      p_3 = proj_p - trian%vertices(3, :)
-      len_p_3 = sqrt( sum( p_3**2 ) )
-
-      theta = theta + acos( sum( p_1 * p_2 ) / ( len_p_1 * len_p_2 ) )
-      theta = theta + acos( sum( p_1 * p_3 ) / ( len_p_1 * len_p_3 ) )
-      theta = theta + acos( sum( p_2 * p_3 ) / ( len_p_2 * len_p_3 ) )
-
-      if ( abs( theta - 2 * pi ) > epsilon(0.e0) ) then
-        is_inside = .false.
-      else
-        is_inside = .true.
-      end if
-    end function is_inside_triangle
   end subroutine rhyme_drawing_apply
 end module rhyme_drawing
