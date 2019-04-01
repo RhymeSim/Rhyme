@@ -29,6 +29,8 @@ endforeach ( dep )
 
 
 set ( srcs
+  src/rhyme_drawing_uniform_rectangle.f90
+  src/rhyme_drawing_uniform_bg.f90
   src/rhyme_drawing.f90
 )
 

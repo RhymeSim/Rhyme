@@ -50,6 +50,21 @@ module rhyme_drawing
     procedure :: apply => rhyme_drawing_apply
   end type drawing_t
 
+  interface
+    pure module subroutine rhyme_drawing_uniform_bg ( samr, ig, bg_prim )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( hydro_primitive_t ), intent ( in ) :: bg_prim
+    end subroutine rhyme_drawing_uniform_bg
+
+    pure module subroutine rhyme_drawing_uniform_rectangle ( samr, ig, rect )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( shape_t ), intent ( in ) :: rect
+    end subroutine rhyme_drawing_uniform_rectangle
+
+  end interface
+
 contains
 
 
@@ -89,21 +104,13 @@ contains
     type ( samr_t ), intent(inout) :: samr
 
     integer :: i, j, k, lb(3), ub(3)
-    type ( hydro_conserved_t ) :: bg, h(2)
+    type ( hydro_conserved_t ) :: h(2)
     type ( shape_t ), pointer :: shape
 
 
     ! No action for transparent
     if ( this%type .eq. drid%uniform_bg ) then
-      call ig%prim_to_cons ( this%canvas, bg )
-
-      do k = 1, samr%levels(0)%boxes(1)%dims(3)
-        do j = 1, samr%levels(0)%boxes(1)%dims(2)
-          do i = 1, samr%levels(0)%boxes(1)%dims(1)
-            samr%levels(0)%boxes(1)%hydro(i,j,k)%u = bg%u
-          end do
-        end do
-      end do
+      call rhyme_drawing_uniform_bg( samr, ig, this%canvas )
     end if
 
     shape => this%shapes
@@ -114,15 +121,7 @@ contains
 
       if ( shape%type .eq. drid%rect ) then
         if ( shape%fill%type .eq. drid%uniform) then
-
-          do k = shape%xl(3), shape%xl(3) + shape%length(3) - 1
-            do j = shape%xl(2), shape%xl(2) + shape%length(2) - 1
-              do i = shape%xl(1), shape%xl(1) + shape%length(1) - 1
-                samr%levels(0)%boxes(1)%hydro(i,j,k)%u = h(1)%u
-              end do
-            end do
-          end do
-
+          call rhyme_drawing_uniform_rectangle( samr, ig, shape )
         end if
       else if ( shape%type .eq. drid%circle ) then
         if ( shape%fill%type .eq. drid%uniform ) then

@@ -16,15 +16,14 @@ module rhyme_drawing_factory
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
   integer, parameter :: xl(3) = [ 4, 6, 8 ]
-  integer, parameter :: l(3) = [ 4, 2, 1 ]
+  integer, parameter :: length(3) = [ 4, 2, 1 ]
 
   type ( rhyme_hydro_factory_t ) :: hy
 
 
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
-  type ( ideal_gas_t ) :: ig
-  type ( log_t ) :: log
+  type ( ideal_gas_t ) :: draw_fac_ig_di
+  type ( ideal_gas_t ) :: draw_fac_ig_mon
+  type ( log_t ) :: draw_fac_log
   type ( samr_t ) :: samr
 
 contains
@@ -32,13 +31,17 @@ contains
   subroutine rhyme_drawing_factory_init ()
     implicit none
 
+    type ( chemistry_t ) :: chemi
+    type ( thermo_base_t ) :: thermo
+
     if ( rhyme_drawing_factory_initialized ) return
 
     call hy%init
 
-    call chemi%init( log )
-    call thermo%init( log )
-    call ig%init_with( chemi, thermo, igid%diatomic, log )
+    call chemi%init( draw_fac_log )
+    call thermo%init( draw_fac_log )
+    call draw_fac_ig_mon%init_with( chemi, thermo, igid%monatomic, draw_fac_log )
+    call draw_fac_ig_di%init_with( chemi, thermo, igid%diatomic, draw_fac_log )
 
     call rhyme_samr_factory_fill ( &
       nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
