@@ -6,13 +6,13 @@ logical function rhyme_drawing_new_shape_test () result (failed)
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
 
-  shape => draw%new_shape ( drid%circle )
+  shape => draw%new_shape ( drid%sphere )
 
   failed = &
   .not. associated ( draw%shapes ) &
   .or. .not. associated ( shape ) &
-  .or. draw%shapes%type .ne. drid%circle &
-  .or. shape%type .ne. drid%circle &
+  .or. draw%shapes%type .ne. drid%sphere &
+  .or. shape%type .ne. drid%sphere &
   .or. draw%shapes%fill%type .ne. drid%unset &
   .or. shape%fill%type .ne. drid%unset &
   .or. draw%shapes%trans%type .ne. drid%unset &
@@ -24,7 +24,7 @@ logical function rhyme_drawing_new_shape_test () result (failed)
 
   failed = &
   .not. associated ( draw%shapes%next ) &
-  .or. draw%shapes%type .ne. drid%circle &
+  .or. draw%shapes%type .ne. drid%sphere &
   .or. draw%shapes%next%type .ne. drid%rect &
   .or. draw%shapes%next%fill%type .ne. drid%unset &
   .or. draw%shapes%next%trans%type .ne. drid%unset

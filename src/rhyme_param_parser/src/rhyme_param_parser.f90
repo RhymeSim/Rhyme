@@ -184,11 +184,11 @@ contains
           call log%log( '', 'shape (triangle, vertice_2)', '=', shape%vertices(2,:) )
           call log%log( '', 'shape (triangle, vertice_3)', '=', shape%vertices(3,:) )
           call log%log( '', 'shape (triangle, tickness)', '=', [ shape%thickness ] )
-        else if ( trim(str) .eq. "circle" ) then
-          shape => draw%new_shape ( drid%circle )
+        else if ( trim(str) .eq. "sphere" ) then
+          shape => draw%new_shape ( drid%sphere )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
-          call log%log( '', 'shape (circle, origin)', '=', shape%x0 )
-          call log%log( '', 'shape (circle, radius)', '=', [ shape%r ] )
+          call log%log( '', 'shape (sphere, origin)', '=', shape%x0 )
+          call log%log( '', 'shape (sphere, radius)', '=', [ shape%r ] )
         end if
 
       case ( "shape_trans" );

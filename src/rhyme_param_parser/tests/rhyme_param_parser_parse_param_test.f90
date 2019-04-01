@@ -62,7 +62,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. abs ( draw%shapes%next%trans%width_px - 0.d0 ) > epsilon(0.d0) &
   .or. draw%shapes%fill%type .ne. drid%uniform &
   .or. any ( abs ( draw%shapes%fill%states(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%next%next%type .ne. drid%circle &
+  .or. draw%shapes%next%next%type .ne. drid%sphere &
   .or. any ( abs ( draw%shapes%next%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
   .or. abs ( draw%shapes%next%next%r - 2.34d0 ) > epsilon(0.d0) &
   .or. draw%shapes%next%next%trans%type .ne. drid%cubic &

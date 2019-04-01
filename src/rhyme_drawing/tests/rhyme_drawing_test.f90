@@ -4,7 +4,7 @@ logical function rhyme_drawing_test () result (failed)
   implicit none
 
   failed = &
-  drid%rect .ne. 10 .or. drid%circle .ne. 11 &
+  drid%rect .ne. 10 .or. drid%sphere .ne. 11 &
   .or. drid%linear .ne. 1 .or. drid%cubic .ne. 2 &
   .or. drid%grad_x .ne. -1 .or. drid%grad_y .ne. -2 .or. drid%grad_z .ne. -3 &
   .or. drid%grad_r .ne. -4 .or. drid%uniform .ne. 0 &

@@ -9,7 +9,7 @@ module rhyme_drawing
     integer :: grad_x = -1, grad_y = -2, grad_z = -3, grad_r = -4 ! Filling types
     integer :: uniform = 0
     integer :: linear = 1, cubic = 2 ! Gradient/transition types
-    integer :: rect = 10, circle = 11, triangle = 12 ! Shapes
+    integer :: rect = 10, sphere = 11, triangle = 12 ! Shapes
     integer :: uniform_bg = 20, transparent_bg = 21
     integer :: unset = -1234 ! Unset
   end type drawing_indices_t
@@ -63,6 +63,11 @@ module rhyme_drawing
       type ( shape_t ), intent ( in ) :: rect
     end subroutine rhyme_drawing_uniform_rectangle
 
+    pure module subroutine rhyme_drawing_uniform_sphere ( samr, ig, sphere )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( shape_t ), intent ( in ) :: sphere
+    end subroutine rhyme_drawing_uniform_sphere
   end interface
 
 contains
@@ -103,7 +108,7 @@ contains
     type ( ideal_gas_t ), intent(in) :: ig
     type ( samr_t ), intent(inout) :: samr
 
-    integer :: i, j, k, lb(3), ub(3)
+    integer :: i, j, k
     type ( hydro_conserved_t ) :: h(2)
     type ( shape_t ), pointer :: shape
 
@@ -123,25 +128,10 @@ contains
         if ( shape%fill%type .eq. drid%uniform) then
           call rhyme_drawing_uniform_rectangle( samr, ig, shape )
         end if
-      else if ( shape%type .eq. drid%circle ) then
+      else if ( shape%type .eq. drid%sphere ) then
         if ( shape%fill%type .eq. drid%uniform ) then
 
-          lb = int( shape%x0 - shape%r ) - 1
-          lb = merge( lb, 1, lb > 1 )
-
-          ub = int( shape%x0 + shape%r ) + 1
-          ub = merge( ub, samr%base_grid, ub < samr%base_grid )
-
-          do k = lb(3), ub(3)
-            do j = lb(2), ub(2)
-              do i = lb(1), ub(1)
-                if ( is_inside_circle( [i, j, k], shape ) ) then
-                  samr%levels(0)%boxes(1)%hydro(i,j,k)%u = h(1)%u
-                end if
-              end do
-            end do
-          end do
-
+          call rhyme_drawing_uniform_sphere( samr, ig, shape )
         end if
       else if ( shape%type .eq. drid%triangle ) then
         if ( shape%fill%type .eq. drid%uniform) then
@@ -162,22 +152,6 @@ contains
       shape => shape%next
     end do
   contains
-    logical function is_inside_circle ( point, circ ) result ( is_inside )
-      implicit none
-
-      integer, intent ( in ) :: point(3)
-      type ( shape_t ), intent ( in ) :: circ
-
-      real ( kind=8 ) :: p0(3)
-
-      p0 = real( point, kind=8 )
-
-      if ( sqrt( sum( (p0 - circ%x0)**2 ) ) > circ%r ) then
-        is_inside = .false.
-      else
-        is_inside = .true.
-      end if
-    end function is_inside_circle
 
 
     logical function is_inside_triangle ( point, trian ) result ( is_inside )
