@@ -187,14 +187,14 @@ contains
         else if ( trim(str) .eq. "circle" ) then
           shape => draw%new_shape ( drid%circle )
           read (1, *) key, op, str, shape%x0(1:3), shape%r
-          call log%log( '', 'circle_origin', '=', shape%x0 )
-          call log%log( '', 'circle_radius', '=', [ shape%r ] )
+          call log%log( '', 'shape (circle, origin)', '=', shape%x0 )
+          call log%log( '', 'shape (circle, radius)', '=', [ shape%r ] )
         end if
 
       case ( "shape_trans" );
         read (1, *) key, op, str, shape%trans%width_px
-        call log%log( '', 'shape_transition', '=', [ str ] )
-        call log%log( '', 'shape_transition_width', '=', [ shape%trans%width_px ] )
+        call log%log( '', 'shape (transition)', '=', [ str ] )
+        call log%log( '', 'shape (transition, width)', '=', [ shape%trans%width_px ] )
 
         if ( trim(str) .eq. "linear" ) then
           shape%trans%type = drid%linear
@@ -204,19 +204,19 @@ contains
 
       case ( "shape_fill" );
         read (1, *) key, op, str
-        call log%log( '', 'shape_filling', '=', [ str ] )
+        call log%log( '', 'shape_fill', '=', [ str ] )
 
         backspace (1)
 
         if ( trim(str) .eq. "uniform" ) then
           read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p)
           shape%fill%type = drid%uniform
-          call log%log( '', 'shape_filling_primary', '=', shape%fill%states(1)%w )
+          call log%log( '', 'shape_fill (primary)', '=', shape%fill%states(1)%w )
         else
           read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p), &
           shape%fill%states(2)%w(hyid%rho:hyid%p)
-          call log%log( '', 'shape_filling_gradient', '=', [ str ] )
-          call log%log( '', 'shape_filling_secondary', '=', shape%fill%states(2)%w )
+          call log%log( '', 'shape_fill (gradient)', '=', [ str ] )
+          call log%log( '', 'shape_fill (secondary)', '=', shape%fill%states(2)%w )
 
           if ( trim(str) .eq. "grad_x" ) then
             shape%fill%type = drid%grad_x
