@@ -116,6 +116,9 @@ shape = sphere 3.d0 4.d0 5.d0 2.34d0
 shape_filling = uniform
 shape_filling_colors = 1.d0 0.d0 0.d0 0.d0 1.d0
 
+shape = smoothed_slab_2d x 56 72 2 4
+shape_filling_colors = .125d0 0.d0 0.d0 0.d0 .1d0 1.d0 0.d0 0.d0 0.d0 1.d0
+
 
 # **Chombo Output**
 # You can use **prefix** option to drop output snapshot into a directory

@@ -1,6 +1,6 @@
 submodule ( rhyme_drawing ) rhyme_drawing_uniform_triangle_submodule
 contains
-  module subroutine rhyme_drawing_uniform_triangle ( samr, ig, tri )
+  pure module subroutine rhyme_drawing_uniform_triangle ( samr, ig, tri )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr

@@ -9,9 +9,10 @@ module rhyme_drawing
     integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
     integer :: uniform = 10 ! Filling type
     integer :: rect = 20, sphere = 21, triangle = 22 ! Shapes
-    integer :: smoothed_slab = 23 ! Shapes
+    integer :: smoothed_slab_2d = 23 ! Shapes
     integer :: linear = 41, cubic = 42, ramp = 43 ! transition types
     integer :: unset = -1, none = -2
+    integer :: x = hyid%x, y = hyid%y, z = hyid%z ! directions
   end type drawing_indices_t
 
   type ( drawing_indices_t ), parameter :: drid = drawing_indices_t ()
@@ -36,9 +37,12 @@ module rhyme_drawing
 
   type shape_t
     integer :: type = drid%unset ! Shape
-    integer :: xl(3) = 0, length(3) = 0 ! Rectangle (in pixel unit)
-    real ( kind=8 ) :: x0(3) = 0.d0, r = 0.d0 ! Circle (in pixel unit)
-    real ( kind=8 ) :: vertices( 3, 3 ), thickness ! Triangle (in pixel unit)
+    integer :: xl(3) = 0, length(3) = 0 ! Rectangle (in unit of pixels)
+    real ( kind=8 ) :: x0(3) = 0.d0, r = 0.d0 ! Circle (in unit of pixels)
+    real ( kind=8 ) :: vertices( 3, 3 ), thickness ! Triangle (in unit of pixels)
+    real ( kind=8 ) :: position(2) ! Begin/end (in unit of pixel)
+    integer :: direction = drid%x ! smoothed_slab_2d
+    real ( kind=8 ) :: sigma(2)
     type ( shape_filling_t ) :: fill
     type ( shape_transition_t ) :: trans
     type ( shape_t ), pointer :: next => null()
@@ -74,11 +78,17 @@ module rhyme_drawing
       type ( shape_t ), intent ( in ) :: sphere
     end subroutine rhyme_drawing_uniform_sphere
 
-    module subroutine rhyme_drawing_uniform_triangle ( samr, ig, tri )
+    pure module subroutine rhyme_drawing_uniform_triangle ( samr, ig, tri )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: tri
     end subroutine rhyme_drawing_uniform_triangle
+
+    pure module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( shape_t ), intent ( in ) :: shape
+    end subroutine rhyme_drawing_smoothed_slab_2d
   end interface
 
 contains
@@ -150,6 +160,9 @@ contains
         if ( shape%fill%type .eq. drid%uniform) then
           call rhyme_drawing_uniform_triangle( samr, ig, shape )
         end if
+
+      case ( drid%smoothed_slab_2d )
+        call rhyme_drawing_smoothed_slab_2d( samr, ig, shape )
 
       end select
 

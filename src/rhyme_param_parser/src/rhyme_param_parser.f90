@@ -32,7 +32,7 @@ contains
     type ( chombo_t ), intent ( inout ) :: chombo
 
     integer :: ios
-    character(len=1024) :: key, op, str
+    character(len=1024) :: key, op, str, dir_str
     type ( shape_t ), pointer :: shape
     logical :: param_file_was_found
 
@@ -55,7 +55,7 @@ contains
       key = adjustl(trim(key))
       if ( key(1:1) .eq. "#" ) cycle
 
-      backspace (1)
+      backspace(1)
 
       select case ( adjustl(trim(key)) )
 
@@ -263,13 +263,11 @@ contains
 
       read (1, *) key, op, str
       call log%log( '', 'shape', '=', [ str ] )
-      backspace (1)
-
-      call log%log( '', 'shape', '=', [ str ] )
 
       select case ( trim(str) )
       case ( 'rect' )
         shape => draw%new_shape( drid%rect )
+        backspace (1)
         read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
 
         call log%log( '', 'shape (rect, left_edge)', '=', shape%xl )
@@ -277,6 +275,7 @@ contains
 
       case ( 'triangle' )
         shape => draw%new_shape( drid%triangle )
+        backspace (1)
         read (1, *) key, op, str, shape%vertices(1,:), shape%vertices(2,:), &
           shape%vertices(3,:), shape%thickness
 
@@ -286,15 +285,31 @@ contains
         call log%log( '', 'shape (triangle, thickness)', '=', [ shape%thickness ] )
 
       case ( 'sphere' )
-        shape => draw%new_shape ( drid%sphere )
+        shape => draw%new_shape( drid%sphere )
+        backspace (1)
         read (1, *) key, op, str, shape%x0(1:3), shape%r
 
         call log%log( '', 'shape (sphere, origin)', '=', shape%x0 )
         call log%log( '', 'shape (sphere, radius)', '=', [ shape%r ] )
 
+      case ( 'smoothed_slab_2d' )
+        shape => draw%new_shape( drid%smoothed_slab_2d )
+        backspace (1)
+        read (1, *) key, op, str, dir_str, shape%position(1:2), shape%sigma(1:2)
+
+        select case ( trim(dir_str) )
+        case ( 'x' ); shape%direction = drid%x
+        case ( 'y' ); shape%direction = drid%y
+        case ( 'z' ); shape%direction = drid%z
+        case DEFAULT; call log%err( 'Unknown direction', dir_str )
+        end select
+
+        call log%log( '', 'shape (smoothed_slab_2d, direction)', '=', [ dir_str ] )
+        call log%log( '', 'shape (smoothed_slab_2d, position)', '=', shape%position )
+        call log%log( '', 'shape (smoothed_slab_2d, sigma)', '=', shape%sigma )
       case DEFAULT
+        read (1, *)
         call log%err( 'Unknow shape', str )
-        return
       end select
 
     end subroutine read_shape
@@ -318,8 +333,8 @@ contains
       case ( 'ramp' )
         shape%trans%type( idx ) = drid%ramp
       case DEFAULT
+        read (1, *)
         call log%err( 'Unknown shape_transition_'//trim(tag), str )
-        return
       end select
 
       call log%log( '', 'shape (transition_'//trim(tag)//', sigma)', '=', &
@@ -355,22 +370,30 @@ contains
       case ( 'uniform' )
         shape%fill%type = drid%uniform
       case DEFAULT
+        read (1, *)
         call log%warn( 'Unknown shape_filling', str )
       end select
     end subroutine read_shape_filling
 
+
     subroutine read_shape_filling_colors ()
       implicit none
 
-      select case ( shape%fill%type )
-      case ( drid%uniform )
+      if ( shape%fill%type .eq. drid%uniform ) then
         read (1, *) key, op, shape%fill%colors(1)%w(hyid%rho:hyid%p)
 
         call log%log( '', 'shape_filling_colors', '=', shape%fill%colors(1)%w )
 
-      case DEFAULT
+      else if ( shape%type .eq. drid%smoothed_slab_2d ) then
+        read (1, *) key, op, shape%fill%colors(1)%w(hyid%rho:hyid%p), &
+          shape%fill%colors(2)%w(hyid%rho:hyid%p)
+
+        call log%log( '', 'shape_filling_colors(1)', '=', shape%fill%colors(1)%w )
+        call log%log( '', 'shape_filling_colors(2)', '=', shape%fill%colors(2)%w )
+      else
+        read (1, *)
         call log%err( 'Unknown shape_filling type', 'Cannot read colors')
-      end select
+      end if
     end subroutine read_shape_filling_colors
 
   end subroutine parse_params

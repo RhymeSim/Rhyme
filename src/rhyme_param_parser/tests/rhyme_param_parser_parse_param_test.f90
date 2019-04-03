@@ -51,14 +51,8 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. any( draw%shapes%length .ne. [ 56, 128, 1 ] ) &
   .or. draw%shapes%trans%type( samrid%top ) .ne. drid%ramp &
   .or. abs( draw%shapes%trans%sigma( samrid%top ) - 2.5d0 ) > epsilon(0.d0) &
-  .or. any( abs( &
-    draw%shapes%trans%colors( samrid%top, 1 )%w &
-    - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] &
-  ) > epsilon(0.d0) ) &
-  .or. any( abs( &
-    draw%shapes%trans%colors( samrid%top, 2 )%w &
-    - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] &
-  ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%trans%colors( samrid%top, 1 )%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%trans%colors( samrid%top, 2 )%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
   .or. draw%shapes%trans%type( samrid%bottom ) .ne. drid%linear &
   .or. abs( draw%shapes%trans%sigma( samrid%bottom ) - 1.5d0 ) > epsilon(0.d0) &
   .or. any( abs( draw%shapes%trans%colors( samrid%bottom, 1 )%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
@@ -76,7 +70,13 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. any ( abs ( draw%shapes%next%next%x0 - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
   .or. abs ( draw%shapes%next%next%r - 2.34d0 ) > epsilon(0.d0) &
   .or. draw%shapes%next%next%fill%type .ne. drid%uniform &
-  .or. any ( abs ( draw%shapes%next%next%fill%colors(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
+  .or. any ( abs ( draw%shapes%next%next%fill%colors(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. draw%shapes%next%next%next%type .ne. drid%smoothed_slab_2d &
+  .or. draw%shapes%next%next%next%direction .ne. drid%x &
+  .or. any( abs( draw%shapes%next%next%next%position - [ 56, 72 ] ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%next%next%next%sigma - [ 2, 4 ] ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%next%next%next%fill%colors(1)%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%next%next%next%fill%colors(2)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
   if ( failed ) return
 
   ! Iterative Riemann Solver
