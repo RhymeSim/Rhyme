@@ -6,31 +6,36 @@ module rhyme_drawing
   implicit none
 
   type drawing_indices_t
-    integer :: grad_x = -1, grad_y = -2, grad_z = -3, grad_r = -4 ! Filling types
-    integer :: uniform = 0
-    integer :: linear = 1, cubic = 2 ! Gradient/transition types
-    integer :: rect = 10, sphere = 11, triangle = 12 ! Shapes
-    integer :: uniform_bg = 20, transparent_bg = 21
-    integer :: unset = -1234 ! Unset
+    integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
+    integer :: uniform = 10 ! Filling type
+    integer :: rect = 20, sphere = 21, triangle = 22 ! Shapes
+    integer :: smoothed_slab = 23 ! Shapes
+    integer :: linear = 41, cubic = 42, ramp = 43 ! transition types
+    integer :: unset = -1, none = -2
   end type drawing_indices_t
 
   type ( drawing_indices_t ), parameter :: drid = drawing_indices_t ()
 
 
   type shape_transition_t
-    integer :: type
-    real(kind=8) :: width_px
+    integer :: type(6) = drid%none ! samrid sides
+    real ( kind=8 ) :: sigma(6) = 0.d0 ! samrid sides
+    type ( hydro_primitive_t ) :: colors(6, 2) ! samrid sides, begin/end
+
+    integer :: radial_type = drid%none
+    real ( kind=8 ) :: radial_sigma = 0.d0
+    type ( hydro_primitive_t ) :: radial_colors(2)
   end type shape_transition_t
 
 
   type shape_filling_t
-    integer :: type
-    type ( hydro_primitive_t ) :: states(2)
+    integer :: type = drid%uniform
+    type ( hydro_primitive_t ) :: colors(2)
   end type shape_filling_t
 
 
   type shape_t
-    integer :: type ! Shape
+    integer :: type = drid%unset ! Shape
     integer :: xl(3) = 0, length(3) = 0 ! Rectangle (in pixel unit)
     real ( kind=8 ) :: x0(3) = 0.d0, r = 0.d0 ! Circle (in pixel unit)
     real ( kind=8 ) :: vertices( 3, 3 ), thickness ! Triangle (in pixel unit)
@@ -41,7 +46,7 @@ module rhyme_drawing
 
 
   type drawing_t
-    integer :: type = drid%uniform_bg
+    integer :: type = drid%transparent_canvas
     type ( hydro_primitive_t ) :: canvas
     type ( shape_t ), pointer :: shapes => null()
     logical :: initialized
@@ -51,11 +56,11 @@ module rhyme_drawing
   end type drawing_t
 
   interface
-    pure module subroutine rhyme_drawing_uniform_bg ( samr, ig, bg_prim )
+    pure module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( hydro_primitive_t ), intent ( in ) :: bg_prim
-    end subroutine rhyme_drawing_uniform_bg
+    end subroutine rhyme_drawing_uniform_canvas
 
     pure module subroutine rhyme_drawing_uniform_rectangle ( samr, ig, rect )
       type ( samr_t ), intent ( inout ) :: samr
@@ -102,8 +107,13 @@ contains
     end if
 
     shape%type = shape_type
+
     shape%fill%type = drid%unset
-    shape%trans%type = drid%unset
+    shape%fill%colors(1)%w = [ 0.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
+    shape%fill%colors(2)%w = [ 0.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
+
+    shape%trans%type = drid%none
+    shape%trans%sigma = 0.d0
   end function rhyme_drawing_new_shape
 
 
@@ -118,8 +128,8 @@ contains
 
 
     ! No action for transparent
-    if ( this%type .eq. drid%uniform_bg ) then
-      call rhyme_drawing_uniform_bg( samr, ig, this%canvas )
+    if ( this%type .eq. drid%uniform_canvas ) then
+      call rhyme_drawing_uniform_canvas( samr, ig, this%canvas )
     end if
 
     shape => this%shapes

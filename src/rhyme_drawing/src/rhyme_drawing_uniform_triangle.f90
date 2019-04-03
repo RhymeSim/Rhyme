@@ -11,7 +11,7 @@ contains
     integer :: l, b, k, j, i, ax
     integer :: shift(3), lb(3), ub(3)
 
-    call ig%prim_to_cons ( tri%fill%states(1), color )
+    call ig%prim_to_cons ( tri%fill%colors(1), color )
 
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -39,6 +39,7 @@ contains
             end do
           end do
         end do
+
       end do
     end do
 

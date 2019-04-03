@@ -1,6 +1,6 @@
-submodule ( rhyme_drawing ) rhyme_drawing_uniform_bg_submodule
+submodule ( rhyme_drawing ) rhyme_drawing_uniform_canvas_submodule
 contains
-  pure module subroutine rhyme_drawing_uniform_bg ( samr, ig, bg_prim )
+  pure module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr
@@ -19,5 +19,5 @@ contains
       end do
     end do
 
-  end subroutine rhyme_drawing_uniform_bg
-end submodule rhyme_drawing_uniform_bg_submodule
+  end subroutine rhyme_drawing_uniform_canvas
+end submodule rhyme_drawing_uniform_canvas_submodule

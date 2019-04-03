@@ -155,79 +155,33 @@ contains
 
         if ( trim(str) .eq. 'uniform' ) then
           read (1, *) key, op, str, draw%canvas%w(hyid%rho:hyid%p)
-          draw%type = drid%uniform_bg
+          draw%type = drid%uniform_canvas
           call log%log( '', 'canvas (uniform)', '=', draw%canvas%w )
         else if ( trim(str) .eq. 'transparent' ) then
           read (1, *) key, op, str
-          draw%type = drid%transparent_bg
+          draw%type = drid%transparent_canvas
         else
           call log%err( 'Unsuported canvas', 'canvas_type', '=', [ str ] )
         end if
 
+      case ( "shape" ); call read_shape()
 
+      case ( "shape_transition_left" ); call read_shape_transition( 'left', samrid%left )
+      case ( "shape_transition_right" ); call read_shape_transition( 'right', samrid%right )
+      case ( "shape_transition_bottom" ); call read_shape_transition( 'bottom', samrid%bottom )
+      case ( "shape_transition_top" ); call read_shape_transition( 'top', samrid%top )
+      case ( "shape_transition_back" ); call read_shape_transition( 'back', samrid%back )
+      case ( "shape_transition_front" ); call read_shape_transition( 'front', samrid%front )
 
-      case ( "shape" )
-        read (1, *) key, op, str
-        call log%log( '', 'shape', '=', [ str ] )
-        backspace (1)
+      case ( 'shape_transition_left_colors' ); call read_shape_transition_colors( 'left', samrid%left )
+      case ( 'shape_transition_right_colors' ); call read_shape_transition_colors( 'right', samrid%right )
+      case ( 'shape_transition_bottom_colors' ); call read_shape_transition_colors( 'bottom', samrid%bottom )
+      case ( 'shape_transition_top_colors' ); call read_shape_transition_colors( 'top', samrid%top )
+      case ( 'shape_transition_back_colors' ); call read_shape_transition_colors( 'back', samrid%back )
+      case ( 'shape_transition_front_colors' ); call read_shape_transition_colors( 'front', samrid%front )
 
-        if ( trim(str) .eq. "rect" ) then
-          shape => draw%new_shape( drid%rect )
-          read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
-          call log%log( '', 'shape (rect, left_edge)', '=', shape%xl )
-          call log%log( '', 'shape (rect, length)', '=', shape%length )
-        else if ( trim(str) .eq. 'triangle' ) then
-          shape => draw%new_shape( drid%triangle )
-          read (1, *) key, op, str, shape%vertices(1,:), shape%vertices(2,:), &
-            shape%vertices(3,:), shape%thickness
-          call log%log( '', 'shape (triangle, vertice_1)', '=', shape%vertices(1,:) )
-          call log%log( '', 'shape (triangle, vertice_2)', '=', shape%vertices(2,:) )
-          call log%log( '', 'shape (triangle, vertice_3)', '=', shape%vertices(3,:) )
-          call log%log( '', 'shape (triangle, tickness)', '=', [ shape%thickness ] )
-        else if ( trim(str) .eq. "sphere" ) then
-          shape => draw%new_shape ( drid%sphere )
-          read (1, *) key, op, str, shape%x0(1:3), shape%r
-          call log%log( '', 'shape (sphere, origin)', '=', shape%x0 )
-          call log%log( '', 'shape (sphere, radius)', '=', [ shape%r ] )
-        end if
-
-      case ( "shape_trans" );
-        read (1, *) key, op, str, shape%trans%width_px
-        call log%log( '', 'shape (transition)', '=', [ str ] )
-        call log%log( '', 'shape (transition, width)', '=', [ shape%trans%width_px ] )
-
-        if ( trim(str) .eq. "linear" ) then
-          shape%trans%type = drid%linear
-        else if ( trim(str) .eq. "cubic" ) then
-          shape%trans%type = drid%cubic
-        end if
-
-      case ( "shape_fill" );
-        read (1, *) key, op, str
-        call log%log( '', 'shape_fill', '=', [ str ] )
-
-        backspace (1)
-
-        if ( trim(str) .eq. "uniform" ) then
-          read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p)
-          shape%fill%type = drid%uniform
-          call log%log( '', 'shape_fill (primary)', '=', shape%fill%states(1)%w )
-        else
-          read (1, *) key, op, str, shape%fill%states(1)%w(hyid%rho:hyid%p), &
-          shape%fill%states(2)%w(hyid%rho:hyid%p)
-          call log%log( '', 'shape_fill (gradient)', '=', [ str ] )
-          call log%log( '', 'shape_fill (secondary)', '=', shape%fill%states(2)%w )
-
-          if ( trim(str) .eq. "grad_x" ) then
-            shape%fill%type = drid%grad_x
-          else if ( trim(str) .eq. "grad_y" ) then
-            shape%fill%type = drid%grad_y
-          else if ( trim(str) .eq. "grad_z" ) then
-            shape%fill%type = drid%grad_z
-          else if ( trim(str) .eq. "grad_r" ) then
-            shape%fill%type = drid%grad_r
-          end if
-        end if
+      case ( "shape_filling" ); call read_shape_filling()
+      case ( 'shape_filling_colors' ); call read_shape_filling_colors()
 
         ! Iterative Riemann Solver
       case ( "pressure_floor" )
@@ -304,6 +258,120 @@ contains
       end select
     end function select_boundary
 
-  end subroutine parse_params
+    subroutine read_shape ()
+      implicit none
 
+      read (1, *) key, op, str
+      call log%log( '', 'shape', '=', [ str ] )
+      backspace (1)
+
+      call log%log( '', 'shape', '=', [ str ] )
+
+      select case ( trim(str) )
+      case ( 'rect' )
+        shape => draw%new_shape( drid%rect )
+        read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
+
+        call log%log( '', 'shape (rect, left_edge)', '=', shape%xl )
+        call log%log( '', 'shape (rect, length)', '=', shape%length )
+
+      case ( 'triangle' )
+        shape => draw%new_shape( drid%triangle )
+        read (1, *) key, op, str, shape%vertices(1,:), shape%vertices(2,:), &
+          shape%vertices(3,:), shape%thickness
+
+        call log%log( '', 'shape (triangle, vertice_1)', '=', shape%vertices(1,:) )
+        call log%log( '', 'shape (triangle, vertice_2)', '=', shape%vertices(2,:) )
+        call log%log( '', 'shape (triangle, vertice_3)', '=', shape%vertices(3,:) )
+        call log%log( '', 'shape (triangle, thickness)', '=', [ shape%thickness ] )
+
+      case ( 'sphere' )
+        shape => draw%new_shape ( drid%sphere )
+        read (1, *) key, op, str, shape%x0(1:3), shape%r
+
+        call log%log( '', 'shape (sphere, origin)', '=', shape%x0 )
+        call log%log( '', 'shape (sphere, radius)', '=', [ shape%r ] )
+
+      case DEFAULT
+        call log%err( 'Unknow shape', str )
+        return
+      end select
+
+    end subroutine read_shape
+
+
+    subroutine read_shape_transition ( tag, idx )
+      implicit none
+
+      character ( len=* ), intent ( in ) :: tag
+      integer, intent ( in ) :: idx
+
+      read (1, *) key, op, str, shape%trans%sigma( idx )
+
+      call log%log( '', 'shape (transition_'//trim(tag)//')', '=', [ str ] )
+
+      select case ( trim(str) )
+      case ( 'linear' )
+        shape%trans%type( idx ) = drid%linear
+      case ( 'cubic' )
+        shape%trans%type( idx ) = drid%cubic
+      case ( 'ramp' )
+        shape%trans%type( idx ) = drid%ramp
+      case DEFAULT
+        call log%err( 'Unknown shape_transition_'//trim(tag), str )
+        return
+      end select
+
+      call log%log( '', 'shape (transition_'//trim(tag)//', sigma)', '=', &
+        [ shape%trans%sigma( idx ) ] )
+
+    end subroutine read_shape_transition
+
+
+    subroutine read_shape_transition_colors ( tag, idx )
+      implicit none
+
+      character ( len=* ), intent ( in ) :: tag
+      integer, intent ( in ) :: idx
+
+      read (1, *) key, op, shape%trans%colors(idx, 1)%w(hyid%rho:hyid%p), &
+        shape%trans%colors(idx, 2)%w(hyid%rho:hyid%p)
+
+      call log%log( '', 'shape (transition_'//trim(tag)//', color(1))', '=', &
+        [ shape%trans%colors( idx, 1 )%w ] )
+      call log%log( '', 'shape (transition_'//trim(tag)//', color(2))', '=', &
+        [ shape%trans%colors( idx, 2 )%w ] )
+    end subroutine read_shape_transition_colors
+
+
+    subroutine read_shape_filling ()
+      implicit none
+
+      read (1, *) key, op, str
+
+      call log%log( '', 'shape_filling', '=', [ str ] )
+
+      select case ( trim(str) )
+      case ( 'uniform' )
+        shape%fill%type = drid%uniform
+      case DEFAULT
+        call log%warn( 'Unknown shape_filling', str )
+      end select
+    end subroutine read_shape_filling
+
+    subroutine read_shape_filling_colors ()
+      implicit none
+
+      select case ( shape%fill%type )
+      case ( drid%uniform )
+        read (1, *) key, op, shape%fill%colors(1)%w(hyid%rho:hyid%p)
+
+        call log%log( '', 'shape_filling_colors', '=', shape%fill%colors(1)%w )
+
+      case DEFAULT
+        call log%err( 'Unknown shape_filling type', 'Cannot read colors')
+      end select
+    end subroutine read_shape_filling_colors
+
+  end subroutine parse_params
 end module rhyme_param_parser

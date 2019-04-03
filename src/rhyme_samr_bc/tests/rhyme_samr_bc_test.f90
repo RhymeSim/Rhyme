@@ -8,10 +8,10 @@ logical function rhyme_samr_bc_test () result (failed)
   .or. bcid%outflow .ne. 2 &
   .or. bcid%periodic .ne. 3 &
   .or. bcid%unset .ne. -1 &
-  .or. bcid%left .ne. 1 &
-  .or. bcid%right .ne. 2 &
-  .or. bcid%bottom .ne. 3 &
-  .or. bcid%top .ne. 4 &
-  .or. bcid%back .ne. 5 &
-  .or. bcid%front .ne. 6
+  .or. bcid%left .ne. samrid%left &
+  .or. bcid%right .ne. samrid%right &
+  .or. bcid%bottom .ne. samrid%bottom &
+  .or. bcid%top .ne. samrid%top &
+  .or. bcid%back .ne. samrid%back &
+  .or. bcid%front .ne. samrid%front
 end function rhyme_samr_bc_test

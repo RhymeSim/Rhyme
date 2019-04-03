@@ -27,14 +27,14 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   call rhyme_samr_factory_fill ( &
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
 
-  draw%type = drid%transparent_bg
+  draw%type = drid%transparent_canvas
 
   shape => draw%new_shape( drid%sphere )
 
   shape%x0 = x0
   shape%r = r
   shape%fill%type = drid%uniform
-  shape%fill%states(1)%w = hy%prim%w
+  shape%fill%colors(1)%w = hy%prim%w
 
 
   call rhyme_drawing_uniform_sphere( samr, draw_fac_ig_mon, shape )

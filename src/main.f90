@@ -85,7 +85,7 @@ program rhyme
 
 
   ! Main loop
-  do while ( samr%levels(0)%t < 0.2d0 )
+  do while ( samr%levels(0)%t < 0.4d0 )
     call log%set_iteration_section( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = cfl%dt( ig, samr )

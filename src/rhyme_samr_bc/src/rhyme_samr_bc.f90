@@ -8,7 +8,9 @@ module rhyme_samr_bc
   type samr_bc_indices_t
     integer :: unset = -1
     integer :: reflective = 1, outflow = 2, periodic = 3
-    integer :: left = 1, right = 2, bottom = 3, top = 4, back = 5, front = 6
+    integer :: left = samrid%left, right = samrid%right
+    integer :: bottom = samrid%bottom, top = samrid%top
+    integer :: back = samrid%back, front = samrid%front
   end type samr_bc_indices_t
 
 

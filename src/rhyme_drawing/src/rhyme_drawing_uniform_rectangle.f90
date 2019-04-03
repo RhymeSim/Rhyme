@@ -11,7 +11,7 @@ contains
     integer :: shift(3), lb(3), ub(3)
     type ( hydro_conserved_t ) :: color
 
-    call ig%prim_to_cons( rect%fill%states(1), color )
+    call ig%prim_to_cons( rect%fill%colors(1), color )
 
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes

@@ -4,9 +4,9 @@ logical function rhyme_drawing_test () result (failed)
   implicit none
 
   failed = &
-  drid%rect .ne. 10 .or. drid%sphere .ne. 11 &
-  .or. drid%linear .ne. 1 .or. drid%cubic .ne. 2 &
-  .or. drid%grad_x .ne. -1 .or. drid%grad_y .ne. -2 .or. drid%grad_z .ne. -3 &
-  .or. drid%grad_r .ne. -4 .or. drid%uniform .ne. 0 &
-  .or. drid%unset .ne. -1234
+  drid%uniform_canvas .ne. 0 .or. drid%transparent_canvas .ne. 1 &
+  .or. drid%uniform .ne. 10 &
+  .or. drid%rect .ne. 20 .or. drid%sphere .ne. 21 .or. drid%triangle .ne. 22 &
+  .or. drid%linear .ne. 41 .or. drid%cubic .ne. 42 .or. drid%ramp .ne. 43 &
+  .or. drid%unset .ne. -1 .or. drid%none .ne. -2
 endfunction rhyme_drawing_test

@@ -29,14 +29,14 @@ logical function rhyme_drawing_uniform_triangle_test () result ( failed )
   call rhyme_samr_factory_fill ( &
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
 
-  draw%type = drid%transparent_bg
+  draw%type = drid%transparent_canvas
 
   shape => draw%new_shape( drid%triangle )
 
   shape%vertices = vertices
   shape%thickness = thickness
   shape%fill%type = drid%uniform
-  shape%fill%states(1)%w = hy%prim%w
+  shape%fill%colors(1)%w = hy%prim%w
 
   call rhyme_drawing_uniform_triangle( samr, draw_fac_ig_mon, shape )
 
@@ -50,10 +50,7 @@ logical function rhyme_drawing_uniform_triangle_test () result ( failed )
               failed = any( abs( &
                 samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
               ) > epsilon(0.d0) )
-              if ( failed ) then
-                print *, l, b, i, j, k
-                return
-              end if
+              if ( failed ) return
 
             end if
           end do

@@ -341,7 +341,7 @@ contains
         call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
-          reshape( scale_d * data( 1:product(bdims) ), bdims )
+          reshape( scale_d * data( 1:blen ), bdims )
 
         samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
           reshape( scale_d * data( 1:blen ) * scale_l / scale_t * data( 1*blen+1:2*blen ), bdims )

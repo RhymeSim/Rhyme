@@ -7,6 +7,7 @@ module rhyme_samr
     integer :: ghost = -1
     integer :: unset = -10
     integer :: max_nlevels = 23
+    integer :: left = 1, right = 2, bottom = 3, top = 4, back = 5, front = 6
   end type samr_indices_t
 
   type ( samr_indices_t ), parameter :: samrid = samr_indices_t ()
