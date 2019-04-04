@@ -74,9 +74,33 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   .or. draw%shapes%next%next%next%type .ne. drid%smoothed_slab_2d &
   .or. draw%shapes%next%next%next%slab_2d%dir .ne. drid%x &
   .or. any( abs( draw%shapes%next%next%next%slab_2d%pos - [ 56, 72 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%next%next%next%slab_2d%sigma - [ 2, 4 ] ) > epsilon(0.d0) ) &
+  .or. any( abs( draw%shapes%next%next%next%slab_2d%sigma - [ .2d0, .4d0 ] ) > epsilon(0.d0) ) &
   .or. any( abs( draw%shapes%next%next%next%fill%colors(1)%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
   .or. any( abs( draw%shapes%next%next%next%fill%colors(2)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
+  if ( failed ) return
+
+  ! Perturbation
+  failed = &
+  draw%perturbs%type .ne. drid%harmonic &
+  .or. draw%perturbs%coor_type .ne. drid%cartesian &
+  .or. draw%perturbs%dir .ne. drid%x &
+  .or. abs( draw%perturbs%harmonic%A - .05d0 ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%harmonic%lambda - 32 ) > epsilon(0.d0) &
+  .or. any( abs( draw%perturbs%harmonic%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. draw%perturbs%next%type .ne. drid%symmetric_decaying &
+  .or. draw%perturbs%next%coor_type .ne. drid%cartesian &
+  .or. draw%perturbs%next%dir .ne. drid%y &
+  .or. abs( draw%perturbs%next%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%next%sym_decaying%pos - 56 ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%next%sym_decaying%sigma - 2 ) > epsilon(0.d0) &
+  .or. any( abs( draw%perturbs%next%sym_decaying%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
+  .or. draw%perturbs%next%next%type .ne. drid%symmetric_decaying &
+  .or. draw%perturbs%next%next%coor_type .ne. drid%cartesian &
+  .or. draw%perturbs%next%next%dir .ne. drid%y &
+  .or. abs( draw%perturbs%next%next%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%next%next%sym_decaying%pos - 72 ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%next%next%sym_decaying%sigma - 8 ) > epsilon(0.d0) &
+  .or. any( abs( draw%perturbs%next%next%sym_decaying%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
   if ( failed ) return
 
   ! Iterative Riemann Solver
@@ -88,7 +112,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   ! Slope Limiter
   failed = &
-  abs ( sl%w - 1.23d0 ) > epsilon(0.d0) &
+  abs ( sl%w - 0.d0 ) > epsilon(0.d0) &
   .or. sl%type .ne. slid%van_Leer
   if ( failed ) return
 

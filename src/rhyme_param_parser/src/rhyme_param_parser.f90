@@ -1,5 +1,6 @@
 module rhyme_param_parser
   ! TODO: replace iteration with fortran namelists
+  ! TODO: This is ugly as hell, pfffff :(
 
   use rhyme_log
   use rhyme_initial_condition
@@ -32,8 +33,9 @@ contains
     type ( chombo_t ), intent ( inout ) :: chombo
 
     integer :: ios
-    character(len=1024) :: key, op, str, dir_str
+    character(len=1024) :: key, op, str, coor_str, dir_str
     type ( shape_t ), pointer :: shape
+    type ( perturbation_t ), pointer :: perturb
     logical :: param_file_was_found
 
 
@@ -182,6 +184,8 @@ contains
 
       case ( "shape_filling" ); call read_shape_filling()
       case ( 'shape_filling_colors' ); call read_shape_filling_colors()
+
+      case ( 'perturb' ); call read_perturbation()
 
         ! Iterative Riemann Solver
       case ( "pressure_floor" )
@@ -395,6 +399,78 @@ contains
         call log%err( 'Unknown shape_filling type', 'Cannot read colors')
       end if
     end subroutine read_shape_filling_colors
+
+
+    subroutine set_perturbation_dir ()
+
+      select case ( trim(dir_str) )
+      case ( 'x' ); perturb%dir = drid%x
+      case ( 'y' ); perturb%dir = drid%y
+      case ( 'z' ); perturb%dir = drid%z
+      case ( 'xy' ); perturb%dir = drid%xy
+      case ( 'xz' ); perturb%dir = drid%xz
+      case ( 'yz' ); perturb%dir = drid%yz
+      case ( 'xyz' ); perturb%dir = drid%xyz
+      case ( 'r' ); perturb%dir = drid%r
+      case ( 'theta' ); perturb%dir = drid%theta
+      case ( 'phi' ); perturb%dir = drid%phi
+      case ( 'rtheta' ); perturb%dir = drid%rtheta
+      case ( 'rphi' ); perturb%dir = drid%rphi
+      case ( 'thetaphi' ); perturb%dir = drid%thetaphi
+      case ( 'rthetaphi' ); perturb%dir = drid%rthetaphi
+      case DEFAULT
+        call log%err( 'Unknown perturbation dir', dir_str )
+        return
+      end select
+    end subroutine set_perturbation_dir
+
+
+    subroutine set_perturbation_coor ()
+      select case ( trim(coor_str) )
+      case ( 'cartesian' ); perturb%coor_type = drid%cartesian
+      case ( 'spherical' ); perturb%coor_type = drid%spherical
+      case DEFAULT
+        call log%err( 'Unknown perturbation coordinate', coor_str )
+        return
+      end select
+    end subroutine set_perturbation_coor
+
+
+    subroutine read_perturbation ()
+      read (1, *) key, op, str, coor_str, dir_str
+      call log%log( '', 'perturb', '=', [ str ] )
+      call log%log( '', 'perturb (directionality)', '=', [ dir_str ] )
+
+      select case ( trim(str) )
+      case ( 'harmonic' )
+        perturb => draw%new_perturb( drid%harmonic )
+        call set_perturbation_dir
+        call set_perturbation_coor
+        backspace (1)
+        read (1, *) key, op, str, coor_str, dir_str, perturb%harmonic%A, &
+          perturb%harmonic%lambda, perturb%harmonic%base%w( hyid%rho:hyid%p )
+
+        call log%log( '', 'perturb (harmonic, A)', '=', [ perturb%harmonic%A ] )
+        call log%log( '', 'perturb (harmonic, lambda)', '=', [ perturb%harmonic%lambda ] )
+        call log%log( '', 'perturb (harmonic, base)', '=', perturb%harmonic%base%w )
+
+      case ( 'symmetric_decaying' )
+        perturb => draw%new_perturb( drid%symmetric_decaying )
+        call set_perturbation_dir
+        call set_perturbation_coor
+        backspace (1)
+        read (1, *) key, op, str, coor_str, dir_str, perturb%sym_decaying%A, &
+          perturb%sym_decaying%pos, perturb%sym_decaying%sigma, &
+          perturb%sym_decaying%base%w( hyid%rho:hyid%p )
+
+        call log%log( '', 'perturb (sym_decaying, A)', '=', [ perturb%sym_decaying%A ] )
+        call log%log( '', 'perturb (sym_decaying, pos)', '=', [ perturb%sym_decaying%pos ] )
+        call log%log( '', 'perturb (sym_decaying, sigma)', '=', [ perturb%sym_decaying%sigma ] )
+        call log%log( '', 'perturb (sym_decaying, base)', '=', perturb%sym_decaying%base%w )
+      case DEFAULT
+        call log%err( 'Unknown perturbation', str )
+      end select
+    end subroutine read_perturbation
 
   end subroutine parse_params
 end module rhyme_param_parser

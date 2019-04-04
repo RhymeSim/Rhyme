@@ -45,7 +45,7 @@ module rhyme_drawing
 
 
   type perturbation_harmonic_t
-    real ( kind=8 ) :: A = 1.d0, k = 0.d0
+    real ( kind=8 ) :: A = 1.d0, lambda = 0.d0
     type ( hydro_primitive_t ) :: base
   end type perturbation_harmonic_t
 
@@ -225,7 +225,7 @@ contains
     perturb%dir = drid%unset
 
     perturb%harmonic%A = 1.d0
-    perturb%harmonic%k = 0.d0
+    perturb%harmonic%lambda = 0.d0
     perturb%harmonic%base%w = 0.d0
 
     perturb%sym_decaying%A = 1.d0

@@ -20,8 +20,8 @@ logical function rhyme_drawing_new_perturb_test () result ( failed )
   .or. perturb%dir .ne. drid%unset &
   .or. abs( draw%perturbs%harmonic%A - 1.d0 ) > epsilon(0.d0) &
   .or. abs( perturb%harmonic%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%harmonic%k ) > epsilon(0.d0) &
-  .or. abs( perturb%harmonic%k ) > epsilon(0.d0) &
+  .or. abs( draw%perturbs%harmonic%lambda ) > epsilon(0.d0) &
+  .or. abs( perturb%harmonic%lambda ) > epsilon(0.d0) &
   .or. any( abs( draw%perturbs%harmonic%base%w ) > epsilon(0.d0) ) &
   .or. any( abs( perturb%harmonic%base%w ) > epsilon(0.d0) ) &
   .or. abs( draw%perturbs%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
