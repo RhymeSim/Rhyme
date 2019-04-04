@@ -1,4 +1,6 @@
 module rhyme_drawing
+  ! TODO: Move shapes, transitions, fillings and perturbations into separate modules
+
   use rhyme_samr
   use rhyme_hydro_base
   use rhyme_ideal_gas
@@ -6,13 +8,20 @@ module rhyme_drawing
   implicit none
 
   type drawing_indices_t
+    integer :: unset = -1, none = -2
     integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
     integer :: uniform = 10 ! Filling type
     integer :: cuboid = 20, sphere = 21, prism = 22 ! Shapes
     integer :: smoothed_slab_2d = 23 ! Shapes
     integer :: linear = 41, cubic = 42, ramp = 43 ! transition types
-    integer :: unset = -1, none = -2
-    integer :: x = hyid%x, y = hyid%y, z = hyid%z ! directions
+    integer :: harmonic = 61, symmetric_decaying = 62 ! perturbation types
+    integer :: x = hyid%x, y = hyid%y, z = hyid%z ! Cartesian directions
+    integer :: xy = 81, xz = 82, yz = 83 ! Cartesian planes
+    integer :: xyz = 84 ! Cartesian volume
+    integer :: r = 85, theta = 86, phi = 87 ! spherical directions
+    integer :: rtheta = 88, rphi = 89, thetaphi = 90 ! spherical planes
+    integer :: rthetaphi = 91 ! spherical volume
+    integer :: cartesian = 101, cylindrical = 102, spherical = 103 ! coordinate types
   end type drawing_indices_t
 
   type ( drawing_indices_t ), parameter :: drid = drawing_indices_t ()
@@ -33,6 +42,29 @@ module rhyme_drawing
     integer :: type = drid%uniform
     type ( hydro_primitive_t ) :: colors(2)
   end type shape_filling_t
+
+
+  type perturbation_harmonic_t
+    real ( kind=8 ) :: A = 1.d0, k = 0.d0
+    type ( hydro_primitive_t ) :: base
+  end type perturbation_harmonic_t
+
+
+  type perturbation_symmetric_decaying_t
+    real ( kind=8 ) :: A = 1.d0, pos = 0.d0, sigma = 1.d0
+    type ( hydro_primitive_t ) :: base
+  end type perturbation_symmetric_decaying_t
+
+
+  type perturbation_t
+    integer :: type ! perturbation type
+    integer :: coor_type = drid%cartesian ! perturbation coordinate type
+    integer :: dir = drid%x ! perturbation direction, plane or volume
+    type ( perturbation_harmonic_t ) :: harmonic
+    type ( perturbation_symmetric_decaying_t ) :: sym_decaying
+
+    type ( perturbation_t ), pointer :: next => null()
+  end type perturbation_t
 
 
   type shape_cuboid_t
@@ -79,9 +111,11 @@ module rhyme_drawing
     integer :: type = drid%transparent_canvas
     type ( hydro_primitive_t ) :: canvas
     type ( shape_t ), pointer :: shapes => null()
+    type ( perturbation_t ), pointer :: perturbs => null()
     logical :: initialized
   contains
     procedure :: new_shape => rhyme_drawing_new_shape
+    procedure :: new_perturb => rhyme_drawing_new_perturb
     procedure :: apply => rhyme_drawing_apply
   end type drawing_t
 
@@ -119,7 +153,6 @@ module rhyme_drawing
 
 contains
 
-
   function rhyme_drawing_new_shape ( this, shape_type ) result ( shape )
     implicit none
 
@@ -135,10 +168,10 @@ contains
         shape => shape%next
       end do
 
-      allocate ( shape%next )
+      allocate( shape%next )
       shape => shape%next
     else
-      allocate ( this%shapes )
+      allocate( this%shapes )
       shape => this%shapes
     end if
 
@@ -163,6 +196,42 @@ contains
     shape%trans%type = drid%none
     shape%trans%sigma = 0.d0
   end function rhyme_drawing_new_shape
+
+
+  function rhyme_drawing_new_perturb ( this, perturb_type ) result ( perturb )
+    implicit none
+
+    class ( drawing_t ), intent ( inout ) :: this
+    integer, intent ( in ) :: perturb_type
+
+    type ( perturbation_t ), pointer :: perturb
+
+    perturb => this%perturbs
+
+    if ( associated ( perturb ) ) then
+      do while ( associated ( perturb%next ) )
+        perturb => perturb%next
+      end do
+
+      allocate( perturb%next )
+      perturb => perturb%next
+    else
+      allocate( this%perturbs )
+      perturb => this%perturbs
+    end if
+
+    perturb%type = perturb_type
+    perturb%coor_type = drid%unset
+    perturb%dir = drid%unset
+
+    perturb%harmonic%A = 1.d0
+    perturb%harmonic%k = 0.d0
+    perturb%harmonic%base%w = 0.d0
+
+    perturb%sym_decaying%A = 1.d0
+    perturb%sym_decaying%pos = 0.d0
+    perturb%sym_decaying%sigma = 1.d0
+  end function rhyme_drawing_new_perturb
 
 
   subroutine rhyme_drawing_apply ( this, ig, samr )
