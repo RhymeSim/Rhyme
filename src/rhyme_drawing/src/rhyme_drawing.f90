@@ -149,6 +149,12 @@ module rhyme_drawing
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_smoothed_slab_2d
+
+    module subroutine rhyme_drawing_apply_perturbations ( samr, ig, perturbs )
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( perturbation_t ), pointer, intent ( in ) :: perturbs
+    end subroutine rhyme_drawing_apply_perturbations
   end interface
 
 contains
@@ -251,7 +257,7 @@ contains
 
     shape => this%shapes
 
-    do while ( associated(shape) )
+    do while ( associated( shape ) )
       select case ( shape%type )
       case ( drid%cuboid )
         if ( shape%fill%type .eq. drid%uniform) then
@@ -275,6 +281,8 @@ contains
 
       shape => shape%next
     end do
+
+    call rhyme_drawing_apply_perturbations( samr, ig, this%perturbs )
 
   end subroutine rhyme_drawing_apply
 end module rhyme_drawing

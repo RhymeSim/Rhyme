@@ -29,6 +29,7 @@ endforeach ( dep )
 
 
 set ( srcs
+  src/rhyme_drawing_apply_perturbations.f90
   src/rhyme_drawing_smoothed_slab_2d.f90
   src/rhyme_drawing_uniform_prism.f90
   src/rhyme_drawing_uniform_sphere.f90

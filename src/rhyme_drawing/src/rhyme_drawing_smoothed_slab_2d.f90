@@ -1,6 +1,8 @@
 submodule ( rhyme_drawing ) rhyme_drawing_smoothed_slab_2d_submodule
 contains
   pure module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape )
+    ! TODO: Add test
+
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr
@@ -17,11 +19,11 @@ contains
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
               select case ( shape%slab_2d%dir )
               case ( drid%x )
-                x = real( i + samr%levels(l)%boxes(b)%left_edge(1) ) / 2**l
+                x = real( i + samr%levels(l)%boxes(b)%left_edge(1) - 1 ) / 2**l
               case ( drid%y )
-                x = real( j + samr%levels(l)%boxes(b)%left_edge(2) ) / 2**l
+                x = real( j + samr%levels(l)%boxes(b)%left_edge(2) - 1 ) / 2**l
               case ( drid%z )
-                x = real( k + samr%levels(l)%boxes(b)%left_edge(3) ) / 2**l
+                x = real( k + samr%levels(l)%boxes(b)%left_edge(3) - 1 ) / 2**l
               end select
 
               samr%levels(l)%boxes(b)%hydro(i, j, k) = ramp_func( ig, x, shape )
