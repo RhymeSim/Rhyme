@@ -94,13 +94,13 @@ solver_type = cpu_intensive
 # Implemented canvases:
 # - uniform, transparent
 # Implemented shapes:
-# - rect
+# - cuboid, sphere, prism, slab_2d
 # Implemented filling:
 # - uniform
 
 canvas = uniform .125d0 0.d0 0.d0 0.d0 .1d0
 
-shape = rect 1 1 1 56 128 1
+shape = cuboid 1 1 1 56 128 1
 shape_transition_top = ramp 2.5d0
 shape_transition_top_colors = .125d0 0.d0 0.d0 0.d0 .1d0 1.d0 0.d0 0.d0 0.d0 1.d0
 shape_transition_bottom = linear 1.5d0
@@ -108,7 +108,7 @@ shape_transition_bottom_colors = .125d0 0.d0 0.d0 0.d0 .1d0 1.d0 0.d0 0.d0 0.d0 
 shape_filling = uniform
 shape_filling_colors = 1.d0 0.d0 0.d0 0.d0 1.d0
 
-shape = triangle 56 1 1 56 128 1 72 1 1 1
+shape = prism 56 1 1 56 128 1 72 1 1 1
 shape_filling = uniform
 shape_filling_colors = 1.d0 0.d0 0.d0 0.d0 1.d0
 

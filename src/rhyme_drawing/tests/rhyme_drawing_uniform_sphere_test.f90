@@ -19,7 +19,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
     1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  real ( kind=8 ), parameter :: x0(3) = [ 8.d0, 8.d0, 8.d0 ]
+  real ( kind=8 ), parameter :: origin(3) = [ 8.d0, 8.d0, 8.d0 ]
   real ( kind=8 ), parameter :: r = 4.d0
 
   call rhyme_drawing_factory_init
@@ -31,8 +31,8 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
 
   shape => draw%new_shape( drid%sphere )
 
-  shape%x0 = x0
-  shape%r = r
+  shape%sphere%origin = origin
+  shape%sphere%r = r
   shape%fill%type = drid%uniform
   shape%fill%colors(1)%w = hy%prim%w
 
@@ -45,7 +45,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
       do k = 1, samr%levels(l)%boxes(b)%dims(3)
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
-            if ( is_inside_circle( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
+            if ( is_inside_sphere( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
 
               failed = any( abs( &
                 samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
@@ -60,22 +60,22 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   end do
 
 contains
-  logical function is_inside_circle ( p0, box, sphere ) result ( is_inside )
+  logical function is_inside_sphere ( p0, box, shape ) result ( is_inside )
     implicit none
 
     integer, intent ( in ) :: p0(3)
     type ( samr_box_t ), intent ( in ) :: box
-    type ( shape_t ), intent ( in ) :: sphere
+    type ( shape_t ), intent ( in ) :: shape
 
     real ( kind=8 ) :: p(3), r2
 
     p = real( p0, kind=8 ) / 2**box%level
-    r2 = sphere%r**2
+    r2 = shape%sphere%r**2
 
-    if ( sum( ( p - sphere%x0 )**2 ) > r2 ) then
+    if ( sum( ( p - shape%sphere%origin )**2 ) > r2 ) then
       is_inside = .false.
     else
       is_inside = .true.
     end if
-  end function is_inside_circle
+  end function is_inside_sphere
 end function rhyme_drawing_uniform_sphere_test

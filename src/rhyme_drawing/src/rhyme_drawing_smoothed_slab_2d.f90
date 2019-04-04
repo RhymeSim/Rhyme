@@ -15,7 +15,7 @@ contains
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
           do j = 1, samr%levels(l)%boxes(b)%dims(2)
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
-              select case ( shape%direction )
+              select case ( shape%slab_2d%dir )
               case ( drid%x )
                 x = real( i + samr%levels(l)%boxes(b)%left_edge(1) ) / 2**l
               case ( drid%y )
@@ -43,8 +43,8 @@ contains
       real ( kind=8 ) :: factor
       type ( hydro_primitive_t ) :: W
 
-      factor = tanh( (x - shape%position(1)) / shape%sigma(1) ) &
-        - tanh( (x - shape%position(2)) / shape%sigma(2) )
+      factor = tanh( (x - shape%slab_2d%pos(1)) / shape%slab_2d%sigma(1) ) &
+        - tanh( (x - shape%slab_2d%pos(2)) / shape%slab_2d%sigma(2) )
 
       W%w = shape%fill%colors(1)%w + 0.5 * ( &
         shape%fill%colors(2)%w - shape%fill%colors(1)%w &

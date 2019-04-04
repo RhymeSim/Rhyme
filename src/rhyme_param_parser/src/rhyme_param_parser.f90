@@ -265,48 +265,48 @@ contains
       call log%log( '', 'shape', '=', [ str ] )
 
       select case ( trim(str) )
-      case ( 'rect' )
-        shape => draw%new_shape( drid%rect )
+      case ( 'cuboid' )
+        shape => draw%new_shape( drid%cuboid )
         backspace (1)
-        read (1, *) key, op, str, shape%xl(1:3), shape%length(1:3)
+        read (1, *) key, op, str, shape%cuboid%left_corner(1:3), shape%cuboid%lengths(1:3)
 
-        call log%log( '', 'shape (rect, left_edge)', '=', shape%xl )
-        call log%log( '', 'shape (rect, length)', '=', shape%length )
+        call log%log( '', 'shape (rect, left_edge)', '=', shape%cuboid%left_corner )
+        call log%log( '', 'shape (rect, length)', '=', shape%cuboid%lengths )
 
-      case ( 'triangle' )
-        shape => draw%new_shape( drid%triangle )
+      case ( 'prism' )
+        shape => draw%new_shape( drid%prism )
         backspace (1)
-        read (1, *) key, op, str, shape%vertices(1,:), shape%vertices(2,:), &
-          shape%vertices(3,:), shape%thickness
+        read (1, *) key, op, str, shape%prism%vertices(1,:), &
+          shape%prism%vertices(2,:), shape%prism%vertices(3,:), shape%prism%thickness
 
-        call log%log( '', 'shape (triangle, vertice_1)', '=', shape%vertices(1,:) )
-        call log%log( '', 'shape (triangle, vertice_2)', '=', shape%vertices(2,:) )
-        call log%log( '', 'shape (triangle, vertice_3)', '=', shape%vertices(3,:) )
-        call log%log( '', 'shape (triangle, thickness)', '=', [ shape%thickness ] )
+        call log%log( '', 'shape (triangle, vertice_1)', '=', shape%prism%vertices(1,:) )
+        call log%log( '', 'shape (triangle, vertice_2)', '=', shape%prism%vertices(2,:) )
+        call log%log( '', 'shape (triangle, vertice_3)', '=', shape%prism%vertices(3,:) )
+        call log%log( '', 'shape (triangle, thickness)', '=', [ shape%prism%thickness ] )
 
       case ( 'sphere' )
         shape => draw%new_shape( drid%sphere )
         backspace (1)
-        read (1, *) key, op, str, shape%x0(1:3), shape%r
+        read (1, *) key, op, str, shape%sphere%origin(1:3), shape%sphere%r
 
-        call log%log( '', 'shape (sphere, origin)', '=', shape%x0 )
-        call log%log( '', 'shape (sphere, radius)', '=', [ shape%r ] )
+        call log%log( '', 'shape (sphere, origin)', '=', shape%sphere%origin )
+        call log%log( '', 'shape (sphere, radius)', '=', [ shape%sphere%r ] )
 
       case ( 'smoothed_slab_2d' )
         shape => draw%new_shape( drid%smoothed_slab_2d )
         backspace (1)
-        read (1, *) key, op, str, dir_str, shape%position(1:2), shape%sigma(1:2)
+        read (1, *) key, op, str, dir_str, shape%slab_2d%pos(1:2), shape%slab_2d%sigma(1:2)
 
         select case ( trim(dir_str) )
-        case ( 'x' ); shape%direction = drid%x
-        case ( 'y' ); shape%direction = drid%y
-        case ( 'z' ); shape%direction = drid%z
+        case ( 'x' ); shape%slab_2d%dir = drid%x
+        case ( 'y' ); shape%slab_2d%dir = drid%y
+        case ( 'z' ); shape%slab_2d%dir = drid%z
         case DEFAULT; call log%err( 'Unknown direction', dir_str )
         end select
 
         call log%log( '', 'shape (smoothed_slab_2d, direction)', '=', [ dir_str ] )
-        call log%log( '', 'shape (smoothed_slab_2d, position)', '=', shape%position )
-        call log%log( '', 'shape (smoothed_slab_2d, sigma)', '=', shape%sigma )
+        call log%log( '', 'shape (smoothed_slab_2d, position)', '=', shape%slab_2d%pos )
+        call log%log( '', 'shape (smoothed_slab_2d, sigma)', '=', shape%slab_2d%sigma )
       case DEFAULT
         read (1, *)
         call log%err( 'Unknow shape', str )

@@ -1,4 +1,4 @@
-logical function rhyme_drawing_uniform_rectangle_test () result (failed)
+logical function rhyme_drawing_uniform_cuboid_test () result (failed)
   use rhyme_drawing_factory
 
   implicit none
@@ -19,8 +19,8 @@ logical function rhyme_drawing_uniform_rectangle_test () result (failed)
     1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-  integer, parameter :: xl(3) = [ 3, 3, 3 ]
-  integer, parameter :: length = 12
+  integer, parameter :: left_corner(3) = [ 3, 3, 3 ]
+  integer, parameter :: lengths = 12
 
 
   call rhyme_drawing_factory_init
@@ -30,15 +30,15 @@ logical function rhyme_drawing_uniform_rectangle_test () result (failed)
 
   draw%type = drid%transparent_canvas
 
-  shape => draw%new_shape( drid%rect )
+  shape => draw%new_shape( drid%cuboid )
 
-  shape%xl = xl
-  shape%length = length
+  shape%cuboid%left_corner = left_corner
+  shape%cuboid%lengths = lengths
   shape%fill%type = drid%uniform
   shape%fill%colors(1)%w = hy%prim%w
 
 
-  call rhyme_drawing_uniform_rectangle( samr, draw_fac_ig_mon, shape )
+  call rhyme_drawing_uniform_cuboid( samr, draw_fac_ig_mon, shape )
 
 
   do l = 0, samr%nlevels - 1
@@ -46,7 +46,7 @@ logical function rhyme_drawing_uniform_rectangle_test () result (failed)
       do k = 1, samr%levels(l)%boxes(b)%dims(3)
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
-            if ( is_inside_rect( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
+            if ( is_inside_cuboid( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
 
               failed = any( abs( &
                 samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
@@ -62,19 +62,19 @@ logical function rhyme_drawing_uniform_rectangle_test () result (failed)
 
 contains
 
-  logical function is_inside_rect ( p0, box, rect ) result ( is_inside )
+  logical function is_inside_cuboid ( p0, box, shape ) result ( is_inside )
     implicit none
 
     integer, intent ( in ) :: p0(3)
     type ( samr_box_t ), intent ( in ) :: box
-    type ( shape_t ), intent ( in ) :: rect
+    type ( shape_t ), intent ( in ) :: shape
 
     integer :: le(3), re(3), p(3)
 
     p = p0 / 2**box%level
 
-    le = rect%xl
-    re = rect%xl + rect%length - 1
+    le = shape%cuboid%left_corner
+    re = shape%cuboid%left_corner + shape%cuboid%lengths - 1
 
     if ( any( p < le ) .or. any( p >  re ) ) then
       is_inside = .false.
@@ -82,5 +82,5 @@ contains
       is_inside = .true.
     end if
 
-  end function is_inside_rect
-end function rhyme_drawing_uniform_rectangle_test
+  end function is_inside_cuboid
+end function rhyme_drawing_uniform_cuboid_test

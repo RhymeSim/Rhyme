@@ -22,12 +22,12 @@ logical function rhyme_drawing_new_shape_test () result (failed)
   if ( failed ) return
 
 
-  shape => draw%new_shape( drid%rect )
+  shape => draw%new_shape( drid%cuboid )
 
   failed = &
   .not. associated ( draw%shapes%next ) &
   .or. draw%shapes%type .ne. drid%sphere &
-  .or. draw%shapes%next%type .ne. drid%rect &
+  .or. draw%shapes%next%type .ne. drid%cuboid &
   .or. draw%shapes%next%fill%type .ne. drid%unset &
   .or. any( draw%shapes%next%trans%type .ne. drid%none ) &
   .or. any( abs( draw%shapes%next%trans%sigma ) > epsilon(0.d0) )

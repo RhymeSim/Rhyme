@@ -41,8 +41,7 @@ contains
     call draw_fac_ig_di%init_with( chemi, thermo, igid%diatomic, draw_fac_log )
 
     call rhyme_samr_factory_fill ( &
-      nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, draw_fac_samr &
-    )
+      nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, draw_fac_samr )
 
     rhyme_drawing_factory_initialized = .true.
   end subroutine rhyme_drawing_factory_init
