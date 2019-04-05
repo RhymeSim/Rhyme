@@ -3,15 +3,15 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
 
   implicit none
 
-
   type ( mh_workspace_t ) :: ws
   integer :: l, b, lb(3), ub(3), lbws(4), ubws(4), dims(3)
 
 
   call rhyme_mh_workspace_factory_init
 
-
   call ws%init( samr, log )
+
+  failed = .false.
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes
@@ -36,6 +36,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
       .or. size ( ws%levels(l)%boxes(b)%FR ) .ne. product ( dims ) * 3 &
       .or. any ( lb .ne. lbws(:3) ) &
       .or. any ( ub .ne. ubws(:3) )
+      if ( failed ) return
 
       ! Check cpu_intensive
       ws%type = mhwsid%cpu_intensive
@@ -50,6 +51,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
       .or. size ( ws%levels(l)%boxes(b)%U ) .ne. product( dims ) &
       .or. any ( lb .ne. 1 ) &
       .or. any ( ub .ne. dims )
+      if ( failed ) return
     end do
   end do
 end function rhyme_mh_workspace_check_test

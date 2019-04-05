@@ -106,27 +106,27 @@ contains
         ! Boundary Condition
       case ( "left_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%left) = select_boundary ( str )
+        bc%types(bcid%left) = select_boundary( str )
         call log%log( '', 'left_bc', '=', [ str ] )
       case ( "right_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%right) = select_boundary ( str )
+        bc%types(bcid%right) = select_boundary( str )
         call log%log( '', 'right_bc', '=', [ str ] )
       case ( "bottom_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%bottom) = select_boundary ( str )
+        bc%types(bcid%bottom) = select_boundary( str )
         call log%log( '', 'bottom_bc', '=', [ str ] )
       case ( "top_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%top) = select_boundary ( str )
+        bc%types(bcid%top) = select_boundary( str )
         call log%log( '', 'top_bc', '=', [ str ] )
       case ( "back_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%back) = select_boundary ( str )
+        bc%types(bcid%back) = select_boundary( str )
         call log%log( '', 'back_bc', '=', [ str ] )
       case ( "front_bc" )
         read (1, *) key, op, str
-        bc%types(bcid%front) = select_boundary ( str )
+        bc%types(bcid%front) = select_boundary( str )
         call log%log( '', 'front_bc', '=', [ str ] )
 
         !CFL
@@ -259,6 +259,9 @@ contains
       case ( "reflective" ); bc = bcid%reflective
       case ( "outflow" ); bc = bcid%outflow
       case ( "periodic" ); bc = bcid%periodic
+      case DEFAULT
+        call log%err( 'Unknonw boundary condition', '', '=', [ bundry ] )
+        bc = bcid%unset
       end select
     end function select_boundary
 
