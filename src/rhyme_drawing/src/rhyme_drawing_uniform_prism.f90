@@ -1,6 +1,6 @@
 submodule ( rhyme_drawing ) rhyme_drawing_uniform_prism_submodule
 contains
-  pure module subroutine rhyme_drawing_uniform_prism ( samr, ig, shape )
+  module subroutine rhyme_drawing_uniform_prism ( samr, ig, shape )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr

@@ -70,8 +70,8 @@ program rhyme
   ! Boundary Conditions
   call bc%init( samr, log )
 
-  ! Initial Condition
-  call draw%apply( ig, samr )
+  ! Initial Condition ( Drawing )
+  call rhyme_drawing_apply( draw, ig, samr, log )
 
   ! Iterative Riemann Solver
   call irs%init( log )

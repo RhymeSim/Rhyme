@@ -1,6 +1,6 @@
 submodule ( rhyme_drawing ) rhyme_drawing_smoothed_slab_2d_submodule
 contains
-  pure module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape )
+  module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape, log )
     ! TODO: Add test
 
     implicit none
@@ -8,6 +8,7 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( shape_t ), intent ( in ) :: shape
+    type ( log_t ), intent ( inout ) :: log
 
     integer :: l, b, k, j, i
     real ( kind=8 ) :: x
@@ -24,6 +25,9 @@ contains
                 x = real( j + samr%levels(l)%boxes(b)%left_edge(2) - 1 ) / 2**l
               case ( drid%z )
                 x = real( k + samr%levels(l)%boxes(b)%left_edge(3) - 1 ) / 2**l
+              case DEFAULT
+                call log%err( 'Unknown slab direction', 'dir', '=', [shape%slab_2d%dir] )
+                return
               end select
 
               samr%levels(l)%boxes(b)%hydro(i, j, k) = ramp_func( ig, x, shape )

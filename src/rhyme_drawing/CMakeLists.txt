@@ -35,6 +35,7 @@ set ( srcs
   src/rhyme_drawing_uniform_sphere.f90
   src/rhyme_drawing_uniform_cuboid.f90
   src/rhyme_drawing_uniform_canvas.f90
+  src/rhyme_drawing_apply.f90
   src/rhyme_drawing.f90
 )
 

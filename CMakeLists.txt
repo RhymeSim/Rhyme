@@ -3,7 +3,7 @@ cmake_minimum_required ( VERSION 3.7 )
 project ( rhyme )
 
 enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra )
+add_compile_options ( -Wall -Wextra -O3 )
 set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 

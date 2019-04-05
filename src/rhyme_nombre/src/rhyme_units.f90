@@ -74,6 +74,8 @@ contains
 
     real(kind=8) :: exponent
 
+    u => null()
+
     do while ( i <= size(arr) .and. .not. arr(i) == char(0) )
       select case ( trim(arr(i)) )
 

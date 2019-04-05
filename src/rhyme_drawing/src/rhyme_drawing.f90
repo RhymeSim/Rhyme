@@ -4,6 +4,7 @@ module rhyme_drawing
   use rhyme_samr
   use rhyme_hydro_base
   use rhyme_ideal_gas
+  use rhyme_log
 
   implicit none
 
@@ -116,45 +117,53 @@ module rhyme_drawing
   contains
     procedure :: new_shape => rhyme_drawing_new_shape
     procedure :: new_perturb => rhyme_drawing_new_perturb
-    procedure :: apply => rhyme_drawing_apply
   end type drawing_t
 
   interface
-    pure module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
+    module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( hydro_primitive_t ), intent ( in ) :: bg_prim
     end subroutine rhyme_drawing_uniform_canvas
 
-    pure module subroutine rhyme_drawing_uniform_cuboid ( samr, ig, shape )
+    module subroutine rhyme_drawing_uniform_cuboid ( samr, ig, shape )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_uniform_cuboid
 
-    pure module subroutine rhyme_drawing_uniform_sphere ( samr, ig, shape )
+    module subroutine rhyme_drawing_uniform_sphere ( samr, ig, shape )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_uniform_sphere
 
-    pure module subroutine rhyme_drawing_uniform_prism ( samr, ig, shape )
+    module subroutine rhyme_drawing_uniform_prism ( samr, ig, shape )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_uniform_prism
 
-    pure module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape )
+    module subroutine rhyme_drawing_smoothed_slab_2d ( samr, ig, shape, log )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( shape_t ), intent ( in ) :: shape
+      type ( log_t ), intent ( inout ) :: log
     end subroutine rhyme_drawing_smoothed_slab_2d
 
-    module subroutine rhyme_drawing_apply_perturbations ( samr, ig, perturbs )
+    module subroutine rhyme_drawing_apply_perturbations ( samr, ig, perturbs, log )
       type ( samr_t ), intent ( inout ) :: samr
       type ( ideal_gas_t ), intent ( in ) :: ig
       type ( perturbation_t ), pointer, intent ( in ) :: perturbs
+      type ( log_t ), intent ( inout ) :: log
     end subroutine rhyme_drawing_apply_perturbations
+
+    module subroutine rhyme_drawing_apply ( cfg, ig, samr, log )
+      class ( drawing_t ), intent ( inout ) :: cfg
+      type ( ideal_gas_t ), intent ( in ) :: ig
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( log_t ), intent ( inout ) :: log
+    end subroutine rhyme_drawing_apply
   end interface
 
 contains
@@ -240,49 +249,4 @@ contains
   end function rhyme_drawing_new_perturb
 
 
-  subroutine rhyme_drawing_apply ( this, ig, samr )
-    implicit none
-
-    class ( drawing_t ), intent(in) :: this
-    type ( ideal_gas_t ), intent(in) :: ig
-    type ( samr_t ), intent(inout) :: samr
-
-    type ( shape_t ), pointer :: shape
-
-
-    ! No action for transparent
-    if ( this%type .eq. drid%uniform_canvas ) then
-      call rhyme_drawing_uniform_canvas( samr, ig, this%canvas )
-    end if
-
-    shape => this%shapes
-
-    do while ( associated( shape ) )
-      select case ( shape%type )
-      case ( drid%cuboid )
-        if ( shape%fill%type .eq. drid%uniform) then
-          call rhyme_drawing_uniform_cuboid( samr, ig, shape )
-        end if
-
-      case ( drid%sphere )
-        if ( shape%fill%type .eq. drid%uniform ) then
-          call rhyme_drawing_uniform_sphere( samr, ig, shape )
-        end if
-
-      case ( drid%prism )
-        if ( shape%fill%type .eq. drid%uniform) then
-          call rhyme_drawing_uniform_prism( samr, ig, shape )
-        end if
-
-      case ( drid%smoothed_slab_2d )
-        call rhyme_drawing_smoothed_slab_2d( samr, ig, shape )
-
-      end select
-
-      shape => shape%next
-    end do
-
-    call rhyme_drawing_apply_perturbations( samr, ig, this%perturbs )
-
-  end subroutine rhyme_drawing_apply
 end module rhyme_drawing

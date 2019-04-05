@@ -1,6 +1,6 @@
 submodule ( rhyme_drawing ) rhyme_drawing_uniform_canvas_submodule
 contains
-  pure module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
+  module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr

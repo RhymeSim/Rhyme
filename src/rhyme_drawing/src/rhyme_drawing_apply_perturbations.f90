@@ -1,6 +1,6 @@
 submodule ( rhyme_drawing ) rhyme_drawing_apply_perturbations_submodule
 contains
-  module subroutine rhyme_drawing_apply_perturbations ( samr, ig, perturbs )
+  module subroutine rhyme_drawing_apply_perturbations ( samr, ig, perturbs, log )
     ! TODO: Add test
 
     implicit none
@@ -8,6 +8,7 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( perturbation_t ), pointer, intent ( in ) :: perturbs
+    type ( log_t ), intent ( inout ) :: log
 
     integer :: l, b, k, j, i
     real ( kind=8 ) :: x0(3)
@@ -60,6 +61,7 @@ contains
       do while ( associated( p ) )
         select case ( p%type )
         case ( drid%harmonic )
+          call log%log( 'harmonic perturbation detected', 'dir', '=', [ p%dir ] )
           harmonic_enabled = .true.
 
           select case ( p%coor_type )
@@ -68,18 +70,27 @@ contains
             case ( drid%x ); kx = 2 * pi / p%harmonic%lambda * x(1)
             case ( drid%y ); kx = 2 * pi / p%harmonic%lambda * x(2)
             case ( drid%z ); kx = 2 * pi / p%harmonic%lambda * x(3)
+            case DEFAULT
+              call log%err( 'Unknown harmonic perturbation direction', &
+                '', '=', [ p%dir ] )
+              kx = pi / 2
             end select
 
             h_term%w = h_term%w + p%harmonic%A * cos(kx) * p%harmonic%base%w
           end select
 
         case ( drid%symmetric_decaying )
+          call log%log( 'symmetric_decaying perturbation detected', 'dir', '=', [ p%dir ] )
           sym_decaying_enabled = .true.
 
             select case ( p%dir )
             case ( drid%x ); x_Rs = x(1) - p%sym_decaying%pos
             case ( drid%y ); x_Rs = x(2) - p%sym_decaying%pos
             case ( drid%z ); x_Rs = x(3) - p%sym_decaying%pos
+            case DEFAULT
+              call log%err( 'Unknown symmetric_decaying perturbation direction', &
+                '', '=', [ p%dir ] )
+              x_Rs = sqrt( huge( 0.d0 ) )
             end select
 
             d_term%w = d_term%w + p%sym_decaying%A * exp( &
