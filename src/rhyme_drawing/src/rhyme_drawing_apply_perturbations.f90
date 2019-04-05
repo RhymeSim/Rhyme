@@ -61,7 +61,6 @@ contains
       do while ( associated( p ) )
         select case ( p%type )
         case ( drid%harmonic )
-          call log%log( 'harmonic perturbation detected', 'dir', '=', [ p%dir ] )
           harmonic_enabled = .true.
 
           select case ( p%coor_type )
@@ -80,7 +79,6 @@ contains
           end select
 
         case ( drid%symmetric_decaying )
-          call log%log( 'symmetric_decaying perturbation detected', 'dir', '=', [ p%dir ] )
           sym_decaying_enabled = .true.
 
             select case ( p%dir )
