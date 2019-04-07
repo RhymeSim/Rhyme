@@ -12,8 +12,8 @@ module rhyme_assertion
 
   type assertion_constants_t
     character ( len=16 ) :: int_fmt = '(I0)'
-    character ( len=16 ) :: real_fmt = '(E7.7)'
-    character ( len=16 ) :: double_fmt = '(E15.15)'
+    character ( len=16 ) :: real_fmt = '(E12.7)'
+    character ( len=16 ) :: double_fmt = '(E20.15)'
   end type assertion_constants_t
 
   type ( assertion_constants_t ), parameter :: assertcnst = assertion_constants_t()
