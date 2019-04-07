@@ -17,9 +17,8 @@ logical function rhyme_assertion_expect_test () result ( failed )
   call tester%expect( test2 )
 
   failed = &
-  tester%tests%is_passed .neqv. .false. &
+  tester%tests%is_passed &
   .or. tester%tests%type .ne. 1234 &
-  .or. tester%tests%next%is_passed .neqv. .true. &
-  .or. tester%tests%next%type .ne. 4321 &
-  .or. associated( tester%tests%next%next )
+  .or. .not. tester%tests%next%is_passed &
+  .or. tester%tests%next%type .ne. 4321
 end function rhyme_assertion_expect_test

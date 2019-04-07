@@ -5,15 +5,13 @@ logical function rhyme_assertion_is_equal_to_test () result ( failed )
 
   integer, parameter :: int_value = 123
 
-  type ( assertion_t ) :: tester
+  type ( test_t ) :: test
   integer :: int_test
 
-  tester = .describe. 'tester'
-
   int_test = int_value
-  call tester%expect( int_test .isEqualTo. 123 )
+  test = int_test .toBe. int_value
 
   failed = &
-  tester%tests%is_passed .neqv. .true. &
-  .or. tester%tests%type .ne. assertid%int
+  test%is_passed .neqv. .true. &
+  .or. test%type .ne. assertid%int
 end function rhyme_assertion_is_equal_to_test

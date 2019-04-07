@@ -1,6 +1,6 @@
 submodule ( rhyme_assertion ) rhyme_assertion_is_equal_to_submodule
 contains
-  module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
+  pure module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
     implicit none
 
     class (*), intent ( in ) :: val, exp

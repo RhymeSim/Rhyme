@@ -24,5 +24,8 @@ contains
 
     t_ptr%type = test%type
     t_ptr%is_passed = test%is_passed
+    t_ptr%val = test%val
+    t_ptr%op = test%op
+    t_ptr%exp = test%exp
   end subroutine rhyme_assertion_expect
 end submodule rhyme_assertion_expect_submodule

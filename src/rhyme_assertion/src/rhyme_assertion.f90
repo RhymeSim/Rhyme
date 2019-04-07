@@ -13,6 +13,7 @@ module rhyme_assertion
     integer :: type = assertid%unset
     logical :: is_passed = .false.
     character ( len=128 ) :: msg = ''
+    character ( len=128 ) :: val = '', op = '', exp = ''
     type ( test_t ), pointer :: next => null()
   end type test_t
 
@@ -34,10 +35,16 @@ module rhyme_assertion
       type ( test_t ), intent ( in ) :: test
     end subroutine rhyme_assertion_expect
 
-    module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
+    pure module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
       class (*), intent ( in ) :: val, exp
       type ( test_t ) :: test
     end function rhyme_assertion_is_equal_to
+
+    pure module function rhyme_assertion_add_test_message ( t, msg ) result ( test )
+      type ( test_t ), intent ( in ) :: t
+      character ( len=* ), intent ( in ) :: msg
+      type ( test_t ) :: test
+    end function rhyme_assertion_add_test_message
   end interface
 
 
@@ -45,7 +52,11 @@ module rhyme_assertion
     procedure rhyme_assertion_describe
   end interface operator ( .describe. )
 
-  interface operator ( .isEqualTo. )
+  interface operator ( .toBe. )
     procedure rhyme_assertion_is_equal_to
-  end interface operator ( .isEqualTo. )
+  end interface operator ( .toBe. )
+
+  interface operator ( .when. )
+    procedure rhyme_assertion_add_test_message
+  end interface operator ( .when. )
 end module rhyme_assertion
