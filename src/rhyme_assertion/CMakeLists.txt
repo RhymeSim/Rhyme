@@ -26,6 +26,7 @@ endforeach ( dep )
 
 set ( srcs
   src/rhyme_assertion_add_test_message.f90
+  src/rhyme_assertion_to_be_array.f90
   src/rhyme_assertion_to_be.f90
   src/rhyme_assertion_expect.f90
   src/rhyme_assertion_describe.f90

@@ -18,7 +18,6 @@ contains
 
       select type ( e => exp )
       type is ( integer )
-        write ( test%exp, assertcnst%int_fmt ) e
         passed = v .eq. e
       class default
         passed = .false.
@@ -57,6 +56,10 @@ contains
         passed = .false.
       end select
 
+    class default
+      test%type = assertid%unset
+      passed = .false.
+      test%val = 'Unsupported type'
     end select
 
 
