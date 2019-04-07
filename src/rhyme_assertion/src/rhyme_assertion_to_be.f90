@@ -1,6 +1,6 @@
-submodule ( rhyme_assertion ) rhyme_assertion_is_equal_to_submodule
+submodule ( rhyme_assertion ) rhyme_assertion_to_be_submodule
 contains
-  pure module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
+  pure module function rhyme_assertion_to_be ( val, exp ) result ( test )
     implicit none
 
     class (*), intent ( in ) :: val, exp
@@ -23,5 +23,5 @@ contains
     end select
 
     test%is_passed = passed
-  end function rhyme_assertion_is_equal_to
-end submodule rhyme_assertion_is_equal_to_submodule
+  end function rhyme_assertion_to_be
+end submodule rhyme_assertion_to_be_submodule

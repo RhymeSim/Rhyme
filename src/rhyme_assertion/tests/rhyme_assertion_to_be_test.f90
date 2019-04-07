@@ -1,4 +1,4 @@
-logical function rhyme_assertion_is_equal_to_test () result ( failed )
+logical function rhyme_assertion_to_be_test () result ( failed )
   use rhyme_assertion
 
   implicit none
@@ -14,4 +14,4 @@ logical function rhyme_assertion_is_equal_to_test () result ( failed )
   failed = &
   test%is_passed .neqv. .true. &
   .or. test%type .ne. assertid%int
-end function rhyme_assertion_is_equal_to_test
+end function rhyme_assertion_to_be_test

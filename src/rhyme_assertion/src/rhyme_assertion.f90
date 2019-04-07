@@ -35,10 +35,10 @@ module rhyme_assertion
       type ( test_t ), intent ( in ) :: test
     end subroutine rhyme_assertion_expect
 
-    pure module function rhyme_assertion_is_equal_to ( val, exp ) result ( test )
+    pure module function rhyme_assertion_to_be ( val, exp ) result ( test )
       class (*), intent ( in ) :: val, exp
       type ( test_t ) :: test
-    end function rhyme_assertion_is_equal_to
+    end function rhyme_assertion_to_be
 
     pure module function rhyme_assertion_add_test_message ( t, msg ) result ( test )
       type ( test_t ), intent ( in ) :: t
@@ -53,7 +53,7 @@ module rhyme_assertion
   end interface operator ( .describe. )
 
   interface operator ( .toBe. )
-    procedure rhyme_assertion_is_equal_to
+    procedure rhyme_assertion_to_be
   end interface operator ( .toBe. )
 
   interface operator ( .when. )
