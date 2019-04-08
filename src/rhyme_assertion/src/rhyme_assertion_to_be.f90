@@ -56,6 +56,21 @@ contains
         passed = .false.
       end select
 
+    type is ( logical )
+      test%type = assertid%log
+      if ( v ) then
+        test%val = '.true.'
+      else
+        test%val = '.false.'
+      end if
+
+      select type ( e => exp )
+      type is ( logical )
+        passed = v .eqv. e
+      class default
+        passed = .false.
+      end select
+
     class default
       test%type = assertid%unset
       passed = .false.
@@ -72,6 +87,12 @@ contains
       write ( test%exp, assertcnst%double_fmt ) e
     type is ( character(*) )
       test%exp = trim( adjustl( e ) )
+    type is ( logical )
+      if ( e ) then
+        test%exp = '.true.'
+      else
+        test%exp = '.false.'
+      end if
     class default
       test%exp = 'Unsupported type'
     end select

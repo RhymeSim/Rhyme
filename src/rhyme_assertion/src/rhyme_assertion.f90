@@ -2,8 +2,8 @@ module rhyme_assertion
   implicit none
 
   type assertion_indices_t
-    integer :: int = 1, real = 2, double = 3, char = 4
-    integer :: int_arr = 11, real_arr = 12, double_arr = 13, char_arr = 14
+    integer :: int = 1, real = 2, double = 3, char = 4, log = 5
+    integer :: int_arr = 11, real_arr = 12, double_arr = 13, char_arr = 14, log_arr = 15
     integer :: unset = -1
   end type assertion_indices_t
 

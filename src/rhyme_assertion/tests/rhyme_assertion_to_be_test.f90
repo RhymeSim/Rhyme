@@ -3,18 +3,21 @@ logical function rhyme_assertion_to_be_test () result ( failed )
 
   implicit none
 
+  type ( test_t ) :: test_i, test_r, test_d, test_c, test_l
+  character ( len=128 ) :: int_str, real_str, double_str, char_str, log_str
+
   integer, parameter :: int_value = 123
   real( kind=4 ), parameter :: real_value = 1.23e4
   real( kind=8 ), parameter :: double_value = 12.3d4
   character ( len=8 ), parameter :: char_value = 'string'
+  logical, parameter :: log_value = .false.
 
-  character ( len=128 ) :: int_str, real_str, double_str, char_str
-
-  type ( test_t ) :: test_i, test_r, test_d, test_c
   integer :: int_test
   real( kind=4 ) :: real_test
   real ( kind=8 ) :: double_test
   character ( len=8 ) :: char_test
+  logical :: log_test
+
 
   int_test = int_value
   test_i = int_test .toBe. int_value
@@ -62,5 +65,17 @@ logical function rhyme_assertion_to_be_test () result ( failed )
   .or. test_c%val .ne. char_str &
   .or. test_c%op .ne. 'to_be' &
   .or. test_c%exp .ne. char_str
+  if ( failed ) return
+
+  log_test = log_value
+  test_l = log_test .toBe. log_value
+  log_str = '.false.'
+
+  failed = &
+  .not. test_l%is_passed &
+  .or. test_l%type .ne. assertid%log &
+  .or. test_l%val .ne. log_str &
+  .or. test_l%op .ne. 'to_be' &
+  .or. test_l%exp .ne. log_str
   if ( failed ) return
 end function rhyme_assertion_to_be_test
