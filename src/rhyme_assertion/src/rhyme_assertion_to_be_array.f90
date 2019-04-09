@@ -83,6 +83,8 @@ contains
       test%exp = array_to_string( e )
     type is ( character(*) )
       test%exp = array_to_string( e )
+    type is ( logical )
+      test%exp = array_to_string( e )
     class default
       test%exp = 'Unsupported type'
     end select
