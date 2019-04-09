@@ -110,6 +110,18 @@ contains
       do i = 1, length
         str = trim( str )//'  '//trim(adjustl( inp(i) ) )
       end do
+    type is ( logical )
+      do i = 1, length
+        if ( inp(i) ) then
+          str = trim( str )//'  '//'.true.'
+        else
+          str = trim( str )//'  '//'.false.'
+        end if
+      end do
+    class default
+      do i = 1, length
+          str = trim( str )//'  '//'unknown type'
+      end do
     end select
 
     if ( length > 1 ) then

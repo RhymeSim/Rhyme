@@ -56,6 +56,17 @@ contains
         passed = .false.
       end select
 
+    type is ( logical )
+      test%type = assertid%log_arr
+      test%val = array_to_string( v )
+
+      select type ( e => expect )
+      type is ( logical )
+        passed = all( v .eqv. e )
+      class default
+        passed = .false.
+      end select
+
     class default
       test%type = assertid%unset
       passed = .false.
