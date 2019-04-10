@@ -32,6 +32,8 @@ module rhyme_assertion
     type ( test_t ), pointer :: tests => null()
   contains
     procedure :: expect => rhyme_assertion_expect
+    procedure :: passed => rhyme_assertion_passed
+    procedure :: failed => rhyme_assertion_failed
   end type assertion_t
 
   interface
@@ -60,6 +62,14 @@ module rhyme_assertion
       class (*), intent ( in ) :: val(:), expect(:)
       type ( test_t ) :: test
     end function rhyme_assertion_to_be_array
+
+    logical module function rhyme_assertion_passed ( this ) result ( passed )
+      class ( assertion_t ), intent ( in ) :: this
+    end function rhyme_assertion_passed
+
+    logical module function rhyme_assertion_failed ( this ) result ( failed )
+      class ( assertion_t ), intent ( in ) :: this
+    end function rhyme_assertion_failed
   end interface
 
 

@@ -22,6 +22,7 @@ contains
       t_ptr => this%tests
     end if
 
+    t_ptr%msg = test%msg
     t_ptr%type = test%type
     t_ptr%is_passed = test%is_passed
     t_ptr%val = test%val
