@@ -22,6 +22,8 @@ logical function rhyme_drawing_uniform_prism_test () result ( failed )
   real ( kind=8 ) :: vertices(3,3)
   real ( kind=8 ), parameter :: thickness = 2
 
+  failed = .false.
+
   vertices = reshape( [ 1, 1, 1, 5, 12, 4, 13, 8, 10 ], [3, 3], order=[2, 1] )
 
   call rhyme_drawing_factory_init

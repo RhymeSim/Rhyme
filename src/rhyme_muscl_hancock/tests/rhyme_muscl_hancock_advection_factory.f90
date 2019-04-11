@@ -226,6 +226,7 @@ contains
     type ( hydro_conserved_t ) :: slab, bg
 
     call mh_adv_slab_bg( hyid%x, slab, bg )
+    failed = .false.
 
     do j = 1, box%dims(2)
       if ( j > slab_start .and. j <= slab_end ) then
@@ -252,6 +253,7 @@ contains
     type ( hydro_conserved_t ) :: slab, bg
 
     call mh_adv_slab_bg( hyid%y, slab, bg )
+    failed = .false.
 
     do j = 1, box%dims(2)
       do i = 1, box%dims(1)
@@ -276,6 +278,7 @@ contains
     type ( hydro_conserved_t ) :: slab, bg
 
     call mh_adv_slab_bg( hyid%z, slab, bg )
+    failed = .false.
 
     do k = 1, box%dims(3)
       do i = 1, box%dims(1)

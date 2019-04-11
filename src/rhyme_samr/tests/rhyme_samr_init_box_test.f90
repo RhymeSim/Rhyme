@@ -22,6 +22,7 @@ logical function rhyme_samr_init_box_test () result ( failed )
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
   )
 
+  failed = .false.
 
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%max_nboxes

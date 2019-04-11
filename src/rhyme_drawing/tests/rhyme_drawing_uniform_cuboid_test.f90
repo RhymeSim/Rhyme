@@ -23,6 +23,8 @@ logical function rhyme_drawing_uniform_cuboid_test () result (failed)
   integer, parameter :: lengths = 12
 
 
+  failed = .false.
+
   call rhyme_drawing_factory_init
 
   call rhyme_samr_factory_fill ( &

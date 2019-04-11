@@ -22,6 +22,8 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   real ( kind=8 ), parameter :: origin(3) = [ 8.d0, 8.d0, 8.d0 ]
   real ( kind=8 ), parameter :: r = 4.d0
 
+  failed = .false.
+
   call rhyme_drawing_factory_init
 
   call rhyme_samr_factory_fill ( &
