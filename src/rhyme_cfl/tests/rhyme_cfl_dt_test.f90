@@ -22,17 +22,41 @@ logical function rhyme_cfl_dt_test () result (failed)
   type ( samr_t ) :: samr
   type ( log_t ) :: log
 
-  real(kind=8) :: dt, dt_expected
+  real ( kind=8 ) :: dt, dt_expected
+  real ( kind=8 ) :: v_cs, max_v_cs
+  integer :: i, j, k
 
   call chemi%init( log )
   call thermo%init( log )
   call ig%init_with ( chemi, thermo, igid%diatomic, log )
 
-  call rhyme_samr_factory_fill( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
+  call rhyme_samr_factory_fill( nlevels, base_grid, ghost_cells, &
+    max_nboxes, init_nboxes, samr, physical=.true. )
 
   dt = cfl%dt ( ig, samr )
-  dt_expected = cfl%courant_number * minval ( samr%levels(0)%dx ) / ig%cs ( samr%levels(0)%boxes(1)%hydro(1,8,1) )
 
+  max_v_cs = calc_v_cs( samr%levels(0)%boxes(1)%hydro(1,1,1) )
+
+  do k = 1, samr%levels(0)%boxes(1)%dims(3)
+    do j = 1, samr%levels(0)%boxes(1)%dims(2)
+      do i = 1, samr%levels(0)%boxes(1)%dims(1)
+        v_cs = calc_v_cs( samr%levels(0)%boxes(1)%hydro(i, j, k) )
+        if ( v_cs > max_v_cs ) max_v_cs = v_cs
+      end do
+    end do
+  end do
+
+  dt_expected = cfl%courant_number * minval ( samr%levels(0)%dx ) / max_v_cs
   failed = abs ( dt - dt_expected ) > epsilon(0.d0)
+
+contains
+  real ( kind=8 ) function calc_v_cs ( U ) result ( v )
+    implicit none
+
+    type ( hydro_conserved_t ), intent ( in ) :: U
+
+    v = sqrt( sum( U%u( hyid%rho_u:hyid%rho_w )**2 / U%u( hyid%rho )**2 ) ) &
+      + ig%cs( U )
+  end function calc_v_cs
+
 end function rhyme_cfl_dt_test
