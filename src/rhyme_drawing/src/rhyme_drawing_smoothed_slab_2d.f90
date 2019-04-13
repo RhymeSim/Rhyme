@@ -20,11 +20,11 @@ contains
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
               select case ( shape%slab_2d%dir )
               case ( drid%x )
-                x = real( i + samr%levels(l)%boxes(b)%left_edge(1) - 1 ) / 2**l
+                x = real( i - .5d0 + samr%levels(l)%boxes(b)%left_edge(1) - 1 ) / 2**l
               case ( drid%y )
-                x = real( j + samr%levels(l)%boxes(b)%left_edge(2) - 1 ) / 2**l
+                x = real( j - .5d0 + samr%levels(l)%boxes(b)%left_edge(2) - 1 ) / 2**l
               case ( drid%z )
-                x = real( k + samr%levels(l)%boxes(b)%left_edge(3) - 1 ) / 2**l
+                x = real( k - .5d0 + samr%levels(l)%boxes(b)%left_edge(3) - 1 ) / 2**l
               case DEFAULT
                 call log%err( 'Unknown slab direction', 'dir', '=', [shape%slab_2d%dir] )
                 return
