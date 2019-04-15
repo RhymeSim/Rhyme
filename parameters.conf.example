@@ -92,6 +92,8 @@ solver_type = cpu_intensive
 
 # **Drawing**
 # NB: All units are in pixels
+# NB: Positional units in smoothed_slab_2d and perturb are cell-centered
+#     for [ nx, ny, nz ], { 0.5, 1.5, ..., nx-0.5 } are cell centers in x-dir
 #
 # Implemented canvases:
 # - uniform, transparent
@@ -100,7 +102,7 @@ solver_type = cpu_intensive
 # Implemented fillings:
 # - uniform
 # Implemented perturbations:
-# - Mandelker
+# - harmonic, symmetric_decaying
 
 canvas = uniform .125d0 0.d0 0.d0 0.d0 .1d0
 
