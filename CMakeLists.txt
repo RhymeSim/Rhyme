@@ -1,31 +1,31 @@
-cmake_minimum_required ( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.7 )
 
-project ( rhyme )
+project( rhyme )
 
-enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra -O3 )
-set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
-
-
-set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
-set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
+enable_language( Fortran )
+add_compile_options( -Wall -Wextra -O3 )
+set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 
 
-set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
+set( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
+set( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 
 
-# find_package ( OpenMP )
+set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
+
+
+# find_package( OpenMP )
 #
-# if ( OPENMP_FOUND )
-#   set ( CMAKE_Fortran_FLAGS
+# if( OPENMP_FOUND )
+#   set( CMAKE_Fortran_FLAGS
 #     "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}" )
-#   set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-#   set ( CMAKE_EXE_LINKER_FLAGS
+#   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+#   set( CMAKE_EXE_LINKER_FLAGS
 #     "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" )
 # endif()
 
 
-set ( deps
+set( deps
   rhyme_log
   rhyme_nombre
   rhyme_hydro_base
@@ -44,23 +44,21 @@ set ( deps
   radamesh_spectrum
 )
 
-foreach ( dep ${deps} )
-  if ( NOT TARGET ${dep} )
-    add_subdirectory ( src/${dep} ${CMAKE_BINARY_DIR}/${dep} )
-  endif ()
-endforeach ( dep )
+foreach( dep ${deps} )
+  if( NOT TARGET ${dep} )
+    add_subdirectory( src/${dep} ${CMAKE_BINARY_DIR}/${dep} )
+  endif()
+endforeach( dep )
 
 
-file ( GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90 )
+file( GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90 )
 
 
-set ( srcs
+set( srcs
   src/main.f90
 )
 
-add_executable ( rhyme ${srcs} ${internal_modules} )
-target_link_libraries ( rhyme ${deps} )
+add_executable( rhyme ${srcs} ${internal_modules} )
+target_link_libraries( rhyme ${deps} )
 
-
-add_subdirectory ( tests )
-enable_testing ()
+enable_testing()
