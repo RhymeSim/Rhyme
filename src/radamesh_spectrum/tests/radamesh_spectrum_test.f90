@@ -1,18 +1,21 @@
 logical function radamesh_spectrum_test () result ( failed )
   use radamesh_spectrum
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: sp_tester
+
   type ( spectrum_t ) :: spec
 
-  failed = &
-  spid%power_law .ne. 1 &
-  .or. spid%blackbody .ne. 2 &
-  .or. spid%line .ne. 3 &
-  .or. spid%lin_space .ne. -1 &
-  .or. spid%log_space .ne. -2
-  if ( failed ) return
+  call sp_tester%expect( spid%power_law .toBe. 1 .hint. "" )
+  call sp_tester%expect( spid%blackbody .toBe. 2 .hint. "" )
+  call sp_tester%expect( spid%line .toBe. 3 .hint. "" )
+  call sp_tester%expect( spid%lin_space .toBe. -1 .hint. "" )
+  call sp_tester%expect( spid%log_space .toBe. -2 .hint. "" )
 
-  failed = spec%initialized .or. spec%filled_bins .ne. 0
-  if ( failed ) return
+  call sp_tester%expect( spec%initialized .toBe. .false. .hint. "" )
+  call sp_tester%expect( spec%filled_bins .toBe. 0 .hint. "" )
+
+  failed = sp_tester%failed()
 end function radamesh_spectrum_test

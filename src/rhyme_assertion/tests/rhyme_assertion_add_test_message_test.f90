@@ -11,7 +11,7 @@ logical function rhyme_assertion_add_test_message_test () result ( failed )
   test_passed%op = 'op'
   test_passed%exp = 'exp'
 
-  test = test_passed .when. 'message'
+  test = test_passed .hint. 'message'
 
   failed = test%msg .ne. 'message'
 end function rhyme_assertion_add_test_message_test

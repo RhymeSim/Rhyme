@@ -82,9 +82,9 @@ module rhyme_assertion
     procedure rhyme_assertion_to_be_array
   end interface operator ( .toBe. )
 
-  interface operator ( .when. )
+  interface operator ( .hint. )
     procedure rhyme_assertion_add_test_message
-  end interface operator ( .when. )
+  end interface operator ( .hint. )
 
 contains
 
