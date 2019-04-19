@@ -1,31 +1,9 @@
-cmake_minimum_required ( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.7 )
+enable_language( Fortran )
 
-project ( rhyme_muscl_hancock )
+project( rhyme_muscl_hancock )
 
-enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra )
-set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
-
-
-set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
-set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
-
-
-set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
-
-
-# find_package ( OpenMP )
-#
-# if ( OPENMP_FOUND )
-#   set ( CMAKE_Fortran_FLAGS
-#     "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}" )
-#   set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-#   set ( CMAKE_EXE_LINKER_FLAGS
-#     "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" )
-# endif ( OPENMP_FOUND )
-
-
-set ( deps
+set( deps
   rhyme_cfl
   rhyme_ideal_gas
   rhyme_slope_limiter
@@ -33,25 +11,16 @@ set ( deps
   rhyme_log
 )
 
-foreach ( dep ${deps} )
-  if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
-  endif ()
-endforeach ( dep )
+set( internal_deps
+  rhyme_mh_workspace
+)
 
-add_subdirectory ( src/rhyme_mh_workspace )
-
-
-set ( srcs
+set( srcs
   src/rhyme_muscl_hancock_solve_memory_intensive.f90
   src/rhyme_muscl_hancock_solve_cpu_intensive.f90
   src/rhyme_muscl_hancock_solve.f90
   src/rhyme_muscl_hancock.f90
 )
 
-add_library ( ${PROJECT_NAME} STATIC ${srcs} )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} rhyme_mh_workspace )
-
-
-add_subdirectory ( tests )
-enable_testing ()
+set( proj_src_dir .. )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )

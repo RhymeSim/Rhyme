@@ -18,7 +18,7 @@ program rhyme
 
   implicit none
 
-  type ( log_t ) :: log
+  type ( log_t ) :: logger
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
@@ -42,80 +42,80 @@ program rhyme
   call get_command_argument ( 1, param_file )
 
 
-  call log%start
-  call log%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
-  call log%log( 'command line argument:', 'param_file', '=', [ param_file ] )
-  call log%log( '', 'log_file', '=', [ log%logfile ] )
-  call log%log( '', 'err_file', '=', [ log%errfile ] )
+  call logger%start
+  call logger%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
+  call logger%log( 'command line argument:', 'param_file', '=', [ param_file ] )
+  call logger%log( '', 'log_file', '=', [ logger%logfile ] )
+  call logger%log( '', 'err_file', '=', [ logger%errfile ] )
 
 
   ! Reading parameters and converting them to code units
-  call parse_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call parse_params( param_file, logger, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Initializing
-  call log%set_section( 'init' )
+  call logger%set_section( 'init' )
 
   ! Chemistry
-  call chemistry%init( log )
+  call chemistry%init( logger )
 
   ! Thermodynamics
-  call thermo%init( log )
+  call thermo%init( logger )
 
   ! Ideal Gas
-  call ig%init( chemistry, thermo, log )
+  call ig%init( chemistry, thermo, logger )
 
   ! Structured AMR
-  call ic%init( samr, ig, log )
+  call ic%init( samr, ig, logger )
 
   ! Boundary Conditions
-  call bc%init( samr, log )
+  call bc%init( samr, logger )
 
   ! Initial Condition ( Drawing )
-  call rhyme_drawing_apply( draw, ig, samr, log )
+  call rhyme_drawing_apply( draw, ig, samr, logger )
 
   ! Iterative Riemann Solver
-  call irs%init( log )
+  call irs%init( logger )
 
   ! MUSCL-Hancock
   mhws%type = mh%solver_type
-  call mh%init( samr, mhws, log )
+  call mh%init( samr, mhws, logger )
 
   ! Chombo Output
-  call chombo%init( log )
+  call chombo%init( logger )
 
 
   ! Main loop
   do while ( samr%levels(0)%t < 0.4d0 )
-    call log%set_iteration_section( samr%levels(0)%iteration )
+    call logger%set_iteration_section( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = cfl%dt( ig, samr )
 
-    call log%log( '', 't', '=', [ samr%levels(0)%t ] )
-    call log%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
+    call logger%log( '', 't', '=', [ samr%levels(0)%t ] )
+    call logger%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
-    call log%start_task( 'boundary-condition' )
+    call logger%start_task( 'boundary-condition' )
     call bc%set_base_grid_boundaries( samr )
-    call log%done
+    call logger%done
 
     ! Update structured AMR
     ! Update ghost cells of boxes
 
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
-      call log%start_task( 'storing-snapshot')
+      call logger%start_task( 'storing-snapshot')
       call chombo%write_samr( samr )
-      call log%done
+      call logger%done
     end if
 
 
-    call log%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
+    call logger%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
-          samr%levels(l)%dx, samr%levels(l)%dt, cfl, ig, irs, sl, mhws, log )
+          samr%levels(l)%dx, samr%levels(l)%dt, cfl, ig, irs, sl, mhws, logger )
       end do
     end do
-    call log%done
+    call logger%done
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1

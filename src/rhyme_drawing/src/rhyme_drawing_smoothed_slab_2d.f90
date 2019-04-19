@@ -46,16 +46,18 @@ contains
       real ( kind=8 ), intent ( in ) :: x
       type ( shape_t ), intent ( in ) :: shape
 
-      real ( kind=8 ) :: factor
+      real ( kind=8 ) :: factor, Rs, slab_center
       type ( hydro_primitive_t ) :: W
 
-      factor = tanh( (x - shape%slab_2d%pos(1)) / shape%slab_2d%sigma(1) ) &
-        - tanh( (x - shape%slab_2d%pos(2)) / shape%slab_2d%sigma(2) )
+      slab_center = ( shape%slab_2d%pos(1) + shape%slab_2d%pos(2) ) / 2.d0
+      Rs = abs( slab_center - shape%slab_2d%pos(1) )
 
-      W%w = shape%fill%colors(1)%w + 0.5 * ( &
+      factor = ( 1 + tanh( (Rs - ( x - slab_center )) / shape%slab_2d%sigma(1) )) &
+        * ( 1 + tanh( (Rs + ( x - slab_center )) / shape%slab_2d%sigma(2)) )
+
+      W%w = shape%fill%colors(1)%w + 0.25 * ( &
         shape%fill%colors(2)%w - shape%fill%colors(1)%w &
       ) * factor
-
       call ig%prim_to_cons( W, U )
     end function ramp_func
 

@@ -1,29 +1,15 @@
-cmake_minimum_required ( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.7 )
+enable_language( Fortran )
 
-project ( rhyme_logger_util )
+project( rhyme_logger_util )
 
-enable_language ( Fortran )
-add_compile_options ( -Wall -Wextra )
-set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008  -ffree-line-length-512" )
+set( CMAKE_Fortran_FLAGS "-ffree-line-length-512" )
 
+set( deps )
 
-set ( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
-set ( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
+set( internal_deps )
 
-
-set ( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
-
-
-set ( deps )
-
-foreach ( dep ${deps} )
-  if ( NOT TARGET ${dep} )
-    add_subdirectory ( ../${dep} ${CMAKE_BINARY_DIR}/${dep} )
-  endif ()
-endforeach ( dep )
-
-
-set ( srcs
+set( srcs
   src/rhyme_logger_util.f90
   src/rhyme_logger_util_log.f90
   src/rhyme_logger_util_warn.f90
@@ -34,9 +20,5 @@ set ( srcs
   src/rhyme_logger_util_time.f90
 )
 
-add_library ( ${PROJECT_NAME} STATIC ${srcs} )
-target_link_libraries ( ${PROJECT_NAME} PRIVATE ${deps} )
-
-
-add_subdirectory ( tests )
-enable_testing ()
+set( proj_src_dir ../../.. )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../../CMakeGlobal/CMakeLists.txt )
