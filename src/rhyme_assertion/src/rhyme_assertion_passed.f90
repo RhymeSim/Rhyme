@@ -30,7 +30,6 @@ contains
       if ( .not. test%is_passed ) then
         passed = .false.
         nft = nft + 1
-        call log%err( trim( test%msg )//' has been failed.' )
         call log%err( 'expected:', test%val, test%op, [ test%exp ] )
         test => test%next
         cycle

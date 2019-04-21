@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_read_1d_dataset_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_1d_dataset.h5"
@@ -17,6 +20,7 @@ logical function rhyme_hdf5_util_read_1d_dataset_test () result ( failed )
   type ( rhyme_hdf5_util_t ) :: h5
   integer ( hid_t ) :: group_id = -1
 
+  h5_tester = .describe. "hdf5_util read_1d_dataset"
 
   ! Prepare chombo file
   call h5%create ( testfile )
@@ -30,16 +34,15 @@ logical function rhyme_hdf5_util_read_1d_dataset_test () result ( failed )
   call h5%open ( testfile )
 
   call h5%read_1d_dataset ( "/group/intdataset", int_arr_read )
-  failed = any ( int_arr .ne. int_arr_read )
-  if ( failed ) return
+  call h5_tester%expect( int_arr .toBe. int_arr_read )
 
   call h5%read_1d_dataset ( "/group/realdataset", real_arr_read )
-  failed = any ( abs( real_arr - real_arr_read ) > epsilon(0.e0) )
-  if ( failed ) return
+  call h5_tester%expect( real_arr .toBe. real_arr_read )
 
   call h5%read_1d_dataset ( "/group/real8dataset", real8_arr_read )
-  failed = any ( abs( real8_arr - real8_arr_read ) > epsilon(0.d0) )
-  if ( failed ) return
+  call h5_tester%expect( real8_arr .toBe. real8_arr_read )
 
   call h5%close
+
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_read_1d_dataset_test

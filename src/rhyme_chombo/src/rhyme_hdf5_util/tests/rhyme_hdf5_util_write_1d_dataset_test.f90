@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_write_1d_dataset_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_1d_dataset.h5"
@@ -22,6 +25,7 @@ logical function rhyme_hdf5_util_write_1d_dataset_test () result ( failed )
   type ( rhyme_hdf5_util_t ) :: h5
   integer ( hid_t ) :: group_id = -1, dset_id = -1
 
+  h5_tester = .describe. "hdf5_util write_1d_dataset"
 
   call h5%create ( testfile )
   call h5%create_group ( "/group", group_id)
@@ -35,45 +39,38 @@ logical function rhyme_hdf5_util_write_1d_dataset_test () result ( failed )
 
 
   call h5lexists_f ( fid, "/group/intdataset", exists, hdferr )
-  failed = .not. exists
-  if ( failed ) return
+  call h5_tester%expect( exists .toBe. .true. )
 
   call h5lexists_f ( fid, "/group/realdataset", exists, hdferr )
-  failed = .not. exists
-  if ( failed ) return
+  call h5_tester%expect( exists .toBe. .true. )
 
   call h5lexists_f ( fid, "/group/real8dataset", exists, hdferr )
-  failed = .not. exists .or. group_id .eq. -1
-  if ( failed ) return
-
+  call h5_tester%expect( exists .toBe. .true. )
+  call h5_tester%expect( int( group_id ) .notToBe. -1 )
 
   call h5dopen_f ( fid, "/group/intdataset", dset_id, hdferr )
   call h5dread_f ( dset_id, H5T_NATIVE_INTEGER, int_arr_read, &
     int(shape(int_arr), kind=hsize_t), hdferr )
   call h5dclose_f ( dset_id, hdferr )
 
-  failed = any ( int_arr_read .ne. int_arr )
-  if ( failed ) return
-
+  call h5_tester%expect( int_arr .toBe. int_arr_read )
 
   call h5dopen_f ( fid, "/group/realdataset", dset_id, hdferr )
   call h5dread_f ( dset_id, H5T_NATIVE_REAL, real_arr_read, &
     int(shape(int_arr), kind=hsize_t), hdferr )
   call h5dclose_f ( dset_id, hdferr )
 
-  failed = any ( abs ( real_arr_read - real_arr ) > epsilon(0.e0) )
-  if ( failed ) return
-
+  call h5_tester%expect( real_arr .toBe. real_arr_read )
 
   call h5dopen_f ( fid, "/group/real8dataset", dset_id, hdferr )
   call h5dread_f ( dset_id, H5T_NATIVE_DOUBLE, real8_arr_read, &
     int(shape(int_arr), kind=hsize_t), hdferr )
   call h5dclose_f ( dset_id, hdferr )
 
-  failed = any ( abs ( real8_arr_read - real8_arr ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call h5_tester%expect( real8_arr .toBe. real8_arr_read )
 
   call h5fclose_f ( fid, hdferr )
   call h5close_f ( hdferr )
+
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_write_1d_dataset_test

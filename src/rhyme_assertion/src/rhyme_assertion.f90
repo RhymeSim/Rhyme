@@ -12,8 +12,8 @@ module rhyme_assertion
 
   type assertion_constants_t
     character ( len=16 ) :: int_fmt = '(I0)'
-    character ( len=16 ) :: real_fmt = '(E12.7)'
-    character ( len=16 ) :: double_fmt = '(E20.15)'
+    character ( len=16 ) :: real_fmt = '(E13.7)'
+    character ( len=16 ) :: double_fmt = '(E21.15)'
   end type assertion_constants_t
 
   type ( assertion_constants_t ), parameter :: assertcnst = assertion_constants_t()
@@ -23,7 +23,7 @@ module rhyme_assertion
     integer :: type = assertid%unset
     logical :: is_passed = .false.
     character ( len=128 ) :: msg = ''
-    character ( len=128 ) :: val = '', op = '', exp = ''
+    character ( len=2048 ) :: val = '', op = '', exp = ''
     type ( test_t ), pointer :: next => null()
   end type test_t
 
@@ -47,21 +47,36 @@ module rhyme_assertion
       type ( test_t ), intent ( in ) :: test
     end subroutine rhyme_assertion_expect
 
-    pure module function rhyme_assertion_to_be ( val, exp ) result ( test )
-      class (*), intent ( in ) :: val, exp
-      type ( test_t ) :: test
-    end function rhyme_assertion_to_be
-
     pure module function rhyme_assertion_add_test_message ( t, msg ) result ( test )
       type ( test_t ), intent ( in ) :: t
       character ( len=* ), intent ( in ) :: msg
       type ( test_t ) :: test
     end function rhyme_assertion_add_test_message
 
+    pure module function rhyme_assertion_to_be ( val, exp ) result ( test )
+      class (*), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be
+
     pure module function rhyme_assertion_to_be_array ( val, expect ) result ( test )
       class (*), intent ( in ) :: val(:), expect(:)
       type ( test_t ) :: test
     end function rhyme_assertion_to_be_array
+
+    pure module function rhyme_assertion_to_be_array_2d ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:,:), expect(:,:)
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_array_2d
+
+    pure module function rhyme_assertion_not_to_be ( val, exp ) result ( test )
+      class (*), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be
+
+    pure module function rhyme_assertion_not_to_be_array ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:), expect(:)
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_array
 
     logical module function rhyme_assertion_passed ( this ) result ( passed )
       class ( assertion_t ), intent ( in ) :: this
@@ -80,11 +95,22 @@ module rhyme_assertion
   interface operator ( .toBe. )
     procedure rhyme_assertion_to_be
     procedure rhyme_assertion_to_be_array
+    procedure rhyme_assertion_to_be_array_2d
   end interface operator ( .toBe. )
+
+  interface operator ( .notToBe. )
+    procedure rhyme_assertion_not_to_be
+    procedure rhyme_assertion_not_to_be_array
+  end interface operator ( .notToBe. )
 
   interface operator ( .hint. )
     procedure rhyme_assertion_add_test_message
   end interface operator ( .hint. )
+
+  interface arr2str
+    procedure array_to_string
+    procedure array_2d_to_string
+  end interface arr2str
 
 contains
 
@@ -92,7 +118,7 @@ contains
     implicit none
 
     class (*), intent ( in ) :: input(:)
-    character ( len=128 ) :: str
+    character ( len=2048 ) :: str
 
     integer :: i, length
     character ( len=64 ) :: inp_str
@@ -140,4 +166,32 @@ contains
       str = adjustl( str )
     end if
   end function array_to_string
+
+
+  pure function array_2d_to_string ( input ) result ( str )
+    implicit none
+
+    class (*), intent ( in ) :: input(:,:)
+    character ( len=2048 ) :: str
+
+    integer :: l
+
+    l = product( shape( input ) )
+
+    select type ( inp => input )
+    type is ( integer )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( real( kind=4 ) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( real( kind=8 ) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( character (*) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( logical )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    class default
+      str = 'unknown type for 2D array'
+    end select
+  end function array_2d_to_string
+
 end module rhyme_assertion

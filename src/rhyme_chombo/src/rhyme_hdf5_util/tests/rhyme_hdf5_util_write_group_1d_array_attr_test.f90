@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_write_group_1d_array_attr_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_1d_array_attr.h5"
@@ -23,13 +26,13 @@ logical function rhyme_hdf5_util_write_group_1d_array_attr_test () result ( fail
   real ( kind=4 ) :: attr_real(5) = 0.e0
   real ( kind=8 ) :: attr_real8(5) = 0.d0
 
+  h5_tester = .describe. "hdf5_util write_group_1d_array_attr"
 
   call h5%create ( testfile )
   call h5%write_group_1d_array_attr ( "/", "array_i", array_int )
   call h5%write_group_1d_array_attr ( "/", "array_r", array_real )
   call h5%write_group_1d_array_attr ( "/", "array_r8", array_real8 )
   call h5%close
-
 
   call h5open_f ( hdferr )
   call h5fopen_f ( trim(testfile), H5F_ACC_RDONLY_F, fid, hdferr )
@@ -39,30 +42,30 @@ logical function rhyme_hdf5_util_write_group_1d_array_attr_test () result ( fail
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key_int, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0
-  if ( failed ) return
+  call h5_tester%expect( (hdferr >= 0 ) .toBe. .true. )
 
   call h5aopen_by_name_f ( fid, "/", "array_r", attr_id, hdferr )
   call h5aread_f ( attr_id, H5T_NATIVE_REAL, attr_real, dims, hdferr )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key_real, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0
-  if ( failed ) return
+  call h5_tester%expect( (hdferr >= 0 ) .toBe. .true. )
 
   call h5aopen_by_name_f ( fid, "/", "array_r8", attr_id, hdferr )
   call h5aread_f ( attr_id, H5T_NATIVE_DOUBLE, attr_real8, dims, hdferr )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key_real8, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0
-  if ( failed ) return
+  call h5_tester%expect( (hdferr >= 0 ) .toBe. .true. )
 
   call h5fclose_f ( fid, hdferr )
 
-  failed = &
-  any ( attr_int .ne. array_int ) .or. trim(key_int) .ne. "array_i" &
-  .or. any ( abs ( attr_real - array_real ) > epsilon(0.e0) ) .or. trim(key_real) .ne. "array_r" &
-  .or. any ( abs ( attr_real8 - array_real8 ) > epsilon(0.d0) ) .or. trim(key_real8) .ne. "array_r8"
+  call h5_tester%expect( key_int .toBe. 'array_i' )
+  call h5_tester%expect( attr_int .toBe. array_int )
+  call h5_tester%expect( key_real .toBe. 'array_r' )
+  call h5_tester%expect( attr_real .toBe. array_real )
+  call h5_tester%expect( key_real8 .toBe. 'array_r8' )
+  call h5_tester%expect( attr_real8 .toBe. array_real8 )
 
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_write_group_1d_array_attr_test

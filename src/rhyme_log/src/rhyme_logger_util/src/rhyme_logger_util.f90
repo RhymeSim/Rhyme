@@ -219,7 +219,7 @@ contains
     implicit none
 
     class (*), intent ( in ) :: input
-    character ( len=128 ) :: str
+    character ( len=2048 ) :: str
 
     str = ''
 
@@ -242,7 +242,7 @@ contains
     implicit none
 
     class (*), intent ( in ) :: input(:)
-    character ( len=128 ) :: str
+    character ( len=2048 ) :: str
 
     integer :: i, length
     character ( len=64 ) :: inp_str
@@ -285,7 +285,7 @@ contains
 
     character ( len=* ), intent ( in ) :: msg, key, op, val
     character ( len=* ), intent ( in ), optional :: color
-    character ( len=128 ) :: str
+    character ( len=2048 ) :: str
 
     character ( len=16 ) :: clr
 

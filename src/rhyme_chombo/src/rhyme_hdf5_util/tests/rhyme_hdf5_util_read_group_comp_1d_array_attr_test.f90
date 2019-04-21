@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_read_group_comp_1d_array_attr_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_read_group_comp_1d_array_attr.h5"
@@ -14,6 +17,8 @@ logical function rhyme_hdf5_util_read_group_comp_1d_array_attr_test () result ( 
   ! variables
   integer :: array_i_read(3) = 0
 
+  h5_tester = .describe. "hdf5_util read_group_comp_1d_array_attr"
+
   call h5%create ( testfile )
   call h5%write_group_comp_1d_array_attr ( "/", "int_attr", keys , array_i )
   call h5%close
@@ -22,6 +27,7 @@ logical function rhyme_hdf5_util_read_group_comp_1d_array_attr_test () result ( 
   call h5reader%read_group_comp_1d_array_attr( '/', 'int_attr', keys, array_i_read )
   call h5reader%close
 
-  print *, array_i_read
-  failed = any( array_i .ne. array_i_read )
+  call h5_tester%expect( array_i .toBe. array_i_read )
+
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_read_group_comp_1d_array_attr_test

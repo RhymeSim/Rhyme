@@ -9,8 +9,8 @@ contains
     character ( len=* ), intent ( in ), optional :: operator
     class (*), intent ( in ), optional :: value(:)
 
-    character ( len=128 ) :: k, v, op
-    character ( len=512 ) :: str
+    character ( len=2048 ) :: k, v, op
+    character ( len=2048 ) :: str
 
     if ( present( key ) ) then
       k = to_string( key )

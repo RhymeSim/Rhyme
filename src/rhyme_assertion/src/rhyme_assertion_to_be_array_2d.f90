@@ -1,15 +1,17 @@
-submodule ( rhyme_assertion ) rhyme_assertion_to_be_array_submodule
+submodule ( rhyme_assertion ) rhyme_assertion_to_be_array_2d_submodule
 contains
-  pure module function rhyme_assertion_to_be_array ( val, expect ) result ( test )
+  pure module function rhyme_assertion_to_be_array_2d ( val, expect ) result ( test )
     implicit none
 
-    class (*), intent ( in ) :: val(:), expect(:)
+    class (*), intent ( in ) :: val(:,:), expect(:,:)
     type ( test_t ) :: test
 
     logical :: passed
+    integer :: l
     passed = .false.
 
     test%op = 'to_be'
+    l = product( shape( val ) )
 
     select type ( v => val )
     type is ( integer )
@@ -18,7 +20,7 @@ contains
 
       select type ( e => expect )
       type is ( integer )
-        passed = all( v .eq. e )
+        passed = all( reshape( v, [l] ) .eq. reshape( e, [l] ) )
       class default
         passed = .false.
       end select
@@ -29,7 +31,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
-        passed = all( abs( v - e ) < epsilon(0.e0) )
+        passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.e0) )
       class default
         passed = .false.
       end select
@@ -40,7 +42,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
-        passed = all( abs( v - e ) < epsilon(0.d0) )
+        passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.d0) )
       class default
         passed = .false.
       end select
@@ -51,7 +53,7 @@ contains
 
       select type ( e => expect )
       type is ( character(*) )
-        passed = all( v .eq. e )
+        passed = all( reshape( v, [l] ) .eq. reshape( e, [l] ) )
       class default
         passed = .false.
       end select
@@ -62,7 +64,7 @@ contains
 
       select type ( e => expect )
       type is ( logical )
-        passed = all( v .eqv. e )
+        passed = all( reshape( v, [l] ) .eqv. reshape( e, [l] ) )
       class default
         passed = .false.
       end select
@@ -91,5 +93,5 @@ contains
 
     test%is_passed = passed
 
-  end function rhyme_assertion_to_be_array
-end submodule rhyme_assertion_to_be_array_submodule
+  end function rhyme_assertion_to_be_array_2d
+end submodule rhyme_assertion_to_be_array_2d_submodule

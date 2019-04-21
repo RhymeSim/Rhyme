@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_attr.h5"
@@ -21,6 +24,7 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   real (kind=8) :: attr_real8
   character(len=128), target :: attr_char
 
+  h5_tester = .describe. "hdf5_util write_group_attr"
 
   call h5%create ( testfile )
   call h5%write_group_attr ( "/", "int", 1 )
@@ -28,7 +32,6 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   call h5%write_group_attr ( "/", "real8", 3.45d0 )
   call h5%write_group_attr ( "/", "string", "Hello world!" )
   call h5%close
-
 
   call h5open_f ( hdferr )
   call h5fopen_f ( trim(testfile), H5F_ACC_RDONLY_F, fid, hdferr )
@@ -38,32 +41,27 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0 &
-  .or. trim ( key ) .ne. "int" &
-  .or. attr_int .ne. 1
-  if ( failed ) return
+  call h5_tester%expect( ( hdferr >= 0 ) .toBe. .true. )
+  call h5_tester%expect( key .toBe. 'int' )
+  call h5_tester%expect( attr_int .toBe. 1 )
 
   call h5aopen_by_name_f ( fid, "/", "real", attr_id, hdferr )
   call h5aread_f ( attr_id, H5T_NATIVE_REAL, attr_real, dims, hdferr )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0 &
-  .or. trim ( key ) .ne. "real" &
-  .or. abs ( attr_real - 2.34e0 ) > epsilon(0.e0)
-
-  if ( failed ) return
+  call h5_tester%expect( ( hdferr >= 0 ) .toBe. .true. )
+  call h5_tester%expect( key .toBe. 'real' )
+  call h5_tester%expect( attr_real .toBe. 2.34e0 )
 
   call h5aopen_by_name_f ( fid, "/", "real8", attr_id, hdferr )
   call h5aread_f ( attr_id, H5T_NATIVE_DOUBLE, attr_real8, dims, hdferr )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key, hdferr )
   call h5aclose_f ( attr_id, hdferr )
 
-  failed = hdferr < 0 &
-  .or. trim ( key ) .ne. "real8" &
-  .or. abs ( attr_real8 - 3.45d0 ) > epsilon(0.d0)
-
-  if ( failed ) return
+  call h5_tester%expect( ( hdferr >= 0 ) .toBe. .true. )
+  call h5_tester%expect( key .toBe. 'real8' )
+  call h5_tester%expect( attr_real8 .toBe. 3.45d0 )
 
   call h5aopen_by_name_f ( fid, "/", "string", attr_id, hdferr )
 
@@ -72,12 +70,12 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
   call h5aread_f ( attr_id, dtype, attr_char, dims, hdferr )
   call h5aget_name_f ( attr_id, int ( 128, kind=size_t ), key, hdferr )
 
-  failed = hdferr < 0 &
-  .or. trim ( key ) .ne. "string" &
-  .or. trim ( attr_char ) .ne. "Hello world!"
-
-  print *,attr_char
+  call h5_tester%expect( ( hdferr >= 0 ) .toBe. .true. )
+  call h5_tester%expect( key .toBe. 'string' )
+  call h5_tester%expect( attr_char .toBe. 'Hello world!' )
 
   call h5fclose_f ( fid, hdferr )
   call h5close_f ( hdferr )
+
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_write_group_attr_test

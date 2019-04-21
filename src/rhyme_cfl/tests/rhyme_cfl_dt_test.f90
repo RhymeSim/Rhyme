@@ -2,8 +2,11 @@ logical function rhyme_cfl_dt_test () result (failed)
   use rhyme_samr_factory
   use rhyme_cfl
   use rhyme_log
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: cfl_tester
 
   integer, parameter :: base_grid(3) = [ 4, 8, 1 ]
   integer, parameter :: nlevels = 1
@@ -26,6 +29,8 @@ logical function rhyme_cfl_dt_test () result (failed)
   real ( kind=8 ) :: v_cs, max_v_cs
   integer :: i, j, k
 
+  cfl_tester = .describe. "CFL"
+
   call chemi%init( log )
   call thermo%init( log )
   call ig%init_with ( chemi, thermo, igid%diatomic, log )
@@ -47,7 +52,10 @@ logical function rhyme_cfl_dt_test () result (failed)
   end do
 
   dt_expected = cfl%courant_number * minval ( samr%levels(0)%dx ) / max_v_cs
-  failed = abs ( dt - dt_expected ) > epsilon(0.d0)
+
+  call cfl_tester%expect( dt .toBe. dt_expected )
+
+  failed = cfl_tester%failed()
 
 contains
   real ( kind=8 ) function calc_v_cs ( U ) result ( v )

@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_write_group_comp_1d_array_attr_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_comp_1d_array_attr.h5"
@@ -22,6 +25,8 @@ logical function rhyme_hdf5_util_write_group_comp_1d_array_attr_test () result (
   real (kind=4) :: array_r_read(3) = 0.e0
   integer :: array_i_read(3) = 0
 
+  h5_tester = .describe. "hdf5_util write_group_comp_1d_array_attr"
+
   call h5%create ( testfile )
   call h5%write_group_comp_1d_array_attr ( "/", "int_attr", keys , array_i )
   call h5%write_group_comp_1d_array_attr ( "/", "real_attr", keys , array_r )
@@ -38,11 +43,11 @@ logical function rhyme_hdf5_util_write_group_comp_1d_array_attr_test () result (
   call h5fclose_f ( fid, hdferr )
   call h5close_f ( hdferr )
 
-  failed = &
-  any ( array_i_read .ne. array_i ) &
-  .or. any ( abs ( array_r_read - array_r ) > epsilon(0.e0) ) &
-  .or. any ( abs ( array_r8_read - array_r8 ) > epsilon(0.d0) )
+  call h5_tester%expect( array_i .toBe. array_i_read )
+  call h5_tester%expect( array_r .toBe. array_r_read )
+  call h5_tester%expect( array_r8 .toBe. array_r8_read )
 
+  failed = h5_tester%failed()
 contains
   subroutine read_comp_array_attr ( type_id, attr_name, buf )
     implicit none

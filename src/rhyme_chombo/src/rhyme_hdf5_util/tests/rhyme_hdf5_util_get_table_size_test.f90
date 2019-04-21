@@ -1,7 +1,10 @@
 logical function rhyme_hdf5_util_get_table_size_test () result ( failed )
   use rhyme_hdf5_util
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: h5_tester
 
   character ( len=1024 ), parameter :: testfile = 'rhyme_hdf5_util_get_table_dims.h5'
   integer, parameter :: ncol = 3, nrow = 4
@@ -12,6 +15,8 @@ logical function rhyme_hdf5_util_get_table_size_test () result ( failed )
   type ( rhyme_hdf5_util_t ) :: h5, h5read
   integer :: arr_size
   integer :: i
+
+  h5_tester = .describe. "hdf5_util get_table_size"
 
   ! Preparing the hdf5 file
   int_table = reshape ( [ (i, i=1, 12) ], [ ncol, nrow ])
@@ -25,5 +30,7 @@ logical function rhyme_hdf5_util_get_table_size_test () result ( failed )
   arr_size = h5read%get_table_size( '/int-table' )
   call h5read%close
 
-  failed = arr_size .ne. nrow
+  call h5_tester%expect( arr_size .toBe. nrow )
+
+  failed = h5_tester%failed()
 end function rhyme_hdf5_util_get_table_size_test

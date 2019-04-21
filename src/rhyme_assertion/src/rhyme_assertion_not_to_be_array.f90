@@ -1,6 +1,6 @@
-submodule ( rhyme_assertion ) rhyme_assertion_to_be_array_submodule
+submodule ( rhyme_assertion ) rhyme_assertion_not_to_be_array_submodule
 contains
-  pure module function rhyme_assertion_to_be_array ( val, expect ) result ( test )
+  pure module function rhyme_assertion_not_to_be_array ( val, expect ) result ( test )
     implicit none
 
     class (*), intent ( in ) :: val(:), expect(:)
@@ -9,7 +9,7 @@ contains
     logical :: passed
     passed = .false.
 
-    test%op = 'to_be'
+    test%op = 'not_to_be'
 
     select type ( v => val )
     type is ( integer )
@@ -18,7 +18,7 @@ contains
 
       select type ( e => expect )
       type is ( integer )
-        passed = all( v .eq. e )
+        passed = all( v .ne. e )
       class default
         passed = .false.
       end select
@@ -29,7 +29,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
-        passed = all( abs( v - e ) < epsilon(0.e0) )
+        passed = all( abs( v - e ) > epsilon(0.e0) )
       class default
         passed = .false.
       end select
@@ -40,7 +40,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
-        passed = all( abs( v - e ) < epsilon(0.d0) )
+        passed = all( abs( v - e ) > epsilon(0.d0) )
       class default
         passed = .false.
       end select
@@ -51,7 +51,7 @@ contains
 
       select type ( e => expect )
       type is ( character(*) )
-        passed = all( v .eq. e )
+        passed = all( v .ne. e )
       class default
         passed = .false.
       end select
@@ -62,7 +62,7 @@ contains
 
       select type ( e => expect )
       type is ( logical )
-        passed = all( v .eqv. e )
+        passed = all( v .neqv. e )
       class default
         passed = .false.
       end select
@@ -91,5 +91,5 @@ contains
 
     test%is_passed = passed
 
-  end function rhyme_assertion_to_be_array
-end submodule rhyme_assertion_to_be_array_submodule
+  end function rhyme_assertion_not_to_be_array
+end submodule rhyme_assertion_not_to_be_array_submodule
