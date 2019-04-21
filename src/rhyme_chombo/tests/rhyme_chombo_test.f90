@@ -1,16 +1,22 @@
 logical function rhyme_chombo_test () result ( failed )
   use rhyme_chombo
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: ch_tester
+
   type ( chombo_t ) :: ch
 
-  failed = &
-  chid%unset .ne. h5id%unset &
-  .or. ch%is_opened &
-  .or. ch%iteration .ne. chid%unset &
-  .or. ch%num_levels .ne. chid%unset &
-  .or. ch%num_components .ne. chid%unset &
-  .or. any ( ch%level_ids .ne. chid%unset ) &
-  .or. ch%initialized .eqv. .true.
+  ch_tester = .describe. "chombo"
+
+  call ch_tester%expect( chid%unset .toBe. h5id%unset )
+  call ch_tester%expect( ch%is_opened .toBe. .false. )
+  call ch_tester%expect( ch%iteration .toBe. chid%unset )
+  call ch_tester%expect( ch%num_levels .toBe. chid%unset )
+  call ch_tester%expect( ch%num_components .toBe. chid%unset )
+  call ch_tester%expect( int( ch%level_ids ) .toBe. chid%unset )
+  call ch_tester%expect( ch%initialized .toBe. .false. )
+
+  failed = ch_tester%failed()
 end function rhyme_chombo_test

@@ -1,7 +1,10 @@
 logical function rhyme_chombo_write_samr_test () result ( failed )
   use rhyme_chombo_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: ch_tester
 
   ! rhyme_chombo variables
   type ( chombo_t ) :: ch
@@ -14,6 +17,7 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
   integer :: l, hdferr
   integer ( kind=hid_t ) :: file_id
 
+  ch_tester = .describe. "chombo write_samr"
 
   call rhyme_chombo_factory_init
 
@@ -30,19 +34,18 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
     write ( level_name, '(A7,I1)') "/level_", l
 
     call h5lexists_f ( file_id, trim(level_name)//"/boxes", exists, hdferr )
-    failed = .not. exists
-    if ( failed ) return
+    call ch_tester%expect( exists .toBe. .true. .hint. trim(level_name)//"/boxes" )
 
     call h5lexists_f ( file_id, trim(level_name)//"/data:datatype=0", exists, hdferr )
-    failed = .not. exists
-    if ( failed ) return
+    call ch_tester%expect( exists .toBe. .true. .hint. trim(level_name)//"/data:datatype=0" )
   end do
 
   call h5fclose_f ( file_id, hdferr )
   call h5close_f ( hdferr )
 
-  failed = &
-  any ( ch%level_ids .ne. chid%unset ) &
-  .or. ch%chombo_global_id .ne. chid%unset &
-  .or. ch%is_opened
+  call ch_tester%expect( int( ch%level_ids ) .toBe. chid%unset )
+  call ch_tester%expect( int( ch%chombo_global_id ) .toBe. chid%unset )
+  call ch_tester%expect( ch%is_opened .toBe. .false. )
+
+  failed = ch_tester%failed()
 end function rhyme_chombo_write_samr_test

@@ -1,7 +1,10 @@
 logical function rhyme_chombo_write_level_data_test () result ( failed )
   use rhyme_chombo_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: ch_tester
 
   ! rhyme_chombo variables
   type ( chombo_t ) :: ch
@@ -16,9 +19,9 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   real ( kind=8 ), allocatable :: data(:), expected_data(:)
   type ( samr_box_t ) :: box
 
+  ch_tester = .describe. "chombo write_level_data"
 
   call rhyme_chombo_factory_init
-
 
   ! Crete chombo file
   ch%nickname = nickname
@@ -33,7 +36,6 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   end do
 
   call ch%close
-
 
   ! Tests
   call ch%open ( filename )
@@ -53,6 +55,8 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
     offset = 1
     do b = 1, chombo_fac_samr%levels(l)%nboxes
+      call ch_tester%reset
+
       bdims = chombo_fac_samr%levels(l)%boxes(b)%dims
       box = chombo_fac_samr%levels(l)%boxes(b)
 
@@ -65,8 +69,7 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
         [ product( bdims ) ] &
       )
 
-      failed = any ( abs( data(lb:ub) - expected_data(lb:ub) ) > epsilon(0.d0) )
-      if ( failed ) return
+      call ch_tester%expect( data(lb:ub) .toBe. expected_data(lb:ub) )
 
       ! E_tot
       lb = lb + (hyid%e_tot - 1) * product( bdims )
@@ -77,10 +80,11 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
         [ product( bdims ) ] &
       )
 
-      failed = any ( abs( data(lb:ub) - expected_data(lb:ub) ) > epsilon(0.d0) )
-      if ( failed ) return
+      call ch_tester%expect( data(lb:ub) .toBe. expected_data(lb:ub) )
 
       offset = offset + 5 * product( bdims )
+
+      failed = ch_tester%failed()
     end do
 
     deallocate ( data )

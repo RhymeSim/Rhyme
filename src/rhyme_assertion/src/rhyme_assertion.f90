@@ -34,9 +34,14 @@ module rhyme_assertion
     procedure :: expect => rhyme_assertion_expect
     procedure :: passed => rhyme_assertion_passed
     procedure :: failed => rhyme_assertion_failed
+    procedure :: reset => rhyme_assertion_reset
   end type assertion_t
 
   interface
+    module subroutine rhyme_assertion_reset ( this )
+      class ( assertion_t ), intent ( inout ) :: this
+    end subroutine rhyme_assertion_reset
+
     pure module function rhyme_assertion_describe ( desc ) result ( tester )
       character ( len=* ), intent ( in ) :: desc
       type ( assertion_t ) :: tester
@@ -63,6 +68,11 @@ module rhyme_assertion
       type ( test_t ) :: test
     end function rhyme_assertion_to_be_array
 
+    pure module function rhyme_assertion_to_be_array_scalar ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:), expect
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_array_scalar
+
     pure module function rhyme_assertion_to_be_array_2d ( val, expect ) result ( test )
       class (*), intent ( in ) :: val(:,:), expect(:,:)
       type ( test_t ) :: test
@@ -77,6 +87,11 @@ module rhyme_assertion
       class (*), intent ( in ) :: val(:), expect(:)
       type ( test_t ) :: test
     end function rhyme_assertion_not_to_be_array
+
+    pure module function rhyme_assertion_not_to_be_array_scalar ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:), expect
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_array_scalar
 
     logical module function rhyme_assertion_passed ( this ) result ( passed )
       class ( assertion_t ), intent ( in ) :: this
@@ -95,12 +110,14 @@ module rhyme_assertion
   interface operator ( .toBe. )
     procedure rhyme_assertion_to_be
     procedure rhyme_assertion_to_be_array
+    procedure rhyme_assertion_to_be_array_scalar
     procedure rhyme_assertion_to_be_array_2d
   end interface operator ( .toBe. )
 
   interface operator ( .notToBe. )
     procedure rhyme_assertion_not_to_be
     procedure rhyme_assertion_not_to_be_array
+    procedure rhyme_assertion_not_to_be_array_scalar
   end interface operator ( .notToBe. )
 
   interface operator ( .hint. )

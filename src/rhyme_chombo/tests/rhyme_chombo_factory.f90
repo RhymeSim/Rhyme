@@ -2,9 +2,7 @@ module rhyme_chombo_factory
   use rhyme_samr_factory
   use rhyme_chombo
 
-
   implicit none
-
 
   integer, parameter :: chombo_fac_base_grid(3) = [ 16, 8, 1 ]
   integer, parameter :: chombo_fac_nlevels = 3
