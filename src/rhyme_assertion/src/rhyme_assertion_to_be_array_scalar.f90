@@ -18,6 +18,7 @@ contains
 
       select type ( e => expect )
       type is ( integer )
+        test%real_accuracy = real( maxval( v - e ), kind=8 )
         passed = all( v .eq. e )
       class default
         passed = .false.
@@ -29,6 +30,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
+        test%real_accuracy = maxval( abs( v - e ) )
         passed = all( abs( v - e ) < epsilon(0.e0) )
       class default
         passed = .false.
@@ -40,9 +42,11 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
+        test%real_accuracy = maxval( abs( v - e ) )
         passed = all( abs( v - e ) < epsilon(0.d0) )
       type is ( real( kind=4 ) )
         ! TODO: set a warning
+        test%real_accuracy = maxval( abs( real(v, kind=4) - e ) )
         passed = all( abs( real(v, kind=4) - e ) < epsilon(0.e0) )
       class default
         passed = .false.

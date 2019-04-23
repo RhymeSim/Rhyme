@@ -12,6 +12,7 @@ set( internal_deps )
 set( srcs
   src/rhyme_assertion_failed.f90
   src/rhyme_assertion_passed.f90
+  src/rhyme_assertion_within.f90
   src/rhyme_assertion_add_test_message.f90
   src/rhyme_assertion_not_to_be_array_scalar.f90
   src/rhyme_assertion_not_to_be_array.f90

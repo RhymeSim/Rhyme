@@ -19,26 +19,6 @@ module rhyme_irs_factory
   type ( irs_t ) :: irs_fac
   type ( log_t ) :: irs_fac_log
 
-  type irs_accuracy_t
-    real ( kind=8 ) :: star_p, star_v, left_rho, right_rho
-  end type irs_accuracy_t
-
-  type ( irs_accuracy_t ), parameter :: irs_sod_acc = irs_accuracy_t ( &
-    5.88E-7, 2.83E-6, 1.35E-6, 1.40E-5 &
-  )
-  type ( irs_accuracy_t ), parameter :: irs_123_acc = irs_accuracy_t ( &
-    2.05E-3, 1.20E-7, 9.70E-5, 9.70E-5 &
-  )
-  type ( irs_accuracy_t ), parameter :: irs_lblast_acc = irs_accuracy_t ( &
-    4.62E-7, 2.45E-6, 4.00E-6, 1.20E-7 &
-  )
-  type ( irs_accuracy_t ), parameter :: irs_rblast_acc = irs_accuracy_t ( &
-    9.60E-7, 2.83E-7, 5.24E-7, 4.86E-6 &
-  )
-  type ( irs_accuracy_t ), parameter :: irs_two_shocks_acc = irs_accuracy_t ( &
-    4.84E-4, 5.37E-4, 2.80E-4, 1.21E-3 &
-  )
-
 contains
 
   subroutine rhyme_irs_factory_init ()

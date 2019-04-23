@@ -18,6 +18,7 @@ contains
 
       select type ( e => exp )
       type is ( integer )
+        test%real_accuracy = real( v - e, kind=8 )
         passed = v .eq. e
       class default
         passed = .false.
@@ -29,7 +30,8 @@ contains
 
       select type ( e => exp )
       type is ( real( kind=4 ) )
-        passed = abs( v - e ) < epsilon(0.e0)
+        test%real_accuracy = abs( v - e )
+        passed = test%real_accuracy < epsilon(0.e0)
       class default
         passed = .false.
       end select
@@ -40,10 +42,12 @@ contains
 
       select type ( e => exp )
       type is ( real( kind=8 ) )
-        passed = abs( v - e ) < epsilon(0.d0)
+        test%real_accuracy = abs( v - e )
+        passed = test%real_accuracy < epsilon(0.d0)
       type is ( real( kind=4 ) )
         ! TODO: set a warning
-        passed = abs( real(v, kind=4) - e ) < epsilon(0.e0)
+        test%real_accuracy = abs( real(v, kind=4) - e )
+        passed = test%real_accuracy < epsilon(0.e0)
       class default
         passed = .false.
       end select
