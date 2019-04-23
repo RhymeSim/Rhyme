@@ -1,7 +1,10 @@
 logical function rhyme_drawing_uniform_cuboid_test () result (failed)
   use rhyme_drawing_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: dr_tester
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
@@ -22,8 +25,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result (failed)
   integer, parameter :: left_corner(3) = [ 3, 3, 3 ]
   integer, parameter :: lengths = 12
 
-
-  failed = .false.
+  dr_tester = .describe. "drawing uniform_canvas"
 
   call rhyme_drawing_factory_init
 
@@ -39,9 +41,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result (failed)
   shape%fill%type = drid%uniform
   shape%fill%colors(1)%w = hy%prim%w
 
-
   call rhyme_drawing_uniform_cuboid( samr, draw_fac_ig_mon, shape )
-
 
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%nboxes
@@ -49,18 +49,15 @@ logical function rhyme_drawing_uniform_cuboid_test () result (failed)
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if ( is_inside_cuboid( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
-
-              failed = any( abs( &
-                samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
-              ) > epsilon(0.d0) )
-              if ( failed ) return
-
+              call dr_tester%expect( samr%levels(l)%boxes(b)%hydro(i,j,k)%u .toBe. hy%cons%u )
             end if
           end do
         end do
       end do
     end do
   end do
+
+  failed = dr_tester%failed()
 
 contains
 

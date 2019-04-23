@@ -1,10 +1,14 @@
 logical function rhyme_drawing_new_perturb_test () result ( failed )
   use rhyme_drawing
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: dr_tester
+
   type ( drawing_t ) :: draw
   type ( perturbation_t ), pointer :: perturb
+
 
   perturb => draw%new_perturb( drid%harmonic )
 

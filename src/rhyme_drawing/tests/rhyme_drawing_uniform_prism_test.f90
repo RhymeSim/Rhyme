@@ -1,7 +1,10 @@
 logical function rhyme_drawing_uniform_prism_test () result ( failed )
   use rhyme_drawing_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: dr_tester
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
@@ -22,7 +25,7 @@ logical function rhyme_drawing_uniform_prism_test () result ( failed )
   real ( kind=8 ) :: vertices(3,3)
   real ( kind=8 ), parameter :: thickness = 2
 
-  failed = .false.
+  dr_tester = .describe. "drawing uniform_prism"
 
   vertices = reshape( [ 1, 1, 1, 5, 12, 4, 13, 8, 10 ], [3, 3], order=[2, 1] )
 
@@ -48,18 +51,15 @@ logical function rhyme_drawing_uniform_prism_test () result ( failed )
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if ( is_inside_prism( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
-
-              failed = any( abs( &
-                samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
-              ) > epsilon(0.d0) )
-              if ( failed ) return
-
+              call dr_tester%expect( samr%levels(l)%boxes(b)%hydro(i,j,k)%u .toBe. hy%cons%u )
             end if
           end do
         end do
       end do
     end do
   end do
+
+  failed = dr_tester%failed()
 
 contains
 

@@ -4,6 +4,8 @@ module rhyme_drawing_factory
   use rhyme_hydro_base_factory
   use rhyme_log
 
+  implicit none
+
   logical :: rhyme_drawing_factory_initialized = .false.
 
   type ( rhyme_hydro_factory_t ) :: hy

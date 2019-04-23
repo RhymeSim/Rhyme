@@ -1,7 +1,10 @@
 logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   use rhyme_drawing_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: dr_tester
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
@@ -22,7 +25,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   real ( kind=8 ), parameter :: origin(3) = [ 8.d0, 8.d0, 8.d0 ]
   real ( kind=8 ), parameter :: r = 4.d0
 
-  failed = .false.
+  dr_tester = .describe. "drawing uniform_sphere"
 
   call rhyme_drawing_factory_init
 
@@ -48,18 +51,15 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if ( is_inside_sphere( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
-
-              failed = any( abs( &
-                samr%levels(l)%boxes(b)%hydro(i,j,k)%u - hy%cons%u &
-              ) > epsilon(0.d0) )
-              if ( failed ) return
-
+              call dr_tester%expect( samr%levels(l)%boxes(b)%hydro(i,j,k)%u .toBe. hy%cons%u )
             end if
           end do
         end do
       end do
     end do
   end do
+
+  failed = dr_tester%failed()
 
 contains
   logical function is_inside_sphere ( p0, box, shape ) result ( is_inside )

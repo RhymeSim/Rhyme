@@ -55,8 +55,6 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
     offset = 1
     do b = 1, chombo_fac_samr%levels(l)%nboxes
-      call ch_tester%reset
-
       bdims = chombo_fac_samr%levels(l)%boxes(b)%dims
       box = chombo_fac_samr%levels(l)%boxes(b)
 
@@ -84,11 +82,12 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
       offset = offset + 5 * product( bdims )
 
-      failed = ch_tester%failed()
     end do
 
     deallocate ( data )
     deallocate ( expected_data )
+
+    failed = ch_tester%failed()
 
     ! TODO: Add test for boxes
   end do
