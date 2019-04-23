@@ -9,41 +9,40 @@ logical function rhyme_drawing_new_perturb_test () result ( failed )
   type ( drawing_t ) :: draw
   type ( perturbation_t ), pointer :: perturb
 
+  dr_tester = .describe. "drawing new_perturb"
 
   perturb => draw%new_perturb( drid%harmonic )
 
-  failed = &
-  .not. associated( draw%perturbs ) &
-  .or. associated( draw%perturbs%next ) &
-  .or. .not. associated( perturb ) &
-  .or. draw%perturbs%type .ne. drid%harmonic &
-  .or. perturb%type .ne. drid%harmonic &
-  .or. draw%perturbs%coor_type .ne. drid%unset &
-  .or. perturb%coor_type .ne. drid%unset &
-  .or. draw%perturbs%dir .ne. drid%unset &
-  .or. perturb%dir .ne. drid%unset &
-  .or. abs( draw%perturbs%harmonic%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( perturb%harmonic%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%harmonic%lambda ) > epsilon(0.d0) &
-  .or. abs( perturb%harmonic%lambda ) > epsilon(0.d0) &
-  .or. any( abs( draw%perturbs%harmonic%base%w ) > epsilon(0.d0) ) &
-  .or. any( abs( perturb%harmonic%base%w ) > epsilon(0.d0) ) &
-  .or. abs( draw%perturbs%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( perturb%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%sym_decaying%pos ) > epsilon(0.d0) &
-  .or. abs( perturb%sym_decaying%pos ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%sym_decaying%sigma - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( perturb%sym_decaying%sigma - 1.d0 ) > epsilon(0.d0) &
-  .or. any( abs( draw%perturbs%sym_decaying%base%w ) > epsilon(0.d0) ) &
-  .or. any( abs( perturb%sym_decaying%base%w ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call dr_tester%expect( associated( draw%perturbs ) .toBe. .true. )
+  call dr_tester%expect( associated( draw%perturbs%next ) .toBe. .false. )
+  call dr_tester%expect( associated( perturb ) .toBe. .true. )
+  call dr_tester%expect( draw%perturbs%type .toBe. drid%harmonic )
+  call dr_tester%expect( perturb%type .toBe. drid%harmonic )
+  call dr_tester%expect( draw%perturbs%coor_type .toBe. drid%unset )
+  call dr_tester%expect( perturb%coor_type .toBe. drid%unset )
+  call dr_tester%expect( draw%perturbs%dir .toBe. drid%unset )
+  call dr_tester%expect( perturb%dir .toBe. drid%unset )
+  call dr_tester%expect( draw%perturbs%harmonic%A .toBe. 1.d0 )
+  call dr_tester%expect( perturb%harmonic%A .toBe. 1.d0 )
+  call dr_tester%expect( draw%perturbs%harmonic%lambda .toBe. 0.d0 )
+  call dr_tester%expect( perturb%harmonic%lambda .toBe. 0.d0 )
+  call dr_tester%expect( draw%perturbs%harmonic%base%w .toBe. 0.d0 )
+  call dr_tester%expect( perturb%harmonic%base%w .toBe. 0.d0 )
+  call dr_tester%expect( draw%perturbs%sym_decaying%A .toBe. 1.d0 )
+  call dr_tester%expect( perturb%sym_decaying%A .toBe. 1.d0 )
+  call dr_tester%expect( draw%perturbs%sym_decaying%pos .toBe. 0.d0 )
+  call dr_tester%expect( perturb%sym_decaying%pos .toBe. 0.d0 )
+  call dr_tester%expect( draw%perturbs%sym_decaying%sigma .toBe. 1.d0 )
+  call dr_tester%expect( perturb%sym_decaying%sigma .toBe. 1.d0 )
+  call dr_tester%expect( draw%perturbs%sym_decaying%base%w .toBe. 0.d0 )
+  call dr_tester%expect( perturb%sym_decaying%base%w .toBe. 0.d0 )
 
   perturb => draw%new_perturb( drid%symmetric_decaying )
 
-  failed = &
-  .not. associated( draw%perturbs%next ) &
-  .or. .not. associated( perturb ) &
-  .or. draw%perturbs%next%type .ne. drid%symmetric_decaying &
-  .or. perturb%type .ne. drid%symmetric_decaying
+  call dr_tester%expect( associated( draw%perturbs%next ) .toBe. .true. )
+  call dr_tester%expect( associated( perturb ) .toBe. .true. )
+  call dr_tester%expect( draw%perturbs%next%type .toBe. drid%symmetric_decaying )
+  call dr_tester%expect( perturb%type .toBe. drid%symmetric_decaying )
+
+  failed = dr_tester%failed()
 end function rhyme_drawing_new_perturb_test

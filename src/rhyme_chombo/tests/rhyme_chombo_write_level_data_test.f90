@@ -87,8 +87,8 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
     deallocate ( data )
     deallocate ( expected_data )
 
-    failed = ch_tester%failed()
-
     ! TODO: Add test for boxes
   end do
+
+  failed = ch_tester%failed()
 end function rhyme_chombo_write_level_data_test
