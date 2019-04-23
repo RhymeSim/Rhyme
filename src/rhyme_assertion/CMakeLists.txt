@@ -16,6 +16,8 @@ set( srcs
   src/rhyme_assertion_not_to_be_array_scalar.f90
   src/rhyme_assertion_not_to_be_array.f90
   src/rhyme_assertion_not_to_be.f90
+  src/rhyme_assertion_to_be_array_3d_scalar.f90
+  src/rhyme_assertion_to_be_array_3d.f90
   src/rhyme_assertion_to_be_array_2d.f90
   src/rhyme_assertion_to_be_array_scalar.f90
   src/rhyme_assertion_to_be_array.f90

@@ -1,8 +1,11 @@
 logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
   use rhyme_initial_condition_factory
   use rhyme_samr_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: ic_tester
 
   character ( len=1024 ) :: nickname = 'rhyme_initial_condition_load_rhyme'
   character ( len=1024 ) :: filename
@@ -13,6 +16,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   integer :: l, b, uid, ub(3)
 
+  ic_tester = .describe. "initial_condition load_rhyme"
 
   ! Initializing SAMR object
   call rhyme_samr_factory_fill ( &
@@ -39,28 +43,23 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   call ic%load_rhyme( samr_read, log )
 
-  ! Test
-  failed = any( samr_read%levels%nboxes .ne. samr%levels%nboxes )
-  if ( failed ) return
+  call ic_tester%expect( (samr_read%levels%nboxes) .toBe. (samr%levels%nboxes) )
 
   do l = 0, samr_read%nlevels - 1
     do b = 1, samr%levels(l)%nboxes
-      failed = &
-      any( samr_read%levels(l)%boxes(b)%dims .ne. samr%levels(l)%boxes(b)%dims ) &
-      .or. any( samr_read%levels(l)%boxes(b)%left_edge .ne. samr%levels(l)%boxes(b)%left_edge ) &
-      .or. any( samr_read%levels(l)%boxes(b)%right_edge .ne. samr%levels(l)%boxes(b)%right_edge )
-      if ( failed ) return
+      call ic_tester%expect( samr_read%levels(l)%boxes(b)%dims .toBe. samr%levels(l)%boxes(b)%dims )
+      call ic_tester%expect( samr_read%levels(l)%boxes(b)%left_edge .toBe. samr%levels(l)%boxes(b)%left_edge )
+      call ic_tester%expect( samr_read%levels(l)%boxes(b)%right_edge .toBe. samr%levels(l)%boxes(b)%right_edge )
 
       ub = samr%levels(l)%boxes(b)%dims
 
       do uid = hyid%rho, hyid%e_tot
-        failed = &
-        any( abs( &
-          samr_read%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(uid) &
-          - samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(uid) &
-        ) > epsilon(0.d0) )
-        if ( failed ) return
+        call ic_tester%expect( &
+          (samr_read%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(uid)) &
+          .toBe. (samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(uid)) )
       end do
     end do
   end do
+
+  failed = ic_tester%failed()
 end function rhyme_initial_condition_load_rhyme_test

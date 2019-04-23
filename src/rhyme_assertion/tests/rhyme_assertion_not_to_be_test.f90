@@ -27,7 +27,7 @@ logical function rhyme_assertion_not_to_be_test () result ( failed )
   test_i%is_passed &
   .or. test_i%type .ne. assertid%int &
   .or. test_i%val .ne. int_str &
-  .or. test_i%op .ne. 'not_to_be' &
+  .or. trim(test_i%op) .ne. 'not_to_be' &
   .or. test_i%exp .ne. int_str
   if ( failed ) return
 

@@ -25,6 +25,8 @@ module rhyme_assertion
     character ( len=128 ) :: msg = ''
     character ( len=2048 ) :: val = '', op = '', exp = ''
     type ( test_t ), pointer :: next => null()
+  contains
+    procedure :: copy_to => rhyme_assertion_copy_test_to
   end type test_t
 
   type assertion_t
@@ -78,6 +80,16 @@ module rhyme_assertion
       type ( test_t ) :: test
     end function rhyme_assertion_to_be_array_2d
 
+    pure module function rhyme_assertion_to_be_array_3d ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:,:,:), expect(:,:,:)
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_array_3d
+
+    pure module function rhyme_assertion_to_be_array_3d_scalar ( val, expect ) result ( test )
+      class (*), intent ( in ) :: val(:,:,:), expect
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_array_3d_scalar
+
     pure module function rhyme_assertion_not_to_be ( val, exp ) result ( test )
       class (*), intent ( in ) :: val, exp
       type ( test_t ) :: test
@@ -112,6 +124,8 @@ module rhyme_assertion
     procedure rhyme_assertion_to_be_array
     procedure rhyme_assertion_to_be_array_scalar
     procedure rhyme_assertion_to_be_array_2d
+    procedure rhyme_assertion_to_be_array_3d
+    procedure rhyme_assertion_to_be_array_3d_scalar
   end interface operator ( .toBe. )
 
   interface operator ( .notToBe. )
@@ -127,9 +141,25 @@ module rhyme_assertion
   interface arr2str
     procedure array_to_string
     procedure array_2d_to_string
+    procedure array_3d_to_string
   end interface arr2str
 
 contains
+
+  pure subroutine rhyme_assertion_copy_test_to ( this, test )
+    implicit none
+
+    class ( test_t ), intent ( inout ) :: this
+    type ( test_t ), intent ( inout ) :: test
+
+    test%type = this%type
+    test%is_passed = this%is_passed
+    test%msg = this%msg
+    test%val = this%val
+    test%op = this%op
+    test%exp = this%exp
+    test%next => this%next
+  end subroutine rhyme_assertion_copy_test_to
 
   pure function array_to_string ( input ) result ( str )
     implicit none
@@ -211,4 +241,30 @@ contains
     end select
   end function array_2d_to_string
 
+
+  pure function array_3d_to_string ( input ) result ( str )
+    implicit none
+
+    class (*), intent ( in ) :: input(:,:,:)
+    character ( len=2048 ) :: str
+
+    integer :: l
+
+    l = product( shape( input ) )
+
+    select type ( inp => input )
+    type is ( integer )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( real( kind=4 ) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( real( kind=8 ) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( character (*) )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    type is ( logical )
+      str = array_to_string( reshape( inp, [ l ] ) )
+    class default
+      str = 'unknown type for 2D array'
+    end select
+  end function array_3d_to_string
 end module rhyme_assertion

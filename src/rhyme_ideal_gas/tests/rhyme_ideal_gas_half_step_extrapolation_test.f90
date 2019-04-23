@@ -1,16 +1,20 @@
 logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
   use rhyme_ideal_gas_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: ig_tester
 
   type ( ideal_gas_t ) :: ig
   type ( hydro_conserved_t ) :: exp_L, exp_R, Delta, L, R
   type ( hydro_flux_t ) :: FL, FR
   real ( kind=8 ) :: dt, dx
 
+  ig_tester = .describe. "ideal_gas half_step_extrapolation"
+
   call rhyme_ideal_gas_factory_init
   call ig%init_with( chemi, thermo, gas_type, log )
-
 
   dx = 1.d0 / 1024
   dt = 1.d-5
@@ -19,10 +23,8 @@ logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
   Delta%u = [ 0.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
   call ig%half_step_extrapolation( hy%cons, Delta, hyid%x, dx, dt, L, R )
 
-  failed = &
-  any ( abs ( hy%cons%u - L%u ) > epsilon(0.d0) ) &
-  .or. any ( abs ( hy%cons%u - R%u ) > epsilon(0.d0) )
-  if ( failed ) return
+  call ig_tester%expect( hy%cons%u .toBe. L%u )
+  call ig_tester%expect( hy%cons%u .toBe. R%u )
 
   ! None zero delta case
   Delta%u = [ 1.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
@@ -40,7 +42,8 @@ logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
   exp_L%u = exp_L%u + .5d0 * dt / dx * ( FL%f - FR%f )
   exp_R%u = exp_R%u + .5d0 * dt / dx * ( FL%f - FR%f )
 
-  failed = &
-  any ( abs ( exp_L%u - L%u ) > epsilon(0.d0) ) &
-  .or. any ( abs ( exp_R%u - R%u ) > epsilon(0.d0) )
+  call ig_tester%expect( exp_L%u .toBe. L%u )
+  call ig_tester%expect( exp_R%u .toBe. R%u )
+
+  failed = ig_tester%failed()
 end function rhyme_ideal_gas_half_step_extrapolation_test

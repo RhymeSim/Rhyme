@@ -1,23 +1,27 @@
 logical function rhyme_initial_condition_test () result ( failed )
   use rhyme_initial_condition
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: ic_tester
+
   type ( initial_condition_t ) :: ic
 
-  failed = &
-  icid%simple .ne. 1 &
-  .or. icid%snapshot .ne. 2 &
-  .or. icid%rhyme .ne. 10 &
-  .or. icid%radamesh .ne. 11 &
-  .or. icid%r2c_2d .ne. 12 &
-  .or. icid%unset .ne. -1
-  if ( failed ) return
+  ic_tester = .describe. "initial_condition"
 
-  failed = &
-  ic%type .ne. icid%unset &
-  .or. any( ic%base_grid .ne. icid%unset ) &
-  .or. ic%nlevels .ne. icid%unset &
-  .or. any( ic%max_nboxes .ne. 0 ) &
-  .or. trim(ic%snapshot_path) .ne. ''
+  call ic_tester%expect( icid%simple .toBe. 1 )
+  call ic_tester%expect( icid%snapshot .toBe. 2 )
+  call ic_tester%expect( icid%rhyme .toBe. 10 )
+  call ic_tester%expect( icid%radamesh .toBe. 11 )
+  call ic_tester%expect( icid%r2c_2d .toBe. 12 )
+  call ic_tester%expect( icid%unset .toBe. -1 )
+
+  call ic_tester%expect( ic%type .toBe. icid%unset )
+  call ic_tester%expect( ic%base_grid .toBe. icid%unset )
+  call ic_tester%expect( ic%nlevels .toBe. icid%unset )
+  call ic_tester%expect( ic%max_nboxes .toBe. 0 )
+  call ic_tester%expect( ic%snapshot_path .toBe. '' )
+
+  failed = ic_tester%failed()
 end function rhyme_initial_condition_test

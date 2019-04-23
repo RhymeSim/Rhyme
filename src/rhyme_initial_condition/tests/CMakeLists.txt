@@ -5,7 +5,9 @@ set( factories
   rhyme_samr
 )
 
-set( test_deps )
+set( test_deps
+  rhyme_assertion
+)
 
 configure_file(
   "./assets/r2c_2d_sample.hdf5"

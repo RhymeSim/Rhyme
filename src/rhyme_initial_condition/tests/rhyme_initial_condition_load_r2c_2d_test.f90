@@ -1,8 +1,11 @@
 logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   use rhyme_initial_condition_factory
   use rhyme_samr
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: ic_tester
 
   character ( len=1024 ) :: filename = 'r2c_2d_sample.hdf5'
   integer, parameter :: res = 128
@@ -18,6 +21,8 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   real ( kind=8 ) :: r2c_data( res, res, 1, 5 )
   real ( kind=8 ) :: pressure
   integer :: i, j, lb, ub
+
+  ic_tester = .describe. "initial_condition load_r2c_2d"
 
   call rhyme_initial_condition_factory_init
 
@@ -51,38 +56,23 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   scale_p = scale_d * ( scale_l / scale_t )**2
 
   ! Test rho
-  failed = &
-  any( abs( &
-    samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho) &
-    - scale_d * r2c_data(:,:,:,rho) &
-  ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call ic_tester%expect( &
+    (samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho)) &
+    .toBe. ( scale_d * r2c_data(:,:,:,rho) ) )
 
   ! Test rho_u
-  failed = &
-  any( abs( &
-    samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_u) &
-    - scale_d * r2c_data(:,:,:,rho) * scale_l / scale_t * r2c_data(:,:,:,u) &
-  ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call ic_tester%expect( &
+    (samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_u)) &
+    .toBe. ( - scale_d * r2c_data(:,:,:,rho) * scale_l / scale_t * r2c_data(:,:,:,u) ) )
 
   ! Test rho_v
-  failed = &
-  any( abs( &
-    samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_v) &
-    - scale_d * r2c_data(:,:,:,rho) * scale_l / scale_t * r2c_data(:,:,:,v) &
-  ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call ic_tester%expect( &
+    (samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_v)) &
+    .toBe. ( - scale_d * r2c_data(:,:,:,rho) * scale_l / scale_t * r2c_data(:,:,:,v) ) )
 
   ! Test rho_w
-  failed = &
-  any( abs( &
-    samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_w) - 0.d0 &
-  ) > epsilon(0.d0) )
-  if ( failed ) return
+  call ic_tester%expect( &
+    (samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%rho_w)) .toBe. 0.d0 )
 
 
   ! Test e_tot
@@ -91,23 +81,17 @@ logical function rhyme_initial_condition_load_r2c_2d_test () result ( failed )
   * ( r2c_data(:,:,:,u)**2 + r2c_data(:,:,:,v)**2 ) &
   + scale_p * r2c_data(:,:,:,p) / ( ig%gamma - 1.d0 ) ! + e_int
 
-  failed = &
-  any( abs( &
-    ( samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%e_tot) - r2c_data(:,:,:,e) ) &
-    / r2c_data(:,:,:,e) &
-  ) > epsilon(0.d0) )
-  if ( failed ) return
-
+  call ic_tester%expect( &
+    (samr%levels(0)%boxes(1)%hydro(1:res,1:res,1:1)%u(hyid%e_tot)) &
+    .toBe. r2c_data(:,:,:,e) )
 
   ! Test pressure after loading the snapshot
   do j = 1, samr%levels(0)%boxes(1)%dims(2)
     do i = 1, samr%levels(0)%boxes(1)%dims(1)
       pressure = scale_p * r2c_data(i,j,1,p)
-
-      failed = abs( &
-        ( ig%p(samr%levels(0)%boxes(1)%hydro(i,j,1)) - pressure ) / pressure &
-      ) > epsilon(0.e0)
-      if ( failed ) return
+      call ic_tester%expect( ig%p(samr%levels(0)%boxes(1)%hydro(i,j,1)) .toBe. pressure )
     end do
   end do
+
+  failed = ic_tester%failed()
 end function rhyme_initial_condition_load_r2c_2d_test

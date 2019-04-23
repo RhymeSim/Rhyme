@@ -5,7 +5,9 @@ set( factories
   rhyme_hydro_base
 )
 
-set( test_deps )
+set( test_deps
+  rhyme_assertion
+)
 
 set( proj_src_dir ../.. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../CMakeGlobal/tests/CMakeLists.txt )

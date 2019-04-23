@@ -45,7 +45,7 @@ contains
         passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.d0) )
       type is ( real( kind=4 ) )
         ! TODO: set a warning
-        passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.e0) )
+        passed = all( abs( reshape( real(v, kind=4), [l] ) - reshape( e, [l] ) ) < epsilon(0.e0) )
       class default
         passed = .false.
       end select
