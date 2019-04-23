@@ -41,6 +41,9 @@ contains
       select type ( e => expect )
       type is ( real( kind=8 ) )
         passed = all( abs( v - e ) < epsilon(0.d0) )
+      type is ( real( kind=4 ) )
+        ! TODO: set a warning
+        passed = all( abs( v - e ) < epsilon(0.e0) )
       class default
         passed = .false.
       end select

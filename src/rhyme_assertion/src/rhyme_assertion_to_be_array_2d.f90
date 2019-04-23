@@ -43,6 +43,9 @@ contains
       select type ( e => expect )
       type is ( real( kind=8 ) )
         passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.d0) )
+      type is ( real( kind=4 ) )
+        ! TODO: set a warning
+        passed = all( abs( reshape( v, [l] ) - reshape( e, [l] ) ) < epsilon(0.e0) )
       class default
         passed = .false.
       end select
