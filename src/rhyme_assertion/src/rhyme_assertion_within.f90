@@ -7,23 +7,36 @@ contains
     class (*), intent ( in ) :: accuracy
 
     type ( test_t ) :: ntest
+    integer :: power
 
-    ntest%type = test%type
-    ntest%is_passed = test%is_passed
-    ntest%msg = test%msg
-    ntest%val = test%val
-    ntest%op = test%op
-    ntest%exp = test%exp
-    ntest%within = test%within
-    ntest%real_accuracy = test%real_accuracy
+    call test%copy_essentials_to( ntest )
 
     select type ( acc => accuracy )
+    type is ( integer ) ! Significant figures
+      power = int( log10( abs( ntest%real_val ) ) )
+      ntest%within = 1.d1**( power - acc + 1 )
+
+      if ( ntest%real_accuracy > ntest%within ) then
+        ntest%is_passed = .false.
+      else
+        ntest%is_passed = .true.
+      end if
+
     type is ( real( kind=4 ) )
       ntest%within = acc
-      if ( test%real_accuracy < acc ) ntest%is_passed = .true.
+      if ( test%real_accuracy > acc ) then
+        ntest%is_passed = .false.
+      else
+        ntest%is_passed = .true.
+      end if
+
     type is ( real( kind=8 ) )
       ntest%within = acc
-      if ( test%real_accuracy < acc ) ntest%is_passed = .true.
+      if ( test%real_accuracy > acc ) then
+        ntest%is_passed = .false.
+      else
+        ntest%is_passed = .true.
+      end if
     end select
   end function rhyme_assertion_within
 end submodule rhyme_assertion_within_submodule

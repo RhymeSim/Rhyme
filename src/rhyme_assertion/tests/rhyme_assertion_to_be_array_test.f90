@@ -3,7 +3,6 @@ logical function rhyme_assertion_to_be_array_test () result ( failed )
 
   implicit none
 
-
   integer, parameter :: int_arr_value(5) = [ 1, 2, 3, 4, 5 ]
   real ( kind=4 ), parameter :: real_arr_value(5) = [ 1.e0, 2.e0, 3.e0, 4.e0, 5.e0 ]
   real ( kind=8 ), parameter :: double_arr_value(5) = [ 1.d0, 2.d0, 3.d0, 4.d0, 5.d0 ]

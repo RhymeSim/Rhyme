@@ -7,8 +7,9 @@ contains
     type ( test_t ) :: test
 
     logical :: passed
-    passed = .false.
+    integer :: idx
 
+    passed = .false.
     test%op = 'to_be'
 
     select type ( v => val )
@@ -18,7 +19,10 @@ contains
 
       select type ( e => expect )
       type is ( integer )
-        test%real_accuracy = real( maxval( v - e ), kind=8 )
+        idx = maxloc( v - e, dim=1 )
+        test%real_val = real( v(idx), kind=8 )
+        test%real_exp = real( e, kind=8 )
+        test%real_accuracy = abs( test%real_val - test%real_exp )
         passed = all( v .eq. e )
       class default
         passed = .false.
@@ -30,7 +34,10 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
-        test%real_accuracy = maxval( abs( v - e ) )
+        idx = maxloc( v - e, dim=1 )
+        test%real_val = real( v(idx), kind=8 )
+        test%real_exp = real( e, kind=8 )
+        test%real_accuracy = abs( test%real_val - test%real_exp )
         passed = all( abs( v - e ) < epsilon(0.e0) )
       class default
         passed = .false.
@@ -42,11 +49,17 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
-        test%real_accuracy = maxval( abs( v - e ) )
+        idx = maxloc( v - e, dim=1 )
+        test%real_val = v(idx)
+        test%real_exp = e
+        test%real_accuracy = abs( test%real_val - test%real_exp )
         passed = all( abs( v - e ) < epsilon(0.d0) )
       type is ( real( kind=4 ) )
         ! TODO: set a warning
-        test%real_accuracy = maxval( abs( real(v, kind=4) - e ) )
+        idx = maxloc( v - e, dim=1 )
+        test%real_val = v(idx)
+        test%real_exp = real( e, kind=8 )
+        test%real_accuracy = abs( test%real_val - test%real_exp )
         passed = all( abs( real(v, kind=4) - e ) < epsilon(0.e0) )
       class default
         passed = .false.

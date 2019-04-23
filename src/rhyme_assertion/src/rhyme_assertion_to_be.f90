@@ -7,8 +7,8 @@ contains
     type ( test_t ) :: test
 
     logical :: passed
-    passed = .false.
 
+    passed = .false.
     test%op = 'to_be'
 
     select type ( v => val )
@@ -18,7 +18,9 @@ contains
 
       select type ( e => exp )
       type is ( integer )
-        test%real_accuracy = real( v - e, kind=8 )
+        test%real_accuracy = abs( real( v - e, kind=8 ) )
+        test%real_val = real( v, kind=8 )
+        test%real_exp = real( e, kind=8 )
         passed = v .eq. e
       class default
         passed = .false.
@@ -31,6 +33,8 @@ contains
       select type ( e => exp )
       type is ( real( kind=4 ) )
         test%real_accuracy = abs( v - e )
+        test%real_val = real( v, kind=8 )
+        test%real_exp = real( e, kind=8 )
         passed = test%real_accuracy < epsilon(0.e0)
       class default
         passed = .false.
@@ -43,10 +47,14 @@ contains
       select type ( e => exp )
       type is ( real( kind=8 ) )
         test%real_accuracy = abs( v - e )
+        test%real_val = v
+        test%real_exp = e
         passed = test%real_accuracy < epsilon(0.d0)
       type is ( real( kind=4 ) )
         ! TODO: set a warning
         test%real_accuracy = abs( real(v, kind=4) - e )
+        test%real_val = real( v, kind=8 )
+        test%real_exp = real( e, kind=8 )
         passed = test%real_accuracy < epsilon(0.e0)
       class default
         passed = .false.

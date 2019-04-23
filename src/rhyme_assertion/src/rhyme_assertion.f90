@@ -26,9 +26,12 @@ module rhyme_assertion
     character ( len=2048 ) :: val = '', op = '', exp = ''
     real ( kind=8 ) :: within = 0.d0
     real ( kind=8 ) :: real_accuracy = 0.d0
+    real ( kind=8 ) :: real_val = 0.d0
+    real ( kind=8 ) :: real_exp = 0.d0
     type ( test_t ), pointer :: next => null()
   contains
-    procedure :: copy_to => rhyme_assertion_copy_test_to
+    procedure :: copy_to => rhyme_assertion_test_copy_to
+    procedure :: copy_essentials_to => rhyme_assertion_test_copy_essentials_to
   end type test_t
 
   type assertion_t
@@ -135,6 +138,7 @@ module rhyme_assertion
     procedure rhyme_assertion_to_be_array_3d
     procedure rhyme_assertion_to_be_array_3d_scalar
   end interface operator ( .toBe. )
+
   interface operator ( .notToBe. )
     procedure rhyme_assertion_not_to_be
     procedure rhyme_assertion_not_to_be_array
@@ -155,13 +159,11 @@ module rhyme_assertion
 
 contains
 
-  pure subroutine rhyme_assertion_copy_test_to ( this, test )
+  pure subroutine rhyme_assertion_test_copy_essentials_to ( this, test )
     implicit none
 
-    class ( test_t ), intent ( inout ) :: this
-    type ( test_t ), intent ( inout ) :: test
-
-    test = this
+    class ( test_t ), intent ( in ) :: this
+    type ( test_t ), intent ( out ) :: test
 
     test%type = this%type
     test%is_passed = this%is_passed
@@ -171,8 +173,22 @@ contains
     test%exp = this%exp
     test%within = this%within
     test%real_accuracy = this%real_accuracy
+    test%real_val = this%real_val
+    test%real_exp = this%real_exp
+  end subroutine rhyme_assertion_test_copy_essentials_to
+
+
+  pure subroutine rhyme_assertion_test_copy_to ( this, test )
+    implicit none
+
+    class ( test_t ), intent ( inout ) :: this
+    type ( test_t ), intent ( inout ) :: test
+
+    call this%copy_essentials_to( test )
+
     test%next => this%next
-  end subroutine rhyme_assertion_copy_test_to
+  end subroutine rhyme_assertion_test_copy_to
+
 
   pure function array_to_string ( input ) result ( str )
     implicit none

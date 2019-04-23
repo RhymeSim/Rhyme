@@ -54,23 +54,23 @@ contains
     end if
 
     call tester%expect( &
-      solution%star%p .toBe. ex_p .within. 1d-5 .hint. test_name//' p' )
+      solution%star%p .toBe. ex_p .within. 5 .hint. test_name//' p' )
 
     call tester%expect( &
-      solution%star%u .toBe. ex_u .within. 1d-5 .hint. test_name//' u' )
+      solution%star%u .toBe. ex_u .within. 5 .hint. test_name//' u' )
 
     call tester%expect( &
       solution%star%left%is_shock .toBe. expected_solution%star%left%is_shock &
       .hint. test_name//' left is shock?' )
 
     call tester%expect( &
-      star_left_rho .toBe. ex_left_rho .within. 1d-5 .hint. test_name//' rhol' )
+      star_left_rho .toBe. ex_left_rho .within. 5 .hint. test_name//' rhol' )
 
     call tester%expect( &
       solution%star%right%is_shock .toBe. expected_solution%star%right%is_shock &
       .hint. test_name//' right is shock' )
 
     call tester%expect( &
-      star_right_rho .toBe. ex_right_rho .within. 1d-5 .hint. test_name//' rhor' )
+      star_right_rho .toBe. ex_right_rho .within. 5 .hint. test_name//' rhor' )
   end subroutine irs_iterate_test_cases
 end function rhyme_irs_iterate_test

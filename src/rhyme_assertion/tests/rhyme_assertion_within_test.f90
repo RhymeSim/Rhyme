@@ -27,4 +27,18 @@ logical function rhyme_assertion_within_test () result ( failed )
 
   res = test .within. 1d-4
   failed = .not. res%is_passed
+  if ( failed ) return
+
+  ! Significant digits
+  res = 1.2345e6 .toBe. 1.2346e6 .within. 6
+  failed = res%is_passed
+  if ( failed ) return
+
+  res = 1.2345e6 .toBe. 1.2346e6 .within. 5
+  failed = .not. res%is_passed
+  if ( failed ) return
+
+  res = 1.2345e6 .toBe. 1.2346e6 .within. 4
+  failed = .not. res%is_passed
+  if ( failed ) return
 end function rhyme_assertion_within_test
