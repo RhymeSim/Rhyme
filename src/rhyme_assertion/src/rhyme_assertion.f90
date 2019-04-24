@@ -41,6 +41,7 @@ module rhyme_assertion
   type assertion_t
     character ( len=128 ) :: desc = ''
     type ( test_t ), pointer :: tests => null()
+    type ( test_t ), pointer :: tail => null()
   contains
     procedure :: expect => rhyme_assertion_expect
     procedure :: passed => rhyme_assertion_passed

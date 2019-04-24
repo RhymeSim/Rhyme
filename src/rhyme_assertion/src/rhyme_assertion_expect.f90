@@ -8,7 +8,7 @@ contains
 
     type ( test_t ), pointer :: t_ptr
 
-    t_ptr => this%tests
+    t_ptr => this%tail
 
     if ( associated( t_ptr ) ) then
       do while ( associated( t_ptr%next ) )
@@ -21,6 +21,8 @@ contains
       allocate( this%tests )
       t_ptr => this%tests
     end if
+
+    this%tail => t_ptr
 
     t_ptr%msg = test%msg
     t_ptr%type = test%type

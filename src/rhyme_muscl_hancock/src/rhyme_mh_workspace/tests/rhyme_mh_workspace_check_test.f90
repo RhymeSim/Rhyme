@@ -1,17 +1,19 @@
 logical function rhyme_mh_workspace_check_test () result ( failed )
   use rhyme_mh_workspace_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: mhws_tester
 
   type ( mh_workspace_t ) :: ws
   integer :: l, b, lb(3), ub(3), lbws(4), ubws(4), dims(3)
 
+  mhws_tester = .describe. "mhws_check"
 
   call rhyme_mh_workspace_factory_init
 
   call ws%init( samr, log )
-
-  failed = .false.
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes
@@ -27,16 +29,14 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
       lbws = lbound ( ws%levels(l)%boxes(b)%UL )
       ubws = ubound ( ws%levels(l)%boxes(b)%UL )
 
-      failed = &
-      .not. allocated ( ws%levels(l)%boxes(b)%UL ) &
-      .or. .not. allocated ( ws%levels(l)%boxes(b)%UR ) &
-      .or. .not. allocated ( ws%levels(l)%boxes(b)%FR ) &
-      .or. size ( ws%levels(l)%boxes(b)%UL ) .ne. product ( dims ) * 3 &
-      .or. size ( ws%levels(l)%boxes(b)%UR ) .ne. product ( dims ) * 3 &
-      .or. size ( ws%levels(l)%boxes(b)%FR ) .ne. product ( dims ) * 3 &
-      .or. any ( lb .ne. lbws(:3) ) &
-      .or. any ( ub .ne. ubws(:3) )
-      if ( failed ) return
+      call mhws_tester%expect( allocated( ws%levels(l)%boxes(b)%UL ) .toBe. .true. )
+      call mhws_tester%expect( allocated( ws%levels(l)%boxes(b)%UR ) .toBe. .true. )
+      call mhws_tester%expect( allocated( ws%levels(l)%boxes(b)%FR ) .toBe. .true. )
+      call mhws_tester%expect( size( ws%levels(l)%boxes(b)%UL ) .toBe. product( dims ) * 3 )
+      call mhws_tester%expect( size( ws%levels(l)%boxes(b)%UR ) .toBe. product( dims ) * 3 )
+      call mhws_tester%expect( size( ws%levels(l)%boxes(b)%FR ) .toBe. product( dims ) * 3 )
+      call mhws_tester%expect( lb .toBe. lbws(:3) )
+      call mhws_tester%expect( ub .toBe. ubws(:3) )
 
       ! Check cpu_intensive
       ws%type = mhwsid%cpu_intensive
@@ -46,12 +46,12 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
       lb = lbound( ws%levels(l)%boxes(b)%U )
       ub = ubound( ws%levels(l)%boxes(b)%U )
 
-      failed = &
-      .not. allocated ( ws%levels(l)%boxes(b)%U ) &
-      .or. size ( ws%levels(l)%boxes(b)%U ) .ne. product( dims ) &
-      .or. any ( lb .ne. 1 ) &
-      .or. any ( ub .ne. dims )
-      if ( failed ) return
+      call mhws_tester%expect( allocated( ws%levels(l)%boxes(b)%U ) .toBe. .true. )
+      call mhws_tester%expect( size( ws%levels(l)%boxes(b)%U ) .toBe. product( dims ) )
+      call mhws_tester%expect( lb .toBe. 1 )
+      call mhws_tester%expect( ub .toBe. dims )
     end do
   end do
+
+  failed = mhws_tester%failed()
 end function rhyme_mh_workspace_check_test
