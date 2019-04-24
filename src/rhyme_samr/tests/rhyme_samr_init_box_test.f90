@@ -1,7 +1,10 @@
 logical function rhyme_samr_init_box_test () result ( failed )
   use rhyme_samr_factory
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: s_tester
 
   integer, parameter :: nlevels = 4
   integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
@@ -13,16 +16,14 @@ logical function rhyme_samr_init_box_test () result ( failed )
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
 
-
   type ( samr_t ) :: samr
   integer :: l, b, box_dims(3), ledge(3), redge(3)
 
+  s_tester = .describe. "samr_init_box"
 
   call rhyme_samr_factory_fill ( &
     nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
   )
-
-  failed = .false.
 
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%max_nboxes
@@ -32,19 +33,19 @@ logical function rhyme_samr_init_box_test () result ( failed )
 
       call samr%init_box( l, b, box_dims, ledge, redge )
 
-      failed = &
-      samr%levels(l)%boxes(b)%level .ne. l &
-      .or. samr%levels(l)%boxes(b)%number .ne. b &
-      .or. .not. allocated( samr%levels(l)%boxes(b)%hydro ) &
-      .or. any( lbound( samr%levels(l)%boxes(b)%hydro ) .ne. - ghost_cells + 1 ) &
-      .or. any( ubound( samr%levels(l)%boxes(b)%hydro ) .ne. box_dims + ghost_cells ) &
-      .or. .not. allocated ( samr%levels(l)%boxes(b)%flags ) &
-      .or. any( lbound( samr%levels(l)%boxes(b)%flags ) .ne. - ghost_cells + 1 ) &
-      .or. any( ubound( samr%levels(l)%boxes(b)%flags ) .ne. box_dims + ghost_cells ) &
-      .or. samr%levels(l)%nboxes .ne. b &
-      .or. any( samr%levels(l)%boxes(b)%left_edge .ne. ledge ) &
-      .or. any( samr%levels(l)%boxes(b)%right_edge .ne. redge )
-      if ( failed ) return
+      call s_tester%expect( samr%levels(l)%boxes(b)%level .toBe. l )
+      call s_tester%expect( samr%levels(l)%boxes(b)%number .toBe. b )
+      call s_tester%expect( allocated( samr%levels(l)%boxes(b)%hydro ) .toBe. .true. )
+      call s_tester%expect( lbound( samr%levels(l)%boxes(b)%hydro ) .toBe. - ghost_cells + 1 )
+      call s_tester%expect( ubound( samr%levels(l)%boxes(b)%hydro ) .toBe. box_dims + ghost_cells )
+      call s_tester%expect( allocated ( samr%levels(l)%boxes(b)%flags ) .toBe. .true. )
+      call s_tester%expect( lbound( samr%levels(l)%boxes(b)%flags ) .toBe. - ghost_cells + 1 )
+      call s_tester%expect( ubound( samr%levels(l)%boxes(b)%flags ) .toBe. box_dims + ghost_cells )
+      call s_tester%expect( samr%levels(l)%nboxes .toBe. b )
+      call s_tester%expect( samr%levels(l)%boxes(b)%left_edge .toBe. ledge )
+      call s_tester%expect( samr%levels(l)%boxes(b)%right_edge .toBe. redge )
     end do
   end do
+
+  failed = s_tester%failed()
 end function rhyme_samr_init_box_test
