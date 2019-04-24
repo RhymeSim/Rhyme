@@ -1,7 +1,10 @@
 logical function rhyme_units_parse_test () result (failed)
   use rhyme_units
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: n_tester
 
   character(len=256) :: str
   type(unit_t), pointer :: unit
@@ -9,6 +12,8 @@ logical function rhyme_units_parse_test () result (failed)
   character(len=8) :: prefixes(5), symbs(5)
   real(kind=8) :: exponents(5)
   integer :: i
+
+  n_tester = .describe. "nombre_units_parse"
 
   str = "(Msun / (Mpc / K)^2 * s^4 * kg)"
   prefixes = ["        ", "M       ", "        ", "        ", "k       "]
@@ -20,16 +25,15 @@ logical function rhyme_units_parse_test () result (failed)
 
   i = 1
   do while ( associated(unit%next) )
-    failed = &
-    trim(unit%prefix%symb) .ne. trim(prefixes(i)) &
-    .or. trim(unit%symb) .ne. trim(symbs(i)) &
-    .or. abs(unit%pow - exponents(i)) > epsilon(0.d0)
-
-    if ( failed ) return
+    call n_tester%expect( unit%prefix%symb .toBe. prefixes(i) )
+    call n_tester%expect( unit%symb .toBe. symbs(i) )
+    call n_tester%expect( unit%pow .toBe. exponents(i) )
 
     unit => unit%next
     i = i + 1
   end do
 
-  failed = associated(unit%next)
+  call n_tester%expect( associated(unit%next) .toBe. .false. )
+
+  failed = n_tester%failed()
 end function rhyme_units_parse_test

@@ -1,10 +1,15 @@
 logical function rhyme_nombre_mul_test () result (failed)
   use rhyme_nombre
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: n_tester
+
   type ( nombre_t ) :: H, H2int, H2int_rev, H2real, H2real_rev, H2real8, H2real8_rev
   type ( unit_t ), pointer :: u_H
+
+  n_tester = .describe. "nombre_mul"
 
   u_H => kilo * m / s / (Mega * pc)
 
@@ -17,18 +22,16 @@ logical function rhyme_nombre_mul_test () result (failed)
   H2real8 = 2.d0 * H
   H2real8_rev = H * 2.d0
 
-  failed = &
-    abs ( H2int%v - H2int_rev%v ) > epsilon(0.d0) &
-    .or. abs ( H2int%v - (2.d0 * 66.7d0) ) > epsilon(0.d0) &
-    .or. abs ( H2real%v - H2real_rev%v ) > epsilon(0.d0) &
-    .or. abs ( H2real%v - (2.d0 * 66.7d0) ) > epsilon(0.d0) &
-    .or. abs ( H2real8%v - H2real8_rev%v ) > epsilon(0.e0) &
-    .or. abs ( H2real8%v - (2.d0 * 66.7d0) ) > epsilon(0.d0)
-
-  if (failed) return
+  call n_tester%expect( H2int%v .toBe. H2int_rev%v )
+  call n_tester%expect( H2int%v .toBe. (2.d0 * 66.7d0) )
+  call n_tester%expect( H2real%v .toBe. H2real_rev%v )
+  call n_tester%expect( H2real%v .toBe. (2.d0 * 66.7d0) )
+  call n_tester%expect( H2real8%v .toBe. H2real8_rev%v )
+  call n_tester%expect( H2real8%v .toBe. (2.d0 * 66.7d0) )
 
   H = H .to. s**(-1.d0)
 
-  failed = .not. ( H2int%u .unitEqualsTo. u_H )
+  call n_tester%expect( H2int%u .unitEqualsTo. u_H .toBe. .true. )
 
+  failed = n_tester%failed()
 end function rhyme_nombre_mul_test

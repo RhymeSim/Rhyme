@@ -1,7 +1,5 @@
 module rhyme_prefix
-
   implicit none
-
 
   type prefix_t
     character(len=8) :: symb
@@ -52,7 +50,6 @@ module rhyme_prefix
   type(prefix_t), parameter :: zepto = prfx_si(-21)
   type(prefix_t), parameter :: yocto = prfx_si(-24)
 
-
   interface operator (*)
     procedure prefix_mul
   end interface operator (*)
@@ -75,31 +72,4 @@ contains
       p = prfx_si(i)
     end if
   end function prefix_mul
-
-
-  function prefix_find (symb) result (p)
-    implicit none
-
-    character(len=*), intent(in) :: symb
-    type(prefix_t) :: p
-
-    integer :: i, lb(1), ub(1)
-
-    lb = lbound ( prfx_si )
-    ub = ubound ( prfx_si )
-
-    do i = lb(1), ub(1)
-      if ( len(trim(prfx_si(i)%symb)) == 0 ) cycle
-
-      if ( trim(prfx_si(i)%symb) .eq. trim(symb( 1:len(trim(prfx_si(i)%symb))) ) ) then
-        if ( prfx_si(i)%symb .eq. "d" .and. symb(2:2) .eq. "a" ) cycle ! Handle the "da" case
-
-        p = prfx_si(i)
-        return
-      end if
-    end do
-
-    p = one
-  end function prefix_find
-
 end module rhyme_prefix

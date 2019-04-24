@@ -4,7 +4,6 @@ module rhyme_unit
 
   implicit none
 
-
   type unit_t
     type(prefix_t) :: prefix
     character(len=8) :: symb

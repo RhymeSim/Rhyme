@@ -3,7 +3,6 @@ module rhyme_units
 
   implicit none
 
-
   type(unit_t), dimension(11), parameter :: units_chain = (/ &
     unit_t(one, "m", 1.d0, LengthDim), &
     unit_t(kilo, "g", 1.d0, MassDim), &
@@ -31,13 +30,11 @@ module rhyme_units
   type(unit_t), target :: Msun = units_chain(10)
   type(unit_t), target :: yr = units_chain(11)
 
-
   interface handle_pow
     procedure handle_pow_int
     procedure handle_pow_real
     procedure handle_pow_real8
   end interface handle_pow
-
 
   interface operator (.unitEqualsTo.)
     procedure units_unit_is_equal_to
@@ -315,4 +312,31 @@ contains
 
   end function units_parse_single
 
+
+  function prefix_find (symb) result (p)
+    implicit none
+
+    character(len=*), intent(in) :: symb
+    type(prefix_t) :: p
+
+    integer :: i, j, lb(1), ub(1)
+
+    lb = lbound ( prfx_si )
+    ub = ubound ( prfx_si )
+
+    do i = lb(1), ub(1)
+      if ( len(trim(prfx_si(i)%symb)) == 0 ) cycle
+
+      if ( trim(prfx_si(i)%symb) .eq. trim(symb( 1:len(trim(prfx_si(i)%symb))) ) ) then
+        do j = 1, size( units_chain )
+          if ( symb( len_trim(prfx_si(i)%symb)+1: ) .eq. trim( units_chain(j)%symb ) ) then
+            p = prfx_si(i)
+            return
+          end if
+        end do
+      end if
+    end do
+
+    p = one
+  end function prefix_find
 end module rhyme_units

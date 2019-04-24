@@ -1,18 +1,24 @@
 logical function rhyme_units_handle_pow_test () result (failed)
   use rhyme_units
+  use rhyme_assertion
 
   implicit none
 
+  type ( assertion_t ) :: n_tester
+
   type(unit_t), pointer :: u
+
+  n_tester = .describe. "nombre_units_handle_pow"
 
   u => kg * m / s
 
   call handle_pow(u, 2.0)
   u => unit_head(u)
 
-  failed = &
-  abs(u%pow - 2.d0) > epsilon(0.d0) &
-  .or. abs(u%next%pow - 2.d0) > epsilon(0.d0) &
-  .or. abs(u%next%next%pow - (-2.d0)) > epsilon(0.d0) &
-  .or. associated(u%next%next%next)
+  call n_tester%expect( u%pow .toBe. 2.d0 )
+  call n_tester%expect( u%next%pow .toBe. 2.d0 )
+  call n_tester%expect( u%next%next%pow .toBe. (-2.d0) )
+  call n_tester%expect( associated(u%next%next%next) .toBe. .false. )
+
+  failed = n_tester%failed()
 end function rhyme_units_handle_pow_test

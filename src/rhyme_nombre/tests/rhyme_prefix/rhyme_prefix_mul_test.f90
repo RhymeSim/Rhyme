@@ -1,7 +1,10 @@
 logical function rhyme_prefix_mul_test () result (failed)
   use rhyme_prefix
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: n_tester
 
   type(prefix_t) :: p1 = prefix_t("p1", 1)
   type(prefix_t) :: p2 = prefix_t("p2", 2)
@@ -14,22 +17,23 @@ logical function rhyme_prefix_mul_test () result (failed)
 
   type(prefix_t) :: p
 
+  n_tester = .describe. "nombre_prefix_mul"
 
   p = p1 * p2 * p3
-  failed = p%symb .ne. "M" .or. p%base_10 .ne. 6
-
-  if ( failed ) return
+  call n_tester%expect( p%symb .toBe. "M" )
+  call n_tester%expect( p%base_10 .toBe. 6 )
 
   p = p24 * p1
-  failed = p%symb .ne. "" .or. p%base_10 .ne. 25
-
-  if ( failed ) return
+  call n_tester%expect( p%symb .toBe. "" )
+  call n_tester%expect( p%base_10 .toBe. 25 )
 
   p = p_1 * p_2 * p_3
-  failed = p%symb .ne. "mu" .or. p%base_10 .ne. -6
-
-  if ( failed ) return
+  call n_tester%expect( p%symb .toBe. "mu" )
+  call n_tester%expect( p%base_10 .toBe. -6 )
 
   p = p_24 * p_1
-  failed = p%symb .ne. "" .or. p%base_10 .ne. -25
+  call n_tester%expect( p%symb .toBe. "" )
+  call n_tester%expect( p%base_10 .toBe. -25 )
+
+  failed = n_tester%failed()
 end function rhyme_prefix_mul_test
