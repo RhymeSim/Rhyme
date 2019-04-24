@@ -1,7 +1,10 @@
 logical function rhyme_param_parser_parse_param_test () result ( failed )
   use rhyme_param_parser
+  use rhyme_assertion
 
   implicit none
+
+  type ( assertion_t ) :: tester
 
   type ( log_t ) :: log
   type ( initial_condition_t ) :: ic
@@ -16,118 +19,103 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
+  tester = .describe. "param_parser"
 
   call parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Structured AMR
-  failed = &
-  ic%type .ne. icid%simple &
-  .or. any ( ic%base_grid .ne. [ 128, 128, 1 ] ) &
-  .or. ic%nlevels .ne. 3 &
-  .or. any ( ic%max_nboxes(0:ic%nlevels-1) .ne. [ 1, 10, 100 ] ) &
-  .or. any ( ic%max_nboxes(ic%nlevels:) .ne. 0 )
-  if ( failed ) return
+  call tester%expect( ic%type .toBe. icid%simple )
+  call tester%expect( ic%base_grid .toBe. [ 128, 128, 1 ] )
+  call tester%expect( ic%nlevels .toBe. 3 )
+  call tester%expect( ic%max_nboxes(0:ic%nlevels-1) .toBe. [ 1, 10, 100 ] )
+  call tester%expect( ic%max_nboxes(ic%nlevels:) .toBe. 0 )
 
   ! Boundary Condition
-  failed = &
-  bc%types(bcid%left) .ne. 1 &
-  .or. bc%types(bcid%right) .ne. 2 &
-  .or. bc%types(bcid%bottom) .ne. 3 &
-  .or. bc%types(bcid%top) .ne. 1 &
-  .or. bc%types(bcid%back) .ne. 2 &
-  .or. bc%types(bcid%front) .ne. 3
-  if ( failed ) return
+  call tester%expect( bc%types(bcid%left) .toBe. 1 )
+  call tester%expect( bc%types(bcid%right) .toBe. 2 )
+  call tester%expect( bc%types(bcid%bottom) .toBe. 3 )
+  call tester%expect( bc%types(bcid%top) .toBe. 1 )
+  call tester%expect( bc%types(bcid%back) .toBe. 2 )
+  call tester%expect( bc%types(bcid%front) .toBe. 3 )
 
   ! Ideal Gas
-  failed = ig%type .ne. igid%diatomic
-  if ( failed ) return
+  call tester%expect( ig%type .toBe. igid%diatomic )
 
   ! Drawing
-  failed = &
-  draw%type .ne. drid%uniform_canvas &
-  .or. any( abs( draw%canvas%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%type .ne. drid%cuboid &
-  .or. any( draw%shapes%cuboid%left_corner .ne. 1 ) &
-  .or. any( draw%shapes%cuboid%lengths .ne. [ 56, 128, 1 ] ) &
-  .or. draw%shapes%trans%type( samrid%top ) .ne. drid%ramp &
-  .or. abs( draw%shapes%trans%sigma( samrid%top ) - 2.5d0 ) > epsilon(0.d0) &
-  .or. any( abs( draw%shapes%trans%colors( samrid%top, 1 )%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%trans%colors( samrid%top, 2 )%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%trans%type( samrid%bottom ) .ne. drid%linear &
-  .or. abs( draw%shapes%trans%sigma( samrid%bottom ) - 1.5d0 ) > epsilon(0.d0) &
-  .or. any( abs( draw%shapes%trans%colors( samrid%bottom, 1 )%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%trans%colors( samrid%bottom, 2 )%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%fill%type .ne. drid%uniform &
-  .or. any ( abs ( draw%shapes%fill%colors(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%next%type .ne. drid%prism &
-  .or. any ( abs ( draw%shapes%next%prism%vertices(1,:) - [ 56, 1, 1 ] ) > epsilon(0.d0) ) &
-  .or. any ( abs ( draw%shapes%next%prism%vertices(2,:) - [ 56, 128, 1 ] ) > epsilon(0.d0) ) &
-  .or. any ( abs ( draw%shapes%next%prism%vertices(3,:) - [ 72, 1, 1 ] ) > epsilon(0.d0) ) &
-  .or. abs ( draw%shapes%next%prism%thickness - 1 ) > epsilon(0.d0) &
-  .or. draw%shapes%fill%type .ne. drid%uniform &
-  .or. any ( abs ( draw%shapes%fill%colors(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%next%next%type .ne. drid%sphere &
-  .or. any ( abs ( draw%shapes%next%next%sphere%origin - [ 3.d0, 4.d0, 5.d0 ] ) > epsilon(0.d0) ) &
-  .or. abs ( draw%shapes%next%next%sphere%r - 2.34d0 ) > epsilon(0.d0) &
-  .or. draw%shapes%next%next%fill%type .ne. drid%uniform &
-  .or. any ( abs ( draw%shapes%next%next%fill%colors(1)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%shapes%next%next%next%type .ne. drid%smoothed_slab_2d &
-  .or. draw%shapes%next%next%next%slab_2d%dir .ne. drid%x &
-  .or. any( abs( draw%shapes%next%next%next%slab_2d%pos - [ 56, 72 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%next%next%next%slab_2d%sigma - [ .2d0, .4d0 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%next%next%next%fill%colors(1)%w - [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] ) > epsilon(0.d0) ) &
-  .or. any( abs( draw%shapes%next%next%next%fill%colors(2)%w - [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
-  if ( failed ) return
+  call tester%expect( draw%type .toBe. drid%uniform_canvas )
+  call tester%expect( draw%canvas%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
+  call tester%expect( draw%shapes%type .toBe. drid%cuboid )
+  call tester%expect( draw%shapes%cuboid%left_corner .toBe. 1 )
+  call tester%expect( draw%shapes%cuboid%lengths .toBe. [ 56, 128, 1 ] )
+  call tester%expect( draw%shapes%trans%type( samrid%top ) .toBe. drid%ramp )
+  call tester%expect( draw%shapes%trans%sigma( samrid%top ) .toBe. 2.5d0 )
+  call tester%expect( draw%shapes%trans%colors( samrid%top, 1 )%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
+  call tester%expect( draw%shapes%trans%colors( samrid%top, 2 )%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%shapes%trans%type( samrid%bottom ) .toBe. drid%linear )
+  call tester%expect( draw%shapes%trans%sigma( samrid%bottom ) .toBe. 1.5d0 )
+  call tester%expect( draw%shapes%trans%colors( samrid%bottom, 1 )%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
+  call tester%expect( draw%shapes%trans%colors( samrid%bottom, 2 )%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%shapes%fill%type .toBe. drid%uniform )
+  call tester%expect( draw%shapes%fill%colors(1)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%shapes%next%type .toBe. drid%prism )
+  call tester%expect( draw%shapes%next%prism%vertices(1,:) .toBe. [ 56.0, 1.0, 1.0 ] )
+  call tester%expect( draw%shapes%next%prism%vertices(2,:) .toBe. [ 56.0, 128.0, 1.0 ] )
+  call tester%expect( draw%shapes%next%prism%vertices(3,:) .toBe. [ 72.0, 1.0, 1.0 ] )
+  call tester%expect( draw%shapes%next%prism%thickness .toBe. 1.0 )
+  call tester%expect( draw%shapes%fill%type .toBe. drid%uniform )
+  call tester%expect( draw%shapes%fill%colors(1)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%shapes%next%next%type .toBe. drid%sphere )
+  call tester%expect( draw%shapes%next%next%sphere%origin .toBe. [ 3.d0, 4.d0, 5.d0 ] )
+  call tester%expect( draw%shapes%next%next%sphere%r .toBe. 2.34d0 )
+  call tester%expect( draw%shapes%next%next%fill%type .toBe. drid%uniform )
+  call tester%expect( draw%shapes%next%next%fill%colors(1)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%shapes%next%next%next%type .toBe. drid%smoothed_slab_2d )
+  call tester%expect( draw%shapes%next%next%next%slab_2d%dir .toBe. drid%x )
+  call tester%expect( draw%shapes%next%next%next%slab_2d%pos .toBe. [ 56.0, 72.0 ] )
+  call tester%expect( draw%shapes%next%next%next%slab_2d%sigma .toBe. [ .2d0, .4d0 ] )
+  call tester%expect( draw%shapes%next%next%next%fill%colors(1)%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
+  call tester%expect( draw%shapes%next%next%next%fill%colors(2)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
 
   ! Perturbation
-  failed = &
-  draw%perturbs%type .ne. drid%harmonic &
-  .or. draw%perturbs%coor_type .ne. drid%cartesian &
-  .or. draw%perturbs%dir .ne. drid%x &
-  .or. abs( draw%perturbs%harmonic%A - .05d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%harmonic%lambda - 32 ) > epsilon(0.d0) &
-  .or. any( abs( draw%perturbs%harmonic%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%perturbs%next%type .ne. drid%symmetric_decaying &
-  .or. draw%perturbs%next%coor_type .ne. drid%cartesian &
-  .or. draw%perturbs%next%dir .ne. drid%y &
-  .or. abs( draw%perturbs%next%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%next%sym_decaying%pos - 56 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%next%sym_decaying%sigma - 2 ) > epsilon(0.d0) &
-  .or. any( abs( draw%perturbs%next%sym_decaying%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) ) &
-  .or. draw%perturbs%next%next%type .ne. drid%symmetric_decaying &
-  .or. draw%perturbs%next%next%coor_type .ne. drid%cartesian &
-  .or. draw%perturbs%next%next%dir .ne. drid%y &
-  .or. abs( draw%perturbs%next%next%sym_decaying%A - 1.d0 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%next%next%sym_decaying%pos - 72 ) > epsilon(0.d0) &
-  .or. abs( draw%perturbs%next%next%sym_decaying%sigma - 8 ) > epsilon(0.d0) &
-  .or. any( abs( draw%perturbs%next%next%sym_decaying%base%w - [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] ) > epsilon(0.d0) )
-  if ( failed ) return
+  call tester%expect( draw%perturbs%type .toBe. drid%harmonic )
+  call tester%expect( draw%perturbs%coor_type .toBe. drid%cartesian )
+  call tester%expect( draw%perturbs%dir .toBe. drid%x )
+  call tester%expect( draw%perturbs%harmonic%A .toBe. .05d0 )
+  call tester%expect( draw%perturbs%harmonic%lambda .toBe. 32.0 )
+  call tester%expect( draw%perturbs%harmonic%base%w .toBe. [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%perturbs%next%type .toBe. drid%symmetric_decaying )
+  call tester%expect( draw%perturbs%next%coor_type .toBe. drid%cartesian )
+  call tester%expect( draw%perturbs%next%dir .toBe. drid%y )
+  call tester%expect( draw%perturbs%next%sym_decaying%A .toBe. 1.d0 )
+  call tester%expect( draw%perturbs%next%sym_decaying%pos .toBe. 56.0 )
+  call tester%expect( draw%perturbs%next%sym_decaying%sigma .toBe. 2.0 )
+  call tester%expect( draw%perturbs%next%sym_decaying%base%w .toBe. [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
+  call tester%expect( draw%perturbs%next%next%type .toBe. drid%symmetric_decaying )
+  call tester%expect( draw%perturbs%next%next%coor_type .toBe. drid%cartesian )
+  call tester%expect( draw%perturbs%next%next%dir .toBe. drid%y )
+  call tester%expect( draw%perturbs%next%next%sym_decaying%A .toBe. 1.d0 )
+  call tester%expect( draw%perturbs%next%next%sym_decaying%pos .toBe. 72.0 )
+  call tester%expect( draw%perturbs%next%next%sym_decaying%sigma .toBe. 8.0 )
+  call tester%expect( draw%perturbs%next%next%sym_decaying%base%w .toBe. [ 0.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
 
   ! Iterative Riemann Solver
-  failed = &
-  abs ( irs%pressure_floor - 1.d-10 ) > epsilon(0.d0) &
-  .or. abs ( irs%tolerance - 1.d-6 ) > epsilon(0.d0) &
-  .or. irs%n_iteration .ne. 100
-  if ( failed ) return
+  call tester%expect( irs%pressure_floor .toBe. 1.d-10 )
+  call tester%expect( irs%tolerance .toBe. 1.d-6 )
+  call tester%expect( irs%n_iteration .toBe. 100 )
 
   ! Slope Limiter
-  failed = &
-  abs ( sl%w - 0.d0 ) > epsilon(0.d0) &
-  .or. sl%type .ne. slid%van_Leer
-  if ( failed ) return
+  call tester%expect( sl%w .toBe. 0.d0 )
+  call tester%expect( sl%type .toBe. slid%van_Leer )
 
   ! MUSCL-Hancock solver
-  failed = mh%solver_type .ne. mhid%cpu_intensive
-  if ( failed ) return
+  call tester%expect( mh%solver_type .toBe. mhid%cpu_intensive )
 
   ! CFL
-  failed = abs ( cfl%courant_number - .81d0 ) > epsilon(0.d0)
-  if ( failed ) return
+  call tester%expect( cfl%courant_number .toBe. .81d0 )
 
   ! Chombo
-  failed = &
-  trim(chombo%prefix) .ne. "./prefix" &
-  .or. trim(chombo%nickname) .ne. "hydro-simulation"
-  if ( failed ) return
+  call tester%expect( trim(chombo%prefix) .toBe. "./prefix" )
+  call tester%expect( trim(chombo%nickname) .toBe. "hydro-simulation" )
 
+  failed = tester%failed()
 end function rhyme_param_parser_parse_param_test

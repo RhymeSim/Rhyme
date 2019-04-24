@@ -2,7 +2,10 @@ project( rhyme_param_parser_tests )
 set( test_subject rhyme_param_parser )
 
 set( factories )
-set( test_deps )
+
+set( test_deps
+  rhyme_assertion
+)
 
 configure_file(
   "../../../parameters.conf.example"
