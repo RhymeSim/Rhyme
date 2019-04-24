@@ -41,8 +41,8 @@ contains
       tas_str = trim( this%time() )//' '//trim( this%sec )
     end if
 
-    if ( len_trim( this%sub_sec ) > 1 ) then
-      tas_str = trim( tas_str )//' § '//trim( adjustl( this%sub_sec ) )
+    if ( len_trim( this%sub_sec ) > 0 ) then
+      tas_str = trim( tas_str )//'§'//trim( adjustl( this%sub_sec ) )
     end if
 
     tas_str = trim( tas_str )//':'//tc%nc

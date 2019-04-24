@@ -12,7 +12,7 @@ logical function rhyme_irs_sampling_test () result ( failed )
   integer :: i
   real ( kind=8 ) :: x, rho_, v, p, e_int
 
-  irs_tester = .describe. "irs sampling"
+  irs_tester = .describe. "irs_sampling"
 
   call rhyme_irs_factory_init
 
@@ -34,10 +34,10 @@ logical function rhyme_irs_sampling_test () result ( failed )
       -.5d0 + real(i - 1, kind=8) / 499.d0, .2d0, U )
 
       print *, i
-    call irs_tester%expect( rho_ .toBe. u%u(hyid%rho) .hint. 'rho' )
-    call irs_tester%expect( rho_ * v .toBe. u%u(hyid%rho_u) .hint. 'rho_u' )
-    call irs_tester%expect( p .toBe. irs_fac_ig%p(U) .hint. 'p' )
-    call irs_tester%expect( e_int .toBe. U%u(hyid%rho) * irs_fac_ig%e_int_sp(U) .within. 1d-3 .hint. 'e_int' )
+    call irs_tester%expect( rho_ .toBe. u%u(hyid%rho) .within. 16 .hint. 'rho' )
+    call irs_tester%expect( rho_ * v .toBe. u%u(hyid%rho_u) .within. 14 .hint. 'rho_u' )
+    call irs_tester%expect( p .toBe. irs_fac_ig%p(U) .within. 16 .hint. 'p' )
+    call irs_tester%expect( e_int .toBe. U%u(hyid%rho) * irs_fac_ig%e_int_sp(U) .within. 15 .hint. 'e_int' )
 
     failed = irs_tester%failed()
 

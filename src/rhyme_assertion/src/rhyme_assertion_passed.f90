@@ -8,12 +8,13 @@ contains
     class ( assertion_t ), intent ( in ) :: this
 
     type ( test_t ), pointer :: test
-    type ( log_t ) :: log
+    type ( log_t ) :: logger
 
     integer :: nft, npt
-    character ( len=128 ) :: err_msg
+    character ( len=128 ) :: msg
+    character ( len=20 ) :: exp, got
 
-    call log%set_section( this%desc )
+    call logger%set_section( this%desc )
 
     passed = .true.
     nft = 0
@@ -22,32 +23,40 @@ contains
     test => this%tests
 
     if ( .not. associated( test ) ) then
-      call log%warn( 'Nothing to test.' )
+      call logger%warn( 'Nothing to test.' )
       return
     end if
 
     do while ( associated( test ) )
-      if ( .not. test%is_passed ) then
-        passed = .false.
-        nft = nft + 1
-        call log%err( 'expected:', test%val, test%op, [ test%exp ] )
-        test => test%next
-        cycle
-      end if
+      call logger%set_sub_section( test%msg )
 
-      npt = npt + 1
-      call log%log( trim( test%msg )//' has been passed.' )
+      if ( test%is_passed ) then
+        npt = npt + 1
+        call logger%log( '✓' )
+      else
+        nft = nft + 1
+        write ( exp, '(A6,2X,A10,T1)' ) new_line('a'), 'expect'
+        write ( got, '(A6,2X,A10,T1)' ) new_line('a'), trim(test%op)
+
+        call logger%err( exp, test%val, got, [ test%exp ] )
+
+        passed = .false.
+      end if
 
       test => test%next
     end do
 
-    call log%set_section( '' )
+    call logger%set_section( '' )
+    call logger%set_sub_section( '' )
+
 
     if ( passed ) then
-      call log%log( 'All tests have been passed.', '#tests', ':', [ npt ] )
+      write( msg, '(I0,A,I0,A)' ) npt, ' out of ', nft + npt, ' test(s) passed.'
+      call logger%log( msg )
     else
-      write( err_msg, '(I0,A,I0,A)' ) nft, ' out of ', nft + npt, ' tests failed.'
-      call log%err( err_msg )
+      write( msg, '(I0,A,I0,A)' ) nft, ' out of ', nft + npt, ' test(s) failed.'
+      call logger%err( msg )
     end if
+
   end function rhyme_assertion_passed
 end submodule rhyme_assertion_passed_submodule

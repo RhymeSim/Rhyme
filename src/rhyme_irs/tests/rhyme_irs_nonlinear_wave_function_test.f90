@@ -11,7 +11,7 @@ logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
   real(kind=8) :: p, p_star = 3.45d2
   integer :: i
 
-  irs_tester = .describe. "irs nonlinear_wave_function"
+  irs_tester = .describe. "irs_nonlinear_wave_function"
 
   call rhyme_irs_factory_init
 

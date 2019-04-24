@@ -33,10 +33,10 @@ contains
     call this%open_logfile
 
     str = concat_components( message, k, op, v, tc%ig )
-    write( stdout,* ) trim(this%tas(color=tc%yl))//tc%yl//' [WARN] '//tc%nc//adjustl(trim(str))
+    write( stdout,* ) trim(this%tas(color=tc%yl))//tc%yl//' (warn) '//tc%nc//adjustl(trim(str))
 
     str = concat_components( message, k, op, v )
-    write( this%logfile_unit,* ) trim(this%tas())//' [WARN] '//adjustl(trim(str))
+    write( this%logfile_unit,* ) trim(this%tas())//' (warn) '//adjustl(trim(str))
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn

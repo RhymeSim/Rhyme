@@ -6,7 +6,7 @@ logical function rhyme_irs_init_with_test () result ( failed )
 
   type ( assertion_t ) :: irs_tester
 
-  irs_tester = .describe. "irs init_with"
+  irs_tester = .describe. "irs_init_with"
 
   call rhyme_irs_factory_init
 

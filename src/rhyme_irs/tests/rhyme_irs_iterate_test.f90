@@ -6,6 +6,8 @@ logical function rhyme_irs_iterate_test () result (failed)
 
   type ( assertion_t ) :: irs_tester
 
+  irs_tester = .describe. "irs_iterate"
+
   call rhyme_irs_factory_init
 
   call irs_iterate_test_cases( irs_Sod_test, "Sod", irs_tester, 5 )

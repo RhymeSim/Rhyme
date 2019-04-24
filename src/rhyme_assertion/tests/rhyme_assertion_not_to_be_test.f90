@@ -62,9 +62,9 @@ logical function rhyme_assertion_not_to_be_test () result ( failed )
   failed = &
   test_c%is_passed &
   .or. test_c%type .ne. assertid%char &
-  .or. test_c%val .ne. char_str &
+  .or. test_c%val .ne. "'"//trim(char_str)//"'" &
   .or. test_c%op .ne. 'not_to_be' &
-  .or. test_c%exp .ne. char_str
+  .or. test_c%exp .ne. "'"//trim(char_str)//"'"
   if ( failed ) return
 
   log_test = log_value

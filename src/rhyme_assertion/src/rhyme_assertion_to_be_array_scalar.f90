@@ -12,10 +12,12 @@ contains
     passed = .false.
     test%op = 'to_be'
 
+    test%exp = .toString. expect
+    test%val = .toString. val
+
     select type ( v => val )
     type is ( integer )
       test%type = assertid%int_arr
-      test%val = arr2str( v )
 
       select type ( e => expect )
       type is ( integer )
@@ -30,7 +32,6 @@ contains
 
     type is ( real( kind=4 ) )
       test%type = assertid%real_arr
-      test%val = arr2str( v )
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
@@ -45,7 +46,6 @@ contains
 
     type is ( real( kind=8 ) )
       test%type = assertid%double_arr
-      test%val = arr2str( v )
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
@@ -67,7 +67,6 @@ contains
 
     type is ( character(*) )
       test%type = assertid%char_arr
-      test%val = arr2str( v )
 
       select type ( e => expect )
       type is ( character(*) )
@@ -78,7 +77,6 @@ contains
 
     type is ( logical )
       test%type = assertid%log_arr
-      test%val = arr2str( v )
 
       select type ( e => expect )
       type is ( logical )
@@ -90,30 +88,8 @@ contains
     class default
       test%type = assertid%unset
       passed = .false.
-      test%val = 'Unsupported type'
-    end select
-
-
-    select type ( e => expect )
-    type is ( integer )
-      write ( test%exp, assertcnst%int_fmt ) e
-    type is ( real( kind=4 ) )
-      write ( test%exp, assertcnst%real_fmt ) e
-    type is ( real( kind=8 ) )
-      write ( test%exp, assertcnst%double_fmt ) e
-    type is ( character(*) )
-      test%exp = trim( adjustl( e ) )
-    type is ( logical )
-      if ( e ) then
-        test%exp = '.true.'
-      else
-        test%exp = '.false.'
-      end if
-    class default
-      test%exp = 'Unsupported type'
     end select
 
     test%is_passed = passed
-
   end function rhyme_assertion_to_be_array_scalar
 end submodule rhyme_assertion_to_be_array_scalar_submodule

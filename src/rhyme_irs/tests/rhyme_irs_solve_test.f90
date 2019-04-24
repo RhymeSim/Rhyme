@@ -1,33 +1,36 @@
 logical function rhyme_irs_solve_test () result ( failed )
   use rhyme_irs_factory
+  use rhyme_assertion
 
   implicit none
 
-  logical :: failed_sod, failed_123, failed_left, failed_right, failed_shocks
+  type ( assertion_t ) :: irs_tester
+
+  irs_tester = .describe. "irs_solve"
 
   call rhyme_irs_factory_init
 
   ! Non-vacuum cases
-  call irs_solve_test_cases( irs_Sod_test, failed_sod )
-  call irs_solve_test_cases( irs_123_test, failed_123 )
-  call irs_solve_test_cases( irs_left_blast_wave_test, failed_left )
-  call irs_solve_test_cases( irs_right_blast_wave_test, failed_right )
-  call irs_solve_test_cases( irs_two_shocks_collision_test, failed_shocks )
+  call irs_solve_test_cases( irs_Sod_test, irs_tester )
+  call irs_solve_test_cases( irs_123_test, irs_tester )
+  call irs_solve_test_cases( irs_left_blast_wave_test, irs_tester )
+  call irs_solve_test_cases( irs_right_blast_wave_test, irs_tester )
+  call irs_solve_test_cases( irs_two_shocks_collision_test, irs_tester )
 
-  failed = failed_sod .or. failed_123 .or. failed_left .or. failed_right .or. failed_shocks
-  if ( failed ) return
+  failed = irs_tester%failed()
 
   ! TODO: vacuum cases
 end function rhyme_irs_solve_test
 
 
-subroutine irs_solve_test_cases ( func, failed )
+subroutine irs_solve_test_cases ( func, tester )
   use rhyme_irs_factory
+  use rhyme_assertion
 
   implicit none
 
   external :: func
-  logical :: failed
+  type ( assertion_t ) :: tester
 
   type ( hydro_conserved_t ) :: L, R, U, ex_U
   type ( riemann_problem_solution_t ) :: solution
@@ -44,8 +47,7 @@ subroutine irs_solve_test_cases ( func, failed )
     dt = dx / solution%star%right%shock%speed - epsilon(0.d0)
     call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, dx, dt, hyid%x, U )
 
-    failed = any( abs( U%u - R%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. R%u .within. 16 .hint. 'right_side_of_shock' )
 
     ! Inside the right shock
     dt = dx / solution%star%right%shock%speed + epsilon(0.d0)
@@ -58,15 +60,13 @@ subroutine irs_solve_test_cases ( func, failed )
       ex_U &
     )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_right_shock' )
   else
     ! Right side of the right fan (outside the fan)
     dt = dx / solution%star%right%fan%speedH - epsilon(0.d0)
     call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, dx, dt, hyid%x, U )
 
-    failed = any( abs( U%u - R%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. R%u .hint. 'right_side_of_fan' )
 
     ! Left side of the right fan (outside the fan)
     dt = dx / solution%star%right%fan%speedT + epsilon(0.d0)
@@ -79,8 +79,7 @@ subroutine irs_solve_test_cases ( func, failed )
       ex_U &
     )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .hint. 'behind_right_fan' )
 
     ! Inside the right fan
     dt = ( &
@@ -91,8 +90,7 @@ subroutine irs_solve_test_cases ( func, failed )
 
     ex_U = irs_w_kfan( irs_fac_ig, solution%right, dx/dt, hyid%x, is_right=.true. )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_right_fan' )
   end if
 
 
@@ -103,8 +101,7 @@ subroutine irs_solve_test_cases ( func, failed )
     dt = dx / solution%star%left%shock%speed - epsilon(0.d0)
     call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, dx, dt, hyid%x, U )
 
-    failed = any( abs( U%u - L%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. L%u .hint. 'left_side_of_shock' )
 
     ! Inside the left shock
     dt = dx / solution%star%left%shock%speed + epsilon(0.d0)
@@ -117,15 +114,13 @@ subroutine irs_solve_test_cases ( func, failed )
       ex_U &
     )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_left_shock' )
   else
     ! Left side of the left fan (outside the fan)
     dt = dx / solution%star%left%fan%speedH - epsilon(0.d0)
     call rhyme_irs_solve( irs_fac, irs_fac_ig, L, R, dx, dt, hyid%x, U )
 
-    failed = any( abs( U%u - L%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. L%u .hint. 'left_side_of_fan' )
 
     ! Right side of the left fan (outside the fan)
     dt = dx / solution%star%left%fan%speedT + epsilon(0.d0)
@@ -138,8 +133,7 @@ subroutine irs_solve_test_cases ( func, failed )
       ex_U &
     )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .within. 14 .hint. 'behind_left_fan' )
 
     ! Inside the left fan
     dt = ( &
@@ -150,7 +144,6 @@ subroutine irs_solve_test_cases ( func, failed )
 
     ex_U = irs_w_kfan( irs_fac_ig, solution%left, dx/dt, hyid%x, is_right=.false. )
 
-    failed = any( abs( U%u - ex_U%u ) > epsilon(0.e0) )
-    if ( failed ) return
+    call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_left_fan' )
   end if
 end subroutine irs_solve_test_cases

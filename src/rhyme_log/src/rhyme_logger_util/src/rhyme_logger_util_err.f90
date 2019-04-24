@@ -34,11 +34,11 @@ contains
     call this%open_errfile
 
     str = concat_components( message, k, op, v, tc%ig )
-    write( stdout,* ) trim(this%tas(color=tc%rd))//tc%rd//' [ERROR] '//tc%nc//adjustl(trim(str))
+    write( stdout,* ) trim(this%tas(color=tc%rd))//tc%rd//' (error) '//tc%nc//adjustl(trim(str))
 
     str = concat_components( message, k, op, v )
-    write( this%logfile_unit,* ) trim(this%tas())//' [ERROR] '//adjustl(trim(str))
-    write( this%errfile_unit,* ) trim(this%tas())//' [ERROR] '//adjustl(trim(str))
+    write( this%logfile_unit,* ) trim(this%tas())//' (error) '//adjustl(trim(str))
+    write( this%errfile_unit,* ) trim(this%tas())//' (error) '//adjustl(trim(str))
 
     call this%close_logfile
     call this%close_errfile
