@@ -3,7 +3,7 @@ module rhyme_units
 
   implicit none
 
-  type(unit_t), dimension(11), parameter :: units_chain = (/ &
+  type(unit_t), dimension(12), parameter :: units_chain = (/ &
     unit_t(one, "m", 1.d0, LengthDim), &
     unit_t(kilo, "g", 1.d0, MassDim), &
     unit_t(one, "s", 1.d0, TimeDim), &
@@ -14,7 +14,8 @@ module rhyme_units
     unit_t(one, "ly", 9.461d15, LengthDim), &
     unit_t(one, "AU", 1.496d11, LengthDim), &
     unit_t(one, "Msun", 1.9885d33, MassDim), &
-    unit_t(one, "yr", 3.154d7, TimeDim) &
+    unit_t(one, "yr", 3.154d7, TimeDim), &
+    unit_t(one, "g", 1.d0, MassDim) &
    /)
 
 
@@ -29,6 +30,7 @@ module rhyme_units
   type(unit_t), target :: AU = units_chain(9)
   type(unit_t), target :: Msun = units_chain(10)
   type(unit_t), target :: yr = units_chain(11)
+  type(unit_t), target :: gram = units_chain(12)
 
   interface handle_pow
     procedure handle_pow_int

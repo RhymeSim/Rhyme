@@ -15,11 +15,7 @@ logical function rhyme_units_find_test () result (failed)
   do i = 1, size(units_chain)
     u => units_find(units_chain(i)%symb)
 
-    if ( trim(units_chain(i)%symb) .eq. 'g' ) then
-      expected_u => mili * units_chain(i)
-    else
-      expected_u => one * units_chain(i)
-    end if
+    expected_u => prfx_si(-units_chain(i)%prefix%base_10) * units_chain(i)
 
     call n_tester%expect( u%p() .toBe. expected_u%p() )
   end do

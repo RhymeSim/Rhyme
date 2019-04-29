@@ -13,7 +13,9 @@ logical function rhyme_hydro_base_sp_internal_e_test () result (failed)
 
   cons = hyfact%conserved()
 
-  call hy_tester%expect( hy_sp_internal_e( cons ) .toBe. hyfact%e_internal() / hyfact%rho )
+  call hy_tester%expect( &
+    hy_sp_internal_e( cons ) .toBe. hyfact%e_internal() / hyfact%rho &
+    .within. 15 )
 
   failed = hy_tester%failed()
 end function rhyme_hydro_base_sp_internal_e_test

@@ -18,6 +18,11 @@ module rhyme_muscl_hancock_advection_factory
     / sqrt( mh_fac_gamma *  mh_adv_p / mh_adv_rho_bg )
   real ( kind=8 ), parameter :: mh_adv_v = mh_adv_dx / mh_adv_dt
 
+  type mh_adv_err_t
+    logical :: is_bg = .false., failed = .false.
+    integer :: i, j, k, axis
+  end type mh_adv_err_t
+
 contains
 
   subroutine rhyme_muscl_hancock_advection_test ( solver, ws, dir, tester )
@@ -45,6 +50,7 @@ contains
     type ( samr_bc_t ) :: bc
     type ( muscl_hancock_t ) :: mh
 
+    type ( mh_adv_err_t ) :: err
     integer :: step
 
     call rhyme_muscl_hancock_factory_init
@@ -62,7 +68,7 @@ contains
     ! Initializing MH and WS object
     call mh%init( samr, ws, mh_fac_log )
 
-    do step = 1, 124 * mh_adv_ngrids
+    do step = 1, 119 * mh_adv_ngrids
       call bc%set_base_grid_boundaries( samr )
 
       call solver( mh, samr%levels(0)%boxes(1), &
@@ -72,16 +78,50 @@ contains
       ! Test
       select case ( dir )
       case ( hyid%x )
-        call mh_adv_test_x( samr%levels(0)%boxes(1), tester )
+        call mh_adv_test_x( samr%levels(0)%boxes(1), err )
+        if ( err%failed ) err%axis = hyid%x
       case ( hyid%y )
-        call mh_adv_test_y( samr%levels(0)%boxes(1), tester )
+        call mh_adv_test_y( samr%levels(0)%boxes(1), err )
+        if ( err%failed ) err%axis = hyid%y
       case ( hyid%z )
-        call mh_adv_test_z( samr%levels(0)%boxes(1), tester )
+        call mh_adv_test_z( samr%levels(0)%boxes(1), err )
+        if ( err%failed ) err%axis = hyid%z
       end select
 
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
+
+      if ( err%failed ) then
+        call mh_adv_handle_err( err, samr%levels(0)%boxes(1), step, tester )
+        return
+      end if
     end do
   end subroutine rhyme_muscl_hancock_advection_test
+
+
+  subroutine mh_adv_handle_err ( err, box, step, tester )
+    implicit none
+
+    type ( mh_adv_err_t ), intent ( in ) :: err
+    type ( samr_box_t ), intent ( in ) :: box
+    integer, intent ( in ) :: step
+    type ( assertion_t ), intent ( inout ) :: tester
+
+    type ( hydro_conserved_t ) :: U, bg, slab
+    character ( len=128 ) :: hint
+
+    call mh_adv_slab_bg( err%axis, slab, bg )
+    write ( hint, '(I0,A,I0)' ) step, ': mh_adv_test_', err%axis
+
+    if ( err%is_bg ) then
+      U = bg
+      hint = trim( hint ) // ' (bg)'
+    else
+      U = slab
+      hint = trim( hint ) // ' (slab)'
+    end if
+
+    call tester%expect( box%hydro(err%i, err%j, err%j)%u .toBe. U%u .hint. hint )
+  end subroutine mh_adv_handle_err
 
 
   subroutine mh_adv_slab_bg( dir, slab, bg )
@@ -216,18 +256,14 @@ contains
   end subroutine mh_adv_set_ic_z
 
 
-  subroutine mh_adv_test_x ( box, tester )
+  subroutine mh_adv_test_x ( box, err )
     implicit none
 
     type ( samr_box_t ), intent ( in ) :: box
-    type ( assertion_t ), intent ( inout ) :: tester
+    type ( mh_adv_err_t ), intent ( inout ) :: err
 
     type ( hydro_conserved_t ) :: slab, bg
-    logical :: failed, is_bg
-    integer :: i, j, ii, jj
-
-    failed = .false.
-    is_bg = .false.
+    integer :: i, j
 
     call mh_adv_slab_bg( hyid%x, slab, bg )
 
@@ -235,44 +271,34 @@ contains
       if ( j > slab_start .and. j <= slab_end ) then
         do i = 1, box%dims(1)
           if ( any( abs( box%hydro(i, j, 1)%u - slab%u ) > epsilon(0.e0) ) ) then
-            is_bg = .false.; ii = i; jj = j
-            failed = .true.
+            err%i = i; err%j = j; err%k = 1
+            err%is_bg = .false.
+            err%failed = .true.
+            return
           end if
         end do
       else
         do i = 1, box%dims(1)
           if ( any( abs( box%hydro(i, j, 1)%u - bg%u ) > epsilon(0.e0) ) ) then
-            is_bg = .true.; ii = i; jj = j
-            failed = .true.
+            err%i = i; err%j = j; err%k = 1
+            err%is_bg = .true.
+            err%failed = .true.
+            return
           end if
         end do
       end if
     end do
-
-    if ( failed ) then
-      if ( is_bg ) then
-        call tester%expect( box%hydro(ii, jj, 1)%u .toBe. bg%u .hint. 'mh_adv_test_x' )
-      else
-        call tester%expect( box%hydro(ii, jj, 1)%u .toBe. slab%u .hint. 'mh_adv_test_x' )
-      end if
-    else
-      call tester%expect( box%hydro(1, 1, 1)%u .toBe. box%hydro(1, 1, 1)%u .hint. 'mh_adv_test_x' )
-    end if
   end subroutine mh_adv_test_x
 
 
-  subroutine mh_adv_test_y ( box, tester )
+  subroutine mh_adv_test_y ( box, err )
     implicit none
 
     type ( samr_box_t ), intent ( in ) :: box
-    type ( assertion_t ), intent ( inout ) :: tester
+    type ( mh_adv_err_t ), intent ( inout ) :: err
 
     type ( hydro_conserved_t ) :: slab, bg
-    logical :: failed, is_bg
-    integer :: i, j, ii, jj
-
-    failed = .false.
-    is_bg = .false.
+    integer :: i, j
 
     call mh_adv_slab_bg( hyid%y, slab, bg )
 
@@ -280,42 +306,32 @@ contains
       do i = 1, box%dims(1)
         if ( i > slab_start .and. i <= slab_end ) then
           if ( any( abs( box%hydro(i, j, 1)%u - slab%u ) > epsilon(0.e0) ) ) then
-            is_bg = .false.; ii = i; jj = j
-            failed = .true.
+            err%i = i; err%j = j; err%k = 1
+            err%is_bg = .false.
+            err%failed = .true.
+            return
           end if
         else
           if ( any( abs( box%hydro(i, j, 1)%u - bg%u ) > epsilon(0.e0) ) ) then
-            is_bg = .true.; ii = i; jj = j
-            failed = .true.
+            err%i = i; err%j = j; err%k = 1
+            err%is_bg = .true.
+            err%failed = .true.
+            return
           end if
         end if
       end do
     end do
-
-    if ( failed ) then
-      if ( is_bg ) then
-        call tester%expect( box%hydro(ii, jj, 1)%u .toBe. bg%u .hint. 'mh_adv_test_y' )
-      else
-        call tester%expect( box%hydro(ii, jj, 1)%u .toBe. slab%u .hint. 'mh_adv_test_y' )
-      end if
-    else
-      call tester%expect( box%hydro(1, 1, 1)%u .toBe. box%hydro(1, 1, 1)%u .hint. 'mh_adv_test_y' )
-    end if
   end subroutine mh_adv_test_y
 
 
-  subroutine mh_adv_test_z ( box, tester )
+  subroutine mh_adv_test_z ( box, err )
     implicit none
 
     type ( samr_box_t ), intent ( in ) :: box
-    type ( assertion_t ), intent ( inout ) :: tester
+    type ( mh_adv_err_t ), intent ( inout ) :: err
 
     type ( hydro_conserved_t ) :: slab, bg
-    logical :: failed, is_bg
-    integer :: i, k, ii, kk
-
-    failed = .false.
-    is_bg = .false.
+    integer :: i, k
 
     call mh_adv_slab_bg( hyid%z, slab, bg )
 
@@ -323,26 +339,20 @@ contains
       do i = 1, box%dims(1)
         if ( i > slab_start .and. i <= slab_end ) then
           if ( any( abs( box%hydro(i, 1, k)%u - slab%u ) > epsilon(0.e0) ) ) then
-            is_bg = .false.; ii = i; kk = k
-            failed = .true.
+            err%i = i; err%j = 1; err%k = k
+            err%is_bg = .false.
+            err%failed = .true.
+            return
           end if
         else
           if ( any( abs( box%hydro(i, 1, k)%u - bg%u ) > epsilon(0.e0) ) ) then
-            is_bg = .true.; ii = i; kk = k
-            failed = .true.
+            err%i = i; err%j = 1; err%k = k
+            err%is_bg = .true.
+            err%failed = .true.
+            return
           end if
         end if
       end do
     end do
-
-    if ( failed ) then
-      if ( is_bg ) then
-        call tester%expect( box%hydro(ii, 1, kk)%u .toBe. bg%u .hint. 'mh_adv_test_z' )
-      else
-        call tester%expect( box%hydro(ii, 1, kk)%u .toBe. slab%u .hint. 'mh_adv_tesz_z' )
-      end if
-    else
-      call tester%expect( box%hydro(1, 1, 1)%u .toBe. box%hydro(1, 1, 1)%u .hint. 'mh_adv_test_z' )
-    end if
   end subroutine mh_adv_test_z
 end module rhyme_muscl_hancock_advection_factory

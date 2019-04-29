@@ -20,7 +20,7 @@ logical function rhyme_chemistry_init_test () result (failed)
   call ch_tester%expect( chemi%molar%e%u%p() .toBe. kg__mol%p() )
   call ch_tester%expect( chemi%atomic%H%v .toBe. 6.6464764d-27 )
   call ch_tester%expect( chemi%atomic%H%u%p() .toBe. kg%p() )
-  call ch_tester%expect( chemi%amu%one%v .toBe. 1.66054d-18 )
+  call ch_tester%expect( chemi%amu%one%v .toBe. 1.66054d-27 )
   call ch_tester%expect( chemi%amu%one%u%p() .toBe. kg%p() )
 
   failed = ch_tester%failed()

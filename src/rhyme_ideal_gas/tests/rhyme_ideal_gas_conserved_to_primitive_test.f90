@@ -20,7 +20,7 @@ logical function rhyme_ideal_gas_conserved_to_primitive_test () result (failed)
   call ig_tester%expect( prim_calc%w( hyid%u ) .toBe. hy%u )
   call ig_tester%expect( prim_calc%w( hyid%v ) .toBe. hy%v )
   call ig_tester%expect( prim_calc%w( hyid%w ) .toBe. hy%w )
-  call ig_tester%expect( prim_calc%w( hyid%p ) .toBe. hy%p )
+  call ig_tester%expect( prim_calc%w( hyid%p ) .toBe. hy%p .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_conserved_to_primitive_test

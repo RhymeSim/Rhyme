@@ -16,7 +16,7 @@ logical function rhyme_ideal_gas_t_per_mu_test () result (failed)
 
   T__mu = real( hy%T / hy%mu )
 
-  call ig_tester%expect( ig%T_per_mu( hy%cons ) .toBe. T__mu )
+  call ig_tester%expect( ig%T_per_mu( hy%cons ) .toBe. T__mu .within. 7 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_t_per_mu_test

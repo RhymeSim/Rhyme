@@ -16,9 +16,9 @@ logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed
 
   e_int_sp = hy%p / hy%rho / ( ig%gamma - 1 )
 
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int / hy%rho )
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int_sp )
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy_sp_internal_e( hy%cons ) )
+  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int / hy%rho .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int_sp .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy_sp_internal_e( hy%cons ) .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_specific_internal_energy_test

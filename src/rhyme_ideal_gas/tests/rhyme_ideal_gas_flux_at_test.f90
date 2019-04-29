@@ -18,9 +18,9 @@ logical function rhyme_ideal_gas_flux_at_test () result (failed)
 
   call ig_tester%expect( f%f( hyid%rho ) .toBe. hy%rho * hy%v )
   call ig_tester%expect( f%f( hyid%rho_u ) .toBe. hy%rho * hy%u * hy%v )
-  call ig_tester%expect( f%f( hyid%rho_v ) .toBe. (hy%rho * hy%v**2 + hy%p) )
+  call ig_tester%expect( f%f( hyid%rho_v ) .toBe. (hy%rho * hy%v**2 + hy%p) .within. 15 )
   call ig_tester%expect( f%f( hyid%rho_w ) .toBe. hy%rho * hy%w * hy%v )
-  call ig_tester%expect( f%f( hyid%e_tot ) .toBe. hy%v * ( hy%e_tot + hy%p ) )
+  call ig_tester%expect( f%f( hyid%e_tot ) .toBe. hy%v * ( hy%e_tot + hy%p ) .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_flux_at_test

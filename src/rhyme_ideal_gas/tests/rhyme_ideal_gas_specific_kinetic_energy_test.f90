@@ -16,8 +16,8 @@ logical function rhyme_ideal_gas_specific_kinetic_energy_test () result (failed)
 
   hy_sp_kin_e = real( hy_sp_kinetic_e( hy%cons ) )
 
-  call ig_tester%expect( ig%e_kin_sp( hy%cons ) .toBe. real( hy%e_kin_sp ) )
-  call ig_tester%expect( ig%e_kin_sp( hy%cons ) .toBe. hy_sp_kin_e )
+  call ig_tester%expect( ig%e_kin_sp( hy%cons ) .toBe. real( hy%e_kin_sp ) .within. 7 )
+  call ig_tester%expect( ig%e_kin_sp( hy%cons ) .toBe. hy_sp_kin_e .within. 7 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_specific_kinetic_energy_test
