@@ -11,9 +11,9 @@ logical function rhyme_units_handle_mul_div_test () result (failed)
   n_tester = .describe. "nombre_units_handle_mul_div"
 
   kgK => kg * Kel
-  m_s2 => (m / s)**2
-  kgm2 => (kg * m)**2
-  Ks3 => (Kel * s)**3
+  m_s2 => (meter / sec)**2
+  kgm2 => (kg * meter)**2
+  Ks3 => (Kel * sec)**3
 
   call handle_mul_div(kgK, m_s2, "*")
   kgK => unit_head(kgK)

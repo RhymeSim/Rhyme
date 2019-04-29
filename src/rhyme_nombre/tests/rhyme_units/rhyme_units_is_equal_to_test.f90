@@ -10,12 +10,12 @@ logical function rhyme_units_is_equal_to_test () result (failed)
 
   n_tester = .describe. "nombre_units_is_equal_to"
 
-  u1 => kg * (m / s)**2
+  u1 => kg * (meter / sec)**2
   u2 => kg
 
   call n_tester%expect( u1 .unitEqualsTo. u2 .toBe. .false. )
 
-  u2 => u2 * (m / s)**2
+  u2 => u2 * (meter / sec)**2
 
   call n_tester%expect( u1 .unitEqualsTo. u2 .toBe. .true. )
 

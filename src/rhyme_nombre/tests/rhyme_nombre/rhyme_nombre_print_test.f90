@@ -10,7 +10,7 @@ logical function rhyme_nombre_print_test () result (failed)
 
   n_tester = .describe. "nombre_print"
 
-  H = 66.7d0 .u. kilo * m / s / (Mega * pc)
+  H = 66.7d0 .u. kilo * meter / sec / (mega * pc)
 
   call n_tester%expect( trim(H%p()) .toBe. "0.667E+02 [ " // trim(H%u%p()) // " ]" )
 

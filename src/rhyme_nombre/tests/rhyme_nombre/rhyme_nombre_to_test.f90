@@ -10,8 +10,8 @@ logical function rhyme_nombre_to_test () result (failed)
 
   n_tester = .describe. "nombre"
 
-  H = 66.7d0 .u. kilo * m / s / (Mega * pc)
-  H_hz = H .to. s**(-1)
+  H = 66.7d0 .u. kilo * meter / sec / (mega * pc)
+  H_hz = H .to. sec**(-1)
 
   call n_tester%expect( H_hz%v .toBe. 2.16137e-018 )
   call n_tester%expect( associated(H_hz%u%next) .toBe. .false. )

@@ -76,7 +76,7 @@ contains
       return
     end if
 
-    this%R = nombre_t( 8.314d0, kg * (m / s)**2 / mol / Kel )
+    this%R = nombre_t( 8.314d0, kg * (meter / sec)**2 / mol / Kel )
     this%kB_per_amu = thermo%kB%v / chemi%amu%one%v
 
     if ( this%type .eq. igid%monatomic ) then

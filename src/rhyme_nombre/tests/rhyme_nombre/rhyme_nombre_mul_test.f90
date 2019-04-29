@@ -11,7 +11,7 @@ logical function rhyme_nombre_mul_test () result (failed)
 
   n_tester = .describe. "nombre_mul"
 
-  u_H => kilo * m / s / (Mega * pc)
+  u_H => kilo * meter / sec / (Mega * pc)
 
   H = 66.7d0 .u. u_H
 
@@ -29,7 +29,7 @@ logical function rhyme_nombre_mul_test () result (failed)
   call n_tester%expect( H2real8%v .toBe. H2real8_rev%v )
   call n_tester%expect( H2real8%v .toBe. (2.d0 * 66.7d0) )
 
-  H = H .to. s**(-1.d0)
+  H = H .to. sec**(-1.d0)
 
   call n_tester%expect( H2int%u .unitEqualsTo. u_H .toBe. .true. )
 

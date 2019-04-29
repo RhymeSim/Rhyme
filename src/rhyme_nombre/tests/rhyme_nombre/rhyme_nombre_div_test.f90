@@ -11,12 +11,12 @@ logical function rhyme_nombre_div_test () result (failed)
 
   n_tester = .describe. "nombre_div"
 
-  n1 = nombre_t(1.23d0, kg * m)
-  n2 = nombre_t(2.34d0, s**2)
+  n1 = nombre_t(1.23d0, kg * meter)
+  n2 = nombre_t(2.34d0, sec**2)
 
   ! Nombre / Nombre
   ndivn = n1 / n2
-  u => kg * m / s**2
+  u => kg * meter / sec**2
 
   call n_tester%expect( ndivn%v .toBe. 1.23d0 / 2.34d0 )
   call n_tester%expect( ndivn%u .unitEqualsTo. u .toBe. .true. )

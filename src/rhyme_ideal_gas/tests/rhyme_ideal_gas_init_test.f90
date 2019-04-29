@@ -13,7 +13,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
 
   call rhyme_ideal_gas_factory_init
 
-  R_unit => kg * (m / s)**2 / mol / Kel
+  R_unit => kg * (meter / sec)**2 / mol / Kel
 
   call ig_tester%expect( igid%monatomic .toBe. 1 )
   call ig_tester%expect( igid%diatomic .toBe. 2 )

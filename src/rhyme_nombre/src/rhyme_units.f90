@@ -19,16 +19,16 @@ module rhyme_units
    /)
 
 
-  type(unit_t), target :: m = units_chain(1)
+  type(unit_t), target :: meter = units_chain(1)
   type(unit_t), target :: kg = units_chain(2)
-  type(unit_t), target :: s = units_chain(3)
-  type(unit_t), target :: Kel = units_chain(4)
-  type(unit_t), target :: A = units_chain(5)
+  type(unit_t), target :: sec = units_chain(3)
+  type(unit_t), target :: kel = units_chain(4)
+  type(unit_t), target :: Ampere = units_chain(5)
   type(unit_t), target :: mol = units_chain(6)
   type(unit_t), target :: pc = units_chain(7)
   type(unit_t), target :: ly = units_chain(8)
-  type(unit_t), target :: AU = units_chain(9)
-  type(unit_t), target :: Msun = units_chain(10)
+  type(unit_t), target :: au = units_chain(9)
+  type(unit_t), target :: m_sun = units_chain(10)
   type(unit_t), target :: yr = units_chain(11)
   type(unit_t), target :: gram = units_chain(12)
 

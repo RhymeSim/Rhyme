@@ -10,9 +10,9 @@ logical function rhyme_nombre_new_test () result (failed)
 
   n_tester = .describe. "nombre_new"
 
-  Hr8 = 66.7d0 .u. kilo * m / s / (Mega * pc)
-  Hr = 66.7e0 .u. kilo * m / s / (Mega * pc)
-  Hi = 66 .u. kilo * m / s / (Mega * pc)
+  Hr8 = 66.7d0 .u. kilo * meter / sec / (mega * pc)
+  Hr = 66.7e0 .u. kilo * meter / sec / (mega * pc)
+  Hi = 66 .u. kilo * meter / sec / (mega * pc)
   kilogram = 1.0d0 .u. kg
 
   call n_tester%expect( Hr8%v .toBe. 66.7d0 )

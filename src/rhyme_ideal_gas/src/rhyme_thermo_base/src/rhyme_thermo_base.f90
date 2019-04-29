@@ -25,7 +25,7 @@ contains
       return
     end if
 
-    this%kB = 1.38064852d-23 .u. m**2 * kg / ( s**2 * Kel )
+    this%kB = 1.38064852d-23 .u. meter**2 * kg / ( sec**2 * Kel )
 
     this%initialized = .true.
   end subroutine rhyme_thermo_base_init

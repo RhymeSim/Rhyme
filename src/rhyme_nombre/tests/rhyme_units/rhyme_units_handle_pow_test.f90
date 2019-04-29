@@ -10,7 +10,7 @@ logical function rhyme_units_handle_pow_test () result (failed)
 
   n_tester = .describe. "nombre_units_handle_pow"
 
-  u => kg * m / s
+  u => kg * meter / sec
 
   call handle_pow(u, 2.0)
   u => unit_head(u)
