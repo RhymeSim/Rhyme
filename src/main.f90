@@ -50,7 +50,7 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call parse_params( param_file, logger, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call load_params( param_file, logger, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Initializing
   call logger%set_section( 'init' )

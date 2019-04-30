@@ -1,4 +1,4 @@
-logical function rhyme_param_parser_parse_param_test () result ( failed )
+logical function rhyme_param_parser_load_params_test () result ( failed )
   use rhyme_param_parser
   use rhyme_assertion
 
@@ -19,9 +19,9 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
 
   character(len=1024), parameter :: param_file = "parameters.conf.example"
 
-  tester = .describe. "param_parser"
+  tester = .describe. "rhyme_param_parser_load_params"
 
-  call parse_params ( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call load_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Structured AMR
   call tester%expect( ic%type .toBe. icid%simple )
@@ -47,14 +47,6 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   call tester%expect( draw%shapes%type .toBe. drid%cuboid )
   call tester%expect( draw%shapes%cuboid%left_corner .toBe. 1 )
   call tester%expect( draw%shapes%cuboid%lengths .toBe. [ 56, 128, 1 ] )
-  call tester%expect( draw%shapes%trans%type( samrid%top ) .toBe. drid%ramp )
-  call tester%expect( draw%shapes%trans%sigma( samrid%top ) .toBe. 2.5d0 )
-  call tester%expect( draw%shapes%trans%colors( samrid%top, 1 )%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
-  call tester%expect( draw%shapes%trans%colors( samrid%top, 2 )%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
-  call tester%expect( draw%shapes%trans%type( samrid%bottom ) .toBe. drid%linear )
-  call tester%expect( draw%shapes%trans%sigma( samrid%bottom ) .toBe. 1.5d0 )
-  call tester%expect( draw%shapes%trans%colors( samrid%bottom, 1 )%w .toBe. [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
-  call tester%expect( draw%shapes%trans%colors( samrid%bottom, 2 )%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
   call tester%expect( draw%shapes%fill%type .toBe. drid%uniform )
   call tester%expect( draw%shapes%fill%colors(1)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
   call tester%expect( draw%shapes%next%type .toBe. drid%prism )
@@ -77,7 +69,7 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   call tester%expect( draw%shapes%next%next%next%fill%colors(2)%w .toBe. [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
 
   ! Perturbation
-  call tester%expect( draw%perturbs%type .toBe. drid%harmonic )
+  call tester%expect( draw%perturbs%type .toBe. drid%harmonic .hint. 'harmonic' )
   call tester%expect( draw%perturbs%coor_type .toBe. drid%cartesian )
   call tester%expect( draw%perturbs%dir .toBe. drid%x )
   call tester%expect( draw%perturbs%harmonic%A .toBe. .05d0 )
@@ -118,4 +110,4 @@ logical function rhyme_param_parser_parse_param_test () result ( failed )
   call tester%expect( trim(chombo%nickname) .toBe. "hydro-simulation" )
 
   failed = tester%failed()
-end function rhyme_param_parser_parse_param_test
+end function rhyme_param_parser_load_params_test
