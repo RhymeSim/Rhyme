@@ -1,12 +1,12 @@
-logical function rhyme_prefix_find_test () result (failed)
-  use rhyme_units
+logical function rhyme_nombre_prefix_find_test () result (failed)
+  use rhyme_nombre_units
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: n_tester
 
-  type(prefix_t) :: p
+  type ( nombre_prefix_t ) :: p
 
   n_tester = .describe. "nombre_prefix_find"
 
@@ -20,4 +20,4 @@ logical function rhyme_prefix_find_test () result (failed)
   call n_tester%expect( p%symb .toBe. "M" )
 
   failed = n_tester%failed()
-end function rhyme_prefix_find_test
+end function rhyme_nombre_prefix_find_test

@@ -6,7 +6,7 @@ logical function rhyme_nombre_new_test () result (failed)
 
   type ( assertion_t ) :: n_tester
 
-  type(nombre_t) :: Hr8, Hr, Hi, kilogram
+  type ( nombre_t ) :: Hr8, Hr, Hi, kilogram
 
   n_tester = .describe. "nombre_new"
 

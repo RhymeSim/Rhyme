@@ -6,13 +6,13 @@ logical function rhyme_nombre_div_test () result (failed)
 
   type ( assertion_t ) :: n_tester
 
-  type(nombre_t) :: n1, n2, ndivn, ndivr8, r8divn, ndivr, rdivn, ndivi, idivn
-  type(unit_t), pointer :: u, r8divn_u, rdivn_u, idivn_u
+  type ( nombre_t ) :: n1, n2, ndivn, ndivr8, r8divn, ndivr, rdivn, ndivi, idivn
+  type ( nombre_unit_t ), pointer :: u, r8divn_u, rdivn_u, idivn_u
 
   n_tester = .describe. "nombre_div"
 
-  n1 = nombre_t(1.23d0, kg * meter)
-  n2 = nombre_t(2.34d0, sec**2)
+  n1 = nombre_t( 1.23d0, kg * meter )
+  n2 = nombre_t( 2.34d0, sec**2 )
 
   ! Nombre / Nombre
   ndivn = n1 / n2

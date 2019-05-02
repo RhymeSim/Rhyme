@@ -7,7 +7,7 @@ logical function rhyme_nombre_mul_test () result (failed)
   type ( assertion_t ) :: n_tester
 
   type ( nombre_t ) :: H, H2int, H2int_rev, H2real, H2real_rev, H2real8, H2real8_rev
-  type ( unit_t ), pointer :: u_H
+  type ( nombre_unit_t ), pointer :: u_H
 
   n_tester = .describe. "nombre_mul"
 

@@ -6,7 +6,7 @@ logical function rhyme_nombre_to_test () result (failed)
 
   type ( assertion_t ) :: n_tester
 
-  type(nombre_t) :: H, H_hz
+  type ( nombre_t ) :: H, H_hz
 
   n_tester = .describe. "nombre"
 
