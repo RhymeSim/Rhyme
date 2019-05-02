@@ -10,6 +10,7 @@ contains
 
     nterm%key = term%key
     nterm%location = term%location
+    nterm%hint = term%hint
     nterm%occurence = occur
   end function rhyme_param_parser_add_occur
 end submodule rhyme_param_parser_add_occur_submodue

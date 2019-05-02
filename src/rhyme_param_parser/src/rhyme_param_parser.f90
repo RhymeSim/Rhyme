@@ -1,6 +1,4 @@
 module rhyme_param_parser
-  ! TODO: This is ugly as hell, pfffff :(
-
   use rhyme_log
   use rhyme_initial_condition
   use rhyme_samr_bc
@@ -38,14 +36,15 @@ module rhyme_param_parser
     character ( len=32 ) :: key
     integer :: location = 1
     integer :: occurence = 1
+    character ( len=1024 ) :: hint = ''
   end type config_term_t
 
 
   interface
-    module subroutine load_params ( param_file, log, ic, bc, cfl, ig, draw, &
+    module subroutine load_params ( param_file, logger, ic, bc, cfl, ig, draw, &
       irs, sl, mh, chombo )
       character (len=1024), intent ( in ) :: param_file
-      type ( log_t ), intent ( inout ) :: log
+      type ( log_t ), intent ( inout ) :: logger
       type ( initial_condition_t ), intent ( inout ) :: ic
       type ( samr_bc_t ), intent ( inout ) :: bc
       type ( cfl_t ), intent ( inout ) :: cfl
@@ -59,7 +58,7 @@ module rhyme_param_parser
 
     pure module subroutine rhyme_param_parser_init ( this, path, logger )
       class ( config_t ), intent ( inout ) :: this
-      character ( len=1024 ), intent ( in ) :: path
+      character ( len=* ), intent ( in ) :: path
       type ( log_t ), intent ( inout ) :: logger
     end subroutine rhyme_param_parser_init
 
@@ -79,7 +78,7 @@ module rhyme_param_parser
 
     pure module subroutine rhyme_param_parser_add_switch ( this, key, val )
       class ( config_switch_t ), intent ( inout ) :: this
-      character ( len=32 ), intent ( in ) :: key
+      character ( len=* ), intent ( in ) :: key
       integer, intent ( in ) :: val
     end subroutine rhyme_param_parser_add_switch
 
@@ -100,6 +99,12 @@ module rhyme_param_parser
       integer, intent ( in ) :: occur
       type ( config_term_t ) :: nterm
     end function rhyme_param_parser_add_occur
+
+    module function rhyme_param_parser_add_hint ( term, hint ) result ( nterm )
+      type ( config_term_t ), intent ( in ) :: term
+      character ( len=* ), intent( in ) :: hint
+      type ( config_term_t ) :: nterm
+    end function rhyme_param_parser_add_hint
   end interface
 
   interface operator ( .at. )
@@ -109,4 +114,8 @@ module rhyme_param_parser
   interface operator ( .occur. )
     procedure rhyme_param_parser_add_occur
   end interface operator ( .occur. )
+
+  interface operator ( .hint. )
+    procedure rhyme_param_parser_add_hint
+  end interface operator ( .hint. )
 end module rhyme_param_parser

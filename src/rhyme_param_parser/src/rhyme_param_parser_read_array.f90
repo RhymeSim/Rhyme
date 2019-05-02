@@ -1,6 +1,8 @@
 submodule ( rhyme_param_parser ) rhyme_param_parser_read_array_submodule
 contains
   module subroutine rhyme_param_parser_read_array ( this, term, var, switch )
+    use rhyme_string
+
     implicit none
 
     class ( config_t ), intent ( inout ) :: this
@@ -40,10 +42,12 @@ contains
             do j = 1, size( var )
               do i = 1, switch%len
                 if ( switch_str(j) .eq. switch%keys(i) ) then
-                  v = switch%values( i )
+                  v(j) = switch%values( i )
                 end if
               end do
             end do
+
+            call this%logger%log( term%key, .toString. switch_str( 1:size(var) ), '=>', v )
 
           class default
             read( 1234, * )
@@ -54,14 +58,19 @@ contains
           select type ( v => var )
           type is ( integer )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
+            call this%logger%log( term%key, term%hint, '=', v )
           type is ( real( kind=4 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
+            call this%logger%log( term%key, term%hint, '=', v )
           type is ( real( kind=8 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
+            call this%logger%log( term%key, term%hint, '=', v )
           type is ( character(*) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
+            call this%logger%log( term%key, term%hint, '=', v )
           type is ( logical )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
+            call this%logger%log( term%key, term%hint, '=', v )
             class default
             read( 1234, * )
             call this%logger%err( 'Unknonw type', 'key', '=', [ term%key ] )

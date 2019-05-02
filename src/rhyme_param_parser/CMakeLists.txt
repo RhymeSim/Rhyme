@@ -5,6 +5,7 @@ project( rhyme_param_parser )
 
 set( deps
   rhyme_log
+  rhyme_string
   rhyme_samr_bc
   rhyme_cfl
   rhyme_ideal_gas
@@ -19,6 +20,7 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_param_parser_add_hint.f90
   src/rhyme_param_parser_add_occur.f90
   src/rhyme_param_parser_occurences.f90
   src/rhyme_param_parser_read_array.f90

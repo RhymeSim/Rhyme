@@ -1,4 +1,6 @@
 module rhyme_assertion
+  use rhyme_string
+
   implicit none
 
   type assertion_indices_t
@@ -9,17 +11,13 @@ module rhyme_assertion
 
   type ( assertion_indices_t ), parameter :: assertid = assertion_indices_t()
 
-  character ( len=16 ), parameter :: unknown_type_str = 'UnknownType'
-
-
   type assertion_constants_t
-    character ( len=16 ) :: int_fmt = '(I0)'
-    character ( len=16 ) :: real_fmt = '(E13.7)'
-    character ( len=16 ) :: double_fmt = '(E21.15)'
+    character ( len=16 ) :: int_fmt = strcnst%int_fmt
+    character ( len=16 ) :: real_fmt = strcnst%real_fmt
+    character ( len=16 ) :: double_fmt = strcnst%double_fmt
   end type assertion_constants_t
 
   type ( assertion_constants_t ), parameter :: assertcnst = assertion_constants_t()
-
 
   type test_t
     integer :: type = assertid%unset
@@ -187,17 +185,6 @@ module rhyme_assertion
   interface operator ( .hint. )
     procedure rhyme_assertion_add_test_message
   end interface operator ( .hint. )
-
-  interface operator ( .isNaN. )
-    procedure rhyme_assertion_is_nan
-  end interface operator ( .isNaN. )
-
-  ! TODO: move this to a new module handeling string stuff
-  interface operator ( .toString. )
-    procedure rhyme_assertion_to_string
-    procedure rhyme_assertion_array_to_string
-  end interface operator ( .toString. )
-
 contains
 
   pure subroutine rhyme_assertion_test_copy_essentials_to ( this, test )
@@ -273,85 +260,4 @@ contains
       this%real_val = ieee_value( this%real_val, ieee_quiet_nan )
     end select
   end subroutine rhyme_assertion_test_set_real_val
-
-
-  pure function rhyme_assertion_array_to_string ( input ) result ( str )
-    implicit none
-
-    class (*), intent ( in ) :: input(:)
-    character ( len=2048 ) :: str
-
-    character ( len=32 ) :: ch_arr( size(input) )
-    integer :: i
-
-    str = ''
-    ch_arr = rhyme_assertion_to_string( input )
-
-    do i = 1, size(input)
-      str = trim( adjustl(str) ) // ' ' // trim( adjustl(ch_arr(i)) )
-    end do
-
-    str = '[ ' // trim( adjustl(str) ) // ' ]'
-  end function rhyme_assertion_array_to_string
-
-
-  elemental pure function rhyme_assertion_to_string ( input ) result ( str )
-    use, intrinsic :: ieee_arithmetic
-
-    implicit none
-
-    class (*), intent ( in ) :: input
-    character ( len=32 ) :: str
-
-    if ( rhyme_assertion_is_nan( input ) ) then
-        str = 'NaN'
-    else
-      select type ( inp => input )
-      type is ( integer )
-        write ( str, assertcnst%int_fmt ) inp
-      type is ( real( kind=4 ) )
-        write ( str, assertcnst%real_fmt ) inp
-      type is ( real( kind=8 ) )
-        write ( str, assertcnst%double_fmt ) inp
-      type is ( character (*) )
-        str = "'" // trim( adjustl(inp) ) // "'"
-      type is ( logical )
-        if ( inp ) then
-          str = '.true.'
-        else
-          str = '.false.'
-        end if
-      class default
-        str = unknown_type_str
-      end select
-    end if
-  end function rhyme_assertion_to_string
-
-
-  elemental pure logical function rhyme_assertion_is_nan ( input ) result ( is_nan )
-    use, intrinsic :: ieee_arithmetic
-
-    implicit none
-
-    class (*), intent ( in ) :: input
-
-    select type ( inp => input )
-    type is ( real( kind=4 ) )
-      if( ieee_is_nan(inp) ) then
-        is_nan = .true.
-      else
-        is_nan = .false.
-      end if
-
-    type is ( real( kind=8 ) )
-      if( ieee_is_nan(inp) ) then
-        is_nan = .true.
-      else
-        is_nan = .false.
-      end if
-
-    class default
-      is_nan = .false.
-    end select
-  end function rhyme_assertion_is_nan
 end module rhyme_assertion

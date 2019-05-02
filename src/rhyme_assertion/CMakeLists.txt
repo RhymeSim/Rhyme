@@ -5,6 +5,7 @@ project( rhyme_assertion )
 
 set( deps
   rhyme_log
+  rhyme_string
 )
 
 set( internal_deps )

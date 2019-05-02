@@ -40,8 +40,9 @@ contains
               end if
             end do
 
+            call this%logger%log( term%key, switch_str, '=>', [ v ] )
+
           class default
-            read( 1234, * )
             call this%logger%err( 'Reading '//trim(term%key)//' with switch into non integer' )
           end select
 
@@ -49,14 +50,19 @@ contains
           select type ( v => var )
           type is ( integer )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v
+            call this%logger%log( term%key, term%hint, '=', [ v ] )
           type is ( real( kind=4 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v
+            call this%logger%log( term%key, term%hint, '=', [ v ] )
           type is ( real( kind=8 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v
+            call this%logger%log( term%key, term%hint, '=', [ v ] )
           type is ( character(*) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v
+            call this%logger%log( term%key, term%hint, '=', [ v ] )
           type is ( logical )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v
+            call this%logger%log( term%key, term%hint, '=', [ v ] )
             class default
             read( 1234, * )
             call this%logger%err( 'Unknonw type', 'key', '=', [ term%key ] )

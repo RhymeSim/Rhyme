@@ -1,11 +1,11 @@
 submodule ( rhyme_param_parser ) rhyme_param_parser_load_params_submodule
 contains
-  module subroutine load_params ( param_file, log, ic, bc, cfl, ig, draw, &
+  module subroutine load_params ( param_file, logger, ic, bc, cfl, ig, draw, &
     irs, sl, mh, chombo )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
     type ( initial_condition_t ), intent ( inout ) :: ic
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( cfl_t ), intent ( inout ) :: cfl
@@ -32,9 +32,9 @@ contains
     integer :: shape_type, perturb_type, n_occur, i
 
 
-    call log%set_section( 'params' )
+    call logger%set_section( 'params' )
 
-    call config%init( param_file, log )
+    call config%init( param_file, logger )
 
     ! Initial Condition
     call ic_types%add( 'simple', icid%simple )
@@ -79,7 +79,7 @@ contains
 
     call config%read( 'canvas' .at. 1, draw%type, canvas_types )
     if ( draw%type .eq. drid%uniform_canvas ) then
-      call config%read_array( 'canvas' .at. 2, draw%canvas%w( hyid%rho:hyid%p ) )
+      call config%read_array( 'canvas' .at. 2 .hint. 'color', draw%canvas%w( hyid%rho:hyid%p ) )
     end if
 
     ! Shapes
@@ -102,38 +102,38 @@ contains
 
       select case ( shape_type )
       case ( drid%cuboid )
-        call config%read_array( 'shape' .at. 2 .occur. i, shape%cuboid%left_corner(1:3) )
-        call config%read_array( 'shape' .at. 5 .occur. i, shape%cuboid%lengths(1:3) )
+        call config%read_array( 'shape' .at. 2 .occur. i .hint. 'left_corner', shape%cuboid%left_corner(1:3) )
+        call config%read_array( 'shape' .at. 5 .occur. i .hint. 'lengths', shape%cuboid%lengths(1:3) )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, filling_types )
         ! currently only uniform filling is supported
-        call config%read_array( 'shape_filling' .at. 2 .occur. i, shape%fill%colors(1)%w( hyid%rho:hyid%p) )
+        call config%read_array( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors(1)%w( hyid%rho:hyid%p) )
 
       case ( drid%prism )
-        call config%read_array( 'shape' .at. 2 .occur. i, shape%prism%vertices(1,1:3) )
-        call config%read_array( 'shape' .at. 5 .occur. i, shape%prism%vertices(2,1:3) )
-        call config%read_array( 'shape' .at. 8 .occur. i, shape%prism%vertices(3,1:3) )
-        call config%read( 'shape' .at. 11 .occur. i, shape%prism%thickness )
+        call config%read_array( 'shape' .at. 2 .occur. i .hint. 'vertex', shape%prism%vertices(1,1:3) )
+        call config%read_array( 'shape' .at. 5 .occur. i .hint. 'vertex', shape%prism%vertices(2,1:3) )
+        call config%read_array( 'shape' .at. 8 .occur. i .hint. 'vertex', shape%prism%vertices(3,1:3) )
+        call config%read( 'shape' .at. 11 .occur. i .hint. 'thickness', shape%prism%thickness )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, filling_types )
         ! currently only uniform filling is supported
-        call config%read_array( 'shape_filling' .at. 2 .occur. i, shape%fill%colors(1)%w( hyid%rho:hyid%p) )
+        call config%read_array( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors(1)%w( hyid%rho:hyid%p) )
 
       case ( drid%sphere )
-        call config%read_array( 'shape' .at. 2 .occur. i, shape%sphere%origin(1:3) )
-        call config%read( 'shape' .at. 5 .occur. i, shape%sphere%r )
+        call config%read_array( 'shape' .at. 2 .occur. i .hint. 'origin', shape%sphere%origin(1:3) )
+        call config%read( 'shape' .at. 5 .occur. i .hint. 'radius', shape%sphere%r )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, filling_types )
         ! currently only uniform filling is supported
-        call config%read_array( 'shape_filling' .at. 2 .occur. i, shape%fill%colors(1)%w( hyid%rho:hyid%p) )
+        call config%read_array( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors(1)%w( hyid%rho:hyid%p) )
 
       case ( drid%smoothed_slab_2d )
-        call config%read( 'shape' .at. 2 .occur. i, shape%slab_2d%dir, axes )
-        call config%read_array( 'shape' .at. 3 .occur. i, shape%slab_2d%pos(1:2) )
-        call config%read_array( 'shape' .at. 5 .occur. i, shape%slab_2d%sigma(1:2) )
+        call config%read( 'shape' .at. 2 .occur. i .hint. 'axis', shape%slab_2d%dir, axes )
+        call config%read_array( 'shape' .at. 3 .occur. i .hint. 'positions', shape%slab_2d%pos(1:2) )
+        call config%read_array( 'shape' .at. 5 .occur. i .hint. 'sigmas', shape%slab_2d%sigma(1:2) )
 
-        call config%read_array( 'shape_filling' .at. 1 .occur. i, shape%fill%colors(1)%w( hyid%rho:hyid%p) )
-        call config%read_array( 'shape_filling' .at. 6 .occur. i, shape%fill%colors(2)%w( hyid%rho:hyid%p) )
+        call config%read_array( 'shape_filling' .at. 1 .occur. i .hint. 'color(1)', shape%fill%colors(1)%w( hyid%rho:hyid%p) )
+        call config%read_array( 'shape_filling' .at. 6 .occur. i .hint. 'color(2)', shape%fill%colors(2)%w( hyid%rho:hyid%p) )
 
       end select
     end do
@@ -167,20 +167,20 @@ contains
       call config%read( 'perturb' .at. 1 .occur. i, perturb_type, perturb_types )
       perturb => draw%new_perturb( perturb_type )
 
-      call config%read( 'perturb' .at. 2 .occur. i, perturb%coor_type, coord_types )
-      call config%read( 'perturb' .at. 3 .occur. i, perturb%dir, perturb_domain_types )
+      call config%read( 'perturb' .at. 2 .occur. i .hint. 'coordinate', perturb%coor_type, coord_types )
+      call config%read( 'perturb' .at. 3 .occur. i .hint. 'domain', perturb%dir, perturb_domain_types )
 
       select case ( perturb_type )
       case ( drid%harmonic )
-        call config%read( 'perturb' .at. 4 .occur. i, perturb%harmonic%A )
-        call config%read( 'perturb' .at. 5 .occur. i, perturb%harmonic%lambda )
-        call config%read_array( 'perturb' .at. 6 .occur. i, perturb%harmonic%base%w( hyid%rho:hyid%p ) )
+        call config%read( 'perturb' .at. 4 .occur. i .hint. 'A', perturb%harmonic%A )
+        call config%read( 'perturb' .at. 5 .occur. i .hint. 'lambda', perturb%harmonic%lambda )
+        call config%read_array( 'perturb' .at. 6 .occur. i .hint. 'state', perturb%harmonic%base%w( hyid%rho:hyid%p ) )
 
       case ( drid%symmetric_decaying )
-        call config%read( 'perturb' .at. 4 .occur. i, perturb%sym_decaying%A )
-        call config%read( 'perturb' .at. 5 .occur. i, perturb%sym_decaying%pos )
-        call config%read( 'perturb' .at. 6 .occur. i, perturb%sym_decaying%sigma )
-        call config%read_array( 'perturb' .at. 7 .occur. i, perturb%sym_decaying%base%w( hyid%rho:hyid%p ) )
+        call config%read( 'perturb' .at. 4 .occur. i .hint. 'A', perturb%sym_decaying%A )
+        call config%read( 'perturb' .at. 5 .occur. i .hint. 'position', perturb%sym_decaying%pos )
+        call config%read( 'perturb' .at. 6 .occur. i .hint. 'sigma', perturb%sym_decaying%sigma )
+        call config%read_array( 'perturb' .at. 7 .occur. i .hint. 'state', perturb%sym_decaying%base%w( hyid%rho:hyid%p ) )
       end select
     end do
 
@@ -208,6 +208,6 @@ contains
     call config%read( 'prefix' .at. 1, chombo%prefix )
     call config%read( 'nickname' .at. 1, chombo%nickname )
 
-    call log%set_section( '' )
+    call logger%set_section( '' )
   end subroutine load_params
 end submodule rhyme_param_parser_load_params_submodule
