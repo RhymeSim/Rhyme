@@ -9,7 +9,7 @@ logical function rhyme_thermo_base_init_test () result ( failed )
   type ( thermo_base_t ) :: th
   type ( log_t ) :: log
 
-  type ( unit_t ), pointer :: u_Kb
+  type ( nombre_unit_t ), pointer :: u_Kb
 
   call ch_tester%expect( th%initialized .toBe. .false. )
 

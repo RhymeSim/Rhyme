@@ -8,7 +8,7 @@ logical function rhyme_chemistry_init_test () result (failed)
 
   type ( chemistry_t ) :: chemi
   type ( log_t ) :: log
-  type ( unit_t ), pointer :: kg__mol
+  type ( nombre_unit_t ), pointer :: kg__mol
 
   ch_tester = .describe. "chemistry init"
 

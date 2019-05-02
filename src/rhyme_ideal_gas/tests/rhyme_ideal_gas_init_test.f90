@@ -7,7 +7,7 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   type ( assertion_t ) :: ig_tester
 
   type ( ideal_gas_t ) :: ig_mon, ig_di, ig_poly
-  type ( unit_t ), pointer :: R_unit
+  type ( nombre_unit_t ), pointer :: R_unit
 
   ig_tester = .describe. "ideal_gas init"
 

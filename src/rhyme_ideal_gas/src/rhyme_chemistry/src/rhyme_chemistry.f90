@@ -5,16 +5,16 @@ module rhyme_chemistry
   implicit none
 
   type chemistry_molar_mass_t
-    type(nombre_t) :: e, H, He
+    type ( nombre_t ) :: e, H, He
   end type chemistry_molar_mass_t
 
   type chemistry_atomic_mass_t
-    type(nombre_t) :: e, H, He
+    type ( nombre_t ) :: e, H, He
   end type chemistry_atomic_mass_t
 
   type chemistry_amu_t
-    type(nombre_t) :: one
-    real(kind=8) :: e, H, He
+    type ( nombre_t ) :: one
+    real ( kind=8 ) :: e, H, He
   end type chemistry_amu_t
 
 
@@ -64,15 +64,15 @@ contains
   !> @param[in] X Hydrogen mass fraction
   !> @param[in] Y Helium mass fraction
   !> @param[in] f ionization fractions - f = (fHI, fHeI, fHeII)
-  pure function chemistry_one_over_mu (this, X, Y, f)
+  pure function chemistry_one_over_mu ( this, X, Y, f )
     implicit none
 
     class ( chemistry_t ), intent ( in ) :: this
     real ( kind=8 ), intent ( in ) :: X, Y, f(3)
     real ( kind=8 ) :: chemistry_one_over_mu
 
-    chemistry_one_over_mu = X * (1.d0 + f(1)) / this%amu%H + &
-      Y * (1.d0 + f(2) + 2 * f(3)) / this%amu%He
+    chemistry_one_over_mu = X * ( 1.d0 + f(1)) / this%amu%H + &
+      Y * (1.d0 + f(2) + 2 * f(3) ) / this%amu%He
   end function chemistry_one_over_mu
 
 
