@@ -15,12 +15,12 @@ module rhyme_ideal_gas
 
 
   type ideal_gas_t
+    integer :: type
+    integer :: beta
     type ( nombre_t ) :: R, Cv, Cp
     real ( kind=8 ) :: gamma
     real ( kind=8 ) :: gm1, gp1, gm1_gp1, gm1_2g, gp1_2g, g_inv
-    integer :: type
-    integer :: beta
-    real ( kind=8 ) :: kB_per_amu ! kB / 1 amu
+    real ( kind=8 ) :: kB__amu
     logical :: initialized = .false.
   contains
     procedure :: init => rhyme_ideal_gas_init
@@ -77,7 +77,7 @@ contains
     end if
 
     this%R = nombre_t( 8.314d0, kg * (meter / sec)**2 / mol / Kel )
-    this%kB_per_amu = thermo%kB%v / chemi%amu%one%v
+    this%kB__amu = thermo%kB%v / chemi%amu%one%v
 
     if ( this%type .eq. igid%monatomic ) then
       this%Cv = 3.d0 / 2.d0 * this%R
@@ -114,7 +114,7 @@ contains
 
     real ( kind=8 ) :: T_per_mu
 
-    T_per_mu = hy_sp_internal_e(U) * ( this%gamma - 1.d0 ) / this%kB_per_amu
+    T_per_mu = hy_sp_internal_e(U) * ( this%gamma - 1.d0 ) / this%kB__amu
   end function rhyme_ideal_gas_T_per_mu
 
 
@@ -139,7 +139,7 @@ contains
 
     real ( kind=8 ) :: Cs
 
-    Cs = sqrt( this%gamma * this%kB_per_amu * this%T_per_mu(U) )
+    Cs = sqrt( this%gamma * this%kB__amu * this%T_per_mu(U) )
   end function rhyme_ideal_gas_sound_speed
 
 
@@ -151,7 +151,7 @@ contains
 
     real ( kind=8 ) :: p
 
-    p = U%u( hyid%rho ) * this%kB_per_amu * this%T_per_mu(U)
+    p = U%u( hyid%rho ) * this%kB__amu * this%T_per_mu(U)
   end function rhyme_ideal_gas_pressure
 
 
@@ -175,7 +175,7 @@ contains
 
     real ( kind=8 ) :: e_int_sp
 
-    e_int_sp = this%kB_per_amu * this%T_per_mu(U) / ( this%gamma - 1.d0 )
+    e_int_sp = this%kB__amu * this%T_per_mu(U) / ( this%gamma - 1.d0 )
   end function rhyme_ideal_gas_pecific_internal_energy
 
 

@@ -50,27 +50,16 @@ module rhyme_nombre_prefix
   type( nombre_prefix_t ), parameter :: zepto = prfx_si(-21)
   type( nombre_prefix_t ), parameter :: yocto = prfx_si(-24)
 
+
+  interface
+    module function rhyme_nombre_prefix_mul ( p1, p2 ) result ( p )
+      type ( nombre_prefix_t ), target, intent ( in ) :: p1, p2
+      type ( nombre_prefix_t ) :: p
+    end function rhyme_nombre_prefix_mul
+  end interface
+
+
   interface operator ( * )
-    procedure nombre_prefix_mul
+    procedure rhyme_nombre_prefix_mul
   end interface operator ( * )
-
-contains
-
-  function nombre_prefix_mul ( p1, p2 ) result ( p )
-    implicit none
-
-    type ( nombre_prefix_t ), target, intent ( in ) :: p1, p2
-    type ( nombre_prefix_t ) :: p
-
-    integer :: i
-
-    i = p1%base_10 + p2%base_10
-
-    if ( i < -24 .or. i > 24 ) then
-      p = nombre_prefix_t( "", i )
-    else
-      p = prfx_si(i)
-    end if
-  end function nombre_prefix_mul
-
 end module rhyme_nombre_prefix

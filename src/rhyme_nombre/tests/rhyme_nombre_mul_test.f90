@@ -29,6 +29,8 @@ logical function rhyme_nombre_mul_test () result (failed)
   call n_tester%expect( H2real8%v .toBe. H2real8_rev%v )
   call n_tester%expect( H2real8%v .toBe. (2.d0 * 66.7d0) )
 
+  ! TODO: test multiplying two nombre objects
+
   H = H .to. sec**(-1.d0)
 
   call n_tester%expect( H2int%u .unitEqualsTo. u_H .toBe. .true. )

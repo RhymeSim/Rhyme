@@ -10,7 +10,7 @@ module rhyme_samr
     integer :: left = 1, right = 2, bottom = 3, top = 4, back = 5, front = 6
   end type samr_indices_t
 
-  type ( samr_indices_t ), parameter :: samrid = samr_indices_t ()
+  type ( samr_indices_t ), parameter :: samrid = samr_indices_t()
 
 
   type samr_box_t
@@ -41,8 +41,8 @@ module rhyme_samr
     integer :: nlevels
     integer :: base_grid(3)
     integer :: ghost_cells(3)
-    integer :: max_nboxes (0:samrid%max_nlevels)
-    type ( samr_level_t ) :: levels(0:samrid%max_nlevels)
+    integer :: max_nboxes ( 0:samrid%max_nlevels )
+    type ( samr_level_t ) :: levels( 0:samrid%max_nlevels )
   contains
     procedure :: init_box => rhyme_samr_init_box
   end type samr_t
