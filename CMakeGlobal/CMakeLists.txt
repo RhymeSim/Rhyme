@@ -31,3 +31,13 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE ${deps} ${internal_deps} )
 # Enable tests
 add_subdirectory( tests )
 enable_testing()
+
+
+# Watch target (Make sure inotify-tools is installed)
+file( GLOB_RECURSE watch_list ${PROJECT_SOURCE_DIR} *.f90 )
+list( JOIN watch_list " " watch_list_str )
+
+add_custom_target( ${PROJECT_NAME}_watch
+  VERBATIM COMMAND /bin/sh -c "inotifywait -m -e modify ${watch_list_str} | while read -r filename event; do make -j8; make test -j8; done"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
