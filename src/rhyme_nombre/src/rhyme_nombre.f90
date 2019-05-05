@@ -7,7 +7,7 @@ module rhyme_nombre
     real ( kind=8 ) :: v
     type ( nombre_unit_t ), pointer :: u => null()
     contains
-     procedure :: p => nombre_print
+     procedure :: p => rhyme_nombre_print
   end type nombre_t
 
 
@@ -47,6 +47,11 @@ module rhyme_nombre
       type ( nombre_t ), intent ( in ) :: n
       type ( nombre_t ) :: n_new
     end function rhyme_nombre_div_rev
+
+    module function rhyme_nombre_print ( this ) result ( str )
+      class ( nombre_t ), intent ( in ) :: this
+      character ( len=128 ) :: str
+    end function rhyme_nombre_print
   end interface
 
 
@@ -74,100 +79,4 @@ module rhyme_nombre
     procedure rhyme_nombre_div
     procedure rhyme_nombre_div_rev
   end interface operator ( / )
-
-contains
-
-
-  function nombre_print ( this ) result ( str )
-    implicit none
-
-    class ( nombre_t ), intent ( in ) :: this
-    character ( len=128 ) :: str
-
-    write (str, fmt="(E9.3,A,A,A)") this%v, " [ ", trim(this%u%p()), " ]"
-  end function nombre_print
-
-
-
-
-  function rhyme_nombre_div_real8_nombre ( r, n ) result ( n_new )
-    implicit none
-
-    real ( kind=8 ), intent ( in ) :: r
-    type ( nombre_t ), intent ( in ) :: n
-
-    type ( nombre_t ) :: n_new
-
-    type ( nombre_unit_t ), pointer :: u
-
-    u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( n%u, hard=.true. ) )
-
-    n_new = nombre_t( r / n%v, u**(-1.d0) )
-  end function rhyme_nombre_div_real8_nombre
-
-
-  function rhyme_nombre_div_nombre_real8 ( n, r ) result ( n_new )
-    implicit none
-
-    type ( nombre_t ), intent ( in ) :: n
-    real ( kind=8 ), intent ( in ) :: r
-
-    type ( nombre_t ) :: n_new
-
-    type ( nombre_unit_t ), pointer :: u
-
-    u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( n%u, hard=.true. ) )
-
-    n_new = nombre_t( n%v / r, u )
-  end function rhyme_nombre_div_nombre_real8
-
-
-  function rhyme_nombre_div_real_nombre ( r, n ) result ( n_new )
-    implicit none
-
-    real, intent ( in ) :: r
-    type ( nombre_t ), intent ( in ) :: n
-
-    type ( nombre_t ) :: n_new
-
-    type ( nombre_unit_t ), pointer :: u
-
-    u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( n%u, hard=.true. ) )
-
-    n_new = nombre_t( real( r, kind=8 ) / n%v, u**(-1.d0) )
-  end function rhyme_nombre_div_real_nombre
-
-
-  function rhyme_nombre_div_nombre_real ( n, r ) result ( n_new )
-    implicit none
-
-    type ( nombre_t ), intent ( in ) :: n
-    real, intent ( in ) :: r
-
-    type ( nombre_t ) :: n_new
-
-    type ( nombre_unit_t ), pointer :: u
-
-    u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( n%u, hard=.true. ) )
-
-    n_new = nombre_t( n%v / real( r, kind=8 ), u )
-  end function rhyme_nombre_div_nombre_real
-
-
-  function rhyme_nombre_div_int_nombre ( i, n ) result ( n_new )
-    implicit none
-
-    integer, intent ( in ) :: i
-    type ( nombre_t ), intent ( in ) :: n
-
-    type ( nombre_t ) :: n_new
-
-    type ( nombre_unit_t ), pointer :: u
-
-    u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( n%u, hard=.true. ) )
-
-    n_new = nombre_t( real( i, kind=8 ) / n%v, u**(-1.d0) )
-  end function rhyme_nombre_div_int_nombre
-
-
 end module rhyme_nombre

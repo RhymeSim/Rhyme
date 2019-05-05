@@ -26,9 +26,9 @@ set( srcs
   src/rhyme_nombre_units_parse.f90
   src/rhyme_nombre_units_parse_single_term.f90
   src/rhyme_nombre_units_is_equal_to.f90
-  src/rhyme_nombre_units_pow.f90
   src/rhyme_nombre_units.f90
 
+  src/rhyme_nombre_print.f90
   src/rhyme_nombre_div.f90
   src/rhyme_nombre_mul.f90
   src/rhyme_nombre_to.f90

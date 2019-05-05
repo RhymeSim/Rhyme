@@ -8,10 +8,9 @@ contains
 
     type ( nombre_unit_t ), pointer :: new_u
 
-    new_u => u
+    new_u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( u ) )
 
     do while ( associated( new_u ) )
-      new_u => rhyme_nombre_unit_clone( new_u )
 
       select type ( p => pow )
       type is ( integer )

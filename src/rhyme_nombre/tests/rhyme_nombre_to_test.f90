@@ -6,12 +6,11 @@ logical function rhyme_nombre_to_test () result (failed)
 
   type ( assertion_t ) :: n_tester
 
-  type ( nombre_t ) :: H, H_hz
+  type ( nombre_t ) :: H_hz
 
   n_tester = .describe. "nombre"
 
-  H = 66.7d0 .u. kilo * meter / sec / (mega * pc)
-  H_hz = H .to. sec**(-1)
+  H_hz = 66.7d0 .u. kilo * meter / sec / (mega * pc) .to. sec**(-1)
 
   call n_tester%expect( H_hz%v .toBe. 2.16137e-018 )
   call n_tester%expect( associated(H_hz%u%next) .toBe. .false. )

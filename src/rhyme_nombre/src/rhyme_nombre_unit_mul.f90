@@ -11,6 +11,8 @@ contains
 
     type ( nombre_unit_t ), pointer :: u_head
 
+    new_u_tail => null()
+
     select type ( m => mul )
     type is ( nombre_unit_t )
       u_head => rhyme_nombre_unit_head( rhyme_nombre_unit_clone( m ) )
@@ -32,6 +34,5 @@ contains
       new_u_tail%conv = new_u_tail%conv * m
 
     end select
-
   end function rhyme_nombre_unit_mul
 end submodule rhyme_nombre_unit_mul_smod

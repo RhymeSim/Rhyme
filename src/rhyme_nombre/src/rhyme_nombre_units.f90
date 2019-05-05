@@ -36,11 +36,6 @@ module rhyme_nombre_units
 
 
   interface
-    module subroutine rhyme_nombre_units_pow ( u, exponent )
-      type ( nombre_unit_t ), intent ( inout ), pointer :: u
-      class (*), intent ( in ) :: exponent
-    end subroutine rhyme_nombre_units_pow
-
     module function rhyme_nombre_units_is_equal_to ( u1, u2 ) result ( is_equal )
       type ( nombre_unit_t ), pointer, intent ( in ) :: u1, u2
       logical :: is_equal

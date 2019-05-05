@@ -34,9 +34,9 @@ contains
     do i = 1, size( nombre_units_chain )
       if ( trim( symb ) .eq. trim( nombre_units_chain(i)%symb ) ) then
         if ( trim( nombre_units_chain(i)%symb ) .eq. 'g' ) then
-          u => mili * rhyme_nombre_unit_clone( nombre_units_chain(i), hard=.true. )
+          u => mili * rhyme_nombre_unit_clone( nombre_units_chain(i) )
         else
-          u => rhyme_nombre_unit_clone( nombre_units_chain(i), hard=.true. )
+          u => rhyme_nombre_unit_clone( nombre_units_chain(i) )
         end if
         return
       end if

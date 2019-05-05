@@ -40,7 +40,7 @@ list( JOIN watch_list " " watch_list_str )
 add_custom_target( ${PROJECT_NAME}_watch
   VERBATIM COMMAND /bin/sh -c "inotifywait -m -e modify ${watch_list_str} \
     | while read -r filename event; do \
-      make -j8; ctest -j8 --output-on-failure --timeout 50; \
+      cmake .. && make -j8; ctest -j8 --output-on-failure --timeout 50; \
     done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

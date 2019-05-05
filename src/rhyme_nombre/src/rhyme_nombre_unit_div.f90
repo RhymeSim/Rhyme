@@ -8,11 +8,8 @@ contains
 
     type ( nombre_unit_t ), pointer :: u1_p, u2_p
 
-    u1_p => rhyme_nombre_unit_clone( u1 )
-    u2_p => rhyme_nombre_unit_clone( u2 )
-
-    u1_p => rhyme_nombre_unit_tail( u1_p )
-    u2_p => rhyme_nombre_unit_tail( u2_p )
+    u1_p => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( u1 ) )
+    u2_p => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( u2 ) )
 
     ! Updating powers
     do while ( associated( u2_p ) )

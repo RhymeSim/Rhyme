@@ -45,9 +45,8 @@ module rhyme_nombre_unit
       character ( len=64 ) :: str
     end function rhyme_nombre_unit_print
 
-    module function rhyme_nombre_unit_clone ( u, hard ) result ( clone )
+    module function rhyme_nombre_unit_clone ( u ) result ( clone )
       type ( nombre_unit_t ), intent ( in ), target :: u
-      logical, intent ( in ), optional :: hard
       type ( nombre_unit_t ), pointer :: clone
     end function rhyme_nombre_unit_clone
 
