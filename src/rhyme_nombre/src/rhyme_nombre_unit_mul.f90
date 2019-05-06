@@ -9,17 +9,17 @@ contains
 
     type ( nombre_unit_t ), pointer :: new_u_tail
 
-    type ( nombre_unit_t ), pointer :: u_head
+    type ( nombre_unit_t ), pointer :: u_tail
 
     new_u_tail => null()
 
     select type ( m => mul )
     type is ( nombre_unit_t )
-      u_head => rhyme_nombre_unit_head( rhyme_nombre_unit_clone( m ) )
-      u_head%prev => rhyme_nombre_unit_clone( u )
-      u_head%prev%next => u_head
+      u_tail => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( u ) )
+      u_tail%next => rhyme_nombre_unit_clone( m )
+      u_tail%next%prev => u_tail
 
-      new_u_tail => rhyme_nombre_unit_tail( u_head )
+      new_u_tail => rhyme_nombre_unit_tail( u_tail )
 
     type is ( integer )
       new_u_tail => rhyme_nombre_unit_clone( u )

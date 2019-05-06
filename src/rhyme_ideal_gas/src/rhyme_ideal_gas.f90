@@ -1,4 +1,5 @@
 module rhyme_ideal_gas
+  use rhyme_units
   use rhyme_hydro_base
   use rhyme_chemistry
   use rhyme_thermo_base
@@ -23,8 +24,6 @@ module rhyme_ideal_gas
     real ( kind=8 ) :: kB__amu
     logical :: initialized = .false.
   contains
-    procedure :: init => rhyme_ideal_gas_init
-    procedure :: init_with => rhyme_ideal_gas_init_with
     procedure :: T_per_mu => rhyme_ideal_gas_T_per_mu
     procedure :: T => rhyme_ideal_gas_T
     procedure :: Cs => rhyme_ideal_gas_sound_speed
@@ -39,72 +38,17 @@ module rhyme_ideal_gas
     procedure :: half_step_extrapolation => rhyme_ideal_gas_half_step_extrapolation
   end type ideal_gas_t
 
+  interface
+    module subroutine rhyme_ideal_gas_init ( this, chemi, thermo, units, logger )
+      class ( ideal_gas_t ), intent ( inout ) :: this
+      type ( chemistry_t ), intent ( in ) :: chemi
+      type ( thermo_base_t ), intent ( in ) :: thermo
+      type ( rhyme_units_t ), intent ( in ) :: units
+      type ( log_t ), intent ( inout ) :: logger
+    end subroutine rhyme_ideal_gas_init
+  end interface
+
 contains
-
-  subroutine rhyme_ideal_gas_init_with ( this, chemi, thermo, gastype, log )
-    implicit none
-
-    class ( ideal_gas_t ), intent ( inout ) :: this
-    type ( chemistry_t ), intent ( in ) :: chemi
-    type ( thermo_base_t ), intent ( in ) :: thermo
-    integer, intent ( in ) :: gastype
-    type ( log_t ), intent ( inout ) :: log
-
-
-    if ( this%initialized ) then
-      call log%warn( 'Try to re-initialize ideal gas object')
-      return
-    end if
-
-    this%type = gastype
-
-    call rhyme_ideal_gas_init( this, chemi, thermo, log )
-  end subroutine rhyme_ideal_gas_init_with
-
-
-  subroutine rhyme_ideal_gas_init ( this, chemi, thermo, log )
-    implicit none
-
-    class ( ideal_gas_t ), intent ( inout ) :: this
-    type ( chemistry_t ), intent ( in ) :: chemi
-    type ( thermo_base_t ), intent ( in ) :: thermo
-    type ( log_t ), intent ( inout ) :: log
-
-
-    if ( this%initialized ) then
-      call log%warn( 'Try to re-initialize ideal gas object' )
-      return
-    end if
-
-    this%R = nombre_t( 8.314d0, kg * (meter / sec)**2 / mol / Kel )
-    this%kB__amu = thermo%kB%v / chemi%amu%one%v
-
-    if ( this%type .eq. igid%monatomic ) then
-      this%Cv = 3.d0 / 2.d0 * this%R
-      this%Cp = 5.d0 / 2.d0 * this%R
-      this%beta = 3 ! Degrees of freedom
-    else if ( this%type .eq. igid%diatomic ) then
-      this%Cv = 5.d0 / 2.d0 * this%R
-      this%Cp = 7.d0 / 2.d0 * this%R
-      this%beta = 5
-    else if ( this%type .eq. igid%polyatomic ) then
-      this%Cv = 3.d0 * this%R
-      this%Cp = 4.d0 * this%R
-      this%beta = 6
-    end if
-
-    this%gamma = this%Cp%v / this%Cv%v
-
-    this%gm1 = this%gamma - 1.d0
-    this%gp1 = this%gamma + 1.d0
-    this%gm1_gp1 = ( this%gamma - 1.d0 ) / ( this%gamma + 1.d0 )
-    this%gm1_2g = ( this%gamma - 1.d0 ) / ( 2 * this%gamma )
-    this%gp1_2g = ( this%gamma + 1.d0 ) / ( 2 * this%gamma )
-    this%g_inv = 1.d0 / this%gamma
-
-    this%initialized = .true.
-  end subroutine rhyme_ideal_gas_init
-
 
   pure function rhyme_ideal_gas_T_per_mu ( this, U ) result ( T_per_mu )
     implicit none

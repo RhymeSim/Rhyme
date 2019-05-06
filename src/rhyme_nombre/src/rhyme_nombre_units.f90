@@ -16,7 +16,7 @@ module rhyme_nombre_units
     nombre_unit_t( one, "Msun", 1.9885d33, MassDim ), &
     nombre_unit_t( one, "yr", 3.154d7, TimeDim ), &
     nombre_unit_t( one, "g", 1.d0, MassDim ), &
-    nombre_unit_t( one, "m_H", 1.6735575d-24, MassDim ) &
+    nombre_unit_t( one, "m_H", 1.6735575d-27, MassDim ) &
   ]
 
 

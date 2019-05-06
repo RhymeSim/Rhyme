@@ -4,13 +4,14 @@ enable_language( Fortran )
 project( rhyme_thermo_base )
 
 set( deps
-  rhyme_nombre
+  rhyme_units
   rhyme_log
 )
 
 set( internal_deps )
 
 set( srcs
+  src/rhyme_thermo_base_init.f90
   src/rhyme_thermo_base.f90
 )
 

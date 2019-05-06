@@ -6,7 +6,8 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( log_t ) :: log
+  type ( log_t ) :: logger
+  type ( rhyme_units_t ) :: units
   type ( initial_condition_t ) :: ic
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
@@ -21,7 +22,8 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 
   tester = .describe. "rhyme_param_parser_load_params"
 
-  call load_params( param_file, log, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call load_params( param_file, logger, units, ic, bc, cfl, ig, draw, irs, &
+  sl, mh, chombo )
 
   ! Structured AMR
   call tester%expect( ic%type .toBe. icid%simple )
@@ -37,6 +39,14 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
   call tester%expect( bc%types(bcid%top) .toBe. 1 )
   call tester%expect( bc%types(bcid%back) .toBe. 2 )
   call tester%expect( bc%types(bcid%front) .toBe. 3 )
+
+  ! Units
+  call tester%expect( units%rho_str .toBe. 'kg / m^3' )
+  call tester%expect( units%length_str .toBe. 'm' )
+  call tester%expect( units%time_str .toBe. 's' )
+
+  ! CFL
+  call tester%expect( cfl%courant_number .toBe. .81d0 )
 
   ! Ideal Gas
   call tester%expect( ig%type .toBe. igid%diatomic )
@@ -101,9 +111,6 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 
   ! MUSCL-Hancock solver
   call tester%expect( mh%solver_type .toBe. mhid%cpu_intensive )
-
-  ! CFL
-  call tester%expect( cfl%courant_number .toBe. .81d0 )
 
   ! Chombo
   call tester%expect( trim(chombo%prefix) .toBe. "./prefix" )

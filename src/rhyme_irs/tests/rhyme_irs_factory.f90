@@ -1,5 +1,6 @@
 module rhyme_irs_factory
   use rhyme_irs
+  use rhyme_ideal_gas_factory
   use rhyme_ideal_gas
 
   implicit none
@@ -26,21 +27,13 @@ contains
 
     if ( irs_fac_initialized ) return
 
-    call irs_fac_chemi%init( irs_fac_log )
-    call irs_fac_thermo%init( irs_fac_log )
-    call irs_fac_ig%init_with ( &
-      irs_fac_chemi, &
-      irs_fac_thermo, &
-      irs_fac_gastype, &
-      irs_fac_log &
-    )
+    call rhyme_ideal_gas_factory_init
 
-    call irs_fac_ig_mon%init_with( &
-      irs_fac_chemi, &
-      irs_fac_thermo, &
-      igid%monatomic, &
-      irs_fac_log &
-    )
+    irs_fac_ig%type = irs_fac_gastype
+    call rhyme_ideal_gas_init( irs_fac_ig, ig_chemi, ig_thermo, ig_units, irs_fac_log )
+
+    irs_fac_ig_mon%type = igid%monatomic
+    call rhyme_ideal_gas_init( irs_fac_ig_mon, ig_chemi, ig_thermo, ig_units, irs_fac_log )
 
     call irs_fac%init_with ( &
       irs_fac_n_iteration, &

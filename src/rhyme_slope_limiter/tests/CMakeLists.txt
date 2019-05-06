@@ -3,6 +3,7 @@ set( test_subject rhyme_slope_limiter )
 
 set( factories
   rhyme_hydro_base
+  rhyme_ideal_gas
 )
 
 set( test_deps

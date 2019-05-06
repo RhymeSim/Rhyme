@@ -1,7 +1,7 @@
 logical function rhyme_cfl_dt_test () result (failed)
-  use rhyme_samr_factory
   use rhyme_cfl
-  use rhyme_log
+  use rhyme_ideal_gas_factory
+  use rhyme_samr_factory
   use rhyme_assertion
 
   implicit none
@@ -19,11 +19,8 @@ logical function rhyme_cfl_dt_test () result (failed)
   ]
 
   type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemi
-  type ( thermo_base_t ) :: thermo
   type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
-  type ( log_t ) :: log
 
   real ( kind=8 ) :: dt, dt_expected
   real ( kind=8 ) :: v_cs, max_v_cs
@@ -31,9 +28,10 @@ logical function rhyme_cfl_dt_test () result (failed)
 
   cfl_tester = .describe. "CFL"
 
-  call chemi%init( log )
-  call thermo%init( log )
-  call ig%init_with ( chemi, thermo, igid%diatomic, log )
+  call rhyme_ideal_gas_factory_init
+
+  ig%type = igid%diatomic
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
   call rhyme_samr_factory_fill( nlevels, base_grid, ghost_cells, &
     max_nboxes, init_nboxes, samr, physical=.true. )

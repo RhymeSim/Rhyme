@@ -12,10 +12,12 @@ logical function rhyme_ideal_gas_sound_speed_test () result (failed)
   ig_tester = .describe. "ideal_gas sound_speed"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  cs = real( sqrt( ig%gamma * hy%p / hy%rho) )
-  call ig_tester%expect( ig%Cs( hy%cons ) .toBe. cs )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
+
+  cs = real( sqrt( ig%gamma * ig_hy%p / ig_hy%rho) )
+  call ig_tester%expect( ig%Cs( ig_hy%cons ) .toBe. cs )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_sound_speed_test

@@ -1,11 +1,12 @@
 submodule ( rhyme_param_parser ) rhyme_param_parser_load_params_submodule
 contains
-  module subroutine load_params ( param_file, logger, ic, bc, cfl, ig, draw, &
-    irs, sl, mh, chombo )
+  module subroutine load_params ( param_file, logger, units, ic, bc, cfl, ig, &
+    draw, irs, sl, mh, chombo )
     implicit none
 
     character (len=1024), intent ( in ) :: param_file
     type ( log_t ), intent ( inout ) :: logger
+    type ( rhyme_units_t ), intent ( inout ) :: units
     type ( initial_condition_t ), intent ( inout ) :: ic
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( cfl_t ), intent ( inout ) :: cfl
@@ -62,6 +63,11 @@ contains
     call config%read( 'top_bc' .at. 1, bc%types( bcid%top ), bc_types)
     call config%read( 'back_bc' .at. 1, bc%types( bcid%back ), bc_types)
     call config%read( 'front_bc' .at. 1, bc%types( bcid%front ), bc_types)
+
+    ! Units
+    call config%read( 'density_unit' .at. 1, units%rho_str )
+    call config%read( 'length_unit' .at. 1, units%length_str )
+    call config%read( 'time_unit' .at. 1, units%time_str )
 
     ! CFL
     call config%read( 'courant_number' .at. 1,  cfl%courant_number )

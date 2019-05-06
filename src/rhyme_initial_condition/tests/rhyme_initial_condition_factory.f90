@@ -1,5 +1,6 @@
 module rhyme_initial_condition_factory
   use rhyme_initial_condition
+  use rhyme_ideal_gas_factory
 
   implicit none
 
@@ -46,15 +47,12 @@ contains
   subroutine rhyme_initial_condition_factory_init ()
     implicit none
 
-    type ( chemistry_t ) :: chemi
-    type ( thermo_base_t ) :: thermo
-
     if ( ic_fac_intialized ) return
 
-    call chemi%init( log )
-    call thermo%init( log )
+    call rhyme_ideal_gas_factory_init
 
-    call ig%init_with( chemi, thermo, igid%monatomic, log )
+    ig%type = igid%monatomic
+    call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, log )
 
     ic_fac_intialized = .true.
   end subroutine rhyme_initial_condition_factory_init

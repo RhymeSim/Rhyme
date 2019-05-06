@@ -52,19 +52,22 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call load_params( param_file, logger, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call load_params( param_file, logger, units, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Initializing
   call logger%set_section( 'init' )
 
+  ! Units
+  call rhyme_units_init( units, logger )
+
   ! Chemistry
-  call chemistry%init( logger )
+  call rhyme_chemistry_init( chemistry, units, logger )
 
   ! Thermodynamics
-  call thermo%init( logger )
+  call rhyme_thermo_base_init( thermo, units, logger )
 
   ! Ideal Gas
-  call ig%init( chemistry, thermo, logger )
+  call rhyme_ideal_gas_init( ig, chemistry, thermo, units, logger )
 
   ! Structured AMR
   call ic%init( samr, ig, logger )

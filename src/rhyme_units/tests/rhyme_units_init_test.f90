@@ -8,6 +8,7 @@ logical function rhyme_units_init_test () result ( failed )
 
   type ( nombre_unit_t ), pointer :: u_rho, u_length, u_time, u_pressure, u_temperature
   type ( rhyme_units_t ) :: units
+  type ( log_t ) :: logger
 
   u_tester = .describe. "rhyme_units_init"
 
@@ -21,7 +22,7 @@ logical function rhyme_units_init_test () result ( failed )
   u_pressure => ( kilo * gram ) * meter**(-3) * meter**2 / sec**2
   u_temperature => kel
 
-  call units%init
+  call rhyme_units_init( units, logger )
 
   call u_tester%expect( associated( units%rho ) .toBe. .true. )
   call u_tester%expect( associated( units%length ) .toBe. .true. )

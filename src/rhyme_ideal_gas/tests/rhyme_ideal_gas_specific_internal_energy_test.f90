@@ -12,13 +12,15 @@ logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed
   ig_tester = .describe. "ideal_gas e_int_sp"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  e_int_sp = hy%p / hy%rho / ( ig%gamma - 1 )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int / hy%rho .within. 15 )
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy%e_int_sp .within. 15 )
-  call ig_tester%expect( ig%e_int_sp( hy%cons ) .toBe. hy_sp_internal_e( hy%cons ) .within. 15 )
+  e_int_sp = ig_hy%p / ig_hy%rho / ( ig%gamma - 1 )
+
+  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. ig_hy%e_int / ig_hy%rho .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. ig_hy%e_int_sp .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. hy_sp_internal_e( ig_hy%cons ) .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_specific_internal_energy_test

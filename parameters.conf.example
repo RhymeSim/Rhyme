@@ -39,6 +39,7 @@ ic_nlevels = 3
 
 max_nboxes = 1 10 100
 
+
 # **Units**
 # NB: These units will be used as internal/code units meaning different
 #     components of the code will be converted accordingly, e.g. kB

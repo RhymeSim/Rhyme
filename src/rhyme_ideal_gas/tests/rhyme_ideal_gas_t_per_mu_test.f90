@@ -12,11 +12,13 @@ logical function rhyme_ideal_gas_t_per_mu_test () result (failed)
   ig_tester = .describe. "ideal_gas t_per_mu"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  T__mu = real( hy%T / hy%mu )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
-  call ig_tester%expect( ig%T_per_mu( hy%cons ) .toBe. T__mu .within. 7 )
+  T__mu = real( ig_hy%T / ig_hy%mu )
+
+  call ig_tester%expect( ig%T_per_mu( ig_hy%cons ) .toBe. T__mu .within. 7 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_t_per_mu_test

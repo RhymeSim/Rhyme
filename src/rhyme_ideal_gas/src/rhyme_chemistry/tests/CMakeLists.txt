@@ -1,7 +1,9 @@
 project( rhyme_chemistry_tests )
 set( test_subject rhyme_chemistry )
 
-set( factories )
+set( factories
+  rhyme_units
+)
 
 set( test_deps
   rhyme_assertion

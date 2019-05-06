@@ -1,7 +1,9 @@
 project( rhyme_thermo_base_tests )
 set( test_subject rhyme_thermo_base )
 
-set( factories )
+set( factories
+  rhyme_units
+)
 
 set( test_deps
   rhyme_assertion

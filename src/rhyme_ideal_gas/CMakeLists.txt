@@ -4,6 +4,7 @@ enable_language( Fortran )
 project( rhyme_ideal_gas )
 
 set( deps
+  rhyme_units
   rhyme_hydro_base
   rhyme_log
 )
@@ -14,6 +15,7 @@ set( internal_deps
 )
 
 set( srcs
+  src/rhyme_ideal_gas_init.f90
   src/rhyme_ideal_gas.f90
 )
 

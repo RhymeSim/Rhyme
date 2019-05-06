@@ -9,21 +9,22 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   type ( ideal_gas_t ) :: ig_mon, ig_di, ig_poly
   type ( nombre_unit_t ), pointer :: R_unit
 
-  ig_tester = .describe. "ideal_gas init"
+  ig_tester = .describe. "ideal_gas_init"
 
   call rhyme_ideal_gas_factory_init
 
-  R_unit => kg * (meter / sec)**2 / mol / Kel
+  R_unit => kg / meter**3 * meter**5 / ( sec**2 * mol * Kel )
 
   call ig_tester%expect( igid%monatomic .toBe. 1 )
   call ig_tester%expect( igid%diatomic .toBe. 2 )
   call ig_tester%expect( igid%polyatomic .toBe. 3 )
 
-  call ig_mon%init_with( chemi, thermo, igid%monatomic, log )
+  ig_mon%type = igid%monatomic
+  call rhyme_ideal_gas_init( ig_mon, ig_chemi, ig_thermo, ig_units, ig_logger )
 
   call ig_tester%expect( ig_mon%initialized .toBe. .true. )
 
-  call ig_tester%expect( ig_mon%R%v .toBe. 8.314d0 )
+  call ig_tester%expect( ig_mon%R%v .toBe. 8.314d0 .hint. 'R' )
   call ig_tester%expect( (ig_mon%R%u .unitEqualsTo. R_unit) .toBe. .true. )
   call ig_tester%expect( ig_mon%Cv%v .toBe. 3.d0 / 2.d0 * 8.314d0 )
   call ig_tester%expect( (ig_mon%Cv%u .unitEqualsTo. R_unit) .toBe. .true. )
@@ -31,7 +32,8 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   call ig_tester%expect( (ig_mon%cp%u .unitequalsto. r_unit) .toBe. .true. )
   call ig_tester%expect( ig_mon%gamma .toBe. ig_mon%Cp%v / ig_mon%Cv%v  )
 
-  call ig_di%init_with( chemi, thermo, igid%diatomic, log )
+  ig_di%type = igid%diatomic
+  call rhyme_ideal_gas_init( ig_di, ig_chemi, ig_thermo, ig_units, ig_logger )
 
   call ig_tester%expect( ig_di%Cv%v .toBe. 5.d0 / 2.d0 * 8.314d0 )
   call ig_tester%expect( (ig_di%Cv%u .unitEqualsTo. R_unit) .toBe. .true. )
@@ -39,7 +41,8 @@ logical function rhyme_ideal_gas_init_test () result (failed)
   call ig_tester%expect( (ig_di%Cp%u .unitEqualsTo. R_unit) .toBe. .true. )
   call ig_tester%expect( ig_di%gamma .toBe. ig_di%Cp%v / ig_di%Cv%v )
 
-  call ig_poly%init_with( chemi, thermo, igid%polyatomic, log )
+  ig_poly%type = igid%polyatomic
+  call rhyme_ideal_gas_init( ig_poly, ig_chemi, ig_thermo, ig_units, ig_logger )
 
   call ig_tester%expect( ig_poly%Cv%v .toBe. 3.d0 * 8.314d0 )
   call ig_tester%expect( (ig_poly%Cv%u .unitEqualsTo. R_unit) .toBe. .true. )

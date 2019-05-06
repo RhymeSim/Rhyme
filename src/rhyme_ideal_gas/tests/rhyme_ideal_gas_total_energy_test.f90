@@ -12,11 +12,13 @@ logical function rhyme_ideal_gas_total_energy_test () result (failed)
   ig_tester = .describe. "ideal_gas e_tot"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  e_tot = hy%rho * ( ig%e_kin_sp( hy%cons ) + ig%e_int_sp( hy%cons ) )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
-  call ig_tester%expect( hy%e_tot .toBe. e_tot )
+  e_tot = ig_hy%rho * ( ig%e_kin_sp( ig_hy%cons ) + ig%e_int_sp( ig_hy%cons ) )
+
+  call ig_tester%expect( ig_hy%e_tot .toBe. e_tot )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_total_energy_test

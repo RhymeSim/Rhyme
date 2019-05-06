@@ -5,6 +5,8 @@ set ( factories
   rhyme_samr
   rhyme_samr_bc
   rhyme_chombo
+  rhyme_ideal_gas
+  rhyme_hydro_base
 )
 
 set( test_deps

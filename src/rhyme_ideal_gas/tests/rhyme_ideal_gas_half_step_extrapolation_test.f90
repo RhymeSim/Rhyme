@@ -14,26 +14,28 @@ logical function rhyme_ideal_gas_half_step_extrapolation_test () result (failed)
   ig_tester = .describe. "ideal_gas half_step_extrapolation"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
+
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
   dx = 1.d0 / 1024
   dt = 1.d-5
 
   ! All zero Delta case
   Delta%u = [ 0.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
-  call ig%half_step_extrapolation( hy%cons, Delta, hyid%x, dx, dt, L, R )
+  call ig%half_step_extrapolation( ig_hy%cons, Delta, hyid%x, dx, dt, L, R )
 
-  call ig_tester%expect( hy%cons%u .toBe. L%u )
-  call ig_tester%expect( hy%cons%u .toBe. R%u )
+  call ig_tester%expect( ig_hy%cons%u .toBe. L%u )
+  call ig_tester%expect( ig_hy%cons%u .toBe. R%u )
 
   ! None zero delta case
   Delta%u = [ 1.d0, 0.d0, 0.d0, 0.d0, 0.d0 ]
-  call ig%half_step_extrapolation( hy%cons, Delta, hyid%x, dx, dt, L, R )
+  call ig%half_step_extrapolation( ig_hy%cons, Delta, hyid%x, dx, dt, L, R )
 
-  exp_L%u = hy%cons%u
+  exp_L%u = ig_hy%cons%u
   exp_L%u(hyid%rho) = exp_L%u(hyid%rho) - .5d0
 
-  exp_R%u = hy%cons%u
+  exp_R%u = ig_hy%cons%u
   exp_R%u(hyid%rho) = exp_R%u(hyid%rho) + .5d0
 
   call ig%flux_at( exp_L, hyid%x, FL )

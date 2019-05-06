@@ -5,6 +5,7 @@ project( rhyme_param_parser )
 
 set( deps
   rhyme_log
+  rhyme_units
   rhyme_string
   rhyme_samr_bc
   rhyme_cfl

@@ -11,9 +11,11 @@ logical function rhyme_ideal_gas_pressure_test () result (failed)
   ig_tester = .describe. "ideal_gas gas_pressure"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  call ig_tester%expect( ig%p( hy%cons ) .toBe. hy%p .within. 15 )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
+
+  call ig_tester%expect( ig%p( ig_hy%cons ) .toBe. ig_hy%p .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_pressure_test

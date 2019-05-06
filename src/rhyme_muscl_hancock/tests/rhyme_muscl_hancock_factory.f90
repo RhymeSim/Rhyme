@@ -4,6 +4,7 @@ module rhyme_muscl_hancock_factory
   use rhyme_cfl
   use rhyme_ideal_gas
   use rhyme_slope_limiter
+  use rhyme_ideal_gas_factory
 
   implicit none
 
@@ -63,9 +64,10 @@ contains
     mh_fac_cfl%courant_number = mh_fac_courant_number
 
     ! Initializing Ideal Gas
-    call mh_fac_chemi%init( mh_fac_log )
-    call mh_fac_thermo%init( mh_fac_log )
-    call mh_fac_ig%init_with( mh_fac_chemi, mh_fac_thermo, mh_fac_gastype, mh_fac_log )
+    call rhyme_ideal_gas_factory_init
+
+    mh_fac_ig%type = mh_fac_gastype
+    call rhyme_ideal_gas_init( mh_fac_ig, ig_chemi, ig_thermo, ig_units, mh_fac_log )
 
     ! Initializing Iteratice Riemann Solver
     call mh_fac_irs%init( mh_fac_log )

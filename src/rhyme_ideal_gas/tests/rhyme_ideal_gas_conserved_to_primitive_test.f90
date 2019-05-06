@@ -12,15 +12,17 @@ logical function rhyme_ideal_gas_conserved_to_primitive_test () result (failed)
   ig_tester = .describe. "ideal_gas cons_to_prim"
 
   call rhyme_ideal_gas_factory_init
-  call ig%init_with( chemi, thermo, gas_type, log )
 
-  call ig%cons_to_prim( hy%cons, prim_calc )
+  ig%type = ig_gas_type
+  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
 
-  call ig_tester%expect( prim_calc%w( hyid%rho ) .toBe. hy%rho )
-  call ig_tester%expect( prim_calc%w( hyid%u ) .toBe. hy%u )
-  call ig_tester%expect( prim_calc%w( hyid%v ) .toBe. hy%v )
-  call ig_tester%expect( prim_calc%w( hyid%w ) .toBe. hy%w )
-  call ig_tester%expect( prim_calc%w( hyid%p ) .toBe. hy%p .within. 15 )
+  call ig%cons_to_prim( ig_hy%cons, prim_calc )
+
+  call ig_tester%expect( prim_calc%w( hyid%rho ) .toBe. ig_hy%rho )
+  call ig_tester%expect( prim_calc%w( hyid%u ) .toBe. ig_hy%u )
+  call ig_tester%expect( prim_calc%w( hyid%v ) .toBe. ig_hy%v )
+  call ig_tester%expect( prim_calc%w( hyid%w ) .toBe. ig_hy%w )
+  call ig_tester%expect( prim_calc%w( hyid%p ) .toBe. ig_hy%p .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_conserved_to_primitive_test

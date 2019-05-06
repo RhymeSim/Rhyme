@@ -5,6 +5,7 @@ project( rhyme_units )
 
 set( deps
   rhyme_nombre
+  rhyme_log
 )
 
 set( internal_deps )
