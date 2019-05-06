@@ -1,6 +1,7 @@
 program rhyme
   use rhyme_log
   use rhyme_nombre
+  use rhyme_units
   use rhyme_hydro_base
   use rhyme_samr
   use rhyme_samr_bc
@@ -19,6 +20,7 @@ program rhyme
   implicit none
 
   type ( log_t ) :: logger
+  type ( rhyme_units_t ) :: units
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl

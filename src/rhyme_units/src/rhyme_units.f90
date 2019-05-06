@@ -21,12 +21,12 @@ contains
 
     class ( rhyme_units_t ), intent ( inout ) :: this
 
-    this%rho => nombre_units_parse( this%rho_str )
-    this%length => nombre_units_parse( this%length_str )
-    this%time => nombre_units_parse( this%time_str )
+    this%rho => rhyme_nombre_units_parse( this%rho_str )
+    this%length => rhyme_nombre_units_parse( this%length_str )
+    this%time => rhyme_nombre_units_parse( this%time_str )
 
     this%pressure => this%rho * this%length**2 / this%time**2
 
-    this%temperature => nombre_unit_hard_clone( kel )
+    this%temperature => rhyme_nombre_unit_clone( kel )
   end subroutine rhyme_units_init
 end module rhyme_units
