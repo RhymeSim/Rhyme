@@ -18,7 +18,7 @@ contains
   function rhyme_nombre_units_tokenizer ( str ) result ( arr )
     implicit none
 
-    character ( len=256 ), intent ( in ) :: str
+    character ( len=* ), intent ( in ) :: str
     character ( len=8 ), dimension ( 32 ) :: arr
 
     integer :: char_i, arr_i, i

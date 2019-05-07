@@ -25,7 +25,7 @@ module rhyme_initial_condition
     integer :: snapshot_type = icid%unset
     integer :: nlevels = icid%unset
     integer :: base_grid(3) = icid%unset
-    integer :: max_nboxes(0:samrid%max_nlevels) = 0
+    integer :: max_nboxes( 0:samrid%max_nlevels ) = 0
     character ( len=32 ) :: box_length_unit
     type ( nombre_t ) :: box_lengths(3)
     character ( len=1024 ) :: snapshot_path = ''

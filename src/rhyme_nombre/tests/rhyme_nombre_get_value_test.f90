@@ -12,6 +12,7 @@ logical function rhyme_nombre_get_value_test () result ( failed )
   n = 1.23d4 .u. kg * meter / sec**2
 
   call n_tester%expect( rhyme_nombre_get_value( n ) .toBe. 1.23d4 )
+  call n_tester%expect( rhyme_nombre_get_value( n .to. (meter / sec**2 * kg) ) .toBe. 1.23d4 )
 
   failed = n_tester%failed()
 end function rhyme_nombre_get_value_test

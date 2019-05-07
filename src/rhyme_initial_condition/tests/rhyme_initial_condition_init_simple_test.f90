@@ -31,7 +31,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   call ic_tester%expect( samr_3d%levels(0)%boxes(1)%left_edge .toBe. 1 )
   call ic_tester%expect( samr_3d%levels(0)%boxes(1)%right_edge .toBe. simple_3d%base_grid )
-  call ic_tester%expect( samr_3d%levels(0)%dx .toBe. 1.d0 / simple_3d%base_grid )
+  call ic_tester%expect( samr_3d%levels(0)%dx .toBe. simple_3d%box_lengths%v / simple_3d%base_grid )
   call ic_tester%expect( samr_3d%levels(0)%refine_factor .toBe. 2.d0 )
 
   ! 1D SAMR test

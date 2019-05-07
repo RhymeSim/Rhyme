@@ -1,4 +1,4 @@
-submodule ( rhyme_initial_condition ) rhyme_initial_condition_init_simple_smod
+submodule ( rhyme_initial_condition ) rhyme_ic_init_simple_smod
 contains
   module subroutine rhyme_initial_condition_init_simple ( ic, samr, units, logger )
     implicit none
@@ -33,7 +33,7 @@ contains
     samr%levels%max_nboxes = samr%max_nboxes
 
     do l = 0, samr%nlevels - 1
-      samr%levels(l)%dx = samr%box_lengths / real( samr%base_grid, kind=8 ) / 2.d0**l
+      samr%levels(l)%dx = samr%box_lengths / ( samr%base_grid * 2.d0**l )
       allocate( samr%levels(l)%boxes( samr%max_nboxes(l) ) )
     end do
 
@@ -61,4 +61,4 @@ contains
 
     call logger%set_sub_section( '' )
   end subroutine rhyme_initial_condition_init_simple
-end submodule rhyme_initial_condition_init_simple_smod
+end submodule rhyme_ic_init_simple_smod

@@ -35,5 +35,10 @@ logical function rhyme_nombre_units_parse_test () result (failed)
 
   call n_tester%expect( associated( unit%next ) .toBe. .false. )
 
+  unit => rhyme_nombre_units_parse( 'm' )
+  call n_tester%expect( unit%prefix%symb .toBe. '' )
+  call n_tester%expect( unit%symb .toBe. 'm' )
+  call n_tester%expect( unit%pow .toBe. 1.d0 )
+
   failed = n_tester%failed()
 end function rhyme_nombre_units_parse_test
