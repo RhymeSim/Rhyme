@@ -34,13 +34,12 @@ enable_testing()
 
 
 # Watch target (Make sure inotify-tools is installed)
-file( GLOB_RECURSE watch_list ${PROJECT_SOURCE_DIR} *.f90 )
-list( JOIN watch_list " " watch_list_str )
 
 add_custom_target( ${PROJECT_NAME}_watch
-  VERBATIM COMMAND /bin/sh -c "inotifywait -m -e modify ${watch_list_str} \
-    | while read -r filename event; do \
-      cmake .. && make -j8; ctest -j8 --output-on-failure --timeout 50; \
-    done"
+  VERBATIM COMMAND /bin/sh -c " \
+  inotifywait -m -r -e modify -e create -e delete -e move ${PROJECT_SOURCE_DIR}/src \
+  | while read -r filename event; do \
+    cmake .. && make -j8; ctest -j8 --output-on-failure --timeout 50; \
+  done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
