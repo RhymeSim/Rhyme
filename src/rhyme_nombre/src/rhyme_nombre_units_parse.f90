@@ -4,7 +4,7 @@ contains
   module function rhyme_nombre_units_parse ( str ) result ( u )
     implicit none
 
-    character ( len=256 ), intent ( in ) :: str
+    character ( len=* ), intent ( in ) :: str
     type ( nombre_unit_t ), pointer :: u
 
     character ( len=8 ), dimension ( 32 ) :: arr

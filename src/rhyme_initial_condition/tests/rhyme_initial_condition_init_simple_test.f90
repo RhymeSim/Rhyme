@@ -6,39 +6,52 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   type ( assertion_t ) :: ic_tester
 
-  integer :: i, actual_grid_size(3) = base_grid + ( 2 * ghost_cells )
-  type ( samr_t ) :: samr, samr1d, samr_uni
+  type ( initial_condition_t ) :: simple_3d, simple_1d, simple_uni
+  type ( samr_t ) :: samr_3d, samr_1d, samr_uni
+  integer :: i, actual_grid_size(3)
 
-  ic_tester = .describe. "initial_condition init_simple"
-
-  call rhyme_initial_condition_factory_init
+  ic_tester = .describe. "initial_condition_init_simple"
 
   ! SAMR test
-  call simple%init( samr, ig, log )
+  simple_3d = ic_factory%generate( ic_factory%simple_3d, 4 )
+  call rhyme_initial_condition_init( simple_3d, samr_3d, ic_factory%ig, &
+    ic_factory%units, ic_factory%logger )
 
-  call ic_tester%expect( samr%nlevels .toBe. nlevels )
-  call ic_tester%expect( samr%max_nboxes .toBe. max_nboxes )
-  call ic_tester%expect( samr%base_grid .toBe. base_grid )
-  call ic_tester%expect( samr%ghost_cells .toBe. ghost_cells )
-  call ic_tester%expect( (samr%levels%level) .toBe. [ (i, i=0, 23) ] )
-  call ic_tester%expect( samr%levels(0)%boxes(1)%dims .toBe. base_grid )
-  call ic_tester%expect( size( samr%levels(0)%boxes ) .toBe. max_nboxes(0) )
-  call ic_tester%expect( size( samr%levels(0)%boxes(1)%flags ) .toBe. product( actual_grid_size ) )
-  call ic_tester%expect( size( samr%levels(0)%boxes(1)%hydro ) .toBe. product( actual_grid_size ) )
-  call ic_tester%expect( samr%levels(0)%boxes(1)%left_edge .toBe. 1 )
-  call ic_tester%expect( samr%levels(0)%boxes(1)%right_edge .toBe. base_grid )
-  call ic_tester%expect( samr%levels(0)%dx .toBe. 1.d0 / base_grid )
-  call ic_tester%expect( samr%levels(0)%refine_factor .toBe. 2.d0 )
+  call ic_tester%expect( samr_3d%nlevels .toBe. simple_3d%nlevels )
+  call ic_tester%expect( samr_3d%max_nboxes .toBe. simple_3d%max_nboxes )
+  call ic_tester%expect( samr_3d%base_grid .toBe. simple_3d%base_grid )
+  call ic_tester%expect( samr_3d%ghost_cells .toBe. [ 2, 2, 2 ] )
+  call ic_tester%expect( (samr_3d%levels%level) .toBe. [ (i, i=0, 23) ] )
+  call ic_tester%expect( samr_3d%levels(0)%boxes(1)%dims .toBe. simple_3d%base_grid )
+  call ic_tester%expect( size( samr_3d%levels(0)%boxes ) .toBe. simple_3d%max_nboxes(0) )
+
+  actual_grid_size = simple_3d%base_grid + ( 2 * [ 2, 2, 2 ] )
+  call ic_tester%expect( size( samr_3d%levels(0)%boxes(1)%flags ) .toBe. product( actual_grid_size ) )
+  call ic_tester%expect( size( samr_3d%levels(0)%boxes(1)%hydro ) .toBe. product( actual_grid_size ) )
+
+  call ic_tester%expect( samr_3d%levels(0)%boxes(1)%left_edge .toBe. 1 )
+  call ic_tester%expect( samr_3d%levels(0)%boxes(1)%right_edge .toBe. simple_3d%base_grid )
+  call ic_tester%expect( samr_3d%levels(0)%dx .toBe. 1.d0 / simple_3d%base_grid )
+  call ic_tester%expect( samr_3d%levels(0)%refine_factor .toBe. 2.d0 )
 
   ! 1D SAMR test
-  call simple1d%init( samr1d, ig, log )
+  simple_1d = ic_factory%generate( ic_factory%simple_1d, 4 )
+  call rhyme_initial_condition_init( simple_1d, samr_1d, ic_factory%ig, &
+    ic_factory%units, ic_factory%logger )
 
-  call ic_tester%expect( samr1d%levels(1)%dx .toBe. [ 1.d0 / ( 2.d0 * base_grid_1d(1)) , 1.d0, 1.d0] )
-  call ic_tester%expect( samr1d%levels(2)%dx .toBe. [ 1.d0 / ( 4.d0 * base_grid_1d(1)) , 1.d0, 1.d0] )
-  call ic_tester%expect( samr1d%levels(3)%dx .toBe. [ 1.d0 / ( 8.d0 * base_grid_1d(1)) , 1.d0, 1.d0] )
+  call ic_tester%expect( samr_1d%levels(0)%dx &
+    .toBe. ( simple_1d%box_lengths%v / ( 1.d0 * simple_1d%base_grid ) ) )
+  call ic_tester%expect( samr_1d%levels(1)%dx &
+    .toBe. ( simple_1d%box_lengths%v / ( 2.d0 * simple_1d%base_grid ) ) )
+  call ic_tester%expect( samr_1d%levels(2)%dx &
+    .toBe. ( simple_1d%box_lengths%v / ( 4.d0 * simple_1d%base_grid ) ) )
+  call ic_tester%expect( samr_1d%levels(3)%dx &
+    .toBe. ( simple_1d%box_lengths%v / ( 8.d0 * simple_1d%base_grid ) ) )
 
   ! Uniform SAMR test
-  call simple_uni%init( samr_uni, ig, log )
+  simple_uni = ic_factory%generate( ic_factory%simple_uni )
+  call rhyme_initial_condition_init( simple_uni, samr_uni, ic_factory%ig, &
+    ic_factory%units, ic_factory%logger )
 
   call ic_tester%expect( samr_uni%max_nboxes(0) .toBe. 1 )
   call ic_tester%expect( samr_uni%max_nboxes(1:) .toBe. 0 )

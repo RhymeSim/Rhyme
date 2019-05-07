@@ -13,6 +13,7 @@ module rhyme_chombo_factory
   integer, parameter :: chombo_fac_init_nboxes ( 0:samrid%max_nlevels ) = [ &
     1, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
+  real ( kind=8 ), parameter :: chombo_fac_box_lengths(3) = [ 1.d0, 1.d0, 0.d0 ]
 
   type(samr_t) :: chombo_fac_samr
 
@@ -27,6 +28,7 @@ contains
       chombo_fac_ghost_cells, &
       chombo_fac_max_nboxes, &
       chombo_fac_init_nboxes, &
+      chombo_fac_box_lengths, &
       chombo_fac_samr &
     )
 

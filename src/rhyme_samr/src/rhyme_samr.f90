@@ -42,6 +42,7 @@ module rhyme_samr
     integer :: base_grid(3)
     integer :: ghost_cells(3)
     integer :: max_nboxes ( 0:samrid%max_nlevels )
+    real ( kind=8 ) :: box_lengths(3) ! In code units, look at rhyme_units module
     type ( samr_level_t ) :: levels( 0:samrid%max_nlevels )
   contains
     procedure :: init_box => rhyme_samr_init_box

@@ -28,6 +28,8 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
   ! Structured AMR
   call tester%expect( ic%type .toBe. icid%simple )
   call tester%expect( ic%base_grid .toBe. [ 128, 128, 1 ] )
+  call tester%expect( (ic%box_lengths%v) .toBe. [ 1.d0, 1.d0, 0.d0 ] )
+  call tester%expect( ic%box_length_unit .toBe. 'kpc' )
   call tester%expect( ic%nlevels .toBe. 3 )
   call tester%expect( ic%max_nboxes(0:ic%nlevels-1) .toBe. [ 1, 10, 100 ] )
   call tester%expect( ic%max_nboxes(ic%nlevels:) .toBe. 0 )

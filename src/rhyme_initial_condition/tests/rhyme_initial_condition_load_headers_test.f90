@@ -10,15 +10,23 @@ logical function rhyme_initial_condition_load_headers_test () result ( failed )
   character ( len=1024 ) :: nickname = 'rhyme_initial_condition_load_headers'
   character ( len=1024 ) :: filename
 
-  type ( initial_condition_t ) :: ic
+  type ( initial_condition_t ) :: ic_read, ic_write
   type ( chombo_t ) :: ch
   type ( samr_t ) :: samr, samr_read
 
   ic_tester = .describe. "initial_condition load_headers"
 
+  ic_write = ic_factory%generate( ic_factory%simple_3d, 4 )
+
   ! Initializing SAMR object
   call rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
+    ic_write%nlevels, &
+    ic_write%base_grid, &
+    [ 2, 2, 2], &
+    ic_write%max_nboxes, &
+    ic_write%max_nboxes, &
+    ic_write%box_lengths%v, &
+    samr )
 
   ! Prepare chombo file
   ch%nickname = nickname
@@ -27,11 +35,11 @@ logical function rhyme_initial_condition_load_headers_test () result ( failed )
   call ch%write_samr( samr )
 
   ! Running load_header
-  ic%type = icid%snapshot
-  ic%snapshot_type = icid%rhyme
-  ic%snapshot_path = filename
+  ic_read%type = icid%snapshot
+  ic_read%snapshot_type = icid%rhyme
+  ic_read%snapshot_path = filename
 
-  call ic%load_headers( samr_read )
+  call ic_read%load_headers( samr_read )
 
   ! Test
   call ic_tester%expect( samr_read%nlevels .toBe. samr%nlevels )

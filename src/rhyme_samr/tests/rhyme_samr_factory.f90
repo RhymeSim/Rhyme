@@ -5,8 +5,8 @@ module rhyme_samr_factory
   implicit none
 
 contains
-  subroutine rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr, physical )
+  subroutine rhyme_samr_factory_fill ( nlevels, base_grid, ghost_cells, &
+      max_nboxes, init_nboxes, box_lengths, samr, physical )
     implicit none
 
     integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
@@ -14,6 +14,7 @@ contains
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
     type ( samr_t ), intent ( out ) :: samr
     logical, intent ( in ), optional :: physical
+    real ( kind=8 ), intent ( in ) :: box_lengths(3)
 
     integer :: l, b, i, j, k, uid, lb(3), ub(3), box_dims(3), rand_len
     real ( kind=8 ) :: val
@@ -36,6 +37,7 @@ contains
     samr%nlevels = nlevels
     samr%base_grid = base_grid
     samr%ghost_cells = ghost_cells
+    samr%box_lengths = box_lengths
     samr%max_nboxes = max_nboxes
 
     samr%levels%level = [ ( l, l=0, 23 ) ]
@@ -46,7 +48,7 @@ contains
       allocate ( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
       samr%levels(l)%iteration = 0
-      samr%levels(l)%dx = 1.d0 / samr%base_grid / 2.d0**l
+      samr%levels(l)%dx = samr%box_lengths / samr%base_grid / 2.d0**l
       samr%levels(l)%dt = 0.d0
       samr%levels(l)%t = 0.d0
 

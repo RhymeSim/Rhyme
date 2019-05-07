@@ -4,6 +4,7 @@ enable_language( Fortran )
 project( rhyme_initial_condition )
 
 set( deps
+  rhyme_units
   rhyme_samr
   rhyme_chombo
   rhyme_ideal_gas
@@ -13,6 +14,8 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_initial_condition_init_simple.f90
+  src/rhyme_initial_condition_init.f90
   src/rhyme_initial_condition.f90
 )
 

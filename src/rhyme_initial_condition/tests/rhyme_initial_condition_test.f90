@@ -14,7 +14,6 @@ logical function rhyme_initial_condition_test () result ( failed )
   call ic_tester%expect( icid%snapshot .toBe. 2 )
   call ic_tester%expect( icid%rhyme .toBe. 10 )
   call ic_tester%expect( icid%radamesh .toBe. 11 )
-  call ic_tester%expect( icid%r2c_2d .toBe. 12 )
   call ic_tester%expect( icid%unset .toBe. -1 )
 
   call ic_tester%expect( ic%type .toBe. icid%unset )

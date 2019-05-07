@@ -4,56 +4,93 @@ module rhyme_initial_condition_factory
 
   implicit none
 
-  logical :: ic_fac_intialized = .false.
+  type rhyme_initial_condition_factory_indices_t
+    integer :: simple_1d = 1, simple_2d = 2, simple_3d = 3, simple_uni = 4
+  end type rhyme_initial_condition_factory_indices_t
 
-  integer, parameter :: nlevels = 4
-  integer, parameter :: base_grid(3) = [ 16, 8, 4 ]
-  integer, parameter :: ghost_cells(3) = [ 2, 2, 2 ]
-  integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
-    1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  integer, parameter :: init_nboxes ( 0:samrid%max_nlevels ) = [ &
-    1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  type ( initial_condition_t ) :: simple = initial_condition_t ( &
-    icid%simple, icid%unset, nlevels, base_grid, max_nboxes, '' &
-  )
+  type ( rhyme_initial_condition_factory_indices_t ), parameter :: ic_factory_id = &
+    rhyme_initial_condition_factory_indices_t()
 
-  integer, parameter :: nlevels_1d = 4
-  integer, parameter :: base_grid_1d(3) = [ 32, 1, 1 ]
-  integer, parameter :: ghost_cells_1d(3) = [ 2, 0, 0 ]
-  integer, parameter :: max_nboxes_1d ( 0:samrid%max_nlevels ) = [ &
-    1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  type ( initial_condition_t ) :: simple1d = initial_condition_t ( &
-    icid%simple, icid%unset, nlevels_1d, base_grid_1d, max_nboxes_1d, '' &
-  )
+  type rhyme_initial_condition_factory_t
+    type ( ideal_gas_t ) :: ig
+    type ( rhyme_units_t ) :: units
+    type ( log_t ) :: logger
+    integer :: gastype = igid%monatomic
+    integer :: simple_1d = ic_factory_id%simple_1d
+    integer :: simple_2d = ic_factory_id%simple_2d
+    integer :: simple_3d = ic_factory_id%simple_3d
+    integer :: simple_uni = ic_factory_id%simple_uni
+    logical :: initialized = .false.
+  contains
+    procedure :: init => rhyme_initial_condition_factory_init
+    procedure :: generate => rhyme_initial_condition_factory_generate
+  end type rhyme_initial_condition_factory_t
 
-  integer, parameter :: nlevels_uni = 1
-  integer, parameter :: base_grid_uni(3) = [ 32, 1, 1 ]
-  integer, parameter :: ghost_cells_uni(3) = [ 2, 0, 0 ]
-  integer, parameter :: max_nboxes_uni ( 0:samrid%max_nlevels ) = [ &
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  type ( initial_condition_t ) :: simple_uni = initial_condition_t ( &
-    icid%simple, icid%unset, nlevels_uni, base_grid_uni, max_nboxes_uni, '' &
-  )
-
-  type ( log_t ) :: log
-  type ( ideal_gas_t ) :: ig
+  type ( rhyme_initial_condition_factory_t ) :: ic_factory = rhyme_initial_condition_factory_t()
 
 contains
 
-  subroutine rhyme_initial_condition_factory_init ()
+  subroutine rhyme_initial_condition_factory_init ( this )
     implicit none
 
-    if ( ic_fac_intialized ) return
+    class ( rhyme_initial_condition_factory_t ), intent( inout ) :: this
 
     call rhyme_ideal_gas_factory_init
 
-    ig%type = igid%monatomic
-    call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, log )
+    this%ig%type = this%gastype
+    call rhyme_ideal_gas_init( this%ig, ig_chemi, ig_thermo, ig_units, this%logger )
 
-    ic_fac_intialized = .true.
+    this%units = ig_units
+
+    this%initialized = .true.
   end subroutine rhyme_initial_condition_factory_init
+
+
+  function rhyme_initial_condition_factory_generate ( &
+    this, type, nlevels ) result ( ic_fac )
+    implicit none
+
+    class ( rhyme_initial_condition_factory_t ), intent( inout ) :: this
+    integer, intent ( in ) :: type
+    integer, intent ( in ), optional :: nlevels
+
+    type ( initial_condition_t ) :: ic_fac
+    integer :: l, nl
+
+    if ( .not. this%initialized ) call this%init
+
+    if ( present( nlevels ) ) then
+      nl = nlevels
+    else
+      nl = 1
+    end if
+
+    ic_fac%type = icid%simple
+    ic_fac%snapshot_type = icid%unset
+    ic_fac%snapshot_path = ''
+    ic_fac%box_length_unit = 'm'
+
+    ic_fac%nlevels = nl
+    ic_fac%max_nboxes = 0
+    ic_fac%max_nboxes( 0:nl-1 ) = [ ( l**3, l=1, nl ) ]
+
+    select case ( type )
+    case ( ic_factory_id%simple_1d )
+      ic_fac%base_grid = [ 16, 1, 1 ]
+      ic_fac%box_lengths%v = [ 1.d0, 0.d0, 0.d0 ]
+    case ( ic_factory_id%simple_2d )
+      ic_fac%base_grid = [ 16, 8, 1 ]
+      ic_fac%box_lengths%v = [ 1.d0, .5d0, 0.d0 ]
+    case ( ic_factory_id%simple_3d )
+      ic_fac%base_grid = [ 16, 8, 4 ]
+      ic_fac%box_lengths%v = [ 1.d0, .5d0, .25d0 ]
+    case ( ic_factory_id%simple_uni )
+      ic_fac%base_grid = [ 16, 8, 4 ]
+      ic_fac%box_lengths%v = [ 1.d0, .5d0, .25d0 ]
+    case default
+      ic_fac%base_grid = [ 16, 8, 4 ]
+      ic_fac%box_lengths%v = [ 1.d0, .5d0, .25d0 ]
+    end select
+
+  end function rhyme_initial_condition_factory_generate
 end module rhyme_initial_condition_factory

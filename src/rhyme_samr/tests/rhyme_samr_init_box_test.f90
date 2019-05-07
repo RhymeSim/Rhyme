@@ -15,15 +15,15 @@ logical function rhyme_samr_init_box_test () result ( failed )
   integer, parameter :: init_nboxes ( 0:samrid%max_nlevels ) = [ &
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
   ]
+  real ( kind=8 ), parameter :: box_lengths(3) = [ 1.d0, 1.d0, 1.d0 ]
 
   type ( samr_t ) :: samr
   integer :: l, b, box_dims(3), ledge(3), redge(3)
 
   s_tester = .describe. "samr_init_box"
 
-  call rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr &
-  )
+  call rhyme_samr_factory_fill ( nlevels, base_grid, ghost_cells, &
+    max_nboxes, init_nboxes, box_lengths, samr )
 
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%max_nboxes

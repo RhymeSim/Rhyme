@@ -52,6 +52,11 @@ module rhyme_nombre
       class ( nombre_t ), intent ( in ) :: this
       character ( len=128 ) :: str
     end function rhyme_nombre_print
+
+    pure module function rhyme_nombre_get_value ( n ) result ( v )
+      type ( nombre_t ), intent ( in ) :: n
+      real ( kind=8 ) :: v
+    end function rhyme_nombre_get_value
   end interface
 
 

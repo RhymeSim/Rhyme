@@ -20,7 +20,7 @@ ic_type = simple
 #
 # Relevant options for snapshot IC:
 # - ic_snapshot_type:
-#   implemented types: rhyme, r2c_2d
+#   implemented types: rhyme
 # - ic_snapshot_path: path to the snapshot
 #
 # - example:
@@ -28,6 +28,7 @@ ic_type = simple
 #   ic_snapshot_path = /path/to/rhyme/chombo/snapshot
 
 ic_grid = 128 128 1
+ic_box_lengths = 1 1 0 "kpc"
 ic_nlevels = 3
 
 
