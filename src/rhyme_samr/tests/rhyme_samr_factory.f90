@@ -4,34 +4,106 @@ module rhyme_samr_factory
 
   implicit none
 
+  type rhyme_samr_factory_t
+    ! Default values
+    integer :: nlevels = 3
+    integer :: base_grid(3) = [ 16, 8, 4 ]
+    integer :: ghost_cells(3) = [ 2, 2, 2 ]
+    integer :: max_nboxes( 0:samrid%max_nlevels ) = 0
+    integer :: init_nboxes( 0:samrid%max_nlevels ) = 0
+    real ( kind=8 ) :: box_lengths(3) = [ 1.d0, .5d0, .25d0 ]
+  contains
+    procedure :: init => rhyme_samr_factory_init
+    procedure :: fill => rhyme_samr_factory_fill
+    procedure :: fill_with => rhyme_samr_factory_fill_with
+  end type rhyme_samr_factory_t
+
+  type ( rhyme_samr_factory_t ) :: samr_factory = rhyme_samr_factory_t()
+
 contains
-  subroutine rhyme_samr_factory_fill ( nlevels, base_grid, ghost_cells, &
-      max_nboxes, init_nboxes, box_lengths, samr, physical )
+
+  subroutine rhyme_samr_factory_init ( this, empty )
     implicit none
 
-    integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
-    integer, intent ( in ) :: max_nboxes( 0:samrid%max_nlevels )
-    integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
-    real ( kind=8 ), intent ( in ) :: box_lengths(3)
-    type ( samr_t ), intent ( out ) :: samr
-    logical, intent ( in ), optional :: physical
+    class ( rhyme_samr_factory_t ), intent ( inout ) :: this
+    logical, intent ( in ), optional :: empty
 
-    integer :: l, b, i, j, k, uid, lb(3), ub(3), box_dims(3), rand_len
-    real ( kind=8 ) :: val
-    logical :: phys = .false.
-    type ( hydro_conserved_t ) :: state
+    this%nlevels = 3
+    this%base_grid = [ 16, 8, 4 ]
+    this%ghost_cells = [ 2, 2, 2 ]
+    this%max_nboxes = 0
+    this%max_nboxes( 0:2 ) = [ 1, 3, 9 ]
+    this%init_nboxes = 0
+    if ( present( empty ) .and. .not. empty ) then
+      this%init_nboxes( 0:2 ) = [ 1, 2, 4 ]
+    end if
+    this%box_lengths = [ 1.d0, .5d0, .25d0 ]
+  end subroutine rhyme_samr_factory_init
+
+
+  function rhyme_samr_factory_fill ( this, physical, empty ) result ( samr )
+    implicit none
+
+    class ( rhyme_samr_factory_t ), intent ( inout ) :: this
+    logical, intent ( in ), optional :: physical, empty
+
+    type ( samr_t ) :: samr
+
+    logical :: phys, emp
+    integer :: l
+
+    if ( present( empty ) ) then
+      emp = empty
+    else
+      emp = .false.
+    end if
+
+    call this%init( empty=emp )
 
     if ( present( physical ) ) then
       phys = physical
-      rand_len = 5
-      call random_seed( size = rand_len )
     else
       phys = .false.
     end if
 
-    if ( samr%initialized ) then
-      print *, 'SAMR has already been initialized'
-      return
+    samr%nlevels = this%nlevels
+    samr%base_grid = this%base_grid
+    samr%ghost_cells = this%ghost_cells
+    samr%box_lengths = this%box_lengths
+    samr%max_nboxes = this%max_nboxes
+
+    samr%levels%level = [ ( l, l=0, 23 ) ]
+    samr%levels%max_nboxes = this%max_nboxes
+    samr%levels%nboxes = this%init_nboxes
+
+    call rhyme_samr_factory_filling( samr, this%init_nboxes, phys )
+  end function rhyme_samr_factory_fill
+
+
+  function rhyme_samr_factory_fill_with ( this, nlevels, base_grid, &
+    ghost_cells, max_nboxes, init_nboxes, box_lengths, physical ) &
+    result ( samr )
+    implicit none
+
+    class ( rhyme_samr_factory_t ), intent ( inout ) :: this
+    integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
+    integer, intent ( in ) :: max_nboxes( 0:samrid%max_nlevels )
+    integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
+    real ( kind=8 ), intent ( in ) :: box_lengths(3)
+    logical, intent ( in ), optional :: physical
+
+    type ( samr_t ) :: samr
+
+    integer :: l
+    logical :: phys
+
+    ! Just to suppress the unused warning
+    call this%init
+
+    if ( present( physical ) ) then
+      phys = physical
+    else
+      phys = .false.
     end if
 
     samr%nlevels = nlevels
@@ -44,6 +116,27 @@ contains
     samr%levels%max_nboxes = max_nboxes
     samr%levels%nboxes = init_nboxes
 
+    call rhyme_samr_factory_filling( samr, init_nboxes, phys )
+  end function rhyme_samr_factory_fill_with
+
+
+  subroutine rhyme_samr_factory_filling ( samr, init_nboxes, physical )
+    implicit none
+
+    type ( samr_t ), intent ( inout ) :: samr
+    integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
+    logical, intent ( in ) :: physical
+
+    real ( kind=8 ) :: val
+    integer :: l, b, k, j, i, uid
+    integer :: lb(3), ub(3), rand_len, box_dims(3)
+    type ( hydro_conserved_t ) :: state
+
+    if ( physical ) then
+      rand_len = 5
+      call random_seed( size = rand_len )
+    end if
+
     do l = 0, samr%nlevels - 1
       allocate ( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
@@ -52,15 +145,15 @@ contains
       samr%levels(l)%dt = 0.d0
       samr%levels(l)%t = 0.d0
 
-      box_dims = floor( base_grid / real( init_nboxes(l) ) )
+      box_dims = floor( samr%base_grid / real( init_nboxes(l) ) )
       box_dims = merge( box_dims, 1, box_dims > 1 )
 
       do b = 1, samr%levels(l)%nboxes
         samr%levels(l)%boxes(b)%level = l
         samr%levels(l)%boxes(b)%number = b
 
-        lb = -ghost_cells + 1
-        ub = box_dims + ghost_cells
+        lb = -samr%ghost_cells + 1
+        ub = box_dims + samr%ghost_cells
 
         samr%levels(l)%boxes(b)%dims = box_dims
 
@@ -73,7 +166,7 @@ contains
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
           do j = 1, samr%levels(l)%boxes(b)%dims(2)
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
-              if ( phys ) then
+              if ( physical ) then
                 state = gen_state()
                 samr%levels(l)%boxes(b)%hydro(i,j,k) = state
               else
@@ -91,8 +184,6 @@ contains
       end do
     end do
 
-    samr%initialized = .true.
-
   contains
     type ( hydro_conserved_t ) function gen_state () result ( U )
       implicit none
@@ -108,5 +199,5 @@ contains
       U%u( hyid%e_tot ) = .5d0 * sum( U%u( hyid%rho_u:hyid%rho_w )**2 ) / r(1) &
         + r(5) / ( 5.d0 / 3.d0 - 1 )
     end function gen_state
-  end subroutine rhyme_samr_factory_fill
+  end subroutine rhyme_samr_factory_filling
 end module rhyme_samr_factory
