@@ -41,23 +41,21 @@ module rhyme_samr_bc
 
 contains
 
-  subroutine rhyme_samr_bc_init ( this, samr, log )
+  subroutine rhyme_samr_bc_init ( this, samr, logger )
     implicit none
 
     class ( samr_bc_t ), intent ( inout ) :: this
     type ( samr_t ), intent ( inout ) :: samr
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     integer :: i, j, k, lb(3), ub(3)
 
     if ( .not. samr%initialized ) then
-      call log%err( 'SAMR object need to be initialized before initializing SAMR_BC' )
-      return
+      call logger%err( 'SAMR object need to be initialized before initializing SAMR_BC' )
     end if
 
     if ( this%initialized ) then
-      call log%warn( 'Trying to re-initialize SAMR_BC object' )
-      return
+      call logger%warn( 'Trying to re-initialize SAMR_BC object' )
     end if
 
     lb = - samr%ghost_cells + 1

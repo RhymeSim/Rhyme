@@ -184,6 +184,7 @@ contains
       end do
     end do
 
+    samr%initialized = .true.
   contains
     type ( hydro_conserved_t ) function gen_state () result ( U )
       implicit none
