@@ -9,21 +9,20 @@ logical function rhyme_hydro_base_prim_to_cons_test () result (failed)
   type ( hydro_primitive_t ) :: prim
   type ( hydro_conserved_t ) :: cons
   real ( kind=8 ) :: e_tot
-  type ( rhyme_hydro_factory_t ) :: hyfact
 
   hy_tester = .describe. "hydro_base prim_to_cons"
 
-  prim = hyfact%primitive()
+  prim = hy_factory%primitive()
 
-  call hy_prim_to_cons ( prim, hyfact%e_internal(), cons )
+  call hy_prim_to_cons ( prim, hy_factory%e_internal(), cons )
 
-  e_tot = hyfact%rho * 0.5d0 * (hyfact%u**2 + hyfact%v**2 + hyfact%w**2) &
-    + hyfact%pressure() / ( hyfact%gamma - 1.d0 )
+  e_tot = hy_factory%rho * 0.5d0 * (hy_factory%u**2 + hy_factory%v**2 + hy_factory%w**2) &
+    + hy_factory%pressure() / ( hy_factory%gamma - 1.d0 )
 
-  call hy_tester%expect( cons%u(hyid%rho) .toBe. hyfact%rho )
-  call hy_tester%expect( cons%u(hyid%rho_u) .toBe. hyfact%rho * hyfact%u )
-  call hy_tester%expect( cons%u(hyid%rho_v) .toBe. hyfact%rho * hyfact%v )
-  call hy_tester%expect( cons%u(hyid%rho_w) .toBe. hyfact%rho * hyfact%w )
+  call hy_tester%expect( cons%u(hyid%rho) .toBe. hy_factory%rho )
+  call hy_tester%expect( cons%u(hyid%rho_u) .toBe. hy_factory%rho * hy_factory%u )
+  call hy_tester%expect( cons%u(hyid%rho_v) .toBe. hy_factory%rho * hy_factory%v )
+  call hy_tester%expect( cons%u(hyid%rho_w) .toBe. hy_factory%rho * hy_factory%w )
   call hy_tester%expect( cons%u(hyid%e_tot) .toBe. e_tot )
 
   failed = hy_tester%failed()

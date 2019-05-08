@@ -7,14 +7,13 @@ logical function rhyme_hydro_base_sp_internal_e_test () result (failed)
   type ( assertion_t ) :: hy_tester
 
   type ( hydro_conserved_t ) :: cons
-  type ( rhyme_hydro_factory_t ) :: hyfact
 
   hy_tester = .describe. "hydro_base sp_internal_e"
 
-  cons = hyfact%conserved()
+  cons = hy_factory%conserved()
 
   call hy_tester%expect( &
-    hy_sp_internal_e( cons ) .toBe. hyfact%e_internal() / hyfact%rho &
+    hy_sp_internal_e( cons ) .toBe. hy_factory%e_internal() / hy_factory%rho &
     .within. 15 )
 
   failed = hy_tester%failed()
