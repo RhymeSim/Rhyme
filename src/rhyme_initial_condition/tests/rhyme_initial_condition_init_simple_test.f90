@@ -14,7 +14,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   ! SAMR test
   simple_3d = ic_factory%generate( ic_factory%simple_3d, 4 )
-  call rhyme_initial_condition_init( simple_3d, samr_3d, ic_factory%ig, &
+  call rhyme_initial_condition_init( simple_3d, samr_3d, &
     ic_factory%units, ic_factory%logger )
 
   call ic_tester%expect( samr_3d%nlevels .toBe. simple_3d%nlevels )
@@ -36,7 +36,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   ! 1D SAMR test
   simple_1d = ic_factory%generate( ic_factory%simple_1d, 4 )
-  call rhyme_initial_condition_init( simple_1d, samr_1d, ic_factory%ig, &
+  call rhyme_initial_condition_init( simple_1d, samr_1d, &
     ic_factory%units, ic_factory%logger )
 
   call ic_tester%expect( samr_1d%levels(0)%dx &
@@ -50,7 +50,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   ! Uniform SAMR test
   simple_uni = ic_factory%generate( ic_factory%simple_uni )
-  call rhyme_initial_condition_init( simple_uni, samr_uni, ic_factory%ig, &
+  call rhyme_initial_condition_init( simple_uni, samr_uni, &
     ic_factory%units, ic_factory%logger )
 
   call ic_tester%expect( samr_uni%max_nboxes(0) .toBe. 1 )

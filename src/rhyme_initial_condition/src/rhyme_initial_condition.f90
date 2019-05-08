@@ -2,7 +2,6 @@ module rhyme_initial_condition
   use rhyme_units
   use rhyme_samr
   use rhyme_chombo
-  use rhyme_ideal_gas
   use rhyme_log
 
   implicit none
@@ -37,10 +36,9 @@ module rhyme_initial_condition
 
 
   interface
-    module subroutine rhyme_initial_condition_init ( ic, samr, ig, units, logger )
+    module subroutine rhyme_initial_condition_init ( ic, samr, units, logger )
       type ( initial_condition_t ), intent ( inout ) :: ic
       type ( samr_t ), intent ( inout ) :: samr
-      type ( ideal_gas_t ), intent ( in ) :: ig
       type ( rhyme_units_t ), intent ( in ) :: units
       type ( log_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_init
@@ -54,14 +52,13 @@ module rhyme_initial_condition
   end interface
 
 contains
-  subroutine rhyme_initial_condition_load_snapshot ( this, samr, ig, logger )
+  subroutine rhyme_initial_condition_load_snapshot ( this, samr, logger )
     use rhyme_chombo
 
     implicit none
 
     class ( initial_condition_t ), intent ( in ) :: this
     type ( samr_t ), intent ( inout ) :: samr
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( log_t ), intent ( inout ) :: logger
 
     logical :: exist

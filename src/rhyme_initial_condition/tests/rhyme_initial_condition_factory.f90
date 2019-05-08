@@ -1,6 +1,6 @@
 module rhyme_initial_condition_factory
   use rhyme_initial_condition
-  use rhyme_ideal_gas_factory
+  use rhyme_units_factory
 
   implicit none
 
@@ -12,10 +12,8 @@ module rhyme_initial_condition_factory
     rhyme_initial_condition_factory_indices_t()
 
   type rhyme_initial_condition_factory_t
-    type ( ideal_gas_t ) :: ig
     type ( rhyme_units_t ) :: units
     type ( log_t ) :: logger
-    integer :: gastype = igid%monatomic
     integer :: simple_1d = ic_factory_id%simple_1d
     integer :: simple_2d = ic_factory_id%simple_2d
     integer :: simple_3d = ic_factory_id%simple_3d
@@ -35,12 +33,7 @@ contains
 
     class ( rhyme_initial_condition_factory_t ), intent( inout ) :: this
 
-    call rhyme_ideal_gas_factory_init
-
-    this%ig%type = this%gastype
-    call rhyme_ideal_gas_init( this%ig, ig_chemi, ig_thermo, ig_units, this%logger )
-
-    this%units = ig_units
+    this%units = units_factory%generate()
 
     this%initialized = .true.
   end subroutine rhyme_initial_condition_factory_init

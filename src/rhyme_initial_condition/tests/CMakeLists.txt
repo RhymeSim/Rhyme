@@ -3,8 +3,7 @@ set( test_subject rhyme_initial_condition )
 
 set( factories
   rhyme_samr
-  rhyme_ideal_gas
-  rhyme_hydro_base
+  rhyme_units
 )
 
 set( test_deps

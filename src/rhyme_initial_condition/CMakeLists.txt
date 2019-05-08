@@ -7,7 +7,6 @@ set( deps
   rhyme_units
   rhyme_samr
   rhyme_chombo
-  rhyme_ideal_gas
   rhyme_log
 )
 
