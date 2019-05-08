@@ -12,6 +12,7 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_cfl_time_step.f90
   src/rhyme_cfl.f90
 )
 

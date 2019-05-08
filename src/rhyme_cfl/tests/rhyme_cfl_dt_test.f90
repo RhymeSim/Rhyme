@@ -1,5 +1,5 @@
 logical function rhyme_cfl_dt_test () result (failed)
-  use rhyme_cfl
+  use rhyme_cfl_factory
   use rhyme_ideal_gas_factory
   use rhyme_samr_factory
   use rhyme_assertion
@@ -7,16 +7,6 @@ logical function rhyme_cfl_dt_test () result (failed)
   implicit none
 
   type ( assertion_t ) :: cfl_tester
-
-  integer, parameter :: base_grid(3) = [ 4, 8, 1 ]
-  integer, parameter :: nlevels = 1
-  integer, parameter :: ghost_cells(3) = [ 2, 2, 0 ]
-  integer, parameter :: max_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  integer, parameter :: init_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
 
   type ( cfl_t ) :: cfl
   type ( ideal_gas_t ) :: ig
@@ -28,15 +18,10 @@ logical function rhyme_cfl_dt_test () result (failed)
 
   cfl_tester = .describe. "CFL"
 
-  call rhyme_ideal_gas_factory_init
+  ig = ig_factory%generate( igid%diatomic )
+  samr = samr_factory%fill( physical=.true. )
 
-  ig%type = igid%diatomic
-  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
-
-  call rhyme_samr_factory_fill( nlevels, base_grid, ghost_cells, &
-    max_nboxes, init_nboxes, samr, physical=.true. )
-
-  dt = cfl%dt ( ig, samr )
+  dt = rhyme_cfl_time_step( cfl, ig, samr )
 
   max_v_cs = calc_v_cs( samr%levels(0)%boxes(1)%hydro(1,1,1) )
 

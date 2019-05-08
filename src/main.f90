@@ -93,7 +93,7 @@ program rhyme
   do while ( samr%levels(0)%t < 0.4d0 )
     call logger%set_iteration_section( samr%levels(0)%iteration )
 
-    samr%levels(0)%dt = cfl%dt( ig, samr )
+    samr%levels(0)%dt = rhyme_cfl_time_step( cfl, ig, samr )
 
     call logger%log( '', 't', '=', [ samr%levels(0)%t ] )
     call logger%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
