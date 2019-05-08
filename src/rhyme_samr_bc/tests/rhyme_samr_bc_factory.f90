@@ -1,49 +1,54 @@
 module rhyme_samr_bc_factory
-  use rhyme_samr_factory
   use rhyme_samr_bc
+  use rhyme_samr_factory
 
   implicit none
 
-  logical :: samr_bc_fac_initialized = .false.
+  type rhyme_samr_bc_factory_t
+    type ( samr_t ) :: samr
+    type ( log_t ) :: logger
+    logical :: initialized = .false.
+  contains
+    procedure :: init => rhyme_samr_bc_factory_init
+    procedure :: types => rhyme_samr_bc_factory_types
+  end type rhyme_samr_bc_factory_t
 
-  integer, parameter :: samr_bc_fac_base_grid(3) = [ 16, 8, 4 ]
-  integer, parameter :: samr_bc_fac_nlevels = 3
-  integer, parameter :: samr_bc_fac_nboxes = 11
-  integer, parameter :: samr_bc_fac_ghost_cells(3) = [ 2, 2, 2 ]
-  integer, parameter :: samr_bc_fac_max_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 10, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  integer, parameter :: samr_bc_fac_init_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-
-  integer :: samr_bc_fac_bc_types(6) = [ &
-    bcid%reflective, &
-    bcid%outflow, &
-    bcid%periodic, &
-    bcid%reflective, &
-    bcid%outflow, &
-    bcid%periodic ]
-
-  type ( samr_t ) :: samr_bc_fac_samr
-  type ( log_t ) :: samr_bc_fac_log
+  type ( rhyme_samr_bc_factory_t ) :: bc_factory = rhyme_samr_bc_factory_t()
 
 contains
 
-  subroutine rhyme_samr_bc_factory_init ()
+  subroutine rhyme_samr_bc_factory_init ( this )
     implicit none
 
-    if ( samr_bc_fac_initialized ) return
+    class ( rhyme_samr_bc_factory_t ), intent ( inout ) :: this
 
-    call rhyme_samr_factory_fill ( &
-      samr_bc_fac_nlevels, &
-      samr_bc_fac_base_grid, &
-      samr_bc_fac_ghost_cells, &
-      samr_bc_fac_max_nboxes, &
-      samr_bc_fac_init_nboxes, &
-      samr_bc_fac_samr &
-    )
+    integer :: max_nboxes ( 0:samrid%max_nlevels )
+    integer :: init_nboxes ( 0:samrid%max_nlevels )
 
-    samr_bc_fac_initialized = .true.
+    max_nboxes = 0
+    max_nboxes( 0:3 ) = [ 1, 3, 9, 7 ]
+
+    init_nboxes = 0
+    init_nboxes( 0:3 ) = [ 1, 2, 4, 8 ]
+
+    call rhyme_samr_factory_fill( 3, [ 16, 8, 4 ], [ 2, 2, 2 ], &
+      max_nboxes, init_nboxes, [ 1.d0, .5d0, .25d0 ], this%samr )
+
+    this%initialized = .true.
   end subroutine rhyme_samr_bc_factory_init
+
+
+  function rhyme_samr_bc_factory_types ( this ) result ( types )
+    implicit none
+
+    class ( rhyme_samr_bc_factory_t ), intent ( inout ) :: this
+    integer :: types(6)
+
+    if ( .not. this%initialized ) call this%init
+
+    types = [ &
+      bcid%reflective, bcid%outflow, bcid%periodic, &
+      bcid%reflective, bcid%outflow, bcid%periodic &
+    ]
+  end function rhyme_samr_bc_factory_types
 end module rhyme_samr_bc_factory

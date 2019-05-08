@@ -43,13 +43,12 @@ contains
 
     call ic_snapshot_types%add( 'rhyme', icid%rhyme )
     call ic_snapshot_types%add( 'radamesh', icid%radamesh )
-    call ic_snapshot_types%add( 'r2c_2d', icid%r2c_2d )
 
     call config%read( 'ic_type' .at. 1, ic%type, ic_types )
     call config%read( 'ic_snapshot_type' .at. 1, ic%snapshot_type, ic_snapshot_types )
     call config%read( 'ic_snapshot_path' .at. 1, ic%snapshot_path )
     call config%read_array( 'ic_grid' .at. 1, ic%base_grid(1:3) )
-    call config%read_array( 'ic_box_lengths' .at. 1, (ic%box_lengths(1:3)%v) )
+    call config%read_array( 'ic_box_lengths' .at. 1, ic%box_lengths%v )
     call config%read( 'ic_box_lengths' .at. 4, ic%box_length_unit )
     call config%read( 'ic_nlevels' .at. 1, ic%nlevels )
     call config%read_array( 'max_nboxes' .at. 1, ic%max_nboxes( 0:ic%nlevels-1 ) )

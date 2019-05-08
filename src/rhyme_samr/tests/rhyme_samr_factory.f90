@@ -12,9 +12,9 @@ contains
     integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
     integer, intent ( in ) :: max_nboxes( 0:samrid%max_nlevels )
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
+    real ( kind=8 ), intent ( in ) :: box_lengths(3)
     type ( samr_t ), intent ( out ) :: samr
     logical, intent ( in ), optional :: physical
-    real ( kind=8 ), intent ( in ) :: box_lengths(3)
 
     integer :: l, b, i, j, k, uid, lb(3), ub(3), box_dims(3), rand_len
     real ( kind=8 ) :: val

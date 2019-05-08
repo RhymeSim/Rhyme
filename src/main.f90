@@ -70,7 +70,7 @@ program rhyme
   call rhyme_ideal_gas_init( ig, chemistry, thermo, units, logger )
 
   ! Structured AMR
-  call ic%init( samr, ig, logger )
+  call rhyme_initial_condition_init( ic, samr, units, logger )
 
   ! Boundary Conditions
   call bc%init( samr, logger )

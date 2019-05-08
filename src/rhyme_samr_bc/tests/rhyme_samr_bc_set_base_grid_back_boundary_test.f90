@@ -13,15 +13,15 @@ logical function rhyme_samr_bc_set_base_grid_back_boundary_test () result ( fail
 
   bc_tester = .describe. "samr_bc_set_base_grid_back_boundary"
 
-  call rhyme_samr_bc_factory_init
+  call bc_factory%init
 
   ! Reflective
   bc%types( bcid%back ) = bcid%reflective
 
-  call bc%set_base_grid_back_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_back_boundary( bc_factory%samr%levels(0)%boxes(1) )
 
-  d = samr_bc_fac_samr%levels(0)%boxes(1)%dims
-  b = samr_bc_fac_samr%levels(0)%boxes(1)
+  d = bc_factory%samr%levels(0)%boxes(1)%dims
+  b = bc_factory%samr%levels(0)%boxes(1)
 
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2),0  )%u(1)) .toBe. (b%hydro( 1:d(1),1:d(2), 1 )%u(1)) )
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2),0  )%u(2)) .toBe. (b%hydro( 1:d(1),1:d(2), 1 )%u(2)) )
@@ -37,9 +37,9 @@ logical function rhyme_samr_bc_set_base_grid_back_boundary_test () result ( fail
   ! Outflow
   bc%types( bcid%back ) = bcid%outflow
 
-  call bc%set_base_grid_back_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_back_boundary( bc_factory%samr%levels(0)%boxes(1) )
 
-  b = samr_bc_fac_samr%levels(0)%boxes(1)
+  b = bc_factory%samr%levels(0)%boxes(1)
 
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2), 0 )%u(1)) .toBe. (b%hydro( 1:d(1),1:d(2),1 )%u(1)) )
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2), 0 )%u(2)) .toBe. (b%hydro( 1:d(1),1:d(2),1 )%u(2)) )
@@ -55,9 +55,9 @@ logical function rhyme_samr_bc_set_base_grid_back_boundary_test () result ( fail
   ! Periodic
   bc%types( bcid%back ) = bcid%periodic
 
-  call bc%set_base_grid_back_boundary ( samr_bc_fac_samr%levels(0)%boxes(1) )
+  call bc%set_base_grid_back_boundary( bc_factory%samr%levels(0)%boxes(1) )
 
-  b = samr_bc_fac_samr%levels(0)%boxes(1)
+  b = bc_factory%samr%levels(0)%boxes(1)
 
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2), 0 )%u(1)) .toBe. (b%hydro( 1:d(1),1:d(2),d(3)   )%u(1)) )
   call bc_tester%expect( (b%hydro( 1:d(1),1:d(2), 0 )%u(2)) .toBe. (b%hydro( 1:d(1),1:d(2),d(3)   )%u(2)) )

@@ -21,7 +21,6 @@ module rhyme_samr_bc
     integer :: types(6) = bcid%reflective
     logical :: initialized = .false.
   contains
-    procedure :: init_with => rhyme_samr_bc_init_with
     procedure :: init => rhyme_samr_bc_init
     procedure :: set_base_grid_boundaries => rhyme_samr_bc_set_base_grid_boundaries
     procedure :: set_base_grid_left_boundary => rhyme_samr_bc_set_base_grid_left_boundary
@@ -41,31 +40,6 @@ module rhyme_samr_bc
   end interface
 
 contains
-
-  subroutine rhyme_samr_bc_init_with ( this, samr, bc_types, log )
-    implicit none
-
-    class (samr_bc_t), intent(inout) :: this
-    type (samr_t), intent(inout) :: samr
-    integer, intent(in) :: bc_types(6)
-    type ( log_t ), intent ( inout ) :: log
-
-    if ( .not. samr%initialized ) then
-      call log%err( 'SAMR object need to be initialized before initializing SAMR_BC' )
-      return
-    end if
-
-    if ( this%initialized ) then
-      call log%warn( 'Trying to re-initialize SAMR_BC object' )
-      return
-    end if
-
-    this%types(:) = bc_types(:)
-
-    call rhyme_samr_bc_init ( this, samr, log )
-
-  end subroutine rhyme_samr_bc_init_with
-
 
   subroutine rhyme_samr_bc_init ( this, samr, log )
     implicit none
