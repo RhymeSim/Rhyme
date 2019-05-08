@@ -1,5 +1,6 @@
 logical function rhyme_ideal_gas_sound_speed_test () result (failed)
   use rhyme_ideal_gas_factory
+  use rhyme_hydro_base_factory
   use rhyme_assertion
 
   implicit none
@@ -7,17 +8,16 @@ logical function rhyme_ideal_gas_sound_speed_test () result (failed)
   type ( assertion_t ) :: ig_tester
 
   type ( ideal_gas_t ) :: ig
+  type ( hydro_conserved_t ) :: cons
   real ( kind=4 ) :: cs
 
   ig_tester = .describe. "ideal_gas sound_speed"
 
-  call rhyme_ideal_gas_factory_init
+  cons = hy_factory%conserved()
+  ig = ig_factory%generate()
 
-  ig%type = ig_gas_type
-  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
-
-  cs = real( sqrt( ig%gamma * ig_hy%p / ig_hy%rho) )
-  call ig_tester%expect( ig%Cs( ig_hy%cons ) .toBe. cs )
+  cs = real( sqrt( ig%gamma * hy_factory%p / hy_factory%rho) )
+  call ig_tester%expect( ig%Cs( cons ) .toBe. cs )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_sound_speed_test

@@ -1,5 +1,6 @@
 logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed)
   use rhyme_ideal_gas_factory
+  use rhyme_hydro_base_factory
   use rhyme_assertion
 
   implicit none
@@ -7,20 +8,19 @@ logical function rhyme_ideal_gas_specific_internal_energy_test () result (failed
   type ( assertion_t ) :: ig_tester
 
   type ( ideal_gas_t ) :: ig
+  type ( hydro_conserved_t ) :: cons
   real ( kind=8 ) :: e_int_sp
 
   ig_tester = .describe. "ideal_gas e_int_sp"
 
-  call rhyme_ideal_gas_factory_init
+  cons = hy_factory%conserved()
+  ig = ig_factory%generate()
 
-  ig%type = ig_gas_type
-  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
+  e_int_sp = hy_factory%p / hy_factory%rho / ( ig%gamma - 1 )
 
-  e_int_sp = ig_hy%p / ig_hy%rho / ( ig%gamma - 1 )
-
-  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. ig_hy%e_int / ig_hy%rho .within. 15 )
-  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. ig_hy%e_int_sp .within. 15 )
-  call ig_tester%expect( ig%e_int_sp( ig_hy%cons ) .toBe. hy_sp_internal_e( ig_hy%cons ) .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( cons ) .toBe. hy_factory%e_int / hy_factory%rho .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( cons ) .toBe. hy_factory%e_int_sp .within. 15 )
+  call ig_tester%expect( ig%e_int_sp( cons ) .toBe. hy_sp_internal_e( cons ) .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_specific_internal_energy_test

@@ -1,5 +1,6 @@
 logical function rhyme_ideal_gas_total_energy_test () result (failed)
   use rhyme_ideal_gas_factory
+  use rhyme_hydro_base_factory
   use rhyme_assertion
 
   implicit none
@@ -7,18 +8,17 @@ logical function rhyme_ideal_gas_total_energy_test () result (failed)
   type ( assertion_t ) :: ig_tester
 
   type ( ideal_gas_t ) :: ig
+  type ( hydro_conserved_t ) :: cons
   real ( kind=8 ) :: e_tot
 
   ig_tester = .describe. "ideal_gas e_tot"
 
-  call rhyme_ideal_gas_factory_init
+  cons = hy_factory%conserved()
+  ig = ig_factory%generate()
 
-  ig%type = ig_gas_type
-  call rhyme_ideal_gas_init( ig, ig_chemi, ig_thermo, ig_units, ig_logger )
+  e_tot = hy_factory%rho * ( ig%e_kin_sp( cons ) + ig%e_int_sp( cons ) )
 
-  e_tot = ig_hy%rho * ( ig%e_kin_sp( ig_hy%cons ) + ig%e_int_sp( ig_hy%cons ) )
-
-  call ig_tester%expect( ig_hy%e_tot .toBe. e_tot )
+  call ig_tester%expect( hy_factory%e_tot .toBe. e_tot )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_total_energy_test
