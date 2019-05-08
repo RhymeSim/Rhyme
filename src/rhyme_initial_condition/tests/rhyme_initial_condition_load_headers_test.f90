@@ -39,7 +39,7 @@ logical function rhyme_initial_condition_load_headers_test () result ( failed )
   ic_read%snapshot_type = icid%rhyme
   ic_read%snapshot_path = filename
 
-  call ic_read%load_headers( samr_read )
+  call rhyme_initial_condition_load_headers( ic_read, samr_read )
 
   ! Test
   call ic_tester%expect( samr_read%nlevels .toBe. samr%nlevels )

@@ -16,7 +16,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   integer :: l, b, uid, ub(3)
 
-  ic_tester = .describe. "initial_condition load_rhyme"
+  ic_tester = .describe. "initial_condition_load_rhyme"
 
   ic_write = ic_factory%generate( ic_factory%simple_3d, 4 )
 
@@ -49,7 +49,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
 
   samr_read%levels%nboxes = 0
 
-  call ic_read%load_rhyme( samr_read, ic_factory%logger )
+  call rhyme_initial_condition_load_rhyme( ic_read, samr_read, ic_factory%logger )
 
   call ic_tester%expect( (samr_read%levels%nboxes) .toBe. (samr%levels%nboxes) )
 

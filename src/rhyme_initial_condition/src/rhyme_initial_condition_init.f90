@@ -1,4 +1,4 @@
-submodule ( rhyme_initial_condition ) rhyme_initial_condition_init_smod
+submodule ( rhyme_initial_condition ) rhyme_ic_init_smod
 contains
   module subroutine rhyme_initial_condition_init ( ic, samr, units, logger )
     implicit none
@@ -24,7 +24,7 @@ contains
     if ( ic%type .eq. icid%simple ) then
       call rhyme_initial_condition_init_simple( ic, samr, units, logger)
     else if ( ic%type .eq. icid%snapshot ) then
-      call ic%load_snapshot( samr, logger )
+      call rhyme_initial_condition_load_snapshot( ic, samr, logger )
     else
       call logger%err( 'Unknown initial condition type', 'ic_type', '=', [ ic%type ] )
       return
@@ -32,4 +32,4 @@ contains
 
     call logger%set_section( '' )
   end subroutine rhyme_initial_condition_init
-end submodule rhyme_initial_condition_init_smod
+end submodule rhyme_ic_init_smod
