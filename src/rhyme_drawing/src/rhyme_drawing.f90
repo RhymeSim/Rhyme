@@ -247,6 +247,4 @@ contains
     perturb%sym_decaying%pos = 0.d0
     perturb%sym_decaying%sigma = 1.d0
   end function rhyme_drawing_new_perturb
-
-
 end module rhyme_drawing

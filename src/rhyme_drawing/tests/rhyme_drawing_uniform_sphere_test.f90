@@ -1,5 +1,8 @@
 logical function rhyme_drawing_uniform_sphere_test () result ( failed )
-  use rhyme_drawing_factory
+  use rhyme_drawing
+  use rhyme_ideal_gas_factory
+  use rhyme_samr_factory
+  use rhyme_hydro_base_factory
   use rhyme_assertion
 
   implicit none
@@ -9,28 +12,20 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
   type ( samr_t ) :: samr
+  type ( ideal_gas_t ) :: ig
+  type ( hydro_primitive_t ) :: prim
+  type ( hydro_conserved_t ) :: cons
 
   integer :: l, b, k, j, i
-
-  integer, parameter :: nlevels = 4
-  integer, parameter :: base_grid(3) = [ 16, 16, 16 ]
-  integer, parameter :: ghost_cells(3) = [ 2, 2, 2 ]
-  integer, parameter :: max_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  integer, parameter :: init_nboxes( 0:samrid%max_nlevels ) = [ &
-    1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-
   real ( kind=8 ), parameter :: origin(3) = [ 8.d0, 8.d0, 8.d0 ]
   real ( kind=8 ), parameter :: r = 4.d0
 
   dr_tester = .describe. "drawing uniform_sphere"
 
-  call rhyme_drawing_factory_init
-
-  call rhyme_samr_factory_fill ( &
-    nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
+  samr = samr_factory%fill()
+  ig = ig_factory%generate()
+  prim = hy_factory%primitive()
+  cons = hy_factory%conserved()
 
   draw%type = drid%transparent_canvas
 
@@ -39,7 +34,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   shape%sphere%origin = origin
   shape%sphere%r = r
   shape%fill%type = drid%uniform
-  shape%fill%colors(1)%w = hy%prim%w
+  shape%fill%colors(1)%w = prim%w
 
 
   call rhyme_drawing_uniform_sphere( samr, draw_fac_ig_mon, shape )
@@ -51,7 +46,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
         do j = 1, samr%levels(l)%boxes(b)%dims(2)
           do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if ( is_inside_sphere( [i, j, k], samr%levels(l)%boxes(b), shape ) ) then
-              call dr_tester%expect( samr%levels(l)%boxes(b)%hydro(i,j,k)%u .toBe. hy%cons%u )
+              call dr_tester%expect( samr%levels(l)%boxes(b)%hydro(i,j,k)%u .toBe. cons%u )
             end if
           end do
         end do

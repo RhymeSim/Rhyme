@@ -2,9 +2,9 @@ project( rhyme_drawing_tests )
 set( test_subject rhyme_drawing )
 
 set( factories
-  rhyme_hydro_base
   rhyme_samr
   rhyme_ideal_gas
+  rhyme_hydro_base
 )
 
 set( test_deps
