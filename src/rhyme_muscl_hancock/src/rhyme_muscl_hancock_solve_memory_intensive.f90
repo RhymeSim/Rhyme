@@ -31,7 +31,7 @@ contains
         do i = lb(1), ub(1)
 
           if ( cfg%active_axis( hyid%x ) ) then
-            call sl%run( cfl, ig, box%hydro( i-1, j, k ), &
+            call rhyme_slope_limiter_run( sl, cfl, ig, box%hydro( i-1, j, k ), &
               box%hydro( i, j, k ), box%hydro( i+1, j, k ), delta )
             call ig%half_step_extrapolation( &
               box%hydro( i, j, k ), delta, hyid%x, dx( hyid%x ), dt, &
@@ -40,7 +40,7 @@ contains
           end if
 
           if ( cfg%active_axis( hyid%y ) ) then
-            call sl%run( cfl, ig, box%hydro( i, j-1, k ), &
+            call rhyme_slope_limiter_run( sl, cfl, ig, box%hydro( i, j-1, k ), &
               box%hydro( i, j, k ), box%hydro( i, j+1, k ), delta )
             call ig%half_step_extrapolation( &
               box%hydro( i, j, k ), delta, hyid%y, dx( hyid%y ), dt, &
@@ -49,7 +49,7 @@ contains
           end if
 
           if ( cfg%active_axis( hyid%z ) ) then
-            call sl%run( cfl, ig, box%hydro( i, j, k-1 ), &
+            call rhyme_slope_limiter_run( sl, cfl, ig, box%hydro( i, j, k-1 ), &
               box%hydro( i, j, k ), box%hydro( i, j, k+1 ), delta )
             call ig%half_step_extrapolation( &
               box%hydro( i, j, k ), delta, hyid%z, dx( hyid%z ), dt, &

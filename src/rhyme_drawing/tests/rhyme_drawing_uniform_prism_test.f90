@@ -24,8 +24,8 @@ logical function rhyme_drawing_uniform_prism_test () result ( failed )
 
   vertices = reshape( [ 1, 1, 1, 5, 12, 4, 13, 8, 10 ], [3, 3], order=[2, 1] )
 
-  samr = samr_factory%fill()
-  ig = ig_factory%generate( type=igid%monatomic )
+  samr = samr_factory%generate()
+  ig = ig_factory%generate( igid%monatomic )
   prim = hy_factory%primitive()
   cons = hy_factory%conserved()
 

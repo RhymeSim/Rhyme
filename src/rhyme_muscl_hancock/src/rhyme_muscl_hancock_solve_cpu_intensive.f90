@@ -46,7 +46,7 @@ contains
               ci = merge( [i, j, k] + idx    , [i, j, k], axes .eq. axis )
               ri = merge( [i, j, k] + idx + 1, [i, j, k], axes .eq. axis )
 
-              call sl%run( cfl, ig, &
+              call rhyme_slope_limiter_run( sl, cfl, ig, &
                 box%hydro( li(1), li(2), li(3) ), &
                 box%hydro( ci(1), ci(2), ci(3) ), &
                 box%hydro( ri(1), ri(2), ri(3) ), &

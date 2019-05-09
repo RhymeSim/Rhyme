@@ -22,8 +22,8 @@ logical function rhyme_drawing_uniform_cuboid_test () result ( failed )
 
   dr_tester = .describe. "drawing uniform_canvas"
 
-  samr = samr_factory%fill()
-  ig = ig_factory%generate( type=igid%monatomic )
+  samr = samr_factory%generate()
+  ig = ig_factory%generate( igid%monatomic )
   prim = hy_factory%primitive()
   cons = hy_factory%conserved()
 

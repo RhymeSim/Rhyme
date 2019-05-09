@@ -12,6 +12,13 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_slope_limiter_superbee.f90
+  src/rhyme_slope_limiter_van_albada.f90
+  src/rhyme_slope_limiter_minmod.f90
+  src/rhyme_slope_limiter_van_leer.f90
+  src/rhyme_slope_limiter_xi_r.f90
+  src/rhyme_slope_limiter_xi_l.f90
+  src/rhyme_slope_limiter_run.f90
   src/rhyme_slope_limiter.f90
 )
 

@@ -1,32 +1,50 @@
 module rhyme_slope_limiter_factory
   use rhyme_slope_limiter
-  use rhyme_hydro_base_factory
-  use rhyme_ideal_gas_factory
-  use rhyme_log
 
   implicit none
 
-  logical :: sl_fac_initialized = .false.
+  type rhyme_slope_limiter_factory_t
+    ! default variables
+    real ( kind=8 ) :: w = 0.d0
+    integer :: type = slid%minmod
+    logical :: initialized = .false.
+  contains
+    procedure :: init => rhyme_slope_limiter_factory_init
+    procedure :: generate => rhyme_slope_limiter_factory_generate
+  end type rhyme_slope_limiter_factory_t
 
-  type ( ideal_gas_t ) :: sl_ig
-  type ( rhyme_hydro_factory_t ) :: sl_hy
-  type ( hydro_conserved_t ) :: UL, UM, UR
+  type ( rhyme_slope_limiter_factory_t ) :: sl_factory = rhyme_slope_limiter_factory_t()
 
 contains
 
-  subroutine rhyme_slope_limiter_factory_init ()
+  subroutine rhyme_slope_limiter_factory_init ( this )
     implicit none
 
-    type ( log_t ) :: logger
+    class ( rhyme_slope_limiter_factory_t ), intent ( inout ) :: this
 
-    if ( sl_fac_initialized ) return
+    this%w = 0.d0
+    this%type = slid%minmod
 
-    call sl_hy%init
-    call rhyme_ideal_gas_factory_init
-
-    sl_ig%type = igid%diatomic
-    call rhyme_ideal_gas_init( sl_ig, ig_chemi, ig_thermo, ig_units, logger )
-
-    sl_fac_initialized = .true.
+    this%initialized = .true.
   end subroutine rhyme_slope_limiter_factory_init
+
+
+  function rhyme_slope_limiter_factory_generate ( this, sl_type ) result ( sl )
+    implicit none
+
+    class ( rhyme_slope_limiter_factory_t ), intent ( inout ) :: this
+    integer, intent ( in ), optional :: sl_type
+
+    type ( slope_limiter_t ) :: sl
+
+    if ( .not. this%initialized ) call this%init
+
+    sl%w = this%w
+
+    if ( present( sl_type ) ) then
+      sl%type = sl_type
+    else
+      sl%type = this%type
+    end if
+  end function rhyme_slope_limiter_factory_generate
 end module rhyme_slope_limiter_factory

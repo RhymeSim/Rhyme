@@ -14,7 +14,7 @@ logical function rhyme_slope_limiter_test () result ( failed )
   call sl_tester%expect( slid%minmod .toBe. 2 )
   call sl_tester%expect( slid%van_albada .toBe. 3 )
   call sl_tester%expect( slid%superbee .toBe. 4 )
-  
+
   call sl_tester%expect( sl%w .toBe. 0.d0 )
   call sl_tester%expect( sl%type .toBe. slid%minmod )
 

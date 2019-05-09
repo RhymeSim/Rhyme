@@ -16,7 +16,7 @@ logical function rhyme_samr_bc_set_base_grid_top_boundary_test () result ( faile
 
   ! Reflective
   bc%types( bcid%top ) = bcid%reflective
-  samr = samr_factory%fill()
+  samr = samr_factory%generate()
 
   call bc%set_base_grid_top_boundary( samr%levels(0)%boxes(1) )
 

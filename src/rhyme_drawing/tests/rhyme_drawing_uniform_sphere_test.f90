@@ -22,7 +22,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
 
   dr_tester = .describe. "drawing uniform_sphere"
 
-  samr = samr_factory%fill()
+  samr = samr_factory%generate()
   ig = ig_factory%generate()
   prim = hy_factory%primitive()
   cons = hy_factory%conserved()
@@ -37,7 +37,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   shape%fill%colors(1)%w = prim%w
 
 
-  call rhyme_drawing_uniform_sphere( samr, draw_fac_ig_mon, shape )
+  call rhyme_drawing_uniform_sphere( samr, ig, shape )
 
 
   do l = 0, samr%nlevels - 1

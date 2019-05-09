@@ -14,8 +14,8 @@ module rhyme_samr_factory
     real ( kind=8 ) :: box_lengths(3) = [ 1.d0, .5d0, .25d0 ]
   contains
     procedure :: init => rhyme_samr_factory_init
-    procedure :: fill => rhyme_samr_factory_fill
-    procedure :: fill_with => rhyme_samr_factory_fill_with
+    procedure :: generate => rhyme_samr_factory_generate
+    procedure :: generate_with => rhyme_samr_factory_generate_with
   end type rhyme_samr_factory_t
 
   type ( rhyme_samr_factory_t ) :: samr_factory = rhyme_samr_factory_t()
@@ -41,7 +41,7 @@ contains
   end subroutine rhyme_samr_factory_init
 
 
-  function rhyme_samr_factory_fill ( this, physical, empty ) result ( samr )
+  function rhyme_samr_factory_generate ( this, physical, empty ) result ( samr )
     implicit none
 
     class ( rhyme_samr_factory_t ), intent ( inout ) :: this
@@ -77,10 +77,10 @@ contains
     samr%levels%nboxes = this%init_nboxes
 
     call rhyme_samr_factory_filling( samr, this%init_nboxes, phys )
-  end function rhyme_samr_factory_fill
+  end function rhyme_samr_factory_generate
 
 
-  function rhyme_samr_factory_fill_with ( this, nlevels, base_grid, &
+  function rhyme_samr_factory_generate_with ( this, nlevels, base_grid, &
     ghost_cells, max_nboxes, init_nboxes, box_lengths, physical ) &
     result ( samr )
     implicit none
@@ -117,7 +117,7 @@ contains
     samr%levels%nboxes = init_nboxes
 
     call rhyme_samr_factory_filling( samr, init_nboxes, phys )
-  end function rhyme_samr_factory_fill_with
+  end function rhyme_samr_factory_generate_with
 
 
   subroutine rhyme_samr_factory_filling ( samr, init_nboxes, physical )

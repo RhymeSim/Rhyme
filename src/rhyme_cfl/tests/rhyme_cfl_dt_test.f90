@@ -19,7 +19,7 @@ logical function rhyme_cfl_dt_test () result (failed)
   cfl_tester = .describe. "CFL"
 
   ig = ig_factory%generate( igid%diatomic )
-  samr = samr_factory%fill( physical=.true. )
+  samr = samr_factory%generate( physical=.true. )
 
   dt = rhyme_cfl_time_step( cfl, ig, samr )
 

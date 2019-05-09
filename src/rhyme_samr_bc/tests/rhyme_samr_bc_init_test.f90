@@ -15,7 +15,7 @@ logical function rhyme_samr_bc_init_test () result (failed)
   bc_tester = .describe. "samr_bc_init"
 
   bc%types = bc_factory%types()
-  samr = samr_factory%fill()
+  samr = samr_factory%generate()
 
   call bc%init( samr, logger )
 

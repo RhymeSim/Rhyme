@@ -11,7 +11,7 @@ logical function rhyme_samr_init_box_test () result ( failed )
 
   s_tester = .describe. "samr_init_box"
 
-  samr = samr_factory%fill( empty=.true. )
+  samr = samr_factory%generate( empty=.true. )
 
   do l = 0, samr%nlevels - 1
     do b = 1, samr%levels(l)%max_nboxes
