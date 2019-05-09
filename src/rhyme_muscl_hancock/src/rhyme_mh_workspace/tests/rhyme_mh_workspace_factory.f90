@@ -1,29 +1,43 @@
 module rhyme_mh_workspace_factory
   use rhyme_mh_workspace
-  use rhyme_samr_factory
 
   implicit none
 
-  integer, parameter :: nlevels = 4
-  integer, parameter :: base_grid(3) = [ 16, 8 , 1 ]
-  integer, parameter :: ghost_cells(3) = [ 2, 1, 0 ]
-  integer, parameter :: max_nboxes ( 0:samrid%max_nlevels ) = [ &
-    1, 3, 9, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
-  integer, parameter :: init_nboxes ( 0:samrid%max_nlevels ) = [ &
-    1, 2, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 &
-  ]
+  type rhyme_mh_workspace_factory_t
+    ! Default variables
+    integer :: nlevels = 1
+    integer :: type = mhwsid%memory_intensive
+    logical :: initialized = .false.
+  contains
+    procedure :: init => rhyme_mh_workspace_factory_init
+    procedure :: generate => rhyme_mh_workspace_factory_generate
+  end type rhyme_mh_workspace_factory_t
 
-  type ( samr_t ) :: samr
-  type ( log_t ) :: log
+  type ( rhyme_mh_workspace_factory_t ) :: mhws_factory = rhyme_mh_workspace_factory_t()
 
 contains
 
-  subroutine rhyme_mh_workspace_factory_init ()
+  subroutine rhyme_mh_workspace_factory_init ( this )
     implicit none
 
-    call rhyme_samr_factory_fill( &
-      nlevels, base_grid, ghost_cells, max_nboxes, init_nboxes, samr )
+    class ( rhyme_mh_workspace_factory_t ), intent ( inout ) :: this
 
+    this%nlevels = 1
+    this%type = mhwsid%memory_intensive
+
+    this%initialized = .true.
   end subroutine rhyme_mh_workspace_factory_init
+
+
+  function rhyme_mh_workspace_factory_generate ( this ) result ( mhws )
+    implicit none
+
+    class ( rhyme_mh_workspace_factory_t ), intent ( inout ) :: this
+    type ( mh_workspace_t ) :: mhws
+
+    if ( .not. this%initialized ) call this%init
+
+    mhws%nlevels = this%nlevels
+    mhws%type = this%type
+  end function rhyme_mh_workspace_factory_generate
 end module rhyme_mh_workspace_factory

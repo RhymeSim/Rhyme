@@ -1,5 +1,7 @@
 logical function rhyme_mh_workspace_check_test () result ( failed )
-  use rhyme_mh_workspace_factory
+  use rhyme_mh_workspace
+  use rhyme_samr_factory
+  use rhyme_log_factory
   use rhyme_assertion
 
   implicit none
@@ -7,13 +9,16 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
   type ( assertion_t ) :: mhws_tester
 
   type ( mh_workspace_t ) :: ws
+  type ( samr_t ) :: samr
+  type ( log_t ) :: logger
   integer :: l, b, lb(3), ub(3), lbws(4), ubws(4), dims(3)
 
   mhws_tester = .describe. "mhws_check"
 
-  call rhyme_mh_workspace_factory_init
+  logger = log_factory%generate()
+  samr = samr_factory%generate()
 
-  call ws%init( samr, log )
+  call rhyme_mh_workspace_init( ws, samr, logger )
 
   do l = 0, samr%nlevels
     do b = 1, samr%levels(l)%nboxes

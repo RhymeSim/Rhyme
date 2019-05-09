@@ -1,5 +1,5 @@
 logical function rhyme_mh_workspace_test () result ( failed )
-  use rhyme_mh_workspace_factory
+  use rhyme_mh_workspace
   use rhyme_assertion
 
   implicit none

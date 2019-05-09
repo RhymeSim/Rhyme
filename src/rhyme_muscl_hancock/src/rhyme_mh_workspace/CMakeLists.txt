@@ -13,6 +13,7 @@ set( internal_deps )
 
 set( srcs
   src/rhyme_mh_workspace_check.f90
+  src/rhyme_mh_workspace_init.f90
   src/rhyme_mh_workspace.f90
 )
 

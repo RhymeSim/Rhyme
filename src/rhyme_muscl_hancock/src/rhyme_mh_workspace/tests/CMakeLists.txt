@@ -3,6 +3,7 @@ set( test_subject rhyme_mh_workspace )
 
 set( factories
   rhyme_samr
+  rhyme_log
 )
 
 set( test_deps
