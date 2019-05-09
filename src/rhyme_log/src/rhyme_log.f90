@@ -29,5 +29,4 @@ contains
     call this%set_section( sec )
     call this%log( 'Start! ツ' )
   end subroutine rhyme_log_set_iteration_section
-
 end module rhyme_log

@@ -1,10 +1,14 @@
 logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
   use rhyme_irs_factory
+  use rhyme_ideal_gas_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: irs_tester
+
+  type ( irs_t ) :: irs
+  type ( ideal_gas_t ) :: ig
 
   type ( rp_side_t ) :: state
   type ( rp_star_side_t ) :: star, prev_star
@@ -13,18 +17,19 @@ logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
 
   irs_tester = .describe. "irs_nonlinear_wave_function"
 
-  call rhyme_irs_factory_init
+  irs = irs_factory%generate()
+  ig = ig_factory%generate( igid%diatomic )
 
   state%rho = 1.23d3
-  state%p = irs_fac%pressure_floor
+  state%p = irs%pressure_floor
 
-  call rhyme_irs_nonlinear_wave_function( irs_fac_ig, state, p_star, prev_star )
+  call rhyme_irs_nonlinear_wave_function( ig, state, p_star, prev_star )
 
   do i = 1, 800
     p = 2.34d0 * p
     call irs_tester%reset
 
-    call rhyme_irs_nonlinear_wave_function( irs_fac_ig, state, p_star, star )
+    call rhyme_irs_nonlinear_wave_function( ig, state, p_star, star )
 
 
     call irs_tester%expect( (star%fprime < 0.0) .toBe. .false. )

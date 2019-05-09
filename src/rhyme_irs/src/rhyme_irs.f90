@@ -13,7 +13,6 @@ module rhyme_irs
     real ( kind=8 ) :: tolerance = 1.d-6
   contains
     procedure :: init => rhyme_irs_init
-    procedure :: init_with => rhyme_irs_init_with
   end type irs_t
 
   interface
@@ -100,28 +99,6 @@ module rhyme_irs
   end interface
 
 contains
-
-  subroutine rhyme_irs_init_with ( &
-    this, niter, tol, pfloor, log )
-    implicit none
-
-    class ( irs_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: niter
-    real ( kind=8 ), intent ( in ) :: tol, pfloor
-    type ( log_t ), intent ( inout ) :: log
-
-    if ( this%initialized ) then
-      call log%warn( 'Try to re-initialize irs object')
-      return
-    end if
-
-    this%n_iteration = niter
-    this%tolerance = tol
-    this%pressure_floor = pfloor
-
-    call this%init( log )
-  end subroutine rhyme_irs_init_with
-
 
   subroutine rhyme_irs_init ( this, log )
     implicit none

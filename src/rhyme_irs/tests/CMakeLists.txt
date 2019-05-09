@@ -10,6 +10,7 @@ configure_file(
 set( factories
   rhyme_hydro_base
   rhyme_ideal_gas
+  rhyme_log
 )
 
 set( test_deps
