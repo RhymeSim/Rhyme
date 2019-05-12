@@ -1,13 +1,14 @@
 logical function rhyme_chombo_write_headers_test () result ( failed )
   use rhyme_chombo_factory
+  use rhyme_samr_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: ch_tester
 
-  ! rhyme_chombo variables
   type ( chombo_t ) :: ch
+  type ( samr_t ) :: samr
 
   ! variables
   integer :: ndims_read
@@ -18,20 +19,20 @@ logical function rhyme_chombo_write_headers_test () result ( failed )
 
   ch_tester = .describe. "chombo write_headers"
 
-  call rhyme_chombo_factory_init
+  samr = samr_factory%generate()
 
   ch%nickname = nickname
-  ch%iteration = chombo_fac_samr%levels(0)%iteration
+  ch%iteration = samr%levels(0)%iteration
 
   call ch%filename_generator( filename )
   call ch%create_chombo
 
-  call ch%write_headers( chombo_fac_samr )
+  call ch%write_headers( samr )
 
   call ch%close
 
-  call ch_tester%expect( int( ch%level_ids(0:chombo_fac_samr%nlevels-1) ) .notToBe. chid%unset )
-  call ch_tester%expect( int( ch%level_ids(chombo_fac_samr%nlevels:) ) .toBe. chid%unset )
+  call ch_tester%expect( int( ch%level_ids(0:samr%nlevels-1) ) .notToBe. chid%unset )
+  call ch_tester%expect( int( ch%level_ids(samr%nlevels:) ) .toBe. chid%unset )
   call ch_tester%expect( int( ch%chombo_global_id ) .notToBe. chid%unset )
 
   call ch%open( filename )

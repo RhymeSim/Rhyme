@@ -1,13 +1,14 @@
 logical function rhyme_chombo_write_samr_test () result ( failed )
   use rhyme_chombo_factory
+  use rhyme_samr_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: ch_tester
 
-  ! rhyme_chombo variables
   type ( chombo_t ) :: ch
+  type ( samr_t ) :: samr
 
   ! Chombo filename
   character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_samr"
@@ -19,18 +20,18 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
 
   ch_tester = .describe. "chombo write_samr"
 
-  call rhyme_chombo_factory_init
+  samr = samr_factory%generate()
 
   ch%nickname = nickname
-  ch%iteration = chombo_fac_samr%levels(0)%iteration
+  ch%iteration = samr%levels(0)%iteration
   call ch%filename_generator ( filename )
 
-  call ch%write_samr ( chombo_fac_samr )
+  call ch%write_samr ( samr )
 
   call h5open_f ( hdferr )
   call h5fopen_f ( filename, H5F_ACC_RDONLY_F, file_id, hdferr )
 
-  do l = 0, chombo_fac_samr%nlevels - 1
+  do l = 0, samr%nlevels - 1
     write ( level_name, '(A7,I1)') "/level_", l
 
     call h5lexists_f ( file_id, trim(level_name)//"/boxes", exists, hdferr )

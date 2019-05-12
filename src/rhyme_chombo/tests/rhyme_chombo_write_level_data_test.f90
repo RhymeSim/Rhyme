@@ -1,13 +1,14 @@
 logical function rhyme_chombo_write_level_data_test () result ( failed )
   use rhyme_chombo_factory
+  use rhyme_samr_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: ch_tester
 
-  ! rhyme_chombo variables
   type ( chombo_t ) :: ch
+  type ( samr_t ) :: samr
 
   ! Chombo filename
   character ( len=1024 ), parameter :: nickname = 'rhyme_chombo_write_level_data'
@@ -21,18 +22,18 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
 
   ch_tester = .describe. "chombo write_level_data"
 
-  call rhyme_chombo_factory_init
+  samr = samr_factory%generate()
 
   ! Crete chombo file
   ch%nickname = nickname
-  ch%iteration = chombo_fac_samr%levels(0)%iteration
+  ch%iteration = samr%levels(0)%iteration
   call ch%filename_generator ( filename )
 
   call ch%create_chombo
-  call ch%write_headers ( chombo_fac_samr )
+  call ch%write_headers ( samr )
 
-  do l = 0, chombo_fac_samr%nlevels - 1
-    call ch%write_level_data ( chombo_fac_samr%levels(l) )
+  do l = 0, samr%nlevels - 1
+    call ch%write_level_data ( samr%levels(l) )
   end do
 
   call ch%close
@@ -40,12 +41,12 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
   ! Tests
   call ch%open ( filename )
 
-  do l = 0, chombo_fac_samr%nlevels - 1
+  do l = 0, samr%nlevels - 1
     write ( level_data_name, '(A7,I1,A)') "/level_", l, "/data:datatype=0"
 
     length = 0
-    do b = 1, chombo_fac_samr%levels(l)%nboxes
-      length = length + product ( chombo_fac_samr%levels(l)%boxes(b)%dims )
+    do b = 1, samr%levels(l)%nboxes
+      length = length + product ( samr%levels(l)%boxes(b)%dims )
     end do
 
     allocate ( data( 5 * length ) )
@@ -54,9 +55,9 @@ logical function rhyme_chombo_write_level_data_test () result ( failed )
     call ch%read_1d_dataset ( level_data_name, data )
 
     offset = 1
-    do b = 1, chombo_fac_samr%levels(l)%nboxes
-      bdims = chombo_fac_samr%levels(l)%boxes(b)%dims
-      box = chombo_fac_samr%levels(l)%boxes(b)
+    do b = 1, samr%levels(l)%nboxes
+      bdims = samr%levels(l)%boxes(b)%dims
+      box = samr%levels(l)%boxes(b)
 
       ! Rho
       lb = offset
