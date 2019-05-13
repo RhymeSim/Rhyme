@@ -26,7 +26,7 @@ contains
       end do
     end do
 
-    dt = cfl%courant_number * minval( samr%levels(0)%dx ) / max_u
+    dt = cfl%courant_number * minval( samr%levels(0)%dx, 1, samr%levels(0)%dx > 0.d0 ) / max_u
 
   contains
     pure real( kind=8 ) function calc_u ( U ) result ( v )

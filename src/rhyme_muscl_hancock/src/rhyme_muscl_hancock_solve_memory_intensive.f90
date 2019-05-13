@@ -102,31 +102,34 @@ contains
     do k = 1, box%dims(3)
       do j = 1, box%dims(2)
         do i = 1, box%dims(1)
-          box%hydro(i,j,k)%u = &
-            box%hydro(i,j,k)%u &
-            + &
-            ( &
-              cfg%active_flux( hyid%x ) * dt / dx( hyid%x ) &
+          if ( cfg%active_axis( hyid%x ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%x ) &
               * ( &
                 ws%levels(l)%boxes(b)%FR( i-1, j, k, hyid%x )%f &
                 - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x )%f &
               ) &
-              + &
-              cfg%active_flux( hyid%y ) * dt / dx( hyid%y ) &
+            )
+          end if
+
+          if ( cfg%active_axis( hyid%y ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%y ) &
               * ( &
                 ws%levels(l)%boxes(b)%FR( i, j-1, k, hyid%y )%f &
                 - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y )%f &
               ) &
-              + &
-              cfg%active_flux( hyid%z ) * dt / dx( hyid%z ) &
+            )
+          end if
+
+          if ( cfg%active_axis( hyid%z ) ) then
+            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%z ) &
               * ( &
                 ws%levels(l)%boxes(b)%FR( i, j, k-1, hyid%z )%f &
                 - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z )%f &
               ) &
             )
+          end if
         end do
       end do
     end do
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
-
 end submodule rhyme_mh_solve_memory_intensive_submodule
