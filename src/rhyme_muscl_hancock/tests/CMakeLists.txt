@@ -1,6 +1,8 @@
 project ( rhyme_muscl_hancock_tests )
 set( test_subject rhyme_muscl_hancock )
 
+set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -O3" )
+
 set ( factories
   rhyme_chombo
   rhyme_cfl

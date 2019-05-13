@@ -1,4 +1,5 @@
 module rhyme_muscl_hancock_advection_factory
+  use, intrinsic :: ieee_arithmetic
   use rhyme_muscl_hancock_factory
   use rhyme_samr_bc_factory
   use rhyme_assertion
@@ -19,13 +20,11 @@ module rhyme_muscl_hancock_advection_factory
     integer :: init_nboxes( 0:samrid%max_nlevels ) = 0
     real ( kind=8 ) :: courant_number = .8d0
     real ( kind=8 ) :: dx = 0.d0, dt = 0.d0, v = 0.d0
-    type ( hydro_primitive_t ) :: slab_base, bg_base
+    type ( hydro_conserved_t ) :: slab, bg
     type ( rhyme_muscl_hancock_advection_factory_err_t ) :: err
     logical :: initialized = .false.
   contains
     procedure :: init => rhyme_muscl_hancock_advection_factory_init
-    procedure :: slab => rhyme_muscl_hancock_advection_factory_slab
-    procedure :: bg => rhyme_muscl_hancock_advection_factory_bg
     procedure :: set_ic_x => rhyme_muscl_hancock_advection_factory_set_ic_x
     procedure :: test_x => rhyme_muscl_hancock_advection_factory_test_x
     procedure :: set_ic_y => rhyme_muscl_hancock_advection_factory_set_ic_y
@@ -37,17 +36,19 @@ module rhyme_muscl_hancock_advection_factory
 
 contains
 
-  subroutine rhyme_muscl_hancock_advection_factory_init ( this, cfl, ig )
+  subroutine rhyme_muscl_hancock_advection_factory_init ( this, cfl, ig, axis )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
     type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
+    integer, intent ( in ) :: axis
 
-    type ( hydro_conserved_t ) :: slab
+    type ( hydro_primitive_t ) :: slab_prim, bg_prim
+    integer :: idx
 
-    this%slab_base%w = [ 1.d0, 0.d0, 0.d0, 0.d0, .1d0 ]
-    this%bg_base%w = [ 1.d0, 0.d0, 0.d0, 0.d0, .1d0 ]
+    slab_prim%w = [ 1.d0, 0.d0, 0.d0, 0.d0, .1d0 ]
+    bg_prim%w = [ 1.d0, 0.d0, 0.d0, 0.d0, .1d0 ]
 
     this%ngrids = 8
     this%slab_min_i = this%ngrids / 4
@@ -64,56 +65,37 @@ contains
     this%courant_number = cfl%courant_number
 
     this%dx = 1.d0 / this%ngrids
-    slab = this%slab( ig, hyid%x )
-    this%dt = this%courant_number * this%dx / ig%p( slab )
+
+    call ig%prim_to_cons( bg_prim, this%bg )
+    this%dt = this%courant_number * this%dx / ig%p( this%bg )
+
     this%v = this%dx / this%dt
-
-    this%initialized = .true.
-  end subroutine rhyme_muscl_hancock_advection_factory_init
-
-
-  function rhyme_muscl_hancock_advection_factory_slab ( this, ig, axis ) result ( slab )
-    implicit none
-
-    class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    integer, intent ( in ) :: axis
-    type ( hydro_conserved_t ) :: slab
-
-    type ( hydro_primitive_t ) :: slab_prim
-    integer :: idx
-
-    slab_prim%w = this%slab_base%w
 
     select case ( axis )
     case ( hyid%x ); idx = hyid%u
     case ( hyid%y ); idx = hyid%v
     case ( hyid%z ); idx = hyid%w
+    case default
+      print *, 'Wrong axis'
+      this%err%failed = .true.
+      stop
     end select
 
     slab_prim%w( idx ) = this%v
-    call ig%prim_to_cons( slab_prim, slab )
-  end function rhyme_muscl_hancock_advection_factory_slab
+    call ig%prim_to_cons( slab_prim, this%slab )
+
+    this%initialized = .true.
+  end subroutine rhyme_muscl_hancock_advection_factory_init
 
 
-  function rhyme_muscl_hancock_advection_factory_bg ( this, ig ) result ( bg )
-    implicit none
-
-    class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ) :: bg
-
-    call ig%prim_to_cons( this%bg_base, bg )
-  end function rhyme_muscl_hancock_advection_factory_bg
-
-
-  subroutine rhyme_muscl_hancock_advection_test ( solver, ws, dir, tester )
+  subroutine rhyme_muscl_hancock_advection_test ( solver, ws, axis, tester )
     use rhyme_cfl_factory
     use rhyme_ideal_gas_factory
     use rhyme_samr_factory
     use rhyme_samr_bc_factory
     use rhyme_irs_factory
     use rhyme_slope_limiter_factory
+    use rhyme_chombo_factory
     use rhyme_log_factory
 
     implicit none
@@ -133,7 +115,7 @@ contains
       end subroutine solver
     end interface
     type ( mh_workspace_t ), intent ( inout ) :: ws
-    integer, intent ( in ) :: dir
+    integer, intent ( in ) :: axis
     type ( assertion_t ), intent ( inout ) :: tester
 
     type ( muscl_hancock_t ) :: mh
@@ -143,6 +125,7 @@ contains
     type ( samr_bc_t ) :: bc
     type ( irs_t ) :: irs
     type ( slope_limiter_t ) :: sl
+    type ( chombo_t ) :: chombo
     type ( log_t ) :: logger
 
     type ( rhyme_muscl_hancock_advection_factory_t ) :: adv
@@ -154,19 +137,18 @@ contains
     bc = bc_factory%generate()
     irs = irs_factory%generate()
     sl = sl_factory%generate()
+    chombo = ch_factory%generate()
     logger = log_factory%generate()
 
-    call adv%init( cfl, ig )
+    call adv%init( cfl, ig, axis )
+    call chombo%init( logger )
 
 
     ! Setting up samr
-    select case ( dir )
-    case ( hyid%x )
-      call adv%set_ic_x( ig, samr, bc, logger )
-    case ( hyid%y )
-      call adv%set_ic_y( ig, samr, bc, logger )
-    case ( hyid%z )
-      call adv%set_ic_z( ig, samr, bc, logger )
+    select case ( axis )
+    case ( hyid%x ); call adv%set_ic_x( samr, bc, logger )
+    case ( hyid%y ); call adv%set_ic_y( samr, bc, logger )
+    case ( hyid%z ); call adv%set_ic_z( samr, bc, logger )
     end select
 
     ! Initializing MH and WS object
@@ -175,75 +157,73 @@ contains
     do step = 1, 119 * adv%ngrids
       call bc%set_base_grid_boundaries( samr )
 
+      print *, 'before:', samr%levels(0)%boxes(1)%hydro(1,1,1)%u
       call solver( mh, samr%levels(0)%boxes(1), &
-        samr%box_lengths, &
+        samr%levels(0)%dx, &
         adv%dt, cfl, ig, irs, sl, ws )
 
+      print *, 'after:', samr%levels(0)%boxes(1)%hydro(1,1,1)%u
+      call chombo%write_samr( samr )
+
       ! Test
-      select case ( dir )
+      select case ( axis )
       case ( hyid%x )
-        call adv%test_x( samr%levels(0)%boxes(1), ig )
+        call adv%test_x( samr%levels(0)%boxes(1) )
         if ( adv%err%failed ) adv%err%axis = hyid%x
       case ( hyid%y )
-        call adv%test_x( samr%levels(0)%boxes(1), ig )
+        call adv%test_y( samr%levels(0)%boxes(1) )
         if ( adv%err%failed ) adv%err%axis = hyid%y
       case ( hyid%z )
-        call adv%test_z( samr%levels(0)%boxes(1), ig )
+        call adv%test_z( samr%levels(0)%boxes(1) )
         if ( adv%err%failed ) adv%err%axis = hyid%z
       end select
 
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
 
       if ( adv%err%failed ) then
-        call adv%handle_err( samr%levels(0)%boxes(1), step, ig, tester )
+        call adv%handle_err( samr%levels(0)%boxes(1), step, tester )
         return
       end if
     end do
   end subroutine rhyme_muscl_hancock_advection_test
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_handle_err ( this, box, step, ig, tester )
+  subroutine rhyme_muscl_hancock_advection_factory_handle_err ( this, box, step, tester )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
     type ( samr_box_t ), intent ( in ) :: box
     integer, intent ( in ) :: step
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( assertion_t ), intent ( inout ) :: tester
 
-    type ( hydro_conserved_t ) :: U, bg, slab
+    type ( hydro_conserved_t ) :: state
     character ( len=128 ) :: hint
 
-    slab = this%slab( ig, this%err%axis )
-    bg = this%bg( ig )
-    write ( hint, '(I0,A,I0)' ) step, ': mh_adv_test_', this%err%axis
+    write ( hint, '(I0,A,I0,A,I0,A,I0,A,I0)' ) step, ' (', this%err%i,', ', &
+      this%err%j, ', ', this%err%k, ') : mh_adv_test_', this%err%axis
 
     if ( this%err%is_bg ) then
-      U = bg
+      state = this%bg
       hint = trim( hint ) // ' (bg)'
     else
-      U = slab
+      state = this%slab
       hint = trim( hint ) // ' (slab)'
     end if
 
-    call tester%expect( box%hydro(this%err%i, this%err%j, this%err%j)%u .toBe. U%u .hint. hint )
+    call tester%expect( box%hydro(this%err%i, this%err%j, this%err%j)%u &
+      .toBe. state%u .hint. hint )
   end subroutine rhyme_muscl_hancock_advection_factory_handle_err
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_set_ic_x( this, ig, samr, bc, logger )
+  subroutine rhyme_muscl_hancock_advection_factory_set_ic_x( this, samr, bc, logger )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( samr_t ), intent ( inout ) :: samr
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( log_t ), intent ( inout ) :: logger
 
     integer :: i, j
-    type ( hydro_conserved_t ) :: slab, bg
-
-    slab = this%slab( ig, hyid%x )
-    bg = this%bg( ig )
 
     samr = samr_factory%generate_with( &
       this%nlevels, &
@@ -257,11 +237,11 @@ contains
     do j = 1, samr%levels(0)%boxes(1)%dims(2)
       if ( j > this%slab_min_i .and. j <= this%slab_max_i ) then
         do i = 1, samr%levels(0)%boxes(1)%dims(1)
-          samr%levels(0)%boxes(1)%hydro(i,j,1)%u = slab%u
+          samr%levels(0)%boxes(1)%hydro(i,j,1)%u = this%slab%u
         end do
       else
         do i = 1, samr%levels(0)%boxes(1)%dims(1)
-          samr%levels(0)%boxes(1)%hydro(i,j,1)%u = bg%u
+          samr%levels(0)%boxes(1)%hydro(i,j,1)%u = this%bg%u
         end do
       end if
     end do
@@ -276,20 +256,15 @@ contains
   end subroutine rhyme_muscl_hancock_advection_factory_set_ic_x
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_set_ic_y ( this, ig, samr, bc, logger )
+  subroutine rhyme_muscl_hancock_advection_factory_set_ic_y ( this, samr, bc, logger )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( samr_t ), intent ( inout ) :: samr
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( log_t ), intent ( inout ) :: logger
 
     integer :: i, j
-    type ( hydro_conserved_t ) :: slab, bg
-
-    slab = this%slab( ig, hyid%y )
-    bg = this%bg( ig )
 
     samr = samr_factory%generate_with( &
       this%nlevels, &
@@ -303,9 +278,9 @@ contains
     do j = 1, samr%levels(0)%boxes(1)%dims(2)
         do i = 1, samr%levels(0)%boxes(1)%dims(1)
           if ( i > this%slab_min_i .and. i <= this%slab_max_i ) then
-            samr%levels(0)%boxes(1)%hydro(i,j,1)%u = slab%u
+            samr%levels(0)%boxes(1)%hydro(i,j,1)%u = this%slab%u
           else
-            samr%levels(0)%boxes(1)%hydro(i,j,1)%u = bg%u
+            samr%levels(0)%boxes(1)%hydro(i,j,1)%u = this%bg%u
           end if
         end do
     end do
@@ -320,20 +295,15 @@ contains
   end subroutine rhyme_muscl_hancock_advection_factory_set_ic_y
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_set_ic_z ( this, ig, samr, bc, logger )
+  subroutine rhyme_muscl_hancock_advection_factory_set_ic_z ( this, samr, bc, logger )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( samr_t ), intent ( inout ) :: samr
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( log_t ), intent ( inout ) :: logger
 
     integer :: i, k
-    type ( hydro_conserved_t ) :: slab, bg
-
-    slab = this%slab( ig, hyid%z )
-    bg = this%bg( ig )
 
     samr = samr_factory%generate_with( &
       this%nlevels, &
@@ -347,9 +317,9 @@ contains
     do k = 1, samr%levels(0)%boxes(1)%dims(3)
         do i = 1, samr%levels(0)%boxes(1)%dims(1)
           if ( i > this%slab_min_i .and. i <= this%slab_max_i ) then
-            samr%levels(0)%boxes(1)%hydro(i,1,k)%u = slab%u
+            samr%levels(0)%boxes(1)%hydro(i,1,k)%u = this%slab%u
           else
-            samr%levels(0)%boxes(1)%hydro(i,1,k)%u = bg%u
+            samr%levels(0)%boxes(1)%hydro(i,1,k)%u = this%bg%u
           end if
         end do
     end do
@@ -364,23 +334,19 @@ contains
   end subroutine rhyme_muscl_hancock_advection_factory_set_ic_z
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_test_x ( this, box, ig )
+  subroutine rhyme_muscl_hancock_advection_factory_test_x ( this, box )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
     type ( samr_box_t ), intent ( in ) :: box
-    type ( ideal_gas_t ), intent ( in ) :: ig
 
-    type ( hydro_conserved_t ) :: slab, bg
     integer :: i, j
-
-    slab = this%slab( ig, hyid%x )
-    bg = this%bg( ig )
 
     do j = 1, box%dims(2)
       if ( j > this%slab_min_i .and. j <= this%slab_max_i ) then
         do i = 1, box%dims(1)
-          if ( any( abs( box%hydro(i, j, 1)%u - slab%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, j, 1)%u ) ) &
+          .or. any( abs( box%hydro(i, j, 1)%u - this%slab%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = j; this%err%k = 1
             this%err%is_bg = .false.
             this%err%failed = .true.
@@ -389,7 +355,8 @@ contains
         end do
       else
         do i = 1, box%dims(1)
-          if ( any( abs( box%hydro(i, j, 1)%u - bg%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, j, 1)%u ) ) &
+          .or. any( abs( box%hydro(i, j, 1)%u - this%bg%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = j; this%err%k = 1
             this%err%is_bg = .true.
             this%err%failed = .true.
@@ -401,30 +368,27 @@ contains
   end subroutine rhyme_muscl_hancock_advection_factory_test_x
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_test_y ( this, box, ig )
+  subroutine rhyme_muscl_hancock_advection_factory_test_y ( this, box )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
     type ( samr_box_t ), intent ( in ) :: box
-    type ( ideal_gas_t ), intent ( in ) :: ig
 
-    type ( hydro_conserved_t ) :: slab, bg
     integer :: i, j
-
-    slab = this%slab( ig, hyid%y )
-    bg = this%bg( ig )
 
     do j = 1, box%dims(2)
       do i = 1, box%dims(1)
         if ( i > this%slab_min_i .and. i <= this%slab_max_i ) then
-          if ( any( abs( box%hydro(i, j, 1)%u - slab%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, j, 1)%u ) ) &
+          .or. any( abs( box%hydro(i, j, 1)%u - this%slab%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = j; this%err%k = 1
             this%err%is_bg = .false.
             this%err%failed = .true.
             return
           end if
         else
-          if ( any( abs( box%hydro(i, j, 1)%u - bg%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, j, 1)%u ) ) &
+          .or. any( abs( box%hydro(i, j, 1)%u - this%bg%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = j; this%err%k = 1
             this%err%is_bg = .true.
             this%err%failed = .true.
@@ -436,30 +400,27 @@ contains
   end subroutine rhyme_muscl_hancock_advection_factory_test_y
 
 
-  subroutine rhyme_muscl_hancock_advection_factory_test_z ( this, box, ig )
+  subroutine rhyme_muscl_hancock_advection_factory_test_z ( this, box )
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
     type ( samr_box_t ), intent ( in ) :: box
-    type ( ideal_gas_t ), intent ( in ) :: ig
 
-    type ( hydro_conserved_t ) :: slab, bg
     integer :: i, k
-
-    slab = this%slab( ig, hyid%z )
-    bg = this%bg( ig )
 
     do k = 1, box%dims(3)
       do i = 1, box%dims(1)
         if ( i > this%slab_min_i .and. i <= this%slab_max_i ) then
-          if ( any( abs( box%hydro(i, 1, k)%u - slab%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, 1, k)%u ) ) &
+          .or. any( abs( box%hydro(i, 1, k)%u - this%slab%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = 1; this%err%k = k
             this%err%is_bg = .false.
             this%err%failed = .true.
             return
           end if
         else
-          if ( any( abs( box%hydro(i, 1, k)%u - bg%u ) > epsilon(0.e0) ) ) then
+          if ( any( ieee_is_nan( box%hydro(i, 1, k)%u ) ) &
+          .or. any( abs( box%hydro(i, 1, k)%u - this%bg%u ) > epsilon(0.e0) ) ) then
             this%err%i = i; this%err%j = 1; this%err%k = k
             this%err%is_bg = .true.
             this%err%failed = .true.

@@ -83,7 +83,7 @@ program rhyme
 
   ! MUSCL-Hancock
   mhws%type = mh%solver_type
-  call mh%init( samr, mhws, logger )
+  call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
 
   ! Chombo Output
   call chombo%init( logger )

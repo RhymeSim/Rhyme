@@ -19,14 +19,7 @@ logical function rhyme_initial_condition_load_headers_test () result ( failed )
   ic_write = ic_factory%generate( ic_factory%simple_3d, 4 )
 
   ! Initializing SAMR object
-  call rhyme_samr_factory_fill ( &
-    ic_write%nlevels, &
-    ic_write%base_grid, &
-    [ 2, 2, 2], &
-    ic_write%max_nboxes, &
-    ic_write%max_nboxes, &
-    ic_write%box_lengths%v, &
-    samr )
+  samr = samr_factory%generate()
 
   ! Prepare chombo file
   ch%nickname = nickname
