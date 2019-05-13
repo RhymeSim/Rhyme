@@ -12,7 +12,7 @@ module rhyme_cfl_factory
     procedure :: generate => rhyme_cfl_factory_generate
   end type rhyme_cfl_factory_t
 
-  type( rhyme_cfl_factory_t ) :: cfl_factory = rhyme_cfl_factory_t()
+  type ( rhyme_cfl_factory_t ) :: cfl_factory = rhyme_cfl_factory_t()
 
 contains
 

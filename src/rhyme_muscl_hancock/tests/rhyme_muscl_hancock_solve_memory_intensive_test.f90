@@ -6,18 +6,20 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
 
   type ( assertion_t ) :: mh_tester
 
-  type ( mh_workspace_t ) :: mhws
+  type ( mh_workspace_t ) :: ws_x, ws_y, ws_z
 
   mh_tester = .describe. "mh_solve_memory_intensive"
 
-  mhws%type = mhwsid%memory_intensive
+  ws_x%type = mhwsid%memory_intensive
+  ws_y%type = mhwsid%memory_intensive
+  ws_z%type = mhwsid%memory_intensive
 
   call rhyme_muscl_hancock_advection_test( &
-    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%x, mh_tester )
+    rhyme_muscl_hancock_solve_memory_intensive, ws_x, hyid%x, mh_tester )
   call rhyme_muscl_hancock_advection_test( &
-    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%y, mh_tester )
+    rhyme_muscl_hancock_solve_memory_intensive, ws_y, hyid%y, mh_tester )
   call rhyme_muscl_hancock_advection_test( &
-    rhyme_muscl_hancock_solve_memory_intensive, mhws, hyid%z, mh_tester )
+    rhyme_muscl_hancock_solve_memory_intensive, ws_z, hyid%z, mh_tester )
 
   failed = mh_tester%failed()
 end function rhyme_muscl_hancock_solve_memory_intensive_test

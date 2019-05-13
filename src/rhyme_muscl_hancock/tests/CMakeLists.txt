@@ -2,11 +2,15 @@ project ( rhyme_muscl_hancock_tests )
 set( test_subject rhyme_muscl_hancock )
 
 set ( factories
-  rhyme_samr
-  rhyme_samr_bc
   rhyme_chombo
+  rhyme_cfl
   rhyme_ideal_gas
   rhyme_hydro_base
+  rhyme_samr
+  rhyme_samr_bc
+  rhyme_irs
+  rhyme_slope_limiter
+  rhyme_log
 )
 
 set( test_deps

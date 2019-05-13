@@ -2,7 +2,7 @@ module rhyme_muscl_hancock_factory
   use rhyme_samr_factory
   use rhyme_muscl_hancock
   use rhyme_cfl
-  use rhyme_ideal_gas
+  use rhyme_ideal_gas_factory
   use rhyme_slope_limiter
   use rhyme_ideal_gas_factory
 
@@ -51,23 +51,13 @@ contains
     if ( mh_fac_initialized ) return
 
     ! Initializing SAMR
-    call rhyme_samr_factory_fill( &
-      mh_fac_nlevels, &
-      mh_fac_base_grid, &
-      mh_fac_ghost_cells, &
-      mh_fac_max_nboxes, &
-      mh_fac_init_nboxes, &
-      mh_fac_samr &
-    )
+    mh_fac_samr = samr_factory%generate()
 
     ! Initializing CFL
     mh_fac_cfl%courant_number = mh_fac_courant_number
 
     ! Initializing Ideal Gas
-    call rhyme_ideal_gas_factory_init
-
-    mh_fac_ig%type = mh_fac_gastype
-    call rhyme_ideal_gas_init( mh_fac_ig, ig_chemi, ig_thermo, ig_units, mh_fac_log )
+    mh_fac_ig = ig_factory%generate( mh_fac_gastype )
 
     ! Initializing Iteratice Riemann Solver
     call mh_fac_irs%init( mh_fac_log )
