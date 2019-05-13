@@ -7,7 +7,7 @@ contains
     type ( rhyme_units_t ), intent ( in ) :: units
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_section( 'thermo_base' )
+    call logger%begin_section( 'thermo_base' )
 
     if ( this%initialized ) call logger%warn( "Try to re-initialize thermo object" )
 
@@ -17,6 +17,6 @@ contains
 
     this%initialized = .true.
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_thermo_base_init
 end submodule rhyme_thermo_base_init_smod

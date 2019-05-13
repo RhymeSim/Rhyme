@@ -14,7 +14,7 @@ contains
     character ( len=128 ) :: msg
     character ( len=20 ) :: exp, got
 
-    call logger%set_section( this%desc )
+    call logger%begin_section( this%desc )
 
     passed = .true.
     nft = 0
@@ -28,7 +28,7 @@ contains
     end if
 
     do while ( associated( test ) )
-      call logger%set_sub_section( test%msg )
+      call logger%begin_section( test%msg )
 
       if ( test%is_passed ) then
         npt = npt + 1
@@ -44,10 +44,10 @@ contains
       end if
 
       test => test%next
+      call logger%end_section
     end do
 
-    call logger%set_section( '' )
-    call logger%set_sub_section( '' )
+    call logger%end_section
 
 
     if ( passed ) then

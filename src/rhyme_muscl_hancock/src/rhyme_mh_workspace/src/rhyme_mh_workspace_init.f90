@@ -9,7 +9,7 @@ contains
 
     integer :: l
 
-    call logger%set_section( 'mh_workspace' )
+    call logger%begin_section( 'mh_workspace' )
 
     if ( mhws%initialized ) call logger%warn( &
       'Trying to re-initialize mh_workspace object' )
@@ -26,6 +26,6 @@ contains
 
     mhws%initialized = .true.
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_mh_workspace_init
 end submodule rhyme_mhws_init_smod

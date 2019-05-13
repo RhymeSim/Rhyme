@@ -1,4 +1,4 @@
-submodule ( rhyme_string ) rhyme_string_to_string_submodule
+submodule ( rhyme_string ) rhyme_string_to_string_smod
 contains
   pure module function rhyme_string_array_to_string ( input ) result ( str )
     implicit none
@@ -51,4 +51,4 @@ contains
       end select
     end if
   end function rhyme_string_to_string
-end submodule rhyme_string_to_string_submodule
+end submodule rhyme_string_to_string_smod

@@ -7,7 +7,7 @@ contains
     type ( rhyme_units_t ), intent ( in ) :: units
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_section( 'chemistry' )
+    call logger%begin_section( 'chemistry' )
 
     if ( chemistry%initialized ) call logger%warn( 'Try to re-initialize chemistry object')
 
@@ -37,6 +37,6 @@ contains
 
     chemistry%initialized = .true.
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_chemistry_init
 end submodule rhyme_chemistry_init_smod

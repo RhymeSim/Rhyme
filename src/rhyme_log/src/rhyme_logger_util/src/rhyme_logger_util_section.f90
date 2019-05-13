@@ -23,5 +23,15 @@ contains
 
     this%sections( this%secid ) = ''
     this%secid = this%secid - 1
+
+
+    if ( this%secid .eq. 0 ) then
+      call this%open_logfile
+
+      write( stdout,* ) ''
+      write( this%logfile_unit,* ) ''
+
+      call this%close_logfile
+    end if
   end subroutine rhyme_logger_util_end_section
 end submodule rhyme_logger_util_section_smod

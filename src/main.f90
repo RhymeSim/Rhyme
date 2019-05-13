@@ -43,19 +43,22 @@ program rhyme
   call get_command_argument ( 0, exe_filename )
   call get_command_argument ( 1, param_file )
 
+  call logger%init( param_file )
 
-  call logger%start
+
+  call logger%begin_section( 'ツ' )
   call logger%log( 'command line argument:', 'exe', '=', [ exe_filename ] )
   call logger%log( 'command line argument:', 'param_file', '=', [ param_file ] )
   call logger%log( '', 'log_file', '=', [ logger%logfile ] )
   call logger%log( '', 'err_file', '=', [ logger%errfile ] )
+  call logger%end_section
 
 
   ! Reading parameters and converting them to code units
   call load_params( param_file, logger, units, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
 
   ! Initializing
-  call logger%set_section( 'init' )
+  call logger%begin_section( 'init' )
 
   ! Units
   call rhyme_units_init( units, logger )
@@ -87,6 +90,9 @@ program rhyme
 
   ! Chombo Output
   call chombo%init( logger )
+
+  ! End Initialization section
+  call logger%end_section
 
 
   ! Main loop

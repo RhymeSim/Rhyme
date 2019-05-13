@@ -33,7 +33,7 @@ contains
     integer :: shape_type, perturb_type, n_occur, i
 
 
-    call logger%set_section( 'params' )
+    call logger%begin_section( 'params' )
 
     call config%init( param_file, logger )
 
@@ -48,7 +48,9 @@ contains
     call config%read( 'ic_snapshot_type' .at. 1, ic%snapshot_type, ic_snapshot_types )
     call config%read( 'ic_snapshot_path' .at. 1, ic%snapshot_path )
     call config%read_array( 'ic_grid' .at. 1, ic%base_grid(1:3) )
-    call config%read_array( 'ic_box_lengths' .at. 1, ic%box_lengths%v )
+    call config%read( 'ic_box_lengths' .at. 1, ic%box_lengths(1)%v )
+    call config%read( 'ic_box_lengths' .at. 2, ic%box_lengths(2)%v )
+    call config%read( 'ic_box_lengths' .at. 3, ic%box_lengths(3)%v )
     call config%read( 'ic_box_lengths' .at. 4, ic%box_length_unit )
     call config%read( 'ic_nlevels' .at. 1, ic%nlevels )
     call config%read_array( 'max_nboxes' .at. 1, ic%max_nboxes( 0:ic%nlevels-1 ) )
@@ -215,6 +217,6 @@ contains
     call config%read( 'prefix' .at. 1, chombo%prefix )
     call config%read( 'nickname' .at. 1, chombo%nickname )
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine load_params
 end submodule rhyme_param_parser_load_params_submodule

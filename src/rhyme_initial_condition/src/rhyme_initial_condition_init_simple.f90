@@ -10,7 +10,7 @@ contains
 
     integer :: l, lb(3), ub(3), stat
 
-    call logger%set_sub_section( 'simple' )
+    call logger%begin_section( 'simple' )
 
     if ( any( ic%base_grid .eq. icid%unset ) &
       .or. ic%nlevels .eq. icid%unset ) then
@@ -59,6 +59,6 @@ contains
 
     samr%initialized = .true.
 
-    call logger%set_sub_section( '' )
+    call logger%end_section
   end subroutine rhyme_initial_condition_init_simple
 end submodule rhyme_ic_init_simple_smod

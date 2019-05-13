@@ -37,7 +37,7 @@ module rhyme_logger_util
     character ( len=1024 ) :: errfile = logger_util_const%default_errfile
     character ( len=1024 ), dimension(10) :: colored_logo = ''
     character ( len=1024 ), dimension(10) :: logo = ''
-    character ( len=32 ) :: sections(32)
+    character ( len=32 ) :: sections(32) = ''
     integer :: secid = 0
     integer :: logfile_unit = logger_util_const%closed
     integer :: errfile_unit = logger_util_const%closed
@@ -189,6 +189,8 @@ contains
 
     call this%close_logfile
     call this%close_errfile
+
+    this%secid = 0
 
     this%initialized = .true.
   end subroutine rhyme_logger_util_init

@@ -33,34 +33,34 @@ module rhyme_chombo
 contains
 
 
-  subroutine rhyme_chombo_init_with ( this, prefix, nickname, log )
+  subroutine rhyme_chombo_init_with ( this, prefix, nickname, logger )
     implicit none
 
     class ( chombo_t ), intent ( inout ) :: this
     character ( len=1024 ), intent ( in ) :: prefix, nickname
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     this%prefix = prefix
     this%nickname = nickname
 
-    call this%init( log )
+    call this%init( logger )
   end subroutine rhyme_chombo_init_with
 
 
-  subroutine rhyme_chombo_init ( this, log )
+  subroutine rhyme_chombo_init ( this, logger )
     implicit none
 
     class ( chombo_t ), intent ( in ) :: this
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     logical :: ex
 
     inquire ( file=trim(this%prefix)//"/.", exist=ex )
 
     if ( .not. ex ) then
-      call log%warn( trim(this%prefix)//' does not exist!')
+      call logger%warn( trim(this%prefix)//' does not exist!')
       call execute_command_line('mkdir -p '//trim(this%prefix) )
-      call log%log( trim(this%prefix)//' has been created' )
+      call logger%log( trim(this%prefix)//' has been created' )
     end if
   end subroutine rhyme_chombo_init
 

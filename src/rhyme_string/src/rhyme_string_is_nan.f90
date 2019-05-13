@@ -1,4 +1,4 @@
-submodule ( rhyme_string ) rhyme_string_is_nan_submodule
+submodule ( rhyme_string ) rhyme_string_is_nan_smod
 contains
   pure elemental module function rhyme_string_is_nan ( input ) result ( is_nan )
     use, intrinsic :: ieee_arithmetic
@@ -27,4 +27,4 @@ contains
       is_nan = .false.
     end select
   end function rhyme_string_is_nan
-end submodule rhyme_string_is_nan_submodule
+end submodule rhyme_string_is_nan_smod

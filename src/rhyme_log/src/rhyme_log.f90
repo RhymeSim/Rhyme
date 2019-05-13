@@ -24,9 +24,11 @@ contains
 
     character ( len=128 ) :: sec
 
-    write ( sec, '(I5)' ) iteration
+    write ( sec, '(I0)' ) iteration
 
-    call this%set_section( sec )
+    if ( this%secid > 0 ) call this%end_section
+
+    call this%begin_section( sec )
     call this%log( 'Start! ツ' )
   end subroutine rhyme_log_set_iteration_section
 end module rhyme_log

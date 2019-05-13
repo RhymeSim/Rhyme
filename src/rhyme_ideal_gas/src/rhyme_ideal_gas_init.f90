@@ -10,7 +10,7 @@ contains
     type ( rhyme_units_t ), intent ( in ) :: units
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_section( 'ideal_gas' )
+    call logger%begin_section( 'ideal_gas' )
 
     if ( this%initialized ) call logger%warn( 'Try to re-initialize ideal gas object' )
 
@@ -51,6 +51,6 @@ contains
 
     this%initialized = .true.
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_ideal_gas_init
 end submodule rhyme_ideal_gas_init_smod

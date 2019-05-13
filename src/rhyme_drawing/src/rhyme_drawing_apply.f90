@@ -10,7 +10,7 @@ contains
 
     type ( shape_t ), pointer :: shape
 
-    call log%set_sub_section( 'drawing' )
+    call log%begin_section( 'drawing' )
 
     ! No action for transparent
     if ( cfg%type .eq. drid%uniform_canvas ) then
@@ -57,6 +57,6 @@ contains
     call log%log( 'perturbations...' )
     call rhyme_drawing_apply_perturbations( samr, ig, cfg%perturbs, log )
 
-    call log%set_sub_section('')
+    call log%end_section
   end subroutine rhyme_drawing_apply
 end submodule rhyme_drawing_apply_submodule

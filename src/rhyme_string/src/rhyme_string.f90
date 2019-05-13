@@ -26,6 +26,11 @@ module rhyme_string
       class (*), intent ( in ) :: input
       logical :: is_nan
     end function rhyme_string_is_nan
+
+    pure elemental module function rhyme_strin_get_filename ( path ) result ( filename )
+      character ( len=* ), intent ( in ) :: path
+      character ( len=256 ) :: filename
+    end function rhyme_strin_get_filename
   end interface
 
 
@@ -34,8 +39,11 @@ module rhyme_string
     procedure rhyme_string_array_to_string
   end interface operator ( .toString. )
 
-
   interface operator ( .isNaN. )
     procedure rhyme_string_is_nan
   end interface operator ( .isNaN. )
+
+  interface operator ( .filename. )
+    procedure rhyme_strin_get_filename
+  end interface operator ( .filename. )
 end module rhyme_string

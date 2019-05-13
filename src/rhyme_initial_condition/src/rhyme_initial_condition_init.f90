@@ -8,7 +8,7 @@ contains
     type ( rhyme_units_t ), intent ( in ) :: units
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_section( 'initial_condition' )
+    call logger%begin_section( 'initial_condition' )
 
     if ( samr%initialized ) call logger%warn( 'Trying to re-initialize SAMR object')
 
@@ -30,6 +30,6 @@ contains
       return
     end if
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_initial_condition_init
 end submodule rhyme_ic_init_smod

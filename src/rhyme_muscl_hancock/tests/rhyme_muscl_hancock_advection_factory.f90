@@ -157,12 +157,10 @@ contains
     do step = 1, 119 * adv%ngrids
       call bc%set_base_grid_boundaries( samr )
 
-      print *, 'before:', samr%levels(0)%boxes(1)%hydro(1,1,1)%u
       call solver( mh, samr%levels(0)%boxes(1), &
         samr%levels(0)%dx, &
         adv%dt, cfl, ig, irs, sl, ws )
 
-      print *, 'after:', samr%levels(0)%boxes(1)%hydro(1,1,1)%u
       call chombo%write_samr( samr )
 
       ! Test

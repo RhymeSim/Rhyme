@@ -8,7 +8,7 @@ contains
     type ( mh_workspace_t ), intent ( inout ) :: ws
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_section( 'muscl_hancock' )
+    call logger%begin_section( 'muscl_hancock' )
 
     call rhyme_mh_workspace_init( ws, samr, logger )
 
@@ -23,6 +23,6 @@ contains
 
     mh%initialized = .true.
 
-    call logger%set_section( '' )
+    call logger%end_section
   end subroutine rhyme_muscl_hancock_init
 end submodule rhyme_mh_init_smod

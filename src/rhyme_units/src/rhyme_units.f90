@@ -21,7 +21,7 @@ contains
     type ( rhyme_units_t ), intent ( inout ) :: units
     type ( log_t ), intent ( inout ) :: logger
 
-    call logger%set_sub_section( 'units' )
+    call logger%begin_section( 'units' )
 
     units%rho => rhyme_nombre_units_parse( units%rho_str )
     call logger%log( '', 'rho:', '[ '//trim(units%rho%p())//' ]' )
@@ -38,6 +38,6 @@ contains
     units%temperature => rhyme_nombre_unit_clone( kel )
     call logger%log( '', 'temperature:', '[ '//trim(units%temperature%p())//' ]' )
 
-    call logger%set_sub_section( '' )
+    call logger%end_section
   end subroutine rhyme_units_init
 end module rhyme_units
