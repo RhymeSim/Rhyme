@@ -1,5 +1,6 @@
 module rhyme_logger_util
   use, intrinsic :: iso_fortran_env, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
+  use rhyme_string
 
   implicit none
 
@@ -36,15 +37,15 @@ module rhyme_logger_util
     character ( len=1024 ) :: errfile = logger_util_const%default_errfile
     character ( len=1024 ), dimension(10) :: colored_logo = ''
     character ( len=1024 ), dimension(10) :: logo = ''
-    character ( len=64 ) :: sec = '', sub_sec = ''
+    character ( len=32 ) :: sections(32)
+    integer :: secid = 0
     integer :: logfile_unit = logger_util_const%closed
     integer :: errfile_unit = logger_util_const%closed
-    integer :: t(8)
-    integer :: task_t(8)
+    integer :: task_t(8), t(8)
   contains
-    procedure :: start => rhyme_logger_util_start
-    procedure :: set_section => rhyme_logger_util_set_section
-    procedure :: set_sub_section => rhyme_logger_util_set_sub_section
+    procedure :: init => rhyme_logger_util_init
+    procedure :: begin_section => rhyme_logger_util_begin_section
+    procedure :: end_section => rhyme_logger_util_end_section
 
     procedure :: log => rhyme_logger_util_log
     procedure :: warn => rhyme_logger_util_warn
@@ -68,28 +69,28 @@ module rhyme_logger_util
   end type logger_util_t
 
   interface
-    module subroutine rhyme_logger_util_log ( this, message, key, operator, value )
+    module subroutine rhyme_logger_util_log ( this, message, key, operator, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
       character ( len=* ), intent ( in ), optional :: operator
-      class (*), intent ( in ), optional :: value(:)
+      class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_log
 
-    module subroutine rhyme_logger_util_warn ( this, message, key, operator, value )
+    module subroutine rhyme_logger_util_warn ( this, message, key, operator, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
       character ( len=* ), intent ( in ), optional :: operator
-      class (*), intent ( in ), optional :: value(:)
+      class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_warn
 
-    module subroutine rhyme_logger_util_err ( this, message, key, operator, value )
+    module subroutine rhyme_logger_util_err ( this, message, key, operator, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
       character ( len=* ), intent ( in ), optional :: operator
-      class (*), intent ( in ), optional :: value(:)
+      class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_err
 
     module subroutine rhyme_logger_util_start_task ( this, task, msg )
@@ -141,14 +142,24 @@ module rhyme_logger_util
     module subroutine rhyme_logger_util_set_logo ( this )
       class ( logger_util_t ), intent ( inout ) :: this
     end subroutine rhyme_logger_util_set_logo
+
+    module subroutine rhyme_logger_util_begin_section ( this, section )
+      class ( logger_util_t ), intent ( inout ) :: this
+      character ( len=* ), intent ( in ) :: section
+    end subroutine rhyme_logger_util_begin_section
+
+    module subroutine rhyme_logger_util_end_section ( this )
+      class ( logger_util_t ), intent ( inout ) :: this
+    end subroutine rhyme_logger_util_end_section
   end interface
 
 contains
 
-  subroutine rhyme_logger_util_start ( this )
+  subroutine rhyme_logger_util_init ( this, str )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: str
 
     integer :: i
 
@@ -158,11 +169,13 @@ contains
     call this%set_logo
     call this%set_colored_logo
 
-    write ( this%logfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)" ) &
-      this%t(1),'-',this%t(2),'-',this%t(3),'-', this%t(5),'-',this%t(6),'-',this%t(7),'.log.txt'
+    write ( this%logfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)" ) &
+      this%t(1), '-', this%t(2), '-', this%t(3), '-', this%t(5), '-', &
+      this%t(6), '-', this%t(7), '-'//trim(.filename. str), '.log.txt'
 
-    write ( this%errfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)" ) &
-      this%t(1),'-',this%t(2),'-',this%t(3),'-', this%t(5),'-',this%t(6),'-',this%t(7),'.err.txt'
+    write ( this%errfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)" ) &
+      this%t(1), '-', this%t(2), '-', this%t(3), '-', this%t(5), '-', &
+      this%t(6), '-', this%t(7), '-'//trim(.filename. str), '.err.txt'
 
     ! Logo
     call this%open_logfile
@@ -177,107 +190,8 @@ contains
     call this%close_logfile
     call this%close_errfile
 
-
-    ! Start point
-    call this%set_section ( 'ツ' )
-    call this%log ( 'Start!' )
-
     this%initialized = .true.
-  end subroutine rhyme_logger_util_start
-
-
-  subroutine rhyme_logger_util_set_section ( this, section )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: section
-
-    call this%open_logfile
-    write ( stdout,* ) ""
-    write ( this%logfile_unit,* ) ""
-    call this%close_logfile
-
-    this%sec = trim( section )
-
-    call this%update_time
-  end subroutine rhyme_logger_util_set_section
-
-
-  subroutine rhyme_logger_util_set_sub_section ( this, sub_section )
-    implicit none
-
-    class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: sub_section
-
-    this%sub_sec = trim( adjustl( sub_section ) )
-
-    call this%update_time
-  end subroutine rhyme_logger_util_set_sub_section
-
-
-  function to_string ( input ) result ( str )
-    implicit none
-
-    class (*), intent ( in ) :: input
-    character ( len=2048 ) :: str
-
-    str = ''
-
-    select type ( inp => input )
-    type is ( integer )
-      write ( str, logger_util_const%int_fmt ) inp
-    type is ( real( kind=4 ) )
-      write ( str, logger_util_const%real_fmt ) inp
-    type is ( real( kind=8 ) )
-      write ( str, logger_util_const%real8_fmt ) inp
-    type is ( character (*) )
-      str = trim( inp )
-    end select
-
-    str = adjustl( str )
-  end function to_string
-
-
-  function array_to_string ( input ) result ( str )
-    implicit none
-
-    class (*), intent ( in ) :: input(:)
-    character ( len=2048 ) :: str
-
-    integer :: i, length
-    character ( len=64 ) :: inp_str
-
-    length = size( input )
-    str = ''
-
-    select type ( inp => input )
-    type is ( integer )
-      do i = 1, length
-        write ( inp_str, logger_util_const%int_fmt ) inp(i)
-        str = trim( str )//'  '//trim(adjustl( inp_str ) )
-      end do
-    type is ( real( kind=4 ) )
-      do i = 1, length
-        write ( inp_str, logger_util_const%real_fmt ) inp(i)
-        str = trim( str )//'  '//trim(adjustl( inp_str ) )
-      end do
-    type is ( real( kind=8 ) )
-      do i = 1, length
-        write ( inp_str, logger_util_const%real8_fmt ) inp(i)
-        str = trim( str )//'  '//trim(adjustl( inp_str ) )
-      end do
-    type is ( character (*) )
-      do i = 1, length
-        str = trim( str )//'  '//trim(adjustl( inp(i) ) )
-      end do
-    end select
-
-    if ( length > 1 ) then
-      str = '[ '//trim(adjustl( str ) )//' ]'
-    else
-      str = adjustl( str )
-    end if
-  end function array_to_string
+  end subroutine rhyme_logger_util_init
 
 
   function concat_components ( msg, key, op, val, color ) result ( str )

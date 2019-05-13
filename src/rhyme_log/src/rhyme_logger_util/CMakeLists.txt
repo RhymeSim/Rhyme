@@ -5,7 +5,9 @@ project( rhyme_logger_util )
 
 set( CMAKE_Fortran_FLAGS "-ffree-line-length-512" )
 
-set( deps )
+set( deps
+  rhyme_string
+)
 
 set( internal_deps )
 
@@ -18,6 +20,7 @@ set( srcs
   src/rhyme_logger_util_io.f90
   src/rhyme_logger_util_logo.f90
   src/rhyme_logger_util_time.f90
+  src/rhyme_logger_util_section.f90
 )
 
 set( proj_src_dir ../../.. )

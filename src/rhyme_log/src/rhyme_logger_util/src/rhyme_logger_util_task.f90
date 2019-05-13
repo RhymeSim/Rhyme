@@ -9,7 +9,7 @@ contains
 
     call date_and_time ( values=this%task_t )
 
-    call this%set_sub_section( task )
+    call this%begin_section( task )
 
     if ( present( msg ) ) then
       call this%log( 'Start '//trim( adjustl( msg ) ) )
@@ -17,6 +17,7 @@ contains
       call this%log( 'Start')
     end if
   end subroutine rhyme_logger_util_start_task
+
 
   subroutine rhyme_logger_util_done ( this )
     implicit none
@@ -51,6 +52,6 @@ contains
 
     call this%log( ' [ done in '//trim( adjustl( time_str ) )//' ]' )
 
-    call this%set_sub_section( '' )
+    call this%end_section
   end subroutine rhyme_logger_util_done
 end submodule rhyme_logger_util_task_submodule

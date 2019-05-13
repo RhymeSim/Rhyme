@@ -1,19 +1,19 @@
 submodule ( rhyme_logger_util ) rhyme_logger_util_err_submodule
 contains
-  module subroutine rhyme_logger_util_err ( this, message, key, operator, value )
+  module subroutine rhyme_logger_util_err ( this, message, key, operator, val )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
     character ( len=* ), intent ( in ) :: message
     class (*), intent ( in ), optional :: key
     character ( len=* ), intent ( in ), optional :: operator
-    class (*), intent ( in ), optional :: value(:)
+    class (*), intent ( in ), optional :: val(:)
 
     character ( len=2048 ) :: k, v, op
     character ( len=2048 ) :: str
 
     if ( present( key ) ) then
-      k = to_string( key )
+      k = .toString. key
     else
       k = ''
     end if
@@ -24,8 +24,8 @@ contains
       op = ''
     end if
 
-    if ( present( value ) ) then
-      v = array_to_string( value )
+    if ( present( val ) ) then
+      v = .toString. val
     else
       v = ''
     end if

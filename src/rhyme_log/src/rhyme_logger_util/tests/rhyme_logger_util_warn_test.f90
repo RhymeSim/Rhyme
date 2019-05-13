@@ -5,8 +5,8 @@ logical function rhyme_logger_util_warn_test () result ( failed )
 
   type ( logger_util_t ) :: log
 
-  call log%start
-  call log%set_section( 'test' )
+  call log%init( 'warn' )
+  call log%begin_section( 'test' )
   call log%warn( 'message' )
   call log%warn( 'message', 'key' )
   call log%warn( 'message', 123 )
@@ -21,6 +21,7 @@ logical function rhyme_logger_util_warn_test () result ( failed )
   call log%warn( 'message', 'key', 'op', [ 123, 234 ] )
   call log%warn( 'message', 'key', 'op', [ 1.2e3, 2.3e4 ] )
   call log%warn( 'message', 'key', 'op', [ 1.2d3, 2.3d4 ] )
+  call log%end_section
 
   ! To see the output set failed to .true.
   failed = .false.

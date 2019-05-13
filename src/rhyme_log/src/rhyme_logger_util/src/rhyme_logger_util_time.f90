@@ -19,8 +19,8 @@ contains
     call this%update_time
 
     write ( time_str, fmt=logger_util_const%time_fmt ) &
-      '[ ',this%t(1),'-',this%t(2),'-',this%t(3),' | ', &
-      this%t(5),':',this%t(6),':',this%t(7),' ]'
+      '[',this%t(1),'-',this%t(2),'-',this%t(3),'|', &
+      this%t(5),':',this%t(6),':',this%t(7),']'
 
     if ( present( color ) ) then
       time_str = trim(color)//trim(time_str)//tc%nc
@@ -35,16 +35,17 @@ contains
     character ( len=* ), intent ( in ), optional :: color
     character ( len=126 ) :: tas_str
 
-    if ( present( color ) ) then
-      tas_str = trim( this%time( color=color ) )//' '//trim(color)//trim( this%sec )
-    else
-      tas_str = trim( this%time() )//' '//trim( this%sec )
-    end if
+    integer :: i
 
-    if ( len_trim( this%sub_sec ) > 0 ) then
-      tas_str = trim( tas_str )//'§'//trim( adjustl( this%sub_sec ) )
-    end if
+    if ( present( color ) ) tas_str = trim( this%time( color=color ) )//' '//trim(color)
 
-    tas_str = trim( tas_str )//':'//tc%nc
+    do i = 1, this%secid
+      if ( i > 1 ) tas_str = trim( tas_str )//'|'
+      tas_str = trim( tas_str )//trim( adjustl( this%sections( i )))
+    end do
+
+    tas_str = trim( tas_str )//':'
+
+    if ( present( color ) ) tas_str = trim( tas_str )//tc%nc
   end function rhyme_logger_util_time_and_section
 end submodule rhyme_logger_util_time_submoudle
