@@ -1,7 +1,5 @@
 module rhyme_slope_limiter
-  use rhyme_cfl
   use rhyme_hydro_base
-  use rhyme_ideal_gas
 
   implicit none
 
@@ -20,73 +18,58 @@ module rhyme_slope_limiter
 
 
   interface
-    pure module subroutine rhyme_slope_limiter_run ( sl, cfl, ig, UL, U, UR, delta )
+    pure module subroutine rhyme_slope_limiter_run ( sl, UL, U, UR, delta )
       class ( slope_limiter_t ), intent(in) :: sl
-      type ( cfl_t ), intent(in) :: cfl
-      type ( ideal_gas_t ), intent(in) :: ig
       type ( hydro_conserved_t ), intent(in) :: UL, U, UR
       type ( hydro_conserved_t ), intent(out) :: delta
     end subroutine rhyme_slope_limiter_run
 
-    pure module subroutine rhyme_slope_limiter_van_leer ( sl, cfl, ig, UL, U, UR, delta )
+    pure module subroutine rhyme_slope_limiter_van_leer ( sl, UL, U, UR, delta )
       class ( slope_limiter_t ), intent(in) :: sl
-      type ( cfl_t ), intent(in) :: cfl
-      type ( ideal_gas_t ), intent(in) :: ig
       type ( hydro_conserved_t ), intent(in) :: UL, U, UR
       type ( hydro_conserved_t ), intent(out) :: delta
     end subroutine rhyme_slope_limiter_van_leer
 
-    pure module subroutine rhyme_slope_limiter_minmod ( sl, cfl, ig, UL, U, UR, delta )
+    pure module subroutine rhyme_slope_limiter_minmod ( sl, UL, U, UR, delta )
       class ( slope_limiter_t ), intent(in) :: sl
-      type ( cfl_t ), intent(in) :: cfl
-      type ( ideal_gas_t ), intent(in) :: ig
       type ( hydro_conserved_t ), intent(in) :: UL, U, UR
       type ( hydro_conserved_t ), intent(out) :: delta
     end subroutine rhyme_slope_limiter_minmod
 
-    pure module subroutine rhyme_slope_limiter_van_albada ( sl, cfl, ig, UL, U, UR, delta )
+    pure module subroutine rhyme_slope_limiter_van_albada ( sl, UL, U, UR, delta )
       class ( slope_limiter_t ), intent(in) :: sl
-      type ( cfl_t ), intent(in) :: cfl
-      type ( ideal_gas_t ), intent(in) :: ig
       type ( hydro_conserved_t ), intent(in) :: UL, U, UR
       type ( hydro_conserved_t ), intent(out) :: delta
     end subroutine rhyme_slope_limiter_van_albada
 
-    pure module subroutine rhyme_slope_limiter_superbee ( sl, cfl, ig, UL, U, UR, delta )
+    pure module subroutine rhyme_slope_limiter_superbee ( sl, UL, U, UR, delta )
       class ( slope_limiter_t ), intent ( in ) :: sl
-      type ( cfl_t ), intent ( in ) :: cfl
-      type ( ideal_gas_t ), intent ( in ) :: ig
       type ( hydro_conserved_t ), intent ( in ) :: UL, U, UR
       type ( hydro_conserved_t ), intent ( out ) :: delta
     end subroutine rhyme_slope_limiter_superbee
 
-    pure module function rhyme_slope_limiter_xi_l ( sl, cfl, r ) result ( xi_l )
+    pure module function rhyme_slope_limiter_xi_l ( sl, r ) result ( xi_l )
       class ( slope_limiter_t ), intent ( in ) :: sl
-      type ( cfl_t ), intent ( in ) :: cfl
       real ( kind=8 ), intent ( in ) :: r
       real ( kind=8 ) :: xi_l
     end function rhyme_slope_limiter_xi_l
 
-    pure module function rhyme_slope_limiter_xi_r ( sl, cfl, r ) result ( xi_r )
+    pure module function rhyme_slope_limiter_xi_r ( sl, r ) result ( xi_r )
       class ( slope_limiter_t ), intent ( in ) :: sl
-      type ( cfl_t ), intent ( in ) :: cfl
       real ( kind=8 ), intent ( in ) :: r
       real ( kind=8 ) :: xi_r
     end function rhyme_slope_limiter_xi_r
   end interface
 
 contains
-  pure subroutine rhyme_slope_limiter_r ( ig, UL, U, UR, r )
+  pure subroutine rhyme_slope_limiter_r ( UL, U, UR, r )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( hydro_conserved_t ), intent ( in ) :: UL, U, UR
     real ( kind=8 ), intent (out ) :: r( hyid%rho:hyid%e_tot )
 
-    real ( kind=8 ) :: denom, cs
+    real ( kind=8 ) :: denom
     integer :: i
-
-    cs = ig%cs ( U )
 
     do i = hyid%rho, hyid%e_tot
 
@@ -98,13 +81,6 @@ contains
       end if
 
       r(i) = ( U%u(i) - UL%u(i) ) / denom
-
-      ! Upwind slope limiter
-      ! if ( cs > 0 ) then
-      !   r(i) = ( U%u(i) - UL%u(i) ) / denom
-      ! else
-      !   r(i) = ( URR%u(i) - UR%u(i) ) / denom
-      ! end if
     end do
   end subroutine rhyme_slope_limiter_r
 end module rhyme_slope_limiter

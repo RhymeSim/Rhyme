@@ -4,7 +4,6 @@ enable_language( Fortran )
 project( rhyme_slope_limiter )
 
 set( deps
-  rhyme_cfl
   rhyme_hydro_base
   rhyme_log
 )
