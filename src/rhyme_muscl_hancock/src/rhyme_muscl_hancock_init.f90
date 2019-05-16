@@ -16,7 +16,6 @@ contains
       'Trying to re-initialize muscl_hancock object' )
 
     mh%active_axis = samr%base_grid > 1
-    mh%active_flux = merge( 1, 0, mh%active_axis )
 
     call logger%log( 'muscl_hancock object has been initialized', &
       'solver_type', '=', [ mh%solver_type ] )

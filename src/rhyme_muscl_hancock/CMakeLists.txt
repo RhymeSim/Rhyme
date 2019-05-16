@@ -4,7 +4,6 @@ enable_language( Fortran )
 project( rhyme_muscl_hancock )
 
 set( deps
-  rhyme_cfl
   rhyme_ideal_gas
   rhyme_slope_limiter
   rhyme_irs

@@ -123,7 +123,7 @@ program rhyme
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
-          samr%levels(l)%dx, samr%levels(l)%dt, cfl, ig, irs, sl, mhws, logger )
+          samr%levels(l)%dx, samr%levels(l)%dt, ig, irs, sl, mhws, logger )
       end do
     end do
     call logger%done

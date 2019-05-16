@@ -19,12 +19,10 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   logger = log_factory%generate()
 
   call mh_tester%expect( mh%active_axis .toBe. .false. )
-  call mh_tester%expect( mh%active_flux .toBe. 0 )
 
   call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
 
   call mh_tester%expect( mh%active_axis .toBe. merge( .true., .false., samr%base_grid > 1 ) )
-  call mh_tester%expect( mh%active_flux .toBe. merge( 1, 0, samr%base_grid > 1 ) )
 
   failed = mh_tester%failed()
 end function rhyme_muscl_hancock_test

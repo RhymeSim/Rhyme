@@ -1,13 +1,12 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_memory_intensive_submodule
 contains
   pure module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
-    cfg, box, dx, dt, cfl, ig, irs, sl, ws )
+    cfg, box, dx, dt, ig, irs, sl, ws )
     implicit none
 
     class ( muscl_hancock_t ), intent ( inout ) :: cfg
     type ( samr_box_t ), intent ( inout ) :: box
     real ( kind=8 ), intent ( in ) :: dx(3), dt
-    type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
     type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
@@ -22,10 +21,10 @@ contains
 
     call rhyme_mh_workspace_check( ws, box )
 
-
     lb = merge( 0, 1, cfg%active_axis )
     ub = merge( box%dims + 1, 1, cfg%active_axis )
 
+    ! TODO: vectorize following loops by taking the conditions out of them
     do k = lb(3), ub(3)
       do j = lb(2), ub(2)
         do i = lb(1), ub(1)

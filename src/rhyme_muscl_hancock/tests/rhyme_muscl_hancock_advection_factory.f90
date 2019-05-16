@@ -36,11 +36,12 @@ module rhyme_muscl_hancock_advection_factory
 
 contains
 
-  subroutine rhyme_muscl_hancock_advection_factory_init ( this, cfl, ig, axis )
+  subroutine rhyme_muscl_hancock_advection_factory_init ( this, ig, axis )
+    use rhyme_ideal_gas
+
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
-    type ( cfl_t ), intent ( in ) :: cfl
     type ( ideal_gas_t ), intent ( in ) :: ig
     integer, intent ( in ) :: axis
 
@@ -61,8 +62,6 @@ contains
 
     this%init_nboxes = 0
     this%init_nboxes( 0:0 ) = [ 1 ]
-
-    this%courant_number = cfl%courant_number
 
     this%dx = 1.d0 / this%ngrids
 
@@ -89,7 +88,8 @@ contains
 
 
   subroutine rhyme_muscl_hancock_advection_test ( solver, ws, axis, tester )
-    use rhyme_cfl_factory
+    ! TODO: replace this test with a standard sinusoid advection test
+    use rhyme_muscl_hancock_factory
     use rhyme_ideal_gas_factory
     use rhyme_samr_factory
     use rhyme_samr_bc_factory
@@ -101,13 +101,12 @@ contains
     implicit none
 
     interface
-      subroutine solver ( cfg, box, dx, dt, cfl, ig, irs, sl, ws )
+      subroutine solver ( cfg, box, dx, dt, ig, irs, sl, ws )
         use rhyme_muscl_hancock
 
         class ( muscl_hancock_t ), intent ( inout ) :: cfg
         type ( samr_box_t ), intent ( inout ) :: box
         real ( kind=8 ), intent ( in ) :: dx(3), dt
-        type ( cfl_t ), intent ( in ) :: cfl
         type ( ideal_gas_t ), intent ( in ) :: ig
         type ( irs_t ), intent ( inout ) :: irs
         type ( slope_limiter_t ), intent ( in ) :: sl
@@ -119,7 +118,6 @@ contains
     type ( assertion_t ), intent ( inout ) :: tester
 
     type ( muscl_hancock_t ) :: mh
-    type ( cfl_t ) :: cfl
     type ( ideal_gas_t ) :: ig
     type ( samr_t ) :: samr
     type ( samr_bc_t ) :: bc
@@ -131,7 +129,6 @@ contains
     type ( rhyme_muscl_hancock_advection_factory_t ) :: adv
     integer :: step
 
-    cfl = cfl_factory%generate()
     ig = ig_factory%generate()
     samr = samr_factory%generate( physical=.true. )
     bc = bc_factory%generate()
@@ -140,7 +137,7 @@ contains
     chombo = ch_factory%generate()
     logger = log_factory%generate()
 
-    call adv%init( cfl, ig, axis )
+    call adv%init( ig, axis )
     call chombo%init( logger )
 
 
@@ -154,12 +151,12 @@ contains
     ! Initializing MH and WS object
     call rhyme_muscl_hancock_init( mh, samr, ws, logger )
 
-    do step = 1, 119 * adv%ngrids
+    do step = 1, 32 * adv%ngrids
       call bc%set_base_grid_boundaries( samr )
 
       call solver( mh, samr%levels(0)%boxes(1), &
         samr%levels(0)%dx, &
-        adv%dt, cfl, ig, irs, sl, ws )
+        adv%dt, ig, irs, sl, ws )
 
       call chombo%write_samr( samr )
 
@@ -214,6 +211,9 @@ contains
 
 
   subroutine rhyme_muscl_hancock_advection_factory_set_ic_x( this, samr, bc, logger )
+    use rhyme_muscl_hancock_factory
+    use rhyme_samr_factory
+
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
@@ -255,6 +255,9 @@ contains
 
 
   subroutine rhyme_muscl_hancock_advection_factory_set_ic_y ( this, samr, bc, logger )
+    use rhyme_muscl_hancock_factory
+    use rhyme_samr_factory
+
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
@@ -294,6 +297,8 @@ contains
 
 
   subroutine rhyme_muscl_hancock_advection_factory_set_ic_z ( this, samr, bc, logger )
+    use rhyme_samr_factory
+
     implicit none
 
     class ( rhyme_muscl_hancock_advection_factory_t ), intent ( inout ) :: this
