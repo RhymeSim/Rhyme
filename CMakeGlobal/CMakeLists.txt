@@ -1,8 +1,16 @@
 # Set generic compiler flags
-add_compile_options( -Wall -Wextra )
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  add_compile_options( -warn all )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  add_compile_options( -Wall -Wextra )
+endif()
 
 # Set Fortran compiler flags
-set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
+endif()
 
 # Set Include directory
 set( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )

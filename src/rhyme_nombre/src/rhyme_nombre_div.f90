@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_div_smod
+submodule ( rhyme_nombre ) div_smod
 contains
 
   module function rhyme_nombre_div ( n, div ) result ( n_new )
@@ -46,4 +46,4 @@ contains
       n_new = nombre_t( d / n%v, u**(-1d0) )
     end select
   end function rhyme_nombre_div_rev
-end submodule rhyme_nombre_div_smod
+end submodule div_smod

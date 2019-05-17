@@ -75,8 +75,8 @@ module rhyme_nombre
   end interface operator ( .to. )
 
   interface operator ( * )
-    procedure rhyme_nombre_mul
-    procedure rhyme_nombre_mul_rev
+    module procedure rhyme_nombre_mul
+    module procedure rhyme_nombre_mul_rev
   end interface operator ( * )
 
 

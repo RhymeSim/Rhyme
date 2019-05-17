@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_head_smod
+submodule ( rhyme_nombre_unit ) unit_head_smod
 contains
   module function rhyme_nombre_unit_head ( u ) result ( head )
     implicit none
@@ -12,4 +12,4 @@ contains
       head => head%prev
     end do
   end function rhyme_nombre_unit_head
-end submodule rhyme_nombre_unit_head_smod
+end submodule unit_head_smod

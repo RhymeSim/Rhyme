@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_get_value_smod
+submodule ( rhyme_nombre ) get_value_smod
 contains
   pure module function rhyme_nombre_get_value ( n ) result ( v )
     implicit none
@@ -8,4 +8,4 @@ contains
 
     v = n%v
   end function rhyme_nombre_get_value
-end submodule rhyme_nombre_get_value_smod
+end submodule get_value_smod

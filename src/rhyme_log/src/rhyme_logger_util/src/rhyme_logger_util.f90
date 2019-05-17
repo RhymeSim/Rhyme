@@ -69,27 +69,27 @@ module rhyme_logger_util
   end type logger_util_t
 
   interface
-    module subroutine rhyme_logger_util_log ( this, message, key, operator, val )
+    module subroutine rhyme_logger_util_log ( this, message, key, ope, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
-      character ( len=* ), intent ( in ), optional :: operator
+      character ( len=* ), intent ( in ), optional :: ope
       class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_log
 
-    module subroutine rhyme_logger_util_warn ( this, message, key, operator, val )
+    module subroutine rhyme_logger_util_warn ( this, message, key, ope, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
-      character ( len=* ), intent ( in ), optional :: operator
+      character ( len=* ), intent ( in ), optional :: ope
       class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_warn
 
-    module subroutine rhyme_logger_util_err ( this, message, key, operator, val )
+    module subroutine rhyme_logger_util_err ( this, message, key, ope, val )
       class ( logger_util_t ), intent ( inout ) :: this
       character ( len=* ), intent ( in ) :: message
       class (*), intent ( in ), optional :: key
-      character ( len=* ), intent ( in ), optional :: operator
+      character ( len=* ), intent ( in ), optional :: ope
       class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_err
 

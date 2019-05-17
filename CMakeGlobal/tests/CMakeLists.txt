@@ -1,13 +1,25 @@
 enable_language( C Fortran )
 
 # Set generic compiler flags
-add_compile_options( -Wall -Wextra )
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  add_compile_options( -warn all )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  add_compile_options( -Wall -Wextra )
+endif()
 
 # Set Fortran compiler flags
-set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
+endif()
 
 # Set C compiler flags
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11" )
+if ( "${CMAKE_C_COMPILER_ID}" STREQUAL "Intel" )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -stand=c11" )
+elseif( "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11" )
+endif()
 
 # Set include directory
 set( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )

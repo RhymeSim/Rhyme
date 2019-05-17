@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_prefix ) rhyme_nombre_prefix_mul_smod
+submodule ( rhyme_nombre_prefix ) prefix_mul_smod
 contains
 
   module function rhyme_nombre_prefix_mul ( p1, p2 ) result ( p )
@@ -17,4 +17,4 @@ contains
       p = prfx_si(i)
     end if
   end function rhyme_nombre_prefix_mul
-end submodule rhyme_nombre_prefix_mul_smod
+end submodule prefix_mul_smod

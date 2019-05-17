@@ -1,4 +1,4 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_time_submoudle
+submodule ( rhyme_logger_util ) rhyme_logger_util_time_smod
 contains
   module subroutine rhyme_logger_util_update_time ( this )
     implicit none
@@ -48,4 +48,4 @@ contains
 
     if ( present( color ) ) tas_str = trim( tas_str )//tc%nc
   end function rhyme_logger_util_time_and_section
-end submodule rhyme_logger_util_time_submoudle
+end submodule rhyme_logger_util_time_smod

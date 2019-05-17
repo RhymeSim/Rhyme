@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_units ) rhyme_nombre_units_parse_smod
+submodule ( rhyme_nombre_units ) units_parse_smod
 contains
 
   module function rhyme_nombre_units_parse ( str ) result ( u )
@@ -153,4 +153,4 @@ contains
   end function rhyme_nombre_units_loc_close_par
 
 
-end submodule rhyme_nombre_units_parse_smod
+end submodule units_parse_smod

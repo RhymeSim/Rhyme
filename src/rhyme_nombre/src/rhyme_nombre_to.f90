@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_to_smod
+submodule ( rhyme_nombre ) to_smod
 contains
   module function rhyme_nombre_to ( n, u_new ) result ( n_new )
     implicit none
@@ -16,4 +16,4 @@ contains
 
     n_new%u => u_new
   end function rhyme_nombre_to
-end submodule rhyme_nombre_to_smod
+end submodule to_smod

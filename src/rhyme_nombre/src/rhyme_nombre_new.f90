@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_new_smod
+submodule ( rhyme_nombre ) new_smod
 contains
   module function rhyme_nombre_new ( val, u ) result ( n )
     implicit none
@@ -20,4 +20,4 @@ contains
       n = nombre_t( v, rhyme_nombre_unit_head( u_ptr ) )
     end select
   end function rhyme_nombre_new
-end submodule rhyme_nombre_new_smod
+end submodule new_smod

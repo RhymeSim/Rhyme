@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_print_smod
+submodule ( rhyme_nombre_unit ) unit_print_smod
 contains
   module function rhyme_nombre_unit_print ( u ) result ( str )
     implicit none
@@ -29,4 +29,4 @@ contains
 
     str = adjustl( trim( str ) )
   end function rhyme_nombre_unit_print
-end submodule rhyme_nombre_unit_print_smod
+end submodule unit_print_smod

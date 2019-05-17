@@ -1,4 +1,4 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_io_submodule
+submodule ( rhyme_logger_util ) rhyme_logger_util_io_smod
 contains
   module subroutine rhyme_logger_util_open_logfile ( this )
     implicit none
@@ -56,4 +56,4 @@ contains
 
     if ( opened ) close ( this%errfile_unit )
   end subroutine rhyme_logger_util_close_errfile
-end submodule rhyme_logger_util_io_submodule
+end submodule rhyme_logger_util_io_smod

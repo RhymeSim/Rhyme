@@ -3,8 +3,8 @@ module rhyme_string
 
   type string_constants_t
     character ( len=16 ) :: int_fmt = '(I0)'
-    character ( len=16 ) :: real_fmt = '(E13.7)'
-    character ( len=16 ) :: double_fmt = '(E21.15)'
+    character ( len=16 ) :: real_fmt = '(E14.7)'
+    character ( len=16 ) :: double_fmt = '(E22.15)'
   end type string_constants_t
 
   type ( string_constants_t ), parameter :: strcnst = string_constants_t()

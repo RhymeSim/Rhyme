@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_mul_smod
+submodule ( rhyme_nombre ) mul_smod
 contains
   module function rhyme_nombre_mul_rev ( n, mul ) result ( n_new )
     implicit none
@@ -38,11 +38,11 @@ contains
       u_mul => rhyme_nombre_unit_clone( m%u )
       n_new = nombre_t( m%v * n%v, u * u_mul )
     type is ( integer )
-      n_new = nombre_t( real( m, kind=8 ) * n%v, u )
+      n_new = nombre_t( n%v * m, u )
     type is ( real( kind=4 ) )
-      n_new = nombre_t( real( m, kind=8 ) * n%v, u )
+      n_new = nombre_t( n%v * real( m, kind=8 ), u )
     type is ( real( kind=8 ) )
-      n_new = nombre_t( m * n%v, u )
+      n_new = nombre_t( n$v * m, u )
     end select
   end function rhyme_nombre_mul
-end submodule rhyme_nombre_mul_smod
+end submodule mul_smod

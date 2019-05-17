@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_pow_smod
+submodule ( rhyme_nombre_unit ) unit_pow_smod
 contains
   module function rhyme_nombre_unit_pow ( u, pow ) result ( new_u )
     implicit none
@@ -28,4 +28,4 @@ contains
       end if
     end do
   end function rhyme_nombre_unit_pow
-end submodule rhyme_nombre_unit_pow_smod
+end submodule unit_pow_smod

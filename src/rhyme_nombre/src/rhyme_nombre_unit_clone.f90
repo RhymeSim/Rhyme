@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_clone_smod
+submodule ( rhyme_nombre_unit ) unit_clone_smod
 contains
   module function rhyme_nombre_unit_clone ( u ) result ( clone )
     implicit none
@@ -33,4 +33,4 @@ contains
     clone => rhyme_nombre_unit_head( clone )
 
   end function rhyme_nombre_unit_clone
-end submodule rhyme_nombre_unit_clone_smod
+end submodule unit_clone_smod

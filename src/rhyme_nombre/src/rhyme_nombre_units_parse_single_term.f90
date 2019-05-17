@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_units ) rhyme_nombre_units_parse_single_term_smod
+submodule ( rhyme_nombre_units ) units_parse_single_term_smod
 contains
 
   module function rhyme_nombre_units_parse_single_term ( symb ) result ( u )
@@ -72,4 +72,4 @@ contains
 
     p = one
   end function rhyme_nombre_units_find_prefix
-end submodule rhyme_nombre_units_parse_single_term_smod
+end submodule units_parse_single_term_smod

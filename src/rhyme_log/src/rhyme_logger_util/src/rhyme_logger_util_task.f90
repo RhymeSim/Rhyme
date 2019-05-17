@@ -1,4 +1,4 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_task_submodule
+submodule ( rhyme_logger_util ) rhyme_logger_util_task_smod
 contains
   module subroutine rhyme_logger_util_start_task ( this, task, msg )
     implicit none
@@ -19,7 +19,7 @@ contains
   end subroutine rhyme_logger_util_start_task
 
 
-  subroutine rhyme_logger_util_done ( this )
+  module subroutine rhyme_logger_util_done ( this )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
@@ -54,4 +54,4 @@ contains
 
     call this%end_section
   end subroutine rhyme_logger_util_done
-end submodule rhyme_logger_util_task_submodule
+end submodule rhyme_logger_util_task_smod

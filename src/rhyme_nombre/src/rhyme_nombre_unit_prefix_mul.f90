@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_prefix_mul_smod
+submodule ( rhyme_nombre_unit ) unit_prefix_mul_smod
 contains
   module function rhyme_nombre_unit_prefix_mul ( p, u ) result ( new_u )
     implicit none
@@ -35,4 +35,4 @@ contains
     end if
 
   end function rhyme_nombre_unit_prefix_mul
-end submodule rhyme_nombre_unit_prefix_mul_smod
+end submodule unit_prefix_mul_smod

@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_tail_smod
+submodule ( rhyme_nombre_unit ) unit_tail_smod
 contains
   module function rhyme_nombre_unit_tail ( u ) result ( tail )
     implicit none
@@ -12,4 +12,4 @@ contains
       tail => tail%next
     end do
   end function rhyme_nombre_unit_tail
-end submodule rhyme_nombre_unit_tail_smod
+end submodule unit_tail_smod

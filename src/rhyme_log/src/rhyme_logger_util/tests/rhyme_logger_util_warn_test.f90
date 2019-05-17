@@ -3,25 +3,25 @@ logical function rhyme_logger_util_warn_test () result ( failed )
 
   implicit none
 
-  type ( logger_util_t ) :: log
+  type ( logger_util_t ) :: logger
 
-  call log%init( 'warn' )
-  call log%begin_section( 'test' )
-  call log%warn( 'message' )
-  call log%warn( 'message', 'key' )
-  call log%warn( 'message', 123 )
-  call log%warn( 'message', 1.2e3 )
-  call log%warn( 'message', 1.2d3 )
-  call log%warn( 'message', 'key', 'op' )
-  call log%warn( 'message', 'key', 'op', [ 'value' ] )
-  call log%warn( 'message', 'key', 'op', [ 123 ] )
-  call log%warn( 'message', 'key', 'op', [ 1.2e3 ] )
-  call log%warn( 'message', 'key', 'op', [ 1.2d3 ] )
-  call log%warn( 'message', 'key', 'op', [ 'value 1', 'value 2' ] )
-  call log%warn( 'message', 'key', 'op', [ 123, 234 ] )
-  call log%warn( 'message', 'key', 'op', [ 1.2e3, 2.3e4 ] )
-  call log%warn( 'message', 'key', 'op', [ 1.2d3, 2.3d4 ] )
-  call log%end_section
+  call logger%init( 'warn' )
+  call logger%begin_section( 'test' )
+  call logger%warn( 'message' )
+  call logger%warn( 'message', 'key' )
+  call logger%warn( 'message', 123 )
+  call logger%warn( 'message', 1.2e3 )
+  call logger%warn( 'message', 1.2d3 )
+  call logger%warn( 'message', 'key', 'op' )
+  call logger%warn( 'message', 'key', 'op', [ 'value' ] )
+  call logger%warn( 'message', 'key', 'op', [ 123 ] )
+  call logger%warn( 'message', 'key', 'op', [ 1.2e3 ] )
+  call logger%warn( 'message', 'key', 'op', [ 1.2d3 ] )
+  call logger%warn( 'message', 'key', 'op', [ 'value 1', 'value 2' ] )
+  call logger%warn( 'message', 'key', 'op', [ 123, 234 ] )
+  call logger%warn( 'message', 'key', 'op', [ 1.2e3, 2.3e4 ] )
+  call logger%warn( 'message', 'key', 'op', [ 1.2d3, 2.3d4 ] )
+  call logger%end_section
 
   ! To see the output set failed to .true.
   failed = .false.

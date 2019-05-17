@@ -1,12 +1,12 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_warn_submodule
+submodule ( rhyme_logger_util ) rhyme_logger_util_warn_smod
 contains
-  module subroutine rhyme_logger_util_warn ( this, message, key, operator, val )
+  module subroutine rhyme_logger_util_warn ( this, message, key, ope, val )
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
     character ( len=* ), intent ( in ) :: message
     class (*), intent ( in ), optional :: key
-    character ( len=* ), intent ( in ), optional :: operator
+    character ( len=* ), intent ( in ), optional :: ope
     class (*), intent ( in ), optional :: val(:)
 
     character ( len=2048 ) :: k, v, op
@@ -18,8 +18,8 @@ contains
       k = ''
     end if
 
-    if ( present( operator ) ) then
-      op = trim( operator )
+    if ( present( ope ) ) then
+      op = trim( ope )
     else
       op = ''
     end if
@@ -40,4 +40,4 @@ contains
 
     call this%close_logfile
   end subroutine rhyme_logger_util_warn
-end submodule rhyme_logger_util_warn_submodule
+end submodule rhyme_logger_util_warn_smod

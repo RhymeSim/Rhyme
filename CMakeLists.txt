@@ -3,8 +3,15 @@ cmake_minimum_required( VERSION 3.7 )
 project( rhyme )
 
 enable_language( Fortran )
-add_compile_options( -Wall -Wextra -O3 )
-set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
+
+
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  add_compile_options( -warn all -O3 )
+  set( CMAKE_Fortran_FLAGS "-stand f08" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  add_compile_options( -Wall -Wextra -O3 )
+  set( CMAKE_Fortran_FLAGS "-std=f2008" )
+endif()
 
 
 set( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )

@@ -1,6 +1,5 @@
-submodule ( rhyme_nombre_unit ) rhyme_nombre_unit_mul_smod
+submodule ( rhyme_nombre_unit ) unit_mul_smod
 contains
-
   module function rhyme_nombre_unit_mul ( u, mul ) result ( new_u_tail )
     implicit none
 
@@ -35,4 +34,4 @@ contains
 
     end select
   end function rhyme_nombre_unit_mul
-end submodule rhyme_nombre_unit_mul_smod
+end submodule unit_mul_smod

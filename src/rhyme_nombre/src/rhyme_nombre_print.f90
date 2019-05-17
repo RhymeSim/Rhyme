@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre ) rhyme_nombre_print_smod
+submodule ( rhyme_nombre ) print_smod
 contains
   module function rhyme_nombre_print ( this ) result ( str )
     implicit none
@@ -8,4 +8,4 @@ contains
 
     write (str, fmt="(E9.3,A,A,A)") this%v, " [ ", trim(this%u%p()), " ]"
   end function rhyme_nombre_print
-end submodule rhyme_nombre_print_smod
+end submodule print_smod

@@ -3,6 +3,12 @@ enable_language( Fortran )
 
 project( rhyme_muscl_hancock )
 
+if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
+endif()
+
 set( deps
   rhyme_ideal_gas
   rhyme_slope_limiter

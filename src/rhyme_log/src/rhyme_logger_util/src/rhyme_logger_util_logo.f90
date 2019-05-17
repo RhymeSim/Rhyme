@@ -1,4 +1,4 @@
-submodule ( rhyme_logger_util ) rhyme_logger_util_logo_submodule
+submodule ( rhyme_logger_util ) rhyme_logger_util_logo_smod
 contains
   module subroutine rhyme_logger_util_set_colored_logo ( this )
     implicit none
@@ -34,4 +34,4 @@ contains
     this%logo(9) = "                      ▀▀▀  © Saeed Sarpas, 2019"
     this%logo(10) = ""
   end subroutine rhyme_logger_util_set_logo
-end submodule rhyme_logger_util_logo_submodule
+end submodule rhyme_logger_util_logo_smod
