@@ -48,8 +48,8 @@ module rhyme_nombre
       type ( nombre_t ) :: n_new
     end function rhyme_nombre_div_rev
 
-    module function rhyme_nombre_print ( this ) result ( str )
-      class ( nombre_t ), intent ( in ) :: this
+    module function rhyme_nombre_print ( n ) result ( str )
+      class ( nombre_t ), intent ( in ) :: n
       character ( len=128 ) :: str
     end function rhyme_nombre_print
 
@@ -75,8 +75,8 @@ module rhyme_nombre
   end interface operator ( .to. )
 
   interface operator ( * )
-    module procedure rhyme_nombre_mul
-    module procedure rhyme_nombre_mul_rev
+    module procedure :: rhyme_nombre_mul
+    module procedure :: rhyme_nombre_mul_rev
   end interface operator ( * )
 
 

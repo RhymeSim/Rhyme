@@ -30,6 +30,6 @@ logical function rhyme_string_to_string_test () result ( failed )
 
   str = .toString. [ 123.4e5, 123.4e5 ]
   write( expected, strcnst%real_fmt ) 123.4e5
-  failed = trim( str ) .ne. '[ '//trim(expected)//' '//trim(expected)//' ]'
+  failed = trim( str ) .ne. '[ '//trim(adjustl(expected))//' '//trim(adjustl(expected))//' ]'
   if ( failed ) return
 end function rhyme_string_to_string_test

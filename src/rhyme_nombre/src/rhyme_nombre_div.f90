@@ -1,6 +1,5 @@
 submodule ( rhyme_nombre ) div_smod
 contains
-
   module function rhyme_nombre_div ( n, div ) result ( n_new )
     implicit none
 
