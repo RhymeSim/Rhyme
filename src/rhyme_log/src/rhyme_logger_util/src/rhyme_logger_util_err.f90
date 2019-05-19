@@ -36,6 +36,7 @@ contains
     str = concat_components( message, k, op, v, tc%ig )
     write( stdout,* ) trim(this%tas(color=tc%rd))//tc%rd//' (error) '//tc%nc//adjustl(trim(str))
 
+    str = ''
     str = concat_components( message, k, op, v )
     write( this%logfile_unit,* ) trim(this%tas())//' (error) '//adjustl(trim(str))
     write( this%errfile_unit,* ) trim(this%tas())//' (error) '//adjustl(trim(str))

@@ -23,7 +23,7 @@ contains
       this%t(5),':',this%t(6),':',this%t(7),']'
 
     if ( present( color ) ) then
-      time_str = trim(color)//trim(time_str)//tc%nc
+      time_str = trim(color)//trim( time_str )//tc%nc
     end if
   end function rhyme_logger_util_time
 
@@ -37,11 +37,18 @@ contains
 
     integer :: i
 
-    if ( present( color ) ) tas_str = trim( this%time( color=color ) )//' '//trim(color)
+    if ( present( color ) ) then
+      tas_str = trim( this%time( color=color ) )//trim(color)
+    else
+      tas_str = trim( this%time() )
+    end if
 
     do i = 1, this%secid
-      if ( i > 1 ) tas_str = trim( tas_str )//'|'
-      tas_str = trim( tas_str )//trim( adjustl( this%sections( i )))
+      if ( i > 1 ) then
+      tas_str = trim( tas_str )//'|'//trim( this%sections( i ) )
+      else
+      tas_str = trim( tas_str )//' '//trim( this%sections( i ) )
+      end if
     end do
 
     tas_str = trim( tas_str )//':'
