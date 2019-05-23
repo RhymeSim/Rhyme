@@ -55,6 +55,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
     dt = dx / solution%star%right%shock%speed - epsilon(0.d0)
     call rhyme_irs_solve( irs, ig, L, R, dx, dt, hyid%x, U )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'right_side_of_shock' )
     call tester%expect( U%u .toBe. R%u .within. 16 .hint. 'right_side_of_shock' )
 
     ! Inside the right shock
@@ -68,16 +69,18 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
       ex_U &
     )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'inside_right_shock' )
     call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_right_shock' )
   else
     ! Right side of the right fan (outside the fan)
     dt = dx / solution%star%right%fan%speedH - epsilon(0.d0)
     call rhyme_irs_solve( irs, ig, L, R, dx, dt, hyid%x, U )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'right_side_of_fan' )
     call tester%expect( U%u .toBe. R%u .hint. 'right_side_of_fan' )
 
     ! Left side of the right fan (outside the fan)
-    dt = dx / solution%star%right%fan%speedT + epsilon(0.d0)
+    dt = dx / solution%star%right%fan%speedT + 2 * epsilon(0.d0)
     call rhyme_irs_solve( irs, ig, L, R, dx, dt, hyid%x, U )
 
     call ig%prim_vars_to_cons( &
@@ -87,6 +90,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
       ex_U &
     )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'behind_right_fan' )
     call tester%expect( U%u .toBe. ex_U%u .hint. 'behind_right_fan' )
 
     ! Inside the right fan
@@ -98,6 +102,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
 
     ex_U = irs_w_kfan( ig, solution%right, dx/dt, hyid%x, is_right=.true. )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'inside_right_fan' )
     call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_right_fan' )
   end if
 
@@ -109,6 +114,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
     dt = dx / solution%star%left%shock%speed - epsilon(0.d0)
     call rhyme_irs_solve( irs, ig, L, R, dx, dt, hyid%x, U )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'left_side_of_shock' )
     call tester%expect( U%u .toBe. L%u .hint. 'left_side_of_shock' )
 
     ! Inside the left shock
@@ -122,12 +128,14 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
       ex_U &
     )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'inside_left_shock' )
     call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_left_shock' )
   else
     ! Left side of the left fan (outside the fan)
     dt = dx / solution%star%left%fan%speedH - epsilon(0.d0)
     call rhyme_irs_solve( irs, ig, L, R, dx, dt, hyid%x, U )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'left_side_of_fan' )
     call tester%expect( U%u .toBe. L%u .hint. 'left_side_of_fan' )
 
     ! Right side of the left fan (outside the fan)
@@ -141,6 +149,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
       ex_U &
     )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'behind_left_fan' )
     call tester%expect( U%u .toBe. ex_U%u .within. 14 .hint. 'behind_left_fan' )
 
     ! Inside the left fan
@@ -152,6 +161,7 @@ subroutine irs_solve_test_cases ( func, irs, ig, tester )
 
     ex_U = irs_w_kfan( ig, solution%left, dx/dt, hyid%x, is_right=.false. )
 
+    call tester%expect( .notToBeNaN. U%u .hint. 'inside_left_fan' )
     call tester%expect( U%u .toBe. ex_U%u .hint. 'inside_left_fan' )
   end if
 end subroutine irs_solve_test_cases

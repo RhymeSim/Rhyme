@@ -15,18 +15,18 @@ contains
 
     if ( dxdt > solution%star%u ) then                                 ! Right side
       if ( solution%star%right%is_shock ) then                         !- Right shock
-        if ( dxdt > solution%star%right%shock%speed ) then             !---- W_R
-          U = irs_w_k( ig, solution%right )
-        else                                                           !---- W_*R^sho
+        if ( dxdt < solution%star%right%shock%speed ) then             !---- W_R
           U = irs_w_starR_sho( ig, solution, dir )
+        else                                                           !---- W_*R^sho
+          U = irs_w_k( ig, solution%right )
         end if
       else                                                             !- Right rarefaction
-        if ( dxdt > solution%star%right%fan%speedH ) then              !---- W_R
-          U = irs_w_k( ig, solution%right )
-        else if ( dxdt > solution%star%right%fan%speedT ) then         !---- W_Rfan
-          U = irs_w_kfan( ig, solution%right, dxdt, dir, is_right=.true. )
-        else                                                           !---- W_*R^fan
+        if ( dxdt < solution%star%right%fan%speedT ) then              !---- W_*R^fan
           U = irs_w_starR_fan( ig, solution, dir )
+        else if ( dxdt < solution%star%right%fan%speedH ) then         !---- W_Rfan
+          U = irs_w_kfan( ig, solution%right, dxdt, dir, is_right=.true. )
+        else                                                           !---- W_R
+          U = irs_w_k( ig, solution%right )
         end if
       end if
     else                                                               ! Left side
