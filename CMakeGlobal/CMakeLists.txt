@@ -1,8 +1,8 @@
 # Set generic compiler flags
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  add_compile_options( -warn all )
+  add_compile_options( -warn all -fpp -O3 )
 elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  add_compile_options( -Wall -Wextra )
+  add_compile_options( -Wall -Wextra -cpp -O3 )
 endif()
 
 # Set Fortran compiler flags
@@ -42,12 +42,23 @@ enable_testing()
 
 
 # Watch target (Make sure inotify-tools is installed)
-
 add_custom_target( ${PROJECT_NAME}_watch
   VERBATIM COMMAND /bin/sh -c " \
   inotifywait -m -r -e modify -e create -e delete -e move ${PROJECT_SOURCE_DIR} \
   | while read -r filename event; do \
-    cmake .. && make -j8; ctest -j8 --output-on-failure --timeout 50; \
+    cmake .. && make && ctest -j8 --output-on-failure --timeout 50; \
   done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+
+# Set compile definitions
+get_directory_property( ${PROJECT_NAME}_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
+
+function( if_not_defined_define key val )
+  if( NOT (
+    "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES "^${key}"
+    OR "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES ";${key}"
+  ))
+    add_compile_definitions( ${key}=${val} )
+  endif()
+endfunction()
