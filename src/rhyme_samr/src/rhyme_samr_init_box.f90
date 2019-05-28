@@ -7,10 +7,10 @@ contains
     !     Also the subroutine does not check if the box has already been
     !     allocated or not, very unsafe, I know ;)
     class ( samr_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: l, b, dims(3)
-    integer, intent ( in ) :: ledges(3), redges(3)
+    integer, intent ( in ) :: l, b, dims( NDIM )
+    integer, intent ( in ) :: ledges( NDIM ), redges( NDIM )
 
-    integer :: lb(3), ub(3)
+    integer :: lb( NDIM ), ub( NDIM )
 
     this%levels(l)%boxes(b)%level = l
     this%levels(l)%boxes(b)%number = b
@@ -18,13 +18,16 @@ contains
     lb = -this%ghost_cells + 1
     ub = dims + this%ghost_cells
 
-    allocate ( this%levels(l)%boxes(b)%flags ( &
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-    ) )
-
-    allocate ( this%levels(l)%boxes(b)%hydro ( &
-      lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) &
-    ) )
+#if NDIM == 1
+    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1) ) )
+    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), NCMP ) )
+#elif NDIM == 2
+    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2) ) )
+    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), NCMP ) )
+#elif NDIM == 3
+    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
+    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), NCMP ) )
+#endif
 
     this%levels(l)%nboxes = this%levels(l)%nboxes + 1
 

@@ -7,11 +7,21 @@ module rhyme_samr_factory
   type rhyme_samr_factory_t
     ! Default values
     integer :: nlevels = 3
-    integer :: base_grid(3) = [ 16, 8, 4 ]
-    integer :: ghost_cells(3) = [ 2, 2, 2 ]
     integer :: max_nboxes( 0:samrid%max_nlevels ) = 0
     integer :: init_nboxes( 0:samrid%max_nlevels ) = 0
-    real ( kind=8 ) :: box_lengths(3) = [ 1.d0, .5d0, .25d0 ]
+#if NDIM == 1
+    integer :: base_grid( NDIM ) = [ 16 ]
+    integer :: ghost_cells( NDIM ) = [ 2 ]
+    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0 ]
+#elif NDIM == 2
+    integer :: base_grid( NDIM ) = [ 16, 8 ]
+    integer :: ghost_cells( NDIM ) = [ 2, 2 ]
+    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0, .5d0 ]
+#elif NDIM == 3
+    integer :: base_grid( NDIM ) = [ 16, 8, 4 ]
+    integer :: ghost_cells( NDIM ) = [ 2, 2, 2 ]
+    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0, .5d0, .25d0 ]
+#endif
   contains
     procedure :: init => rhyme_samr_factory_init
     procedure :: generate => rhyme_samr_factory_generate
@@ -28,16 +38,12 @@ contains
     class ( rhyme_samr_factory_t ), intent ( inout ) :: this
     logical, intent ( in ), optional :: empty
 
-    this%nlevels = 3
-    this%base_grid = [ 16, 8, 4 ]
-    this%ghost_cells = [ 2, 2, 2 ]
     this%max_nboxes = 0
     this%max_nboxes( 0:2 ) = [ 1, 3, 9 ]
     this%init_nboxes = 0
     if ( present( empty ) .and. .not. empty ) then
       this%init_nboxes( 0:2 ) = [ 1, 2, 4 ]
     end if
-    this%box_lengths = [ 1.d0, .5d0, .25d0 ]
   end subroutine rhyme_samr_factory_init
 
 
@@ -86,10 +92,10 @@ contains
     implicit none
 
     class ( rhyme_samr_factory_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: nlevels, base_grid(3), ghost_cells(3)
+    integer, intent ( in ) :: nlevels, base_grid( NDIM ), ghost_cells( NDIM )
     integer, intent ( in ) :: max_nboxes( 0:samrid%max_nlevels )
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
-    real ( kind=8 ), intent ( in ) :: box_lengths(3)
+    real ( kind=8 ), intent ( in ) :: box_lengths( NDIM )
     logical, intent ( in ), optional :: physical
 
     type ( samr_t ) :: samr
@@ -127,13 +133,18 @@ contains
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
     logical, intent ( in ) :: physical
 
-    real ( kind=8 ) :: val
-    integer :: l, b, k, j, i, uid
-    integer :: lb(3), ub(3), rand_len, box_dims(3)
-    type ( hydro_conserved_t ) :: state
+    real ( kind=8 ) :: val, state( NCMP )
+    integer :: l, b, i, uid
+#if NDIM > 1
+    integer :: j
+#endif
+#if NDIM > 2
+    integer :: k
+#endif
+    integer :: lb( NDIM ), ub( NDIM ), rand_len, box_dims( NDIM )
 
     if ( physical ) then
-      rand_len = 5
+      rand_len = NCMP
       call random_seed( size = rand_len )
     end if
 
@@ -157,48 +168,98 @@ contains
 
         samr%levels(l)%boxes(b)%dims = box_dims
 
-        allocate ( samr%levels(l)%boxes(b)%hydro(lb(1):ub(1), lb(2):ub(2), lb(3):ub(3)) )
-        allocate ( samr%levels(l)%boxes(b)%flags(lb(1):ub(1), lb(2):ub(2), lb(3):ub(3)) )
+#if NDIM == 1
+        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1) ) )
+        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), NCMP ) )
+#elif NDIM == 2
+        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2) ) )
+        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), NCMP ) )
+#elif NDIM == 3
+        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
+        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), NCMP ) )
+#endif
 
         samr%levels(l)%boxes(b)%left_edge = (b - 1) * box_dims + 1
         samr%levels(l)%boxes(b)%right_edge = b * box_dims
 
+#if NDIM > 2
         do k = 1, samr%levels(l)%boxes(b)%dims(3)
+#endif
+#if NDIM > 1
           do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#endif
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
               if ( physical ) then
                 state = gen_state()
-                samr%levels(l)%boxes(b)%hydro(i,j,k) = state
+#if NDIM == 1
+                samr%levels(l)%boxes(b)%flags(i) = i
+                samr%levels(l)%boxes(b)%cells(i, :) = state
+#elif NDIM == 2
+                samr%levels(l)%boxes(b)%flags(i, j) = j * box_dims(1) + i
+                samr%levels(l)%boxes(b)%cells(i, j, :) = state
+#elif NDIM == 3
+                samr%levels(l)%boxes(b)%flags(i, j, k) = k * box_dims(2) * box_dims(1) + j * box_dims(1) + i
+                samr%levels(l)%boxes(b)%cells(i, j, k,:) = state
+#endif
               else
-                val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4 + k * 1d-6
-                samr%levels(l)%boxes(b)%flags(i,j,k) = int ( val * 1e3 )
-
-                do uid = hyid%rho, hyid%e_tot
-                  samr%levels(l)%boxes(b)%hydro(i,j,k)%u(uid) = val + uid * 1d-7
+#if NDIM == 1
+                val = l * 1d1 + b * 1d0 + i * 1d-2
+                samr%levels(l)%boxes(b)%flags(i) = int ( val * 1e3 )
+                do uid = 1, NCMP
+                  samr%levels(l)%boxes(b)%cells(i, uid) = val + uid * 1d-7
                 end do
+#elif NDIM == 2
+                val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4
+                samr%levels(l)%boxes(b)%flags(i, j) = int ( val * 1e3 )
+                do uid = 1, NCMP
+                  samr%levels(l)%boxes(b)%cells(i, j, uid) = val + uid * 1d-7
+                end do
+#elif NDIM == 3
+                val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4 + k * 1d-6
+                samr%levels(l)%boxes(b)%flags(i, j, k) = int ( val * 1e3 )
+                do uid = 1, NCMP
+                  samr%levels(l)%boxes(b)%cells(i, j, k, uid) = val + uid * 1d-7
+                end do
+#endif
+
               end if
             end do
+#if NDIM > 1
           end do
+#endif
+#if NDIM > 2
         end do
+#endif
 
       end do
     end do
 
     samr%initialized = .true.
   contains
-    type ( hydro_conserved_t ) function gen_state () result ( U )
+    function gen_state () result ( u )
       implicit none
 
-      real ( kind=8 ) :: r(5)
+      real ( kind=8 ) :: u( NCMP )
+
+      real ( kind=8 ) :: r( NCMP )
+      integer :: i, n_hydro_vars
+
+      n_hydro_vars = 1 + NDIM + 1
 
       call random_number( r )
 
-      U%u( hyid%rho ) = r(1)
-      U%u( hyid%rho_u ) = r(1) * ( r(2) - .5d0 )
-      U%u( hyid%rho_v ) = r(1) * ( r(3) - .5d0 )
-      U%u( hyid%rho_w ) = r(1) * ( r(4) - .5d0 )
-      U%u( hyid%e_tot ) = .5d0 * sum( U%u( hyid%rho_u:hyid%rho_w )**2 ) / r(1) &
-        + r(5) / ( 5.d0 / 3.d0 - 1 )
+      u(1) = r(1)
+
+      do i = 2, NDIM + 1
+        u(i) = r(1) * ( r(i) - .5d0 )
+      end do
+
+      u(n_hydro_vars) = .5d0 * sum( u( 2:NDIM+1 )**2 ) / r(1) + r(i+1) / ( 5.d0 / 3.d0 - 1 )
+
+      do i = n_hydro_vars + 1, NCMP
+        ! TODO: set temperature if it's available
+        u(i) = 0.d0
+      end do
     end function gen_state
   end subroutine rhyme_samr_factory_filling
 end module rhyme_samr_factory

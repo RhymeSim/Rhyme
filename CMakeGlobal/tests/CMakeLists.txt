@@ -86,4 +86,16 @@ while( ${len} GREATER ${idx} )
   math( EXPR idx "${idx} + 1" )
 endwhile()
 
+# Set compile definitions
+get_directory_property( ${PROJECT_NAME}_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
+
+function( if_not_defined_define key val )
+  if( NOT (
+    "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES "^${key}"
+    OR "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES ";${key}"
+  ))
+    add_compile_definitions( ${key}=${val} )
+  endif()
+endfunction()
+
 enable_testing()
