@@ -2,8 +2,9 @@ cmake_minimum_required( VERSION 3.12 )
 
 project( rhyme )
 
-set( HYDRO_SOLVER "MH" ) # { MH (for MUSCL_Hancock), NONE }
-set( RT_SOLVER "MCRT" ) # { MCRT (for Monte-Carlo Ray Tracing), NONE }
+set( HYDRO_SOLVER ON )
+set( RT_SOLVER ON )
+
 set( NUMBER_OF_DIM 3 )
 set( NUMBER_OF_SPECIES 3 )
 
@@ -21,19 +22,18 @@ endif()
 
 
 # Calculating Number of Components (NCMP)
-set( NCMP 1 ) # For density
-
-if( NOT "${HYDRO_SOLVER}" STREQUAL "NONE" )
+if( ${HYDRO_SOLVER} )
   # Adding momenta and total energy
-  math( EXPR NCMP "${NCMP}+${NUMBER_OF_DIM}+1" )
+  math( EXPR NCMP "1+${NUMBER_OF_DIM}+1" ) # rho, momenta, energy
 endif()
 
-if( NOT "${RT_SOLVER}" STREQUAL "NONE" )
+if( ${RT_SOLVER} )
   # Adding temperature and ionization fractions
-  math( EXPR NCMP "${NCMP}+1+${NUMBER_OF_SPECIES}" )
+  math( EXPR NCMP "${NCMP}+1+${NUMBER_OF_SPECIES}" ) # temperature, neutral fractions
 endif()
 
 add_compile_definitions( NDIM=${NUMBER_OF_DIM} )
+add_compile_definitions( NSPE=${NUMBER_OF_SPECIES} )
 add_compile_definitions( NCMP=${NCMP} )
 
 

@@ -46,10 +46,10 @@ create_test_sourcelist( _ test_runner.c ${test_filenames} )
 # Adding factory directories
 foreach( factory ${factories} )
   list( APPEND factory_files
-    ${proj_src_dir}/${factory}/tests/${factory}_factory.f90 )
+    ${rhyme_src_dir}/${factory}/tests/${factory}_factory.f90 )
 
   if( NOT TARGET ${factory} )
-    add_subdirectory( ${proj_src_dir}/${factory}
+    add_subdirectory( ${rhyme_src_dir}/${factory}
       ${CMAKE_BINARY_DIR}/${factory} )
   endif()
 endforeach( factory )
@@ -58,7 +58,7 @@ endforeach( factory )
 # Adding test dependencies
 foreach( dep ${test_deps} )
   if( NOT TARGET ${dep} )
-    add_subdirectory( ${proj_src_dir}/${dep} ${CMAKE_BINARY_DIR}/${dep} )
+    add_subdirectory( ${rhyme_src_dir}/${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif()
 endforeach( dep )
 
@@ -86,16 +86,6 @@ while( ${len} GREATER ${idx} )
   math( EXPR idx "${idx} + 1" )
 endwhile()
 
-# Set compile definitions
-get_directory_property( ${PROJECT_NAME}_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-
-function( if_not_defined_define key val )
-  if( NOT (
-    "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES "^${key}"
-    OR "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES ";${key}"
-  ))
-    add_compile_definitions( ${key}=${val} )
-  endif()
-endfunction()
-
 enable_testing()
+
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/if_not_defined_define/CMakeLists.txt )

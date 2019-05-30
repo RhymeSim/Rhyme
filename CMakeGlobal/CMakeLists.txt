@@ -20,7 +20,7 @@ set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 # Add dependencies
 foreach( dep ${deps} )
   if( NOT TARGET ${dep} )
-    add_subdirectory( ${proj_src_dir}/${dep} ${CMAKE_BINARY_DIR}/${dep} )
+    add_subdirectory( ${rhyme_src_dir}/${dep} ${CMAKE_BINARY_DIR}/${dep} )
   endif()
 endforeach( dep )
 
@@ -51,14 +51,4 @@ add_custom_target( ${PROJECT_NAME}_watch
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-# Set compile definitions
-get_directory_property( ${PROJECT_NAME}_COMPILE_DEFINITIONS COMPILE_DEFINITIONS )
-
-function( if_not_defined_define key val )
-  if( NOT (
-    "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES "^${key}"
-    OR "${${PROJECT_NAME}_COMPILE_DEFINITIONS}" MATCHES ";${key}"
-  ))
-    add_compile_definitions( ${key}=${val} )
-  endif()
-endfunction()
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/if_not_defined_define/CMakeLists.txt )

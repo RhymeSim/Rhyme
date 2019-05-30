@@ -19,6 +19,28 @@ module rhyme_samr
   type ( samr_indices_t ), parameter :: samrid = samr_indices_t()
 
 
+  type samr_components_indices_t
+#if HYDRO_SOLVER
+    integer :: rho = 1
+    integer :: rho_u = 2, u = 2
+#if NDIM > 1
+    integer :: rho_v = 3, v = 3
+#endif
+#if NDIM > 2
+    integer :: rho_w = 4, w = 4
+#endif
+    integer :: e_tot = 1 + NDIM + 1, p = 1 + NDIM + 1
+#if RT_SOLVER
+    integer :: temp = 1 + NDIM + 1 + 1
+#endif
+#elif RT_SOLVER
+    integer :: temp = 1
+#endif
+  end type samr_components_indices_t
+
+  type ( samr_components_indices_t ), parameter :: cid = samr_components_indices_t()
+
+
   type samr_box_t
     integer :: dims( NDIM ) = samrid%unset
     integer :: level = samrid%unset
@@ -31,7 +53,7 @@ module rhyme_samr
 #elif NDIM == 2
     integer, allocatable :: flags (:, :)
     real ( kind=8 ), allocatable :: cells (:, :, :)
-#else
+#elif NDIM == 3
     integer, allocatable :: flags (:, :, :)
     real ( kind=8 ), allocatable :: cells (:, :, :, :)
 #endif

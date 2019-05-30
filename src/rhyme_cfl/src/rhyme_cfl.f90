@@ -17,5 +17,4 @@ module rhyme_cfl
       real ( kind=8 ) :: dt
     end function rhyme_cfl_time_step
   end interface
-
 end module rhyme_cfl

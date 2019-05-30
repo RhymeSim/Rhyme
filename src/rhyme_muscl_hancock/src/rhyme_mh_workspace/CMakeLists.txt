@@ -23,5 +23,5 @@ set( srcs
   src/rhyme_mh_workspace.f90
 )
 
-set( proj_src_dir ../../.. )
+set( rhyme_src_dir ../../.. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../../CMakeGlobal/CMakeLists.txt )
