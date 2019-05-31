@@ -22,26 +22,5 @@ logical function rhyme_samr_test () result ( failed )
   call s_tester%expect( samrid%front .toBe. 6 .hint. 'front' )
 #endif
 
-#if HYDRO_SOLVER
-  call s_tester%expect( cid%rho .toBe. 1 .hint. 'hydro, rho' )
-  call s_tester%expect( cid%u .toBe. 2 .hint. 'hydro, u' )
-  call s_tester%expect( cid%rho_u .toBe. 2 .hint. 'hydro, rho_u' )
-#if NDIM > 1
-  call s_tester%expect( cid%v .toBe. 3 .hint. 'hydro, v' )
-  call s_tester%expect( cid%rho_v .toBe. 3 .hint. 'hydro, rho_v' )
-#endif
-#if NDIM > 2
-  call s_tester%expect( cid%w .toBe. 4 .hint. 'hydro, w' )
-  call s_tester%expect( cid%rho_w .toBe. 4 .hint. 'hydro, rho_w' )
-#endif
-  call s_tester%expect( cid%e_tot .toBe. 1 + NDIM + 1 .hint. 'hydro, e_tot' )
-  call s_tester%expect( cid%p .toBe. 1 + NDIM + 1 .hint. 'hydro, p' )
-#if RT_SOLVER
-  call s_tester%expect( cid%temp .toBe. 1 + NDIM + 1 + 1 .hint. 'rhd, temp' )
-#endif
-#elif RT_SOLVER
-  call s_tester%expect( cid%temp .toBe. 1 .hint. 'only rt, temp' )
-#endif
-
   failed = s_tester%failed()
 end function rhyme_samr_test
