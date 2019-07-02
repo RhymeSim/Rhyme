@@ -55,6 +55,18 @@ foreach( factory ${factories} )
 endforeach( factory )
 
 
+# Adding internal factory directories
+foreach( factory ${internal_factories} )
+  list( APPEND factory_files
+  ${CMAKE_SOURCE_DIR}/src/${factory}/tests/${factory}_factory.f90 )
+
+  if( NOT TARGET ${factory} )
+    add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/src/${factory}
+      ${CMAKE_BINARY_DIR}/${factory} )
+  endif()
+endforeach( factory )
+
+
 # Adding test dependencies
 foreach( dep ${test_deps} )
   if( NOT TARGET ${dep} )
@@ -88,4 +100,4 @@ endwhile()
 
 enable_testing()
 
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/if_not_defined_define/CMakeLists.txt )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/include_from_cmake_global/CMakeLists.txt )
