@@ -5,6 +5,17 @@ module rhyme_mh_workspace
 
   implicit none
 
+#if NDIM == 1
+#define COLON_J
+#define COLON_K
+#elif NDIM == 2
+#define COLON_J ,:
+#define COLON_K
+#elif NDIM == 3
+#define COLON_J ,:
+#define COLON_K ,:
+#endif
+
   type mh_workspace_indices_t
     integer :: cpu_intensive = 1, memory_intensive = 2
   end type mh_workspace_indices_t
@@ -13,10 +24,10 @@ module rhyme_mh_workspace
 
 
   type mh_workspace_box_t
-    type ( hydro_conserved_t ), allocatable :: U ( :, :, : ) ! i, j, k
-    type ( hydro_conserved_t ), allocatable :: UL ( :, :, :, : ) ! i, j, k, dir
-    type ( hydro_conserved_t ), allocatable :: UR ( :, :, :, : ) ! i, j, k, dir
-    type ( hydro_flux_t ), allocatable :: FR ( :, :, :, : ) ! i, j, k, dir
+    real ( kind=8 ), allocatable :: u ( : COLON_J COLON_K, : ) ! i, uid
+    real ( kind=8 ), allocatable :: ul ( : COLON_J COLON_K, :, : ) ! i, uid, dir
+    real ( kind=8 ), allocatable :: ur ( : COLON_J COLON_K, :, : ) ! i, uid, dir
+    real ( kind=8 ), allocatable :: fr ( : COLON_J COLON_K, :, : ) ! i, uid, dir
   end type mh_workspace_box_t
 
 
@@ -46,5 +57,4 @@ module rhyme_mh_workspace
       type ( samr_box_t ), intent ( in ) :: box
     end subroutine rhyme_mh_workspace_check
   end interface
-
 end module rhyme_mh_workspace

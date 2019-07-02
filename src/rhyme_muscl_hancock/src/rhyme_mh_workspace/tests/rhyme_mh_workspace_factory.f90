@@ -3,7 +3,7 @@ module rhyme_mh_workspace_factory
 
   implicit none
 
-  type rhyme_mh_workspace_factory_t
+  type, private :: rhyme_mh_workspace_factory_t
     ! Default variables
     integer :: nlevels = 1
     integer :: type = mhwsid%memory_intensive
@@ -29,15 +29,21 @@ contains
   end subroutine rhyme_mh_workspace_factory_init
 
 
-  function rhyme_mh_workspace_factory_generate ( this ) result ( mhws )
+  function rhyme_mh_workspace_factory_generate ( this, ws_type ) result ( mhws )
     implicit none
 
     class ( rhyme_mh_workspace_factory_t ), intent ( inout ) :: this
+    integer, intent ( in ), optional :: ws_type
     type ( mh_workspace_t ) :: mhws
 
     if ( .not. this%initialized ) call this%init
 
     mhws%nlevels = this%nlevels
-    mhws%type = this%type
+
+    if ( present( ws_type ) ) then
+      mhws%type = ws_type
+    else
+      mhws%type = this%type
+    end if
   end function rhyme_mh_workspace_factory_generate
 end module rhyme_mh_workspace_factory
