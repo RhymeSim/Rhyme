@@ -1,16 +1,15 @@
 submodule ( rhyme_irs ) rhyme_irs_w_kfan_submodule
 contains
-  type ( hydro_conserved_t ) pure module function irs_w_kfan ( &
-    ig, s, dxdt, dir, is_right ) result ( U )
+  pure module function irs_w_kfan ( s, dxdt, axis, is_right ) result ( u )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( rp_side_t ), intent ( in ) :: s
     real ( kind=8 ), intent ( in ) :: dxdt
-    integer, intent ( in ) :: dir
+    integer, intent ( in ) :: axis
     logical, intent ( in ) :: is_right
+    real ( kind=8 ) :: u( cid%rho:cid%e_tot )
 
-    real ( kind=8 ) :: rho, v(3), p, cs
+    real ( kind=8 ) :: rho, v( NDIM ), p, cs
 
     if ( is_right ) then
       cs = - s%cs
@@ -19,16 +18,16 @@ contains
     end if
 
     rho = s%rho * ( &
-      2.d0 / ig%gp1 + ig%gm1_gp1 / cs * ( s%v(dir) - dxdt ) &
-    )**real( 2.d0 / ig%gm1, kind=8 )
+      2.d0 / gp1 + gm1_gp1 / cs * ( s%v(axis) - dxdt ) &
+    )**real( 2.d0 / gm1, kind=8 )
 
     v = s%v
-    v(dir) = 2.d0 / ig%gp1 * ( cs + ig%gm1 / 2.d0 * s%v(dir) + dxdt )
+    v(axis) = 2.d0 / gp1 * ( cs + gm1 / 2.d0 * s%v(axis) + dxdt )
 
     p = s%p * ( &
-      2.d0 / ig%gp1 + ig%gm1_gp1 / cs * ( s%v(dir) - dxdt ) &
-    )**real( 1.d0 / ig%gm1_2g, kind=8 )
+      2.d0 / gp1 + gm1_gp1 / cs * ( s%v(axis) - dxdt ) &
+    )**real( 1.d0 / gm1_2g, kind=8 )
 
-    call ig%prim_vars_to_cons( rho, v(1), v(2), v(3), p, U )
+    call conv_prim_vars_to_cons( rho, v, p, u )
   end function irs_w_kfan
 end submodule rhyme_irs_w_kfan_submodule

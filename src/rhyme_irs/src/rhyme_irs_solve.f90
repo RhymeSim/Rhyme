@@ -1,25 +1,24 @@
 submodule ( rhyme_irs ) rhyme_irs_solve_submodule
 contains
-  pure module subroutine rhyme_irs_solve ( cfg, ig, L, R, dx, dt, dir, U )
+  pure module subroutine rhyme_irs_solve ( irs, l, r, dx, dt, axis, u )
     implicit none
 
-    type ( irs_t ), intent ( in ) :: cfg
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( in ) :: L, R
+    type ( irs_t ), intent ( in ) :: irs
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( in ) :: l, r
     real ( kind=8 ), intent ( in ) :: dx, dt
-    integer, intent ( in ) :: dir
-    type ( hydro_conserved_t ), intent ( inout ) :: U
+    integer, intent ( in ) :: axis
+    real ( kind=8 ), intent ( inout ) :: u( cid%rho:cid%e_tot )
 
     type ( riemann_problem_solution_t ) :: sol
     real ( kind=8 ) :: dxdt, du, du_crit, e
-    real ( kind=8 ) :: S_starL, S_starR
+    real ( kind=8 ) :: s_starl, s_starr
     logical :: vacuum_left, vacuum_right, vacuum_both_sides
 
     dxdt = dx / dt
 
     ! Filling left and right densities
-    sol%left%rho = L%u(hyid%rho)
-    sol%right%rho = R%u(hyid%rho)
+    sol%left%rho = l(cid%rho)
+    sol%right%rho = r(cid%rho)
 
     e = tiny( 0.d0 )
     vacuum_right = sol%right%rho < e .and. sol%left%rho > e
@@ -28,21 +27,22 @@ contains
 
     if ( vacuum_right ) then
 
-      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u( hyid%rho )
-      sol%left%p = ig%p(L)
-      sol%left%cs = ig%Cs(L)
+      sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
+      sol%left%v = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
+      sol%left%p = calc_p(l)
+      sol%left%cs = calc_cs(l)
       sol%right%v = 0.d0
       sol%right%p = 0.d0
       sol%right%cs = 0.d0
 
-      S_starL = sol%left%v(dir) - 2 * sol%left%cs / ig%gm1
+      s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
 
-      if ( dxdt > S_starL ) then                                        !-- W_0
-        U%u = 0.d0
-      else if ( dxdt > sol%left%v(dir) - sol%left%cs ) then             !-- W_Lfan
-        U = irs_w_kfan( ig, sol%left, dxdt, dir, is_right=.false. )
-      else                                                              !-- W_L
-        U = irs_rp_side_to_cons( ig, sol%left )
+      if ( dxdt > s_starl ) then                                        !-- W_0
+        u = 0.d0
+      else if ( dxdt > sol%left%v(axis) - sol%left%cs ) then             !-- W_lfan
+        u = irs_w_kfan( sol%left, dxdt, axis, is_right=.false. )
+      else                                                              !-- W_l
+        u = irs_rp_side_to_cons( sol%left )
       end if
 
     else if ( vacuum_left ) then
@@ -50,58 +50,57 @@ contains
       sol%left%v = 0.d0
       sol%left%p = 0.d0
       sol%left%cs = 0.d0
-      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u( hyid%rho )
-      sol%right%p = ig%p(R)
-      sol%right%cs = ig%Cs(R)
+      sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
+      sol%right%p = calc_p(r)
+      sol%right%cs = calc_cs(r)
 
-      S_starR = sol%right%v(dir) + 2 * sol%right%cs / ig%gm1
+      s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1
 
-      if ( dxdt > sol%right%v(dir) + sol%right%cs ) then                !-- W_R
-        U = irs_rp_side_to_cons( ig, sol%right )
-      else if ( dxdt > S_starR ) then                                   !-- W_Rfan
-        U = irs_w_kfan( ig, sol%right, dxdt, dir, is_right=.true. )
+      if ( dxdt > sol%right%v(axis) + sol%right%cs ) then                !-- W_r
+        u = irs_rp_side_to_cons( sol%right )
+      else if ( dxdt > s_starr ) then                                   !-- W_rfan
+        u = irs_w_kfan( sol%right, dxdt, axis, is_right=.true. )
       else                                                              !-- W_0
-        U%u = 0.d0
+        u = 0.d0
       end if
 
     else if ( vacuum_both_sides ) then
-      U%u = 0.d0
+      u = 0.d0
     else                                                                ! Non-vacuum cases
 
-      sol%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u( hyid%rho )
-      sol%left%p = ig%p(L)
-      sol%left%cs = ig%Cs(L)
-      sol%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u( hyid%rho )
-      sol%right%p = ig%p(R)
-      sol%right%cs = ig%Cs(R)
+      sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
+      sol%left%p = calc_p(l)
+      sol%left%cs = calc_cs(l)
+      sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
+      sol%right%p = calc_p(r)
+      sol%right%cs = calc_cs(r)
 
-      S_starL = sol%left%v(dir) - 2 * sol%left%cs / ig%gm1
-      S_starR = sol%right%v(dir) + 2 * sol%right%cs / ig%gm1
+      s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
+      s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1
 
-      du = sol%right%v(dir) - sol%left%v(dir)
-      du_crit = 2 * ( sol%left%cs + sol%right%cs ) / ig%gm1
+      du = sol%right%v(axis) - sol%left%v(axis)
+      du_crit = 2 * ( sol%left%cs + sol%right%cs ) / gm1
 
       if ( du_crit < du ) then                                          ! Generation of vacuum
-        if ( dxdt > S_starR ) then                                      !-- W_R0
-          if ( dxdt > sol%right%v(dir) + sol%right%cs ) then            !---- W_R
-            U = irs_rp_side_to_cons( ig, sol%right )
-          else                                                          !---- W_Rfan
-            U = irs_w_kfan( ig, sol%right, dxdt, dir, is_right=.true. )
+        if ( dxdt > s_starr ) then                                      !-- W_r0
+          if ( dxdt > sol%right%v(axis) + sol%right%cs ) then            !---- W_r
+            u = irs_rp_side_to_cons( sol%right )
+          else                                                          !---- W_rfan
+            u = irs_w_kfan( sol%right, dxdt, axis, is_right=.true. )
           end if
-        else if ( dxdt > S_starL ) then                                 !-- W_0
-          U%u = 0.d0
-        else                                                            !-- W_L0
-          if ( dxdt > sol%left%v(dir) - sol%left%cs ) then              !---- W_Lfan
-            U = irs_w_kfan( ig, sol%left, dxdt, dir, is_right=.false. )
-          else                                                          !---- W_L
-            U = irs_rp_side_to_cons( ig, sol%left )
+        else if ( dxdt > s_starl ) then                                 !-- W_0
+          u = 0.d0
+        else                                                            !-- W_l0
+          if ( dxdt > sol%left%v(axis) - sol%left%cs ) then              !---- W_lfan
+            u = irs_w_kfan( sol%left, dxdt, axis, is_right=.false. )
+          else                                                          !---- W_l
+            u = irs_rp_side_to_cons( sol%left )
           end if
         end if
       else                                                              ! Normal cases
-        call rhyme_irs_iterate( cfg, ig, sol, dir )
-        call rhyme_irs_sampling( ig, sol, dir, dx, dt, U )
+        call rhyme_irs_iterate( irs, sol, axis )
+        call rhyme_irs_sampling( sol, axis, dx, dt, u )
       end if
     endif
-
   end subroutine rhyme_irs_solve
 end submodule rhyme_irs_solve_submodule

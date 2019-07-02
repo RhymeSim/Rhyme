@@ -8,27 +8,30 @@ contains
 
   !> Sod test (very mild test)
   !! a left rarefacton, a contact discontinuity and a right shock
-  subroutine rhyme_irs_Sod_test ( ig, L, R, solution )
+  subroutine rhyme_irs_Sod_test ( l, r, solution )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( out ) :: l, r
     type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type ( hydro_primitive_t ) :: L_prim, R_prim
-    real ( kind=8 ) :: e_int_L, e_int_R
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: l_prim = 0.d0, r_prim = 0.d0
+    real ( kind=8 ) :: e_int_l, e_int_r
 
+    l_prim( cid%rho ) = 1.d0
+    l_prim( cid%u ) = 0.d0
+    l_prim( cid%p ) = 1.d0
 
-    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d0 ] )
-    R_prim = hydro_primitive_t( [ .125d0, 0.d0, 0.d0, 0.d0, .1d0 ] )
+    r_prim( cid%rho ) = .125d0
+    r_prim( cid%u ) = 0.d0
+    r_prim( cid%p ) = .1d0
 
-    e_int_L = 1.d0 / ( ig%gamma - 1.d0 )
-    e_int_R = .1d0 / ( ig%gamma - 1.d0 )
+    e_int_l = l_prim( cid%p ) / ( get_gamma() - 1.d0 )
+    e_int_r = r_prim( cid%p ) / ( get_gamma() - 1.d0 )
 
-    call hy_prim_to_cons( L_prim, e_int_L, L )
-    call hy_prim_to_cons( R_prim, e_int_R, R )
+    call rhyme_hydro_base_primitive_to_conserved( l_prim, e_int_l, l )
+    call rhyme_hydro_base_primitive_to_conserved( r_prim, e_int_r, r )
 
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call rhyme_irs_factory_set_sides( l, r, solution )
 
     solution%star%p = 0.30313d0
     solution%star%u = 0.92745d0
@@ -42,27 +45,31 @@ contains
   !> 123 test (einfeldt et al. 1991)
   !! Two strong rarefactions and a trivial stationary constact dicontinuity
   !! p* is too small and close to vacuum
-  pure subroutine rhyme_irs_123_test ( ig, L, R, solution )
+  subroutine rhyme_irs_123_test ( l, r, solution )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent(out) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent(out) :: l, r
     type ( riemann_problem_solution_t ), intent(out) :: solution
 
-    type ( hydro_primitive_t ) :: L_prim, R_prim
-    real ( kind=8 ) :: e_int_L, e_int_R
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: l_prim = 0.d0, r_prim = 0.d0
+    real ( kind=8 ) :: e_int_l, e_int_r
 
 
-    L_prim = hydro_primitive_t( [ 1.d0, -2.d0, 0.d0, 0.d0, .4d0 ] )
-    R_prim = hydro_primitive_t( [ 1.d0, 2.d0, 0.d0, 0.d0, .4d0 ] )
+    l_prim( cid%rho ) = 1.d0
+    l_prim( cid%u ) = -2.d0
+    l_prim( cid%p ) = .4d0
 
-    e_int_L = .4d0 / ( ig%gamma - 1.d0 )
-    e_int_R = .4d0 / ( ig%gamma - 1.d0 )
+    r_prim( cid%rho ) = 1.d0
+    r_prim( cid%u ) = 2.d0
+    r_prim( cid%p ) = .4d0
 
-    call hy_prim_to_cons( L_prim, e_int_L, L )
-    call hy_prim_to_cons( R_prim, e_int_R, R )
+    e_int_l = l_prim( cid%p ) / ( get_gamma() - 1.d0 )
+    e_int_r = r_prim( cid%p ) / ( get_gamma() - 1.d0 )
 
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call rhyme_hydro_base_primitive_to_conserved( l_prim, e_int_l, l )
+    call rhyme_hydro_base_primitive_to_conserved( r_prim, e_int_r, r )
+
+    call rhyme_irs_factory_set_sides( l, r, solution )
 
     solution%star%p = 0.00189d0
     solution%star%u = 0.d0
@@ -73,29 +80,33 @@ contains
   end subroutine rhyme_irs_123_test
 
 
-  !> Left half of the blast wave problem of Woodward and Colella
+  !> left half of the blast wave problem of Woodward and Colella
   !! a left rarefaction, a contact and a right shock (very severe)
-  pure subroutine rhyme_irs_left_blast_wave_test ( ig, L, R, solution )
+  subroutine rhyme_irs_left_blast_wave_test ( l, r, solution )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( out ) :: l, r
     type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type ( hydro_primitive_t ) :: L_prim, R_prim
-    real ( kind=8 ) :: e_int_L, e_int_R
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: l_prim = 0.d0, r_prim = 0.d0
+    real ( kind=8 ) :: e_int_l, e_int_r
 
 
-    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d3 ] )
-    R_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d-2 ] )
+    l_prim( cid%rho ) = 1.d0
+    l_prim( cid%u ) = 0.d0
+    l_prim( cid%p ) = 1.d3
 
-    e_int_L = 1.d3 / ( ig%gamma - 1.d0 )
-    e_int_R = 1.d-2 / ( ig%gamma - 1.d0 )
+    r_prim( cid%rho ) = 1.d0
+    r_prim( cid%u ) = 0.d0
+    r_prim( cid%p ) = 1.d-2
 
-    call hy_prim_to_cons( L_prim, e_int_L, L )
-    call hy_prim_to_cons( R_prim, e_int_R, R )
+    e_int_l = l_prim( cid%p ) / ( get_gamma() - 1.d0 )
+    e_int_r = r_prim( cid%p ) / ( get_gamma() - 1.d0 )
 
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call rhyme_hydro_base_primitive_to_conserved( l_prim, e_int_l, l )
+    call rhyme_hydro_base_primitive_to_conserved( r_prim, e_int_r, r )
+
+    call rhyme_irs_factory_set_sides( l, r, solution )
 
     solution%star%p = 460.894d0
     solution%star%u = 19.5975d0
@@ -106,28 +117,32 @@ contains
   end subroutine rhyme_irs_left_blast_wave_test
 
 
-  !> Right half of the blast wave problem of Woodward and Colella
+  !> right half of the blast wave problem of Woodward and Colella
   !! a left shock, a contact and a right rarefaction (very severe)
-  pure subroutine rhyme_irs_right_blast_wave_test ( ig, L, R, solution )
+  subroutine rhyme_irs_right_blast_wave_test ( l, r, solution )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( out ) :: l, r
     type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type ( hydro_primitive_t ) :: L_prim, R_prim
-    real ( kind=8 ) :: e_int_L, e_int_R
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: l_prim = 0.d0, r_prim = 0.d0
+    real ( kind=8 ) :: e_int_l, e_int_r
 
-    L_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d-2 ] )
-    R_prim = hydro_primitive_t( [ 1.d0, 0.d0, 0.d0, 0.d0, 1.d2 ] )
+    l_prim( cid%rho ) = 1.d0
+    l_prim( cid%u ) = 0.d0
+    l_prim( cid%p ) = 1.d-2
 
-    e_int_L = 1.d-2 / ( ig%gamma - 1.d0 )
-    e_int_R = 1.d2 / ( ig%gamma - 1.d0 )
+    r_prim( cid%rho ) = 1.d0
+    r_prim( cid%u ) = 0.d0
+    r_prim( cid%p ) = 1.d2
 
-    call hy_prim_to_cons( L_prim, e_int_L, L )
-    call hy_prim_to_cons( R_prim, e_int_R, R )
+    e_int_l = l_prim( cid%p ) / ( get_gamma() - 1.d0 )
+    e_int_r = r_prim( cid%p ) / ( get_gamma() - 1.d0 )
 
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call rhyme_hydro_base_primitive_to_conserved( l_prim, e_int_l, l )
+    call rhyme_hydro_base_primitive_to_conserved( r_prim, e_int_r, r )
+
+    call rhyme_irs_factory_set_sides( l, r, solution )
 
     solution%star%p = 46.0950d0
     solution%star%u = -6.19633d0
@@ -141,26 +156,30 @@ contains
   !> Collision of the strong shocks emerging from blast waves
   !! a left facing shock (travelling very slowly to the right), a right
   !! travelling contact discontinuity and a right travelling shock wave
-  pure subroutine rhyme_irs_two_shocks_collision_test ( ig, L, R, solution )
+  subroutine rhyme_irs_two_shocks_collision_test ( l, r, solution )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( out ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( out ) :: l, r
     type ( riemann_problem_solution_t ), intent ( out ) :: solution
 
-    type ( hydro_primitive_t ) :: L_prim, R_prim
-    real ( kind=8 ) :: e_int_L, e_int_R
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: l_prim = 0.d0, r_prim = 0.d0
+    real ( kind=8 ) :: e_int_l, e_int_r
 
-    L_prim = hydro_primitive_t( [ 5.99924d0, 19.5975d0, 0.d0, 0.d0, 460.894d0 ] )
-    R_prim = hydro_primitive_t( [ 5.99924d0, -6.19633d0, 0.d0, 0.d0, 46.0950d0 ] )
+    l_prim( cid%rho ) = 5.99924d0
+    l_prim( cid%u ) = 19.5975d0
+    l_prim( cid%p ) = 460.894d0
 
-    e_int_L = 460.894d0 / ( ig%gamma - 1.d0 )
-    e_int_R = 46.0950d0 / ( ig%gamma - 1.d0 )
+    r_prim( cid%rho ) = 5.99924d0
+    r_prim( cid%u ) = -6.19633d0
+    r_prim( cid%p ) = 46.0950d0
 
-    call hy_prim_to_cons( L_prim, e_int_L, L )
-    call hy_prim_to_cons( R_prim, e_int_R, R )
+    e_int_l = l_prim( cid%p ) / ( get_gamma() - 1.d0 )
+    e_int_r = r_prim( cid%p ) / ( get_gamma() - 1.d0 )
 
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call rhyme_hydro_base_primitive_to_conserved( l_prim, e_int_l, l )
+    call rhyme_hydro_base_primitive_to_conserved( r_prim, e_int_r, r )
+
+    call rhyme_irs_factory_set_sides( l, r, solution )
 
     solution%star%p = 1691.64d0
     solution%star%u = 8.68975d0
@@ -171,23 +190,22 @@ contains
   end subroutine rhyme_irs_two_shocks_collision_test
 
 
-  pure subroutine rhyme_irs_factory_set_sides ( ig, L, R, s )
+  subroutine rhyme_irs_factory_set_sides ( l, r, s )
     implicit none
 
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_conserved_t ), intent ( in ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( in ) :: l, r
     type ( riemann_problem_solution_t ), intent ( inout ) :: s
 
-    s%left%rho = L%u( hyid%rho )
-    s%right%rho = R%u( hyid%rho )
+    s%left%rho = l( cid%rho )
+    s%right%rho = r( cid%rho )
 
-    s%left%v = L%u( hyid%rho_u:hyid%rho_w ) / L%u(hyid%rho)
-    s%right%v = R%u( hyid%rho_u:hyid%rho_w ) / R%u(hyid%rho)
+    s%left%v = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
+    s%right%v = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
 
-    s%left%p = ig%p(L)
-    s%right%p = ig%p(R)
+    s%left%p = calc_p(l)
+    s%right%p = calc_P(r)
 
-    s%left%cs = ig%cs(L)
-    s%right%cs = ig%cs(R)
+    s%left%cs = calc_cs(l)
+    s%right%cs = calc_cs(r)
   end subroutine rhyme_irs_factory_set_sides
 end module rhyme_irs_tests_factory

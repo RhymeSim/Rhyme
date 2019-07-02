@@ -15,9 +15,7 @@ logical function rhyme_irs_init_test () result ( failed )
   irs = irs_factory%generate()
   logger = log_factory%generate()
 
-  call irs%init( logger )
-
-  call irs_tester%expect( irs%initialized .toBe. .true. )
+  call rhyme_irs_init( irs, logger )
 
   failed = irs_tester%failed()
 end function rhyme_irs_init_test

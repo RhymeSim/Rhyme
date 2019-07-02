@@ -1,7 +1,8 @@
 logical function rhyme_irs_iterate_test () result (failed)
   use rhyme_irs_factory
   use rhyme_irs_tests_factory
-  use rhyme_ideal_gas_factory
+  use rhyme_thermo_base_factory
+  use rhyme_log_factory
   use rhyme_assertion
 
   implicit none
@@ -9,12 +10,17 @@ logical function rhyme_irs_iterate_test () result (failed)
   type ( assertion_t ) :: tester
 
   type ( irs_t ) :: irs
-  type ( ideal_gas_t ) :: ig
+  type ( thermo_base_t ) :: thermo
+  type ( log_t ) :: logger
 
   tester = .describe. "irs_iterate"
 
   irs = irs_factory%generate()
-  ig = ig_factory%generate( igid%diatomic )
+  thermo = th_factory%generate( thid%diatomic )
+  logger = log_factory%generate()
+
+  call rhyme_thermo_base_init( thermo, logger )
+  call rhyme_irs_init( irs, logger )
 
   call rhyme_irs_iterate_test_cases( rhyme_irs_Sod_test, "Sod", 5 )
   call rhyme_irs_iterate_test_cases( rhyme_irs_123_test, "123 test", 4 )
@@ -31,19 +37,22 @@ contains
     external :: func
     character ( len=* ) :: test_name
     integer :: sig_fig ! Significant figures
+    integer :: axis
 
-    type ( hydro_conserved_t ) :: L, R
+    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ) :: l, r
     type ( riemann_problem_solution_t ) :: expected_solution, solution
     real ( kind=8 ) :: ex_p, ex_u, ex_left_rho, ex_right_rho
     real ( kind=8 ) :: star_left_rho, star_right_rho
 
-    call func( ig, L, R, expected_solution )
-    call rhyme_irs_factory_set_sides( ig, L, R, solution )
+    call func( l, r, expected_solution )
+    call rhyme_irs_factory_set_sides( l, r, solution )
+
+    axis = 1 ! x-axis
 
     ex_p = expected_solution%star%p
     ex_u = expected_solution%star%u
 
-    call rhyme_irs_iterate( irs, ig, solution, hyid%x )
+    call rhyme_irs_iterate( irs, solution, axis )
 
     if ( expected_solution%star%left%is_shock ) then
       ex_left_rho = expected_solution%star%left%shock%rho
