@@ -75,11 +75,11 @@ contains
   end function radamesh_spectrum_new_region
 
 
-  subroutine radamesh_spectrum_dispatch_regions ( this, log )
+  subroutine radamesh_spectrum_dispatch_regions ( this, logger )
     implicit none
 
     class ( spectrum_t ), intent ( inout ) :: this
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     integer :: nbins
     type ( spectral_region_t ), pointer :: region
@@ -87,7 +87,7 @@ contains
     nbins = 0
 
     region => this%regions
-    if ( .not. associated( region ) ) call log%warn( 'No regions to dispatch' )
+    if ( .not. associated( region ) ) call logger%warn( 'No regions to dispatch' )
 
 
     do while ( associated( region ) )
@@ -101,11 +101,11 @@ contains
     region => this%regions
     do while ( associated( region ) )
       if ( region%binning_type .eq. spid%lin_space ) then
-        call this%dispatch_linear_region( region, log )
+        call this%dispatch_linear_region( region, logger )
       else if ( region%binning_type .eq. spid%log_space ) then
-        call this%dispatch_logarithmic_region( region, log )
+        call this%dispatch_logarithmic_region( region, logger )
       else
-        call log%warn( 'Unknown binning type', &
+        call logger%warn( 'Unknown binning type', &
           'binning_type', '=', [ region%binning_type ] )
       end if
 
@@ -114,12 +114,12 @@ contains
   end subroutine radamesh_spectrum_dispatch_regions
 
 
-  subroutine radamesh_spectrum_dispatch_linear_region ( this, region, log )
+  subroutine radamesh_spectrum_dispatch_linear_region ( this, region, logger )
     implicit none
 
     class ( spectrum_t ), intent ( inout ) :: this
     type ( spectral_region_t ), pointer, intent ( in ) :: region
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     integer :: i
     real ( kind=8 ) :: width
@@ -134,19 +134,19 @@ contains
 
       if ( region%spectrum_type .eq. spid%power_law ) then
       else
-        call log%warn( 'Unknown spectrum type', &
+        call logger%warn( 'Unknown spectrum type', &
           'spectrum_type', '=', [ region%spectrum_type ] )
       end if
     end do
   end subroutine radamesh_spectrum_dispatch_linear_region
 
 
-  subroutine radamesh_spectrum_dispatch_logarithmic_region ( this, region, log )
+  subroutine radamesh_spectrum_dispatch_logarithmic_region ( this, region, logger )
     implicit none
 
     class ( spectrum_t ), intent ( inout ) :: this
     type ( spectral_region_t ), pointer, intent ( in ) :: region
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
     integer :: i
     real ( kind=8 ) :: width
