@@ -6,7 +6,7 @@ contains
     class (*), intent ( in ) :: input(:)
     character ( len=2048 ) :: str
 
-    character ( len=32 ) :: ch_arr( size(input) )
+    character ( len=256 ) :: ch_arr( size(input) )
     integer :: i
 
     str = ''
@@ -16,7 +16,7 @@ contains
       str = trim( adjustl(str) ) // ' ' // trim( adjustl(ch_arr(i)) )
     end do
 
-    str = '[ ' // trim( adjustl(str) ) // ' ]'
+    if ( size( input ) > 1 ) str = '[ ' // trim( adjustl(str) ) // ' ]'
   end function rhyme_string_array_to_string
 
 
@@ -26,7 +26,7 @@ contains
     implicit none
 
     class (*), intent ( in ) :: input
-    character ( len=32 ) :: str
+    character ( len=256 ) :: str
 
     if ( rhyme_string_is_nan( input ) ) then
         str = 'NaN'

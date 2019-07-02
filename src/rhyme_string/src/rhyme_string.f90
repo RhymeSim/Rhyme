@@ -19,7 +19,7 @@ module rhyme_string
 
     pure elemental module function rhyme_string_to_string ( input ) result ( str )
       class (*), intent ( in ) :: input
-      character ( len=32 ) :: str
+      character ( len=256 ) :: str
     end function rhyme_string_to_string
 
     pure elemental module function rhyme_string_is_nan ( input ) result ( is_nan )
