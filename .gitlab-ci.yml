@@ -1,13 +1,17 @@
 image: ubuntu:bionic
 
 before_script:
-  - apt-get update -qq && apt-get install -y cmake gfortran gcc g++ libhdf5-dev
+  - apt-get update -qq
+  - apt-get install -y software-properties-common
+  - add-apt-repository ppa:rsjtaylor/cmake-backports
+  - apt-get update -qq
+  - apt-get install -y build-essential cmake gfortran gcc g++ libhdf5-dev
   - export CC=`which gcc`
   - export CXX=`which g++`
   - export FC=`which gfortran`
 
-cmake:
+compile_and_test:
   script:
     - mkdir -p build
     - cd build
-    - cmake .. && make && ctest --timeout 10 --output-on-failure
+    - cmake .. && make && ctest --timeout 120 --output-on-failure
