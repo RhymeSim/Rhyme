@@ -3,7 +3,7 @@ module rhyme_muscl_hancock_factory
 
   implicit none
 
-  type rhyme_muscl_hancock_factory_t
+  type, private :: rhyme_muscl_hancock_factory_t
     ! default variables
     integer :: solver_type = mhid%memory_intensive
     logical :: initialized = .false.
@@ -27,14 +27,19 @@ contains
   end subroutine rhyme_muscl_hancock_factory_init
 
 
-  function rhyme_muscl_hancock_factory_generate ( this ) result ( mh )
+  function rhyme_muscl_hancock_factory_generate ( this, solver_type ) result ( mh )
     implicit none
 
     class ( rhyme_muscl_hancock_factory_t ), intent ( inout ) :: this
+    integer, intent ( in ), optional :: solver_type
     type ( muscl_hancock_t ) :: mh
 
     if ( .not. this%initialized ) call this%init
 
-    mh%solver_type = this%solver_type
+    if ( present( solver_type ) ) then
+      mh%solver_type = solver_type
+    else
+      mh%solver_type = this%solver_type
+    end if
   end function rhyme_muscl_hancock_factory_generate
 end module rhyme_muscl_hancock_factory

@@ -19,11 +19,8 @@ logical function rhyme_muscl_hancock_init_test () result ( failed )
   logger = log_factory%generate()
 
   call mh_tester%expect( mh%solver_type .toBe. mhid%memory_intensive )
-  call mh_tester%expect( mh%active_axis .toBe. .false. )
 
   call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
-
-  call mh_tester%expect( mh%active_axis .toBe. ( samr%base_grid > 1 ) )
 
   failed = mh_tester%failed()
 end function rhyme_muscl_hancock_init_test

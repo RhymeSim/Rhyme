@@ -1,134 +1,162 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_memory_intensive_submodule
 contains
   pure module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
-    cfg, box, dx, dt, ig, irs, sl, ws )
+    box, dx, dt, irs, sl, ws )
     implicit none
 
-    class ( muscl_hancock_t ), intent ( inout ) :: cfg
     type ( samr_box_t ), intent ( inout ) :: box
-    real ( kind=8 ), intent ( in ) :: dx(3), dt
-    type ( ideal_gas_t ), intent ( in ) :: ig
+    real ( kind=8 ), intent ( in ) :: dx( NDIM ), dt
     type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
     type ( mh_workspace_t ), intent ( inout ) :: ws
 
-    integer :: l, b, i, j, k
-    integer :: lb(3), ub(3)
-    type ( hydro_conserved_t ) :: delta, evolved_state
+#if NDIM == 1
+#define JDX
+#define KDX
+#define LOOP_J
+#define LOOP_J_END
+#define LOOP_K
+#define LOOP_K_END
+#endif
+
+#if NDIM == 2
+#define JDX ,j
+#define KDX
+#define LOOP_J do j = lb(2), ub(2)
+#define LOOP_J_END end do
+#define LOOP_K
+#define LOOP_K_END
+#endif
+
+#if NDIM == 3
+#define JDX ,j
+#define KDX ,k
+#define LOOP_J do j = lb(2), ub(2)
+#define LOOP_J_END end do
+#define LOOP_K do k = lb(3), ub(3)
+#define LOOP_K_END end do
+#endif
+
+    integer :: l, b, i JDX KDX
+    integer :: lb( NDIM ), ub( NDIM )
+    real ( kind=8 ) :: delta( cid%rho:cid%e_tot ), evolved_state( cid%rho:cid%e_tot )
 
     l = box%level
     b = box%number
 
     call rhyme_mh_workspace_check( ws, box )
 
-    lb = merge( 0, 1, cfg%active_axis )
-    ub = merge( box%dims + 1, 1, cfg%active_axis )
+    lb = 0
+    ub = box%dims + 1
 
-    ! TODO: vectorize following loops by taking the conditions out of them
-    do k = lb(3), ub(3)
-      do j = lb(2), ub(2)
+    LOOP_K
+      LOOP_J
         do i = lb(1), ub(1)
+          call rhyme_slope_limiter_run( sl, &
+            box%cells( i-1 JDX KDX, cid%rho:cid%e_tot ), &
+            box%cells( i   JDX KDX, cid%rho:cid%e_tot ), &
+            box%cells( i+1 JDX KDX, cid%rho:cid%e_tot ), delta )
+          call rhyme_muscl_hancock_half_step_extrapolation( &
+            box%cells( i JDX KDX, cid%rho:cid%e_tot ), &
+            delta, samrid%x, dx( samrid%x ), dt, &
+            ws%levels(l)%boxes(b)%ul( i JDX KDX, cid%rho:cid%e_tot, samrid%x ), &
+            ws%levels(l)%boxes(b)%ur( i JDX KDX, cid%rho:cid%e_tot, samrid%x ) )
 
-          if ( cfg%active_axis( hyid%x ) ) then
-            call rhyme_slope_limiter_run( sl, box%hydro( i-1, j, k ), &
-              box%hydro( i, j, k ), box%hydro( i+1, j, k ), delta )
-            call ig%half_step_extrapolation( &
-              box%hydro( i, j, k ), delta, hyid%x, dx( hyid%x ), dt, &
-              ws%levels(l)%boxes(b)%UL( i, j, k, hyid%x ), &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%x ) )
-          end if
+#if NDIM > 1
+          call rhyme_slope_limiter_run( sl, &
+            box%cells( i JDX-1 KDX, cid%rho:cid%e_tot ), &
+            box%cells( i JDX   KDX, cid%rho:cid%e_tot ), &
+            box%cells( i JDX+1 KDX, cid%rho:cid%e_tot ), delta )
+          call rhyme_muscl_hancock_half_step_extrapolation( &
+            box%cells( i JDX KDX, cid%rho:cid%e_tot ), &
+            delta, samrid%y, dx( samrid%y ), dt, &
+            ws%levels(l)%boxes(b)%ul( i JDX KDX, cid%rho:cid%e_tot, samrid%y ), &
+            ws%levels(l)%boxes(b)%ur( i JDX KDX, cid%rho:cid%e_tot, samrid%y ) )
+#endif
 
-          if ( cfg%active_axis( hyid%y ) ) then
-            call rhyme_slope_limiter_run( sl, box%hydro( i, j-1, k ), &
-              box%hydro( i, j, k ), box%hydro( i, j+1, k ), delta )
-            call ig%half_step_extrapolation( &
-              box%hydro( i, j, k ), delta, hyid%y, dx( hyid%y ), dt, &
-              ws%levels(l)%boxes(b)%UL( i, j, k, hyid%y ), &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%y ) )
-          end if
-
-          if ( cfg%active_axis( hyid%z ) ) then
-            call rhyme_slope_limiter_run( sl, box%hydro( i, j, k-1 ), &
-              box%hydro( i, j, k ), box%hydro( i, j, k+1 ), delta )
-            call ig%half_step_extrapolation( &
-              box%hydro( i, j, k ), delta, hyid%z, dx( hyid%z ), dt, &
-              ws%levels(l)%boxes(b)%UL( i, j, k, hyid%z ), &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%z ) )
-          end if
-
+#if NDIM > 2
+          call rhyme_slope_limiter_run( sl, &
+            box%cells( i, j KDX-1, cid%rho:cid%e_tot ), &
+            box%cells( i, j KDX, cid%rho:cid%e_tot ), &
+            box%cells( i, j KDX+1, cid%rho:cid%e_tot ), delta )
+          call rhyme_muscl_hancock_half_step_extrapolation( &
+            box%cells( i, j KDX, cid%rho:cid%e_tot ), &
+            delta, samrid%z, dx( samrid%z ), dt, &
+            ws%levels(l)%boxes(b)%ul( i, j KDX, cid%rho:cid%e_tot, samrid%z ), &
+            ws%levels(l)%boxes(b)%ur( i, j KDX, cid%rho:cid%e_tot, samrid%z ) )
+#endif
         end do
-      end do
-    end do
+      LOOP_J_END
+    LOOP_K_END
 
-    lb = merge( 0, 1, cfg%active_axis )
-    ub = merge( box%dims, 1, cfg%active_axis )
+    lb = 0
+    ub = box%dims
 
-    do k = lb(3), ub(3)
-      do j = lb(2), ub(2)
+    LOOP_K
+      LOOP_J
         do i = lb(1), ub(1)
+          call rhyme_irs_solve( irs, &
+            ws%levels(l)%boxes(b)%ur( i   JDX KDX, cid%rho:cid%e_tot, samrid%x ), &
+            ws%levels(l)%boxes(b)%ul( i+1 JDX KDX, cid%rho:cid%e_tot, samrid%x ), &
+            0.d0, dt, samrid%x, evolved_state )
+          ws%levels(l)%boxes(b)%fr( i JDX KDX, cid%rho:cid%e_tot, samrid%x ) = &
+            calc_flux( evolved_state, samrid%x )
 
-          if ( cfg%active_axis( hyid%x ) ) then
-            call rhyme_irs_solve( irs, ig, &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%x ), &
-              ws%levels(l)%boxes(b)%UL( i+1, j, k, hyid%x ), &
-              0.d0, dt, hyid%x, evolved_state )
-            call ig%flux_at( evolved_state, hyid%x, &
-              ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x ) )
-          end if
+#if NDIM > 1
+          call rhyme_irs_solve( irs, &
+            ws%levels(l)%boxes(b)%ur( i JDX   KDX, cid%rho:cid%e_tot, samrid%y ), &
+            ws%levels(l)%boxes(b)%ul( i JDX+1 KDX, cid%rho:cid%e_tot, samrid%y ), &
+            0.d0, dt, samrid%y, evolved_state )
+          ws%levels(l)%boxes(b)%fr( i JDX KDX, cid%rho:cid%e_tot, samrid%y ) = &
+            calc_flux( evolved_state, samrid%y )
+#endif
 
-          if ( cfg%active_axis( hyid%y ) ) then
-            call rhyme_irs_solve( irs, ig, &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%y ), &
-              ws%levels(l)%boxes(b)%UL( i, j+1, k, hyid%y ), &
-              0.d0, dt, hyid%y, evolved_state )
-            call ig%flux_at( evolved_state, hyid%y, &
-              ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y ) )
-          end if
-
-          if ( cfg%active_axis( hyid%z ) ) then
-            call rhyme_irs_solve( irs, ig, &
-              ws%levels(l)%boxes(b)%UR( i, j, k, hyid%z ), &
-              ws%levels(l)%boxes(b)%UL( i, j, k+1, hyid%z ), &
-              0.d0, dt, hyid%z, evolved_state )
-            call ig%flux_at( evolved_state, hyid%z, &
-              ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z ) )
-          end if
-
+#if NDIM > 2
+          call rhyme_irs_solve( irs, &
+            ws%levels(l)%boxes(b)%ur( i, j KDX  , cid%rho:cid%e_tot, samrid%z ), &
+            ws%levels(l)%boxes(b)%ul( i, j KDX+1, cid%rho:cid%e_tot, samrid%z ), &
+            0.d0, dt, samrid%z, evolved_state )
+          ws%levels(l)%boxes(b)%fr( i, j KDX, cid%rho:cid%e_tot, samrid%z ) = &
+            calc_flux( evolved_state, samrid%z )
+#endif
         end do
-      end do
-    end do
+      LOOP_J_END
+    LOOP_K_END
 
-    do k = 1, box%dims(3)
-      do j = 1, box%dims(2)
+    lb = 1
+    ub = box%dims
+
+    LOOP_K
+      LOOP_J
         do i = 1, box%dims(1)
-          if ( cfg%active_axis( hyid%x ) ) then
-            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%x ) &
+          box%cells( i JDX KDX, cid%rho:cid%e_tot ) = &
+          box%cells( i JDX KDX, cid%rho:cid%e_tot ) + &
+          ( &
+            ( dt / dx( samrid%x ) &
               * ( &
-                ws%levels(l)%boxes(b)%FR( i-1, j, k, hyid%x )%f &
-                - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%x )%f &
+                ws%levels(l)%boxes(b)%fr( i-1 JDX KDX, cid%rho:cid%e_tot, samrid%x ) &
+                - ws%levels(l)%boxes(b)%fr( i JDX KDX, cid%rho:cid%e_tot, samrid%x ) &
               ) &
-            )
-          end if
-
-          if ( cfg%active_axis( hyid%y ) ) then
-            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%y ) &
+            ) &
+#if NDIM > 1
+            + ( dt / dx(samrid%y) &
               * ( &
-                ws%levels(l)%boxes(b)%FR( i, j-1, k, hyid%y )%f &
-                - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%y )%f &
+                ws%levels(l)%boxes(b)%fr( i, j-1 KDX, cid%rho:cid%e_tot, samrid%y ) &
+                - ws%levels(l)%boxes(b)%fr( i, j KDX, cid%rho:cid%e_tot, samrid%y ) &
               ) &
-            )
-          end if
-
-          if ( cfg%active_axis( hyid%z ) ) then
-            box%hydro(i,j,k)%u = box%hydro(i,j,k)%u + ( dt / dx( hyid%z ) &
+            ) &
+#endif
+#if NDIM > 2
+            + ( dt / dx(samrid%z) &
               * ( &
-                ws%levels(l)%boxes(b)%FR( i, j, k-1, hyid%z )%f &
-                - ws%levels(l)%boxes(b)%FR( i, j, k, hyid%z )%f &
+                ws%levels(l)%boxes(b)%fr( i, j, k-1, cid%rho:cid%e_tot, samrid%z ) &
+                - ws%levels(l)%boxes(b)%fr( i, j, k, cid%rho:cid%e_tot, samrid%z ) &
               ) &
-            )
-          end if
+            ) &
+#endif
+          )
         end do
-      end do
-    end do
+      LOOP_J_END
+    LOOP_K_END
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
 end submodule rhyme_mh_solve_memory_intensive_submodule
