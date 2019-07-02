@@ -25,7 +25,7 @@ module rhyme_riemann_problem
   end type rp_star_t
 
   type rp_side_t
-    real ( kind=8 ) :: rho = 0.d0, v(3) = 0.d0, p = 0.d0
+    real ( kind=8 ) :: rho = 0.d0, v( NDIM ) = 0.d0, p = 0.d0
     real ( kind=8 ) :: cs = 0.d0
   end type rp_side_t
 

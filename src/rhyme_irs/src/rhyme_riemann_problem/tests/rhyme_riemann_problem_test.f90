@@ -3,11 +3,18 @@ logical function rhyme_riemann_problem_test () result (failed)
 
   implicit none
 
+#if NDIM == 1
+#define V_ARRAY [ 2.34d0 ]
+#elif NDIM == 2
+#define V_ARRAY [ 2.34d0, 4.56d0 ]
+#elif NDIM == 3
+#define V_ARRAY [ 2.34d0, 4.56d0, 5.67d0 ]
+#endif
+
   real ( kind=8 ), parameter :: rho = 1.23d0
   real ( kind=8 ), parameter :: u = 2.34d0
+  real ( kind=8 ), parameter :: v( NDIM ) = V_ARRAY
   real ( kind=8 ), parameter :: p = 3.45d0
-  real ( kind=8 ), parameter :: v = 4.56d0
-  real ( kind=8 ), parameter :: w = 5.67d0
   real ( kind=8 ), parameter :: cs = 6.78d0
   real ( kind=8 ), parameter :: speed = 7.89d0
   real ( kind=8 ), parameter :: speedH = 8.90d0
@@ -39,16 +46,12 @@ logical function rhyme_riemann_problem_test () result (failed)
   solution%star%right%shock%speed = speed
 
   solution%left%rho = rho
-  solution%left%v(1) = u
-  solution%left%v(2) = v
-  solution%left%v(3) = w
+  solution%left%v = v
   solution%left%p = p
   solution%left%cs = cs
 
   solution%right%rho = rho
-  solution%right%v(1) = u
-  solution%right%v(2) = v
-  solution%right%v(3) = w
+  solution%right%v = v
   solution%right%p = p
   solution%right%cs = cs
 
