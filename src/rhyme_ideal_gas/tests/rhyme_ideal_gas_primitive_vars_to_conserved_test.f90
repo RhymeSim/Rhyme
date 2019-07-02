@@ -1,4 +1,4 @@
-logical function rhyme_ideal_gas_primitive_vars_to_conserved_test () result (failed)
+logical function rhyme_ideal_gas_primitive_vars_to_conserved_test() result ( failed )
   use rhyme_ideal_gas_factory
   use rhyme_hydro_base_factory
   use rhyme_assertion
@@ -7,22 +7,20 @@ logical function rhyme_ideal_gas_primitive_vars_to_conserved_test () result (fai
 
   type ( assertion_t ) :: ig_tester
 
-  type ( ideal_gas_t ) :: ig
-  type ( hydro_conserved_t ) :: cons_calc
+  real ( kind=8 ) :: rho, v( NDIM ), p
+  real ( kind=8 ) :: u_exp( cid%rho:cid%e_tot ), u( cid%rho:cid%e_tot )
 
-  ig_tester = .describe. "ideal_gas_prim_vars_to_cons"
+  ig_tester = .describe. "primitive_vars_to_conserved"
 
-  call hy_factory%init
-  ig = ig_factory%generate()
+  rho = hy_factory%rho
+  v = hy_factory%v
+  p = hy_factory%p
 
-  call ig%prim_vars_to_cons( hy_factory%rho, hy_factory%u, &
-    hy_factory%v, hy_factory%w, hy_factory%p, cons_calc )
+  u_exp = hy_factory%generate_conserved()
 
-  call ig_tester%expect( cons_calc%u( hyid%rho ) .toBe. hy_factory%rho )
-  call ig_tester%expect( cons_calc%u( hyid%rho_u ) .toBe. hy_factory%rho * hy_factory%u )
-  call ig_tester%expect( cons_calc%u( hyid%rho_v ) .toBe. hy_factory%rho * hy_factory%v )
-  call ig_tester%expect( cons_calc%u( hyid%rho_w ) .toBe. hy_factory%rho * hy_factory%w )
-  call ig_tester%expect( cons_calc%u( hyid%e_tot ) .toBe. hy_factory%e_tot )
+  call rhyme_ideal_gas_primitive_vars_to_conserved( hy_factory%g, rho, v, p, u )
+
+  call ig_tester%expect( u_exp .toBe. u .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_primitive_vars_to_conserved_test

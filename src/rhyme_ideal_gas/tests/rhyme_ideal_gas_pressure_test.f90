@@ -1,4 +1,4 @@
-logical function rhyme_ideal_gas_pressure_test () result (failed)
+logical function rhyme_ideal_gas_pressure_test () result ( failed )
   use rhyme_ideal_gas_factory
   use rhyme_hydro_base_factory
   use rhyme_assertion
@@ -7,15 +7,15 @@ logical function rhyme_ideal_gas_pressure_test () result (failed)
 
   type ( assertion_t ) :: ig_tester
 
-  type ( ideal_gas_t ) :: ig
-  type ( hydro_conserved_t ) :: cons
+  real ( kind=8 ) :: u( cid%rho:cid%e_tot )
 
-  ig_tester = .describe. "ideal_gas gas_pressure"
+  ig_tester = .describe. "pressure"
 
-  cons = hy_factory%conserved()
-  ig = ig_factory%generate()
+  u = hy_factory%generate_conserved()
 
-  call ig_tester%expect( ig%p( cons ) .toBe. hy_factory%p .within. 15 )
+  call ig_tester%expect( .notToBeNaN. rhyme_ideal_gas_pressure( 7.d0/5.d0, u ) )
+  call ig_tester%expect( rhyme_ideal_gas_pressure( 7.d0/5.d0, u ) .toBe. hy_factory%p &
+    .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_pressure_test

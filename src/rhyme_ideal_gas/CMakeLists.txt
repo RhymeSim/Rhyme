@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_ideal_gas )
@@ -10,20 +10,25 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
-  rhyme_units
   rhyme_hydro_base
-  rhyme_log
 )
 
-set( internal_deps
-  rhyme_chemistry
-  rhyme_thermo_base
-)
+set( internal_deps )
 
 set( srcs
-  src/rhyme_ideal_gas_init.f90
+  src/rhyme_ideal_gas_primitive_vars_to_conserved.f90
+  src/rhyme_ideal_gas_primitive_to_conserved.f90
+  src/rhyme_ideal_gas_flux.f90
+  src/rhyme_ideal_gas_specific_internal_energy.f90
+  src/rhyme_ideal_gas_pressure.f90
+  src/rhyme_ideal_gas_speed_of_sound.f90
+  src/rhyme_ideal_gas_temperature.f90
+  src/rhyme_ideal_gas_temperature_per_mu.f90
   src/rhyme_ideal_gas.f90
 )
 
 set( rhyme_src_dir .. )
-include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )
