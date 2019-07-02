@@ -1,15 +1,9 @@
 cmake_minimum_required( VERSION 3.12 )
 
 project( rhyme )
-
-set( HYDRO_SOLVER ON )
-set( RT_SOLVER ON )
-
-set( NUMBER_OF_DIM 3 )
-set( NUMBER_OF_SPECIES 3 )
-
-
 enable_language( Fortran )
+
+# Check config file (CMakeGlobal/config/CMakeLists.txt) before compiling
 
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
@@ -21,20 +15,8 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 
-# Calculating Number of Components (NCMP)
-if( ${HYDRO_SOLVER} )
-  # Adding momenta and total energy
-  math( EXPR NCMP "1+${NUMBER_OF_DIM}+1" ) # rho, momenta, energy
-endif()
-
-if( ${RT_SOLVER} )
-  # Adding temperature and ionization fractions
-  math( EXPR NCMP "${NCMP}+1+${NUMBER_OF_SPECIES}" ) # temperature, neutral fractions
-endif()
-
-add_compile_definitions( NDIM=${NUMBER_OF_DIM} )
-add_compile_definitions( NSPE=${NUMBER_OF_SPECIES} )
-add_compile_definitions( NCMP=${NCMP} )
+set( rhyme_src_dir src )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/CMakeGlobal/configs/CMakeLists.txt )
 
 
 set( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )
@@ -58,12 +40,13 @@ set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 set( deps
   rhyme_log
   rhyme_nombre
-  rhyme_units
+  rhyme_physics
   rhyme_hydro_base
+  rhyme_thermo_base
+  rhyme_chemistry
   rhyme_samr
   rhyme_samr_bc
   rhyme_cfl
-  rhyme_ideal_gas
   rhyme_drawing
   rhyme_slope_limiter
   rhyme_irs
@@ -89,7 +72,7 @@ set( srcs
   src/main.f90
 )
 
-add_executable( rhyme ${srcs} ${internal_modules} )
-target_link_libraries( rhyme ${deps} )
+add_executable( rhyme_${NUMBER_OF_DIM}d ${srcs} ${internal_modules} )
+target_link_libraries( rhyme_${NUMBER_OF_DIM}d ${deps} )
 
 enable_testing()

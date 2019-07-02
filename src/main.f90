@@ -1,7 +1,7 @@
 program rhyme
   use rhyme_log
   use rhyme_nombre
-  use rhyme_units
+  use rhyme_physics
   use rhyme_hydro_base
   use rhyme_samr
   use rhyme_samr_bc
@@ -20,13 +20,12 @@ program rhyme
   implicit none
 
   type ( log_t ) :: logger
-  type ( rhyme_units_t ) :: units
+  type ( physics_t ) :: physics
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
   type ( chemistry_t ) :: chemistry
   type ( thermo_base_t ) :: thermo
-  type ( ideal_gas_t ) :: ig
   type ( drawing_t ) :: draw
   type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
@@ -55,57 +54,39 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call load_params( param_file, logger, units, ic, bc, cfl, ig, draw, irs, sl, mh, chombo )
+  call load_params( param_file, logger, physics, ic, bc, cfl, thermo, draw, irs, sl, mh, chombo )
 
-  ! Initializing
+
   call logger%begin_section( 'init' )
 
-  ! Units
-  call rhyme_units_init( units, logger )
-
-  ! Chemistry
-  call rhyme_chemistry_init( chemistry, units, logger )
-
-  ! Thermodynamics
-  call rhyme_thermo_base_init( thermo, units, logger )
-
-  ! Ideal Gas
-  call rhyme_ideal_gas_init( ig, chemistry, thermo, units, logger )
-
-  ! Structured AMR
-  call rhyme_initial_condition_init( ic, samr, units, logger )
-
-  ! Boundary Conditions
-  call bc%init( samr, logger )
-
-  ! Initial Condition ( Drawing )
-  call rhyme_drawing_apply( draw, ig, samr, logger )
-
-  ! Iterative Riemann Solver
-  call irs%init( logger )
-
-  ! MUSCL-Hancock
   mhws%type = mh%solver_type
+
+  call rhyme_physics_init( physics, logger )
+  call rhyme_chemistry_init( chemistry, physics, logger )
+  call rhyme_thermo_base_init( thermo, logger )
+  call rhyme_initial_condition_init( ic, samr, physics, logger )
+  call rhyme_samr_bc_init( bc, samr, logger )
+  call rhyme_irs_init( irs, logger )
   call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
+  call rhyme_chombo_init( chombo, samr, logger )
 
-  ! Chombo Output
-  call chombo%init( logger )
-
-  ! End Initialization section
   call logger%end_section
+
+
+  call rhyme_drawing_apply( draw, samr, logger )
 
 
   ! Main loop
   do while ( samr%levels(0)%t < 0.4d0 )
     call logger%set_iteration_section( samr%levels(0)%iteration )
 
-    samr%levels(0)%dt = rhyme_cfl_time_step( cfl, ig, samr )
+    samr%levels(0)%dt = rhyme_cfl_time_step( cfl%courant_number, samr )
 
     call logger%log( '', 't', '=', [ samr%levels(0)%t ] )
     call logger%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
     call logger%start_task( 'boundary-condition' )
-    call bc%set_base_grid_boundaries( samr )
+    call rhyme_samr_bc_set_boundaries( bc, samr )
     call logger%done
 
     ! Update structured AMR
@@ -114,7 +95,7 @@ program rhyme
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
       call logger%start_task( 'storing-snapshot')
-      call chombo%write_samr( samr )
+      call rhyme_chombo_write_samr( chombo, samr )
       call logger%done
     end if
 
@@ -123,7 +104,7 @@ program rhyme
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
-          samr%levels(l)%dx, samr%levels(l)%dt, ig, irs, sl, mhws, logger )
+          samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger )
       end do
     end do
     call logger%done

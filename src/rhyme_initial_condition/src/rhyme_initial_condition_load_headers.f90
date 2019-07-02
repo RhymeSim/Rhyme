@@ -7,7 +7,7 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
 
     type ( chombo_t ) :: ch
-    integer :: l, prob_domain( 3 )
+    integer :: l, prob_domain(3)
 
     call rhyme_hdf5_util_open( ch%file, ic%snapshot_path )
 

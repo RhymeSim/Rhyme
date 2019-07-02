@@ -20,6 +20,7 @@ logical function rhyme_chemistry_one_over_mu_test () result (failed)
 
   call rhyme_chemistry_init( chemistry, physics, logger )
 
+#if NSPE == 3
   call ch_tester%expect( rhyme_chemistry_one_over_mu( chemistry, 1.d0, 0.d0, [0.d0, 0.d0, 0.d0] ) &
     .toBe. 1.d0 / chemistry%amu%H )
   call ch_tester%expect( rhyme_chemistry_one_over_mu( chemistry, 0.d0, 1.d0, [0.d0, 0.d0, 0.d0] ) &
@@ -30,6 +31,7 @@ logical function rhyme_chemistry_one_over_mu_test () result (failed)
     .toBe. 2.d0 / chemistry%amu%He )
   call ch_tester%expect( rhyme_chemistry_one_over_mu( chemistry, 0.d0, 1.d0, [0.d0, 0.d0, 1.d0] ) &
     .toBe. 3.d0 / chemistry%amu%He )
+#endif
 
   failed = ch_tester%failed()
 end function rhyme_chemistry_one_over_mu_test

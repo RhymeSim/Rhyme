@@ -37,7 +37,7 @@ contains
     end do
 
     boxes_shape = 0
-    boxes_shape( 4:4+NDIM-1 ) = samr%base_grid(1)-1
+    boxes_shape( 4:6 ) = reshape( samr%base_grid - 1, shape=[3], pad=[1] )
 
     call rhyme_hdf5_util_write_group_comp_1d_array_attr( chombo%file, "/level_0", &
       "prob_domain", [ "lo_i", 'lo_j', 'lo_k', "hi_i", 'hi_j', 'hi_k' ], &

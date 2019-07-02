@@ -10,7 +10,7 @@ logical function rhyme_physics_test() result ( failed )
 
   ph_tester = .describe. "rhyme_physics"
 
-#if HYDRO_SOLVER
+#ifdef HYDRO_SOLVER
   call ph_tester%expect( cid%rho .toBe. 1 .hint. 'hydro, rho' )
   call ph_tester%expect( cid%u .toBe. 2 .hint. 'hydro, u' )
   call ph_tester%expect( cid%rho_u .toBe. 2 .hint. 'hydro, rho_u' )
@@ -24,10 +24,10 @@ logical function rhyme_physics_test() result ( failed )
 #endif
   call ph_tester%expect( cid%e_tot .toBe. 1 + NDIM + 1 .hint. 'hydro, e_tot' )
   call ph_tester%expect( cid%p .toBe. 1 + NDIM + 1 .hint. 'hydro, p' )
-#if RT_SOLVER
+#ifdef RT_SOLVER
   call ph_tester%expect( cid%temp .toBe. 1 + NDIM + 1 + 1 .hint. 'rhd, temp' )
 #endif
-#elif RT_SOLVER
+#elif defined( RT_SOLVER )
   call ph_tester%expect( cid%temp .toBe. 1 .hint. 'only rt, temp' )
 #endif
 

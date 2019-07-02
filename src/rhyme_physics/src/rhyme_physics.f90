@@ -7,24 +7,24 @@ module rhyme_physics
 #if NDIM == 1
 #define LABEL_V_J
 #define LABEL_V_K
-#define LABEL_V_J_UNIT
-#define LABEL_V_K_UNIT
 #define CMP_J
 #define CMP_K
 #elif NDIM == 2
 #define LABEL_V_J , 'rho_v'
 #define LABEL_V_K
-#define LABEL_V_J_UNIT , rho_v_unit
-#define LABEL_V_K_UNIT
 #define CMP_J , rho_v = 3, v = 3
 #define CMP_K
 #elif NDIM == 3
 #define LABEL_V_J , 'rho_v'
 #define LABEL_V_K , 'rho_w'
-#define LABEL_V_J_UNIT , rho_v_unit
-#define LABEL_V_K_UNIT , rho_v_unit
 #define CMP_J , rho_v = 3, v = 3
 #define CMP_K , rho_w = 4, w = 4
+#endif
+
+#ifdef RT_SOLVER
+#define LABEL_T , 'temp '
+#else
+#define LABEL_T
 #endif
 
   real ( kind=8 ), parameter, private :: kb_value = 1.38064852e-23
@@ -34,47 +34,22 @@ module rhyme_physics
   real ( kind=8 ), parameter, private :: amu_value = 1.6605e-27
   character ( len=32 ), parameter, private :: amu_unit_str = 'kg'
 
-  character ( len=32 ), parameter, private :: rho_unit = 'kg / m^3'
-  character ( len=32 ), parameter, private :: rho_v_unit = 'kg / m^3 * m / s'
-  character ( len=32 ), parameter, private :: e_tot_unit = 'kg / m^3 * m^2 / s^2'
-  character ( len=32 ), parameter, private :: temp_unit = 'K'
-
-
-#if RT_SOLVER
-#define LABEL_T , 'temp '
-#define LABEL_T_UNIT , temp_unit
-#else
-#define LABEL_T
-#define LABEL_T_UNIT
-#endif
-
-
   type, private :: components_indices_t
     character ( len=16 ) :: labels( NCMP - NSPE ) = [ &
-#if HYDRO_SOLVER
-      'rho  ', 'rho_u' LABEL_V_J LABEL_V_K, 'e_tot' LABEL_T &
-#elif RT_SOLVER
-      'temp ' &
+#ifdef HYDRO_SOLVER
+      'rho  ', 'rho_u' LABEL_V_J LABEL_V_K, 'e_tot' LABEL_T ]
+#elif defined( RT_SOLVER )
+      'rho  ' LABEL_T ]
 #endif
-    ]
 
-    character ( len=32 ) :: base_units( NCMP - NSPE ) = [ &
-#if HYDRO_SOLVER
-      rho_unit, rho_v_unit LABEL_V_J_UNIT LABEL_V_K_UNIT, &
-      e_tot_unit LABEL_T_UNIT &
-#elif RT_SOLVER
-      temp_unit &
-#endif
-    ]
-
-#if HYDRO_SOLVER
+#ifdef HYDRO_SOLVER
     integer :: rho = 1
     integer :: rho_u = 2, u = 2 CMP_J CMP_K
     integer :: e_tot = 1 + NDIM + 1, p = 1 + NDIM + 1
-#if RT_SOLVER
+#ifdef RT_SOLVER
     integer :: temp = 1 + NDIM + 1 + 1
 #endif
-#elif RT_SOLVER
+#elif defined( RT_SOLVER )
     integer :: temp = 1
 #endif
   end type components_indices_t

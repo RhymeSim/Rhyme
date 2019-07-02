@@ -10,6 +10,9 @@ contains
 
     call logger%begin_section( 'physics' )
 
+    call logger%log( '', '# of components', '=', [ NCMP ] )
+    call logger%log( '', 'component labels', '=', cid%labels )
+
     physics%rho => rhyme_nombre_units_parse( physics%rho_str )
     call logger%log( '', 'rho:', '[ '//trim(physics%rho%p())//' ]' )
 
