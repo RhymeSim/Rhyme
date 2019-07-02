@@ -16,7 +16,7 @@ logical function rhyme_chombo_test () result ( failed )
   call ch_tester%expect( ch%num_levels .toBe. chid%unset )
   call ch_tester%expect( ch%num_components .toBe. chid%unset )
   call ch_tester%expect( int( ch%level_ids ) .toBe. chid%unset )
-  call ch_tester%expect( ch%initialized .toBe. .false. )
+  call ch_tester%expect( ch%file%initialized .toBe. .false. )
 
   failed = ch_tester%failed()
 end function rhyme_chombo_test

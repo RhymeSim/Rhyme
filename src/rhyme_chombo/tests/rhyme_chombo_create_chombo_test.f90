@@ -12,7 +12,7 @@ logical function rhyme_chombo_create_chombo_test () result ( failed )
   ch_tester = .describe. "chombo create"
 
   ch%nickname = nickname
-  call ch%create_chombo
+  call rhyme_chombo_create_chombo( ch )
 
   call ch_tester%expect( ch%is_opened .toBe. .true. )
 

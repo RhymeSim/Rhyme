@@ -1,25 +1,31 @@
 logical function rhyme_chombo_init_test () result ( failed )
-  use rhyme_chombo
-  use rhyme_log
+  use rhyme_chombo_factory
+  use rhyme_samr_factory
+  use rhyme_log_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: ch_tester
 
-  type ( chombo_t ) :: ch
-  type ( log_t ) :: log
+  type ( chombo_t ) :: chombo
+  type ( samr_t ) :: samr
+  type ( log_t ) :: logger
 
-  logical :: ex
+  logical :: exists
 
-  ch_tester = .describe. "chombo init"
+  ch_tester = .describe. 'chombo init'
 
-  ch%prefix = 'non-exist-directory'
+  chombo = ch_factory%generate()
+  samr = samr_factory%generate()
+  logger = log_factory%generate()
 
-  call ch%init ( log )
+  chombo%prefix = 'non-existing-directory'
 
-  inquire ( file=trim(ch%prefix)//"/.", exist=ex )
-  call ch_tester%expect( ex .toBe. .true. )
+  call rhyme_chombo_init( chombo, samr, logger )
+
+  inquire ( file=trim( chombo%prefix ) // '/.', exist=exists )
+  call ch_tester%expect( exists .toBe. .true. )
 
   failed = ch_tester%failed()
 end function rhyme_chombo_init_test

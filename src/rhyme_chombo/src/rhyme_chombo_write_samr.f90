@@ -1,33 +1,33 @@
 submodule ( rhyme_chombo ) write_samr_smod
 contains
-  module subroutine rhyme_chombo_write_samr ( this, samr )
+  module subroutine rhyme_chombo_write_samr ( chombo, samr )
     implicit none
 
-    class ( chombo_t ), intent (inout) :: this
-    type ( samr_t ), intent (in) :: samr
+    type ( chombo_t ), intent ( inout ) :: chombo
+    type ( samr_t ), intent ( in ) :: samr
 
     integer :: l, hdferr
 
-    this%iteration = samr%levels(0)%iteration
-    call this%create_chombo
+    chombo%iteration = samr%levels(0)%iteration
+    call rhyme_chombo_create_chombo( chombo )
 
-    call this%write_headers( samr )
+    call rhyme_chombo_write_headers( chombo, samr )
 
     do l = 0, samr%nlevels - 1
-      call this%write_level_data( samr%levels(l) )
+      call rhyme_chombo_write_level_data( chombo, samr%levels(l) )
     end do
 
     ! Closing open groups
     do l = 0, samr%nlevels - 1
-      call h5gclose_f( this%level_ids(l), hdferr )
+      call h5gclose_f( chombo%level_ids(l), hdferr )
     end do
-    call h5gclose_f( this%chombo_global_id, hdferr )
+    call h5gclose_f( chombo%chombo_global_id, hdferr )
 
-    call this%close
+    call rhyme_hdf5_util_close( chombo%file )
 
-    this%iteration = chid%unset
-    this%level_ids = chid%unset
-    this%chombo_global_id = chid%unset
-    this%is_opened = .false.
+    chombo%iteration = chid%unset
+    chombo%level_ids = chid%unset
+    chombo%chombo_global_id = chid%unset
+    chombo%is_opened = .false.
   end subroutine rhyme_chombo_write_samr
 end submodule write_samr_smod

@@ -1,16 +1,16 @@
 submodule ( rhyme_chombo ) create_chombo_smod
 contains
-  module subroutine rhyme_chombo_create_chombo ( this )
+  module subroutine rhyme_chombo_create_chombo ( chombo )
     implicit none
 
-    class ( chombo_t ), intent (inout) :: this
+    type ( chombo_t ), intent ( inout ) :: chombo
 
     character ( len=1024 ) :: filename
 
-    call this%filename_generator( filename )
-    call this%create( filename )
+    call rhyme_chombo_filename_generator( chombo, filename )
+    call rhyme_hdf5_util_create( chombo%file, filename )
 
-    this%is_opened = .true.
+    chombo%is_opened = .true.
 
   end subroutine rhyme_chombo_create_chombo
 end submodule create_chombo_smod

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_chombo )
@@ -10,6 +10,7 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
+  rhyme_physics
   rhyme_samr
   rhyme_log
 )
@@ -24,9 +25,11 @@ set( srcs
   src/rhyme_chombo_write_headers.f90
   src/rhyme_chombo_create_chombo.f90
   src/rhyme_chombo_filename_generator.f90
-  src/rhyme_chombo_init.f90
   src/rhyme_chombo.f90
 )
 
 set( rhyme_src_dir .. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )
