@@ -10,6 +10,5 @@ set( test_deps
 set( rhyme_src_dir ../.. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../CMakeGlobal/tests/CMakeLists.txt )
 
-if_not_defined_define( "NDIM" 3 )
-if_not_defined_define( "NCMP" 5 )
-if_not_defined_define( "NSPE" 3 )
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )

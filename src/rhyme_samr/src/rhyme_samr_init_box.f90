@@ -10,6 +10,17 @@ contains
     integer, intent ( in ) :: l, b, dims( NDIM )
     integer, intent ( in ) :: ledges( NDIM ), redges( NDIM )
 
+#if NDIM == 1
+#define RANGE_J
+#define RANGE_K
+#elif NDIM == 2
+#define RANGE_J , lb(2):ub(2)
+#define RANGE_K
+#elif NDIM == 3
+#define RANGE_J , lb(2):ub(2)
+#define RANGE_K , lb(3):ub(3)
+#endif
+
     integer :: lb( NDIM ), ub( NDIM )
 
     this%levels(l)%boxes(b)%level = l
@@ -18,21 +29,13 @@ contains
     lb = -this%ghost_cells + 1
     ub = dims + this%ghost_cells
 
-#if NDIM == 1
-    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1) ) )
-    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), NCMP ) )
-#elif NDIM == 2
-    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2) ) )
-    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), NCMP ) )
-#elif NDIM == 3
-    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
-    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), NCMP ) )
-#endif
+    allocate( this%levels(l)%boxes(b)%flags( lb(1):ub(1) RANGE_J RANGE_K ) )
+    allocate( this%levels(l)%boxes(b)%cells( lb(1):ub(1) RANGE_J RANGE_K, NCMP ) )
 
     this%levels(l)%nboxes = this%levels(l)%nboxes + 1
 
     this%levels(l)%boxes(b)%dims = dims
-    this%levels(l)%boxes(b)%left_edge(:) = ledges(:)
-    this%levels(l)%boxes(b)%right_edge(:) = redges(:)
+    this%levels(l)%boxes(b)%left_edge = ledges
+    this%levels(l)%boxes(b)%right_edge = redges
   end subroutine rhyme_samr_init_box
 end submodule rhyme_samr_init_box_submodule

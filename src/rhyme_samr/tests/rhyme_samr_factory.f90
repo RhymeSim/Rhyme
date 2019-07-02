@@ -4,24 +4,32 @@ module rhyme_samr_factory
 
   implicit none
 
+#if NDIM == 1
+#define BASE_GRID_ARRAY [ 16 ]
+#define GHOST_CELLS_ARRAY [ 2 ]
+#define BOX_LENGTH_ARRAY [ 1.d0 ]
+#endif
+
+#if NDIM == 2
+#define BASE_GRID_ARRAY [ 16, 8 ]
+#define GHOST_CELLS_ARRAY [ 2, 2 ]
+#define BOX_LENGTH_ARRAY [ 1.d0, .5d0 ]
+#endif
+
+#if NDIM == 3
+#define BASE_GRID_ARRAY [ 16, 8, 4 ]
+#define GHOST_CELLS_ARRAY [ 2, 2, 2 ]
+#define BOX_LENGTH_ARRAY [ 1.d0, .5d0, .25d0 ]
+#endif
+
   type rhyme_samr_factory_t
     ! Default values
     integer :: nlevels = 3
     integer :: max_nboxes( 0:samrid%max_nlevels ) = 0
     integer :: init_nboxes( 0:samrid%max_nlevels ) = 0
-#if NDIM == 1
-    integer :: base_grid( NDIM ) = [ 16 ]
-    integer :: ghost_cells( NDIM ) = [ 2 ]
-    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0 ]
-#elif NDIM == 2
-    integer :: base_grid( NDIM ) = [ 16, 8 ]
-    integer :: ghost_cells( NDIM ) = [ 2, 2 ]
-    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0, .5d0 ]
-#elif NDIM == 3
-    integer :: base_grid( NDIM ) = [ 16, 8, 4 ]
-    integer :: ghost_cells( NDIM ) = [ 2, 2, 2 ]
-    real ( kind=8 ) :: box_lengths( NDIM ) = [ 1.d0, .5d0, .25d0 ]
-#endif
+    integer :: base_grid( NDIM ) = BASE_GRID_ARRAY
+    integer :: ghost_cells( NDIM ) = GHOST_CELLS_ARRAY
+    real ( kind=8 ) :: box_lengths( NDIM ) = BOX_LENGTH_ARRAY
   contains
     procedure :: init => rhyme_samr_factory_init
     procedure :: generate => rhyme_samr_factory_generate
@@ -41,6 +49,7 @@ contains
     this%max_nboxes = 0
     this%max_nboxes( 0:2 ) = [ 1, 3, 9 ]
     this%init_nboxes = 0
+
     if ( present( empty ) .and. .not. empty ) then
       this%init_nboxes( 0:2 ) = [ 1, 2, 4 ]
     end if
@@ -55,16 +64,14 @@ contains
 
     type ( samr_t ) :: samr
 
-    logical :: phys, emp
+    logical :: phys
     integer :: l
 
     if ( present( empty ) ) then
-      emp = empty
+      call this%init( empty=empty )
     else
-      emp = .false.
+      call this%init( empty=.false. )
     end if
-
-    call this%init( empty=emp )
 
     if ( present( physical ) ) then
       phys = physical
@@ -133,14 +140,23 @@ contains
     integer, intent ( in ) :: init_nboxes( 0:samrid%max_nlevels )
     logical, intent ( in ) :: physical
 
+#if NDIM == 1
+#define JDX
+#define KDX
+#endif
+
+#if NDIM == 2
+#define JDX ,j
+#define KDX
+#endif
+
+#if NDIM == 3
+#define JDX ,j
+#define KDX ,k
+#endif
+
     real ( kind=8 ) :: val, state( NCMP )
-    integer :: l, b, i, uid
-#if NDIM > 1
-    integer :: j
-#endif
-#if NDIM > 2
-    integer :: k
-#endif
+    integer :: l, b, i JDX KDX, uid, flag
     integer :: lb( NDIM ), ub( NDIM ), rand_len, box_dims( NDIM )
 
     if ( physical ) then
@@ -169,67 +185,72 @@ contains
         samr%levels(l)%boxes(b)%dims = box_dims
 
 #if NDIM == 1
-        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1) ) )
-        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), NCMP ) )
-#elif NDIM == 2
-        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2) ) )
-        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), NCMP ) )
-#elif NDIM == 3
-        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) )
-        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3), NCMP ) )
+#define RANGE_J
+#define RANGE_K
+#define LOOP_J
+#define LOOP_K
+#define LOOP_J_END
+#define LOOP_K_END
 #endif
+
+#if NDIM == 2
+#define RANGE_J ,lb(2):ub(2)
+#define RANGE_K
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K
+#define LOOP_J_END end do
+#define LOOP_K_END
+#endif
+
+#if NDIM == 3
+#define RANGE_J ,lb(2):ub(2)
+#define RANGE_K ,lb(3):ub(3)
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K do k = 1, samr%levels(l)%boxes(b)%dims(3)
+#define LOOP_J_END end do
+#define LOOP_K_END end do
+#endif
+
+        allocate( samr%levels(l)%boxes(b)%flags( lb(1):ub(1) RANGE_J RANGE_K ) )
+        allocate( samr%levels(l)%boxes(b)%cells( lb(1):ub(1) RANGE_J RANGE_K, NCMP ) )
 
         samr%levels(l)%boxes(b)%left_edge = (b - 1) * box_dims + 1
         samr%levels(l)%boxes(b)%right_edge = b * box_dims
 
-#if NDIM > 2
-        do k = 1, samr%levels(l)%boxes(b)%dims(3)
-#endif
-#if NDIM > 1
-          do j = 1, samr%levels(l)%boxes(b)%dims(2)
-#endif
+        LOOP_K
+          LOOP_J
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
               if ( physical ) then
-                state = gen_state()
 #if NDIM == 1
-                samr%levels(l)%boxes(b)%flags(i) = i
-                samr%levels(l)%boxes(b)%cells(i, :) = state
+                flag = i
 #elif NDIM == 2
-                samr%levels(l)%boxes(b)%flags(i, j) = j * box_dims(1) + i
-                samr%levels(l)%boxes(b)%cells(i, j, :) = state
+                flag = j * box_dims(1) + i
 #elif NDIM == 3
-                samr%levels(l)%boxes(b)%flags(i, j, k) = k * box_dims(2) * box_dims(1) + j * box_dims(1) + i
-                samr%levels(l)%boxes(b)%cells(i, j, k,:) = state
+                flag = k * box_dims(2) * box_dims(1) + j * box_dims(1) + i
 #endif
+                state = gen_state()
+
+                samr%levels(l)%boxes(b)%flags( i JDX KDX ) = flag
+                samr%levels(l)%boxes(b)%cells( i JDX KDX, : ) = state
               else
 #if NDIM == 1
                 val = l * 1d1 + b * 1d0 + i * 1d-2
-                samr%levels(l)%boxes(b)%flags(i) = int ( val * 1e3 )
-                do uid = 1, NCMP
-                  samr%levels(l)%boxes(b)%cells(i, uid) = val + uid * 1d-7
-                end do
 #elif NDIM == 2
                 val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4
-                samr%levels(l)%boxes(b)%flags(i, j) = int ( val * 1e3 )
-                do uid = 1, NCMP
-                  samr%levels(l)%boxes(b)%cells(i, j, uid) = val + uid * 1d-7
-                end do
 #elif NDIM == 3
                 val = l * 1d1 + b * 1d0 + i * 1d-2 + j * 1d-4 + k * 1d-6
-                samr%levels(l)%boxes(b)%flags(i, j, k) = int ( val * 1e3 )
-                do uid = 1, NCMP
-                  samr%levels(l)%boxes(b)%cells(i, j, k, uid) = val + uid * 1d-7
-                end do
 #endif
+
+                samr%levels(l)%boxes(b)%flags( i JDX KDX ) = int ( val * 1e6 )
+
+                do uid = 1, NCMP
+                  samr%levels(l)%boxes(b)%cells( i JDX KDX, uid ) = val + uid * 1d-7
+                end do
 
               end if
             end do
-#if NDIM > 1
-          end do
-#endif
-#if NDIM > 2
-        end do
-#endif
+          LOOP_J_END
+        LOOP_K_END
 
       end do
     end do

@@ -3,17 +3,29 @@ module rhyme_samr
 
   implicit none
 
-  type samr_indices_t
+#if NDIM == 1
+#define COLON_J
+#define COLON_K
+#define IDS_J
+#define IDS_K
+#elif NDIM == 2
+#define COLON_J ,:
+#define COLON_K
+#define IDS_J , y = 2, bottom = 3, top = 4
+#define IDS_K
+#elif NDIM == 3
+#define COLON_J ,:
+#define COLON_K ,:
+#define IDS_J , y = 2, bottom = 3, top = 4
+#define IDS_K , z = 3, back = 5, front = 6
+#endif
+
+
+  type, private :: samr_indices_t
     integer :: ghost = -1
     integer :: unset = -10
     integer :: max_nlevels = 23
-    integer :: left = 1, right = 2
-#if NDIM > 1
-    integer :: bottom = 3, top = 4
-#endif
-#if NDIM > 2
-    integer :: back = 5, front = 6
-#endif
+    integer :: x = 1, left = 1, right = 2 IDS_J IDS_K
   end type samr_indices_t
 
   type ( samr_indices_t ), parameter :: samrid = samr_indices_t()
@@ -25,16 +37,8 @@ module rhyme_samr
     integer :: number = samrid%unset
     integer :: left_edge( NDIM ) = samrid%unset
     integer :: right_edge( NDIM ) = samrid%unset
-#if NDIM == 1
-    integer, allocatable :: flags (:)
-    real ( kind=8 ), allocatable :: cells (:, :)
-#elif NDIM == 2
-    integer, allocatable :: flags (:, :)
-    real ( kind=8 ), allocatable :: cells (:, :, :)
-#elif NDIM == 3
-    integer, allocatable :: flags (:, :, :)
-    real ( kind=8 ), allocatable :: cells (:, :, :, :)
-#endif
+    integer, allocatable :: flags ( : COLON_J COLON_K )
+    real ( kind=8 ), allocatable :: cells ( : COLON_J COLON_K , : )
   end type samr_box_t
 
 
@@ -56,7 +60,7 @@ module rhyme_samr
     integer :: base_grid( NDIM )
     integer :: ghost_cells( NDIM )
     integer :: max_nboxes ( 0:samrid%max_nlevels )
-    real ( kind=8 ) :: box_lengths( NDIM ) ! In code units, look at rhyme_units module
+    real ( kind=8 ) :: box_lengths( NDIM )
     type ( samr_level_t ) :: levels( 0:samrid%max_nlevels )
   contains
     procedure :: init_box => rhyme_samr_init_box
