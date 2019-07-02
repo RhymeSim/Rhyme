@@ -3,163 +3,77 @@ module rhyme_hydro_base_factory
 
   implicit none
 
+#if NDIM == 1
+#define V_ARRAY [ 2.34D0 ]
+#elif NDIM == 2
+#define V_ARRAY [ 2.34D0, 2.35D0 ]
+#else
+#define V_ARRAY [ 2.34D0, 2.35D0, 2.36D0 ]
+#endif
+
+  real ( kind=8 ), parameter, private :: rho_param = 1.23d0
+  real ( kind=8 ), parameter, private :: v_param( NDIM ) = V_ARRAY
+  real ( kind=8 ), parameter, private :: p_param = 1.2d0
+  real ( kind=8 ), parameter, private :: g_param = 1.4d0
+  real ( kind=8 ), parameter, private :: e_int_param = 3.d0
+
   type rhyme_hydro_base_factory_t
-    real ( kind=8 ) :: rho = 1.23d0
-    real ( kind=8 ) :: u = 2.34d0
-    real ( kind=8 ) :: v = 3.45d0
-    real ( kind=8 ) :: w = 4.56d0
-    real ( kind=8 ) :: T = 5.67d2
-    real ( kind=8 ) :: mu = 0.98d0
-    real ( kind=8 ) :: kB = 1.38064852d-23
-    real ( kind=8 ) :: amu = 1.66054e-27
-    real ( kind=8 ) :: gamma = 5.d0 / 3.d0
-    real ( kind=8 ) :: p = 0.d0
-    real ( kind=8 ) :: e_int = 0.d0
-    real ( kind=8 ) :: e_int_sp = 0.d0
-    real ( kind=8 ) :: e_kin_sp = 0.d0
-    real ( kind=8 ) :: e_tot = 0.d0
-    type ( hydro_conserved_t ) :: cons
-    type ( hydro_primitive_t ) :: prim
-    type ( hydro_flux_t ) :: flux_x
+    real ( kind=8 ) :: rho = rho_param
+    real ( kind=8 ) :: v( NDIM ) = v_param
+    real ( kind=8 ) :: p = p_param
+    real ( kind=8 ) :: g = g_param
+    real ( kind=8 ) :: e_int = e_int_param
     logical :: initialized = .false.
   contains
-    procedure :: init => rhyme_hydro_factory_init
-    procedure :: pressure => rhyme_hydro_factory_p
-    procedure :: e_internal => rhyme_hydro_factory_e_int
-    procedure :: e_internal_specific => rhyme_hydro_factory_e_int_sp
-    procedure :: e_kinetic_specific => rhyme_hydro_factory_e_kin_sp
-    procedure :: e_total => rhyme_hydro_factory_e_tot
-    procedure :: conserved => rhyme_hydro_factory_cons
-    procedure :: primitive => rhyme_hydro_factory_prim
-    procedure :: flux_x_direction => rhyme_hydro_factory_flux_x
+    procedure :: init => rhyme_hydro_base_factory_init
+    procedure :: generate_primitive => rhyme_hydro_base_factory_generate_primitive
+    procedure :: generate_conserved => rhyme_hydro_base_factory_generate_conserved
   end type rhyme_hydro_base_factory_t
 
-  type ( rhyme_hydro_base_factory_t ) :: hy_factory = rhyme_hydro_base_factory_t()
+  type ( rhyme_hydro_base_factory_t ) :: hy_factory  = rhyme_hydro_base_factory_t()
 
 contains
 
-  subroutine rhyme_hydro_factory_init ( this )
+  subroutine rhyme_hydro_base_factory_init ( this )
     implicit none
 
     class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
+
+    this%rho = 1.23d0
+    this%v = V_ARRAY
+    this%p = 1.2d0
+    this%g = 1.4d0
+    this%e_int = 3.d0
 
     this%initialized = .true.
-
-    this%p = this%pressure()
-    this%e_int = this%e_internal()
-    this%e_int_sp = this%e_internal_specific()
-    this%e_kin_sp = this%e_kinetic_specific()
-    this%e_tot = this%e_total()
-    this%cons = this%conserved()
-    this%prim = this%primitive()
-    this%flux_x = this%flux_x_direction()
-  end subroutine rhyme_hydro_factory_init
+  end subroutine rhyme_hydro_base_factory_init
 
 
-  function rhyme_hydro_factory_p  ( this ) result ( p )
+  function rhyme_hydro_base_factory_generate_primitive ( this ) result ( w )
     implicit none
 
     class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    real ( kind=8 ) :: p
+    real ( kind=8 ) :: w( cid%rho:cid%p )
 
     if ( .not. this%initialized ) call this%init
 
-    p = this%rho / ( this%mu * this%amu ) * this%kB * this%T
-  end function rhyme_hydro_factory_p
+    w( cid%rho ) = this%rho
+    w( cid%u:cid%u+size(this%v)-1 ) = this%v
+    w( cid%p ) = this%p
+
+  end function rhyme_hydro_base_factory_generate_primitive
 
 
-  function rhyme_hydro_factory_e_int  ( this ) result ( e_int )
+  function rhyme_hydro_base_factory_generate_conserved ( this ) result ( u )
     implicit none
 
     class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    real ( kind=8 ) :: e_int
+    real ( kind=8 ) :: u( cid%rho:cid%p )
 
     if ( .not. this%initialized ) call this%init
 
-    e_int = this%pressure() / ( this%gamma - 1.d0 )
-  end function rhyme_hydro_factory_e_int
-
-
-  function rhyme_hydro_factory_e_int_sp ( this ) result ( e_int_sp )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    real ( kind=8 ) :: e_int_sp
-
-    if ( .not. this%initialized ) call this%init
-
-    e_int_sp = this%e_internal() / this%rho
-  end function rhyme_hydro_factory_e_int_sp
-
-
-  function rhyme_hydro_factory_e_kin_sp ( this ) result ( e_kin_sp )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    real ( kind=8 ) :: e_kin_sp
-
-    if ( .not. this%initialized ) call this%init
-
-    e_kin_sp = 0.5d0 * (this%v**2 + this%u**2 + this%w**2)
-  end function rhyme_hydro_factory_e_kin_sp
-
-
-  function rhyme_hydro_factory_e_tot ( this ) result ( e_tot )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    real ( kind=8 ) :: e_tot
-
-    if ( .not. this%initialized ) call this%init
-
-    e_tot = this%rho * this%e_kinetic_specific() + this%e_internal()
-  end function rhyme_hydro_factory_e_tot
-
-
-  function rhyme_hydro_factory_cons ( this ) result ( cons )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    type ( hydro_conserved_t ) :: cons
-
-    if ( .not. this%initialized ) call this%init
-
-    cons%u(hyid%rho) = this%rho
-    cons%u(hyid%rho_u) = this%rho * this%u
-    cons%u(hyid%rho_v) = this%rho * this%v
-    cons%u(hyid%rho_w) = this%rho * this%w
-    cons%u(hyid%e_tot) = this%rho * this%e_kinetic_specific() + this%e_internal()
-  end function rhyme_hydro_factory_cons
-
-
-  function rhyme_hydro_factory_prim ( this ) result ( prim )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    type ( hydro_primitive_t ) :: prim
-
-    if ( .not. this%initialized ) call this%init
-
-    prim%w(hyid%rho) = this%rho
-    prim%w(hyid%u) = this%u
-    prim%w(hyid%v) = this%v
-    prim%w(hyid%w) = this%w
-    prim%w(hyid%p) = this%pressure()
-  end function rhyme_hydro_factory_prim
-
-
-  function rhyme_hydro_factory_flux_x ( this ) result ( flux_x )
-    implicit none
-
-    class ( rhyme_hydro_base_factory_t ), intent ( inout ) :: this
-    type ( hydro_flux_t ) :: flux_x
-
-    if ( .not. this%initialized ) call this%init
-
-    flux_x%f(hyid%rho) = this%rho * this%u
-    flux_x%f(hyid%rho_u) = this%rho * this%u**2 + this%pressure()
-    flux_x%f(hyid%rho_v) = this%rho * this%u * this%v
-    flux_x%f(hyid%rho_w) = this%rho * this%u * this%w
-    flux_x%f(hyid%e_tot) = this%u * ( this%e_total() + this%pressure() )
-  end function rhyme_hydro_factory_flux_x
+    u( cid%rho ) = this%rho
+    u( cid%rho_u:cid%rho_u+size(this%v)-1 ) = this%rho * this%v
+    u( cid%e_tot ) = .5d0 * this%rho * sum( this%v**2 ) + this%e_int
+  end function rhyme_hydro_base_factory_generate_conserved
 end module rhyme_hydro_base_factory
