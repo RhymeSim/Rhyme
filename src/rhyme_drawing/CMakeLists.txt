@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_drawing )
@@ -10,9 +10,10 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
-  rhyme_samr
+  rhyme_physics
+  rhyme_thermo_base
   rhyme_hydro_base
-  rhyme_ideal_gas
+  rhyme_samr
   rhyme_log
 )
 
@@ -31,3 +32,6 @@ set( srcs
 
 set( rhyme_src_dir .. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )

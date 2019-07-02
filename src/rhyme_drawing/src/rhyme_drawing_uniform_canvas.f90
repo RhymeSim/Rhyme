@@ -1,21 +1,50 @@
 submodule ( rhyme_drawing ) rhyme_drawing_uniform_canvas_submodule
 contains
-  module subroutine rhyme_drawing_uniform_canvas ( samr, ig, bg_prim )
+  module subroutine rhyme_drawing_uniform_canvas ( samr, bg_prim )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr
-    type ( ideal_gas_t ), intent ( in ) :: ig
-    type ( hydro_primitive_t ), intent ( in ) :: bg_prim
+    real ( kind=8 ), intent ( in ) :: bg_prim( cid%rho:cid%p )
 
-    integer :: l, b, d(3)
-    type ( hydro_conserved_t ) :: bg
+#if NDIM == 1
+#define JDX
+#define KDX
+#define LOOP_J
+#define LOOP_K
+#define LOOP_J_END
+#define LOOP_K_END
+#elif NDIM == 2
+#define JDX ,j
+#define KDX
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K
+#define LOOP_J_END end do
+#define LOOP_K_END
+#elif NDIM == 3
+#define JDX ,j
+#define KDX ,k
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K do k = 1, samr%levels(l)%boxes(b)%dims(3)
+#define LOOP_J_END end do
+#define LOOP_K_END end do
+#endif
 
-    call ig%prim_to_cons( bg_prim, bg )
+    integer :: l, b, i JDX KDX
+    real ( kind=8 ) :: bg( cid%rho:cid%e_tot )
+
+    call conv_prim_to_cons( bg_prim, bg )
 
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
-        d = samr%levels(l)%boxes(b)%dims
-        samr%levels(l)%boxes(b)%hydro( 1:d(1), 1:d(2), 1:d(3) ) = bg
+
+        LOOP_K
+          LOOP_J
+            do i = 1, samr%levels(l)%boxes(b)%dims(1)
+              samr%levels(l)%boxes(b)%cells( i JDX KDX, cid%rho:cid%e_tot ) = bg
+            end do
+          LOOP_J_END
+        LOOP_K_END
+
       end do
     end do
 

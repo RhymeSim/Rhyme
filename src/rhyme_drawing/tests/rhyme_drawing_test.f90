@@ -13,7 +13,9 @@ logical function rhyme_drawing_test () result (failed)
   call dr_tester%expect( drid%uniform .toBe. 10 )
   call dr_tester%expect( drid%cuboid .toBe. 20 )
   call dr_tester%expect( drid%sphere .toBe. 21 )
+#if NDIM > 1
   call dr_tester%expect( drid%prism .toBe. 22 )
+#endif
   call dr_tester%expect( drid%linear .toBe. 41 )
   call dr_tester%expect( drid%cubic .toBe. 42 )
   call dr_tester%expect( drid%ramp .toBe. 43 )

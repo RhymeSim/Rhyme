@@ -19,10 +19,6 @@ logical function rhyme_drawing_new_shape_test () result (failed)
   call dr_tester%expect( shape%type .toBe. drid%sphere )
   call dr_tester%expect( draw%shapes%fill%type .toBe. drid%unset )
   call dr_tester%expect( shape%fill%type .toBe. drid%unset )
-  call dr_tester%expect( draw%shapes%trans%type .toBe. drid%none )
-  call dr_tester%expect( shape%trans%type .toBe. drid%none )
-  call dr_tester%expect( draw%shapes%trans%sigma .toBe. 0.d0 )
-  call dr_tester%expect( shape%trans%sigma .toBe. 0.d0 )
 
   shape => draw%new_shape( drid%cuboid )
 
@@ -30,8 +26,6 @@ logical function rhyme_drawing_new_shape_test () result (failed)
   call dr_tester%expect( draw%shapes%type .toBe. drid%sphere )
   call dr_tester%expect( draw%shapes%next%type .toBe. drid%cuboid )
   call dr_tester%expect( draw%shapes%next%fill%type .toBe. drid%unset )
-  call dr_tester%expect( draw%shapes%next%trans%type .toBe. drid%none )
-  call dr_tester%expect( draw%shapes%next%trans%sigma .toBe. 0.d0 )
 
   failed = dr_tester%failed()
 end function rhyme_drawing_new_shape_test

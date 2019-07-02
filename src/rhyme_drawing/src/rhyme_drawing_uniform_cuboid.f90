@@ -1,17 +1,39 @@
 submodule ( rhyme_drawing ) rhyme_drawing_uniform_cuboid_submoduel
 contains
-  module subroutine rhyme_drawing_uniform_cuboid ( samr, ig, shape )
+  module subroutine rhyme_drawing_uniform_cuboid ( samr, shape )
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr
-    type ( ideal_gas_t ), intent ( in ) :: ig
     type ( shape_t ), intent ( in ) :: shape
 
-    integer :: l, b
-    integer :: shift(3), lb(3), ub(3)
-    type ( hydro_conserved_t ) :: color
+#if NDIM == 1
+#define JDX
+#define KDX
+#define LOOP_J
+#define LOOP_K
+#define LOOP_J_END
+#define LOOP_K_END
+#elif NDIM == 2
+#define JDX ,j
+#define KDX
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K
+#define LOOP_J_END end do
+#define LOOP_K_END
+#elif NDIM == 3
+#define JDX ,j
+#define KDX ,k
+#define LOOP_J do j = 1, samr%levels(l)%boxes(b)%dims(2)
+#define LOOP_K do k = 1, samr%levels(l)%boxes(b)%dims(3)
+#define LOOP_J_END end do
+#define LOOP_K_END end do
+#endif
 
-    call ig%prim_to_cons( shape%fill%colors(1), color )
+    integer :: l, b, i JDX KDX, uid
+    integer :: shift( NDIM ), lb( NDIM ), ub( NDIM )
+    real ( kind=8 ) :: color( cid%rho:cid%e_tot )
+
+    call conv_prim_to_cons( shape%fill%colors( cid%rho:cid%p, 1 ), color )
 
     do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -25,7 +47,16 @@ contains
         ub = merge( 0, ub, ub < 1 )
         ub = merge( samr%levels(l)%boxes(b)%dims, ub, ub > samr%levels(l)%boxes(b)%dims )
 
-        samr%levels(l)%boxes(b)%hydro( lb(1):ub(1), lb(2):ub(2), lb(3):ub(3) ) = color
+
+        do uid = cid%rho, cid%e_tot
+          LOOP_K
+            LOOP_J
+              do i = lb(1), ub(1)
+                samr%levels(l)%boxes(b)%cells( i JDX KDX, uid ) = color( uid )
+              end do
+            LOOP_J_END
+          LOOP_K_END
+        end do
 
       end do
     end do
