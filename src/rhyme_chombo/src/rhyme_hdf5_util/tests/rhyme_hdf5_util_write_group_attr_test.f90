@@ -1,23 +1,18 @@
 logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
-  use rhyme_hdf5_util
+  use rhyme_hdf5_util_factory
   use rhyme_assertion
 
   implicit none
 
-  type ( assertion_t ) :: h5_tester
-
-  ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_attr.h5"
 
-  ! HDF5 related variables
+  type ( assertion_t ) :: h5_tester
+
+  type ( hdf5_util_t ) :: h5
+
   integer :: hdferr
   integer ( hid_t ) :: fid, attr_id, dtype
   integer ( hsize_t ) :: dims(1) = 1
-
-  ! rhyme_hdf5_util variables
-  type ( rhyme_hdf5_util_t ) :: h5
-
-  ! variables
   character(len=128) :: key
   integer :: attr_int
   real (kind=4) :: attr_real
@@ -26,12 +21,14 @@ logical function rhyme_hdf5_util_write_group_attr_test () result ( failed )
 
   h5_tester = .describe. "hdf5_util write_group_attr"
 
-  call h5%create ( testfile )
-  call h5%write_group_attr ( "/", "int", 1 )
-  call h5%write_group_attr ( "/", "real", 2.34e0 )
-  call h5%write_group_attr ( "/", "real8", 3.45d0 )
-  call h5%write_group_attr ( "/", "string", "Hello world!" )
-  call h5%close
+  h5 = h5_factory%generate()
+
+  call rhyme_hdf5_util_create( h5, testfile )
+  call rhyme_hdf5_util_write_group_attr( h5, "/", "int", 1 )
+  call rhyme_hdf5_util_write_group_attr( h5, "/", "real", 2.34e0 )
+  call rhyme_hdf5_util_write_group_attr( h5, "/", "real8", 3.45d0 )
+  call rhyme_hdf5_util_write_group_attr( h5, "/", "string", "Hello world!" )
+  call rhyme_hdf5_util_close( h5 )
 
   call h5open_f ( hdferr )
   call h5fopen_f ( trim(testfile), H5F_ACC_RDONLY_F, fid, hdferr )

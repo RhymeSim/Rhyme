@@ -1,37 +1,34 @@
 logical function rhyme_hdf5_util_write_group_comp_1d_array_attr_test () result ( failed )
-  use rhyme_hdf5_util
+  use rhyme_hdf5_util_factory
   use rhyme_assertion
 
   implicit none
 
-  type ( assertion_t ) :: h5_tester
-
-  ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_group_comp_1d_array_attr.h5"
   character(len=8), parameter :: keys(3) = [ "key_1   ", "key_2   ", "key_3   " ]
   real (kind=8), parameter :: array_r8(3) = [ 1.d0, 2.d0, 3.d0 ]
   real (kind=4), parameter :: array_r(3) = [ 4.e0, 5.e0, 6.e0 ]
   integer, parameter :: array_i(3) = [ 7, 8, 9 ]
 
-  ! HDF5 related variables
+  type ( assertion_t ) :: h5_tester
+
+  type ( hdf5_util_t ) :: h5
+
   integer :: hdferr
   integer ( hid_t ) :: fid
-
-  ! rhyme_hdf5_util variables
-  type ( rhyme_hdf5_util_t ) :: h5
-
-  ! variables
   real (kind=8) :: array_r8_read(3) = 0.d0
   real (kind=4) :: array_r_read(3) = 0.e0
   integer :: array_i_read(3) = 0
 
   h5_tester = .describe. "hdf5_util write_group_comp_1d_array_attr"
 
-  call h5%create ( testfile )
-  call h5%write_group_comp_1d_array_attr ( "/", "int_attr", keys , array_i )
-  call h5%write_group_comp_1d_array_attr ( "/", "real_attr", keys , array_r )
-  call h5%write_group_comp_1d_array_attr ( "/", "real8_attr", keys , array_r8 )
-  call h5%close
+  h5 = h5_factory%generate()
+
+  call rhyme_hdf5_util_create( h5, testfile )
+  call rhyme_hdf5_util_write_group_comp_1d_array_attr( h5, "/", "int_attr", keys , array_i )
+  call rhyme_hdf5_util_write_group_comp_1d_array_attr( h5, "/", "real_attr", keys , array_r )
+  call rhyme_hdf5_util_write_group_comp_1d_array_attr( h5, "/", "real8_attr", keys , array_r8 )
+  call rhyme_hdf5_util_close( h5 )
 
   call h5open_f ( hdferr )
   call h5fopen_f ( trim(testfile), H5F_ACC_RDONLY_F, fid, hdferr )

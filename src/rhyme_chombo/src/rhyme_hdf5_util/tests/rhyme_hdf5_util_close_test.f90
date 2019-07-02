@@ -1,21 +1,22 @@
 logical function rhyme_hdf5_util_close_test () result ( failed )
-  use rhyme_hdf5_util
+  use rhyme_hdf5_util_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: h5_tester
 
-  ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_close.h5"
 
-  ! rhyme_hdf5_util variables
-  type ( rhyme_hdf5_util_t ) :: h5
+  type ( hdf5_util_t ) :: h5
 
-  h5_tester = .describe. "hdf5_utils close"
+  h5_tester = .describe. "close"
 
-  call h5%create ( testfile )
-  call h5%close
+
+  h5 = h5_factory%generate()
+
+  call rhyme_hdf5_util_create( h5, testfile )
+  call rhyme_hdf5_util_close( h5 )
 
   call h5_tester%expect( int( h5%fid ) .toBe. h5id%unset )
   call h5_tester%expect( h5%filename .toBe. "" )

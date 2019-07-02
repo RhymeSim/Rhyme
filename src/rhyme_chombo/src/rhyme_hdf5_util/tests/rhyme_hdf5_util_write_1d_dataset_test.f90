@@ -1,38 +1,36 @@
 logical function rhyme_hdf5_util_write_1d_dataset_test () result ( failed )
-  use rhyme_hdf5_util
+  use rhyme_hdf5_util_factory
   use rhyme_assertion
 
   implicit none
 
-  type ( assertion_t ) :: h5_tester
-
-  ! Constants
   character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_1d_dataset.h5"
   integer, parameter :: int_arr(6) = [ 1, 2, 3, 4, 5, 6 ]
   real ( kind=4 ), parameter :: real_arr(6) = [ 1.2e0, 2.3e0, 3.4e0, 4.5e0, 5.6e0, 6.7e0 ]
   real ( kind=8 ), parameter :: real8_arr(6) = [ 1.2d0, 2.3d0, 3.4d0, 4.5d0, 5.6d0, 6.7d0 ]
 
+  type ( assertion_t ) :: h5_tester
+
+  type ( hdf5_util_t ) :: h5
+
   integer :: int_arr_read(6)
   real ( kind=4 ) :: real_arr_read(6)
   real ( kind=8 ) :: real8_arr_read(6)
-
-  ! HDF5 related variables
   integer :: hdferr
   integer ( hid_t ) :: fid
   logical :: exists
-
-  ! rhyme_hdf5_util variables
-  type ( rhyme_hdf5_util_t ) :: h5
   integer ( hid_t ) :: group_id = -1, dset_id = -1
 
-  h5_tester = .describe. "hdf5_util write_1d_dataset"
+  h5_tester = .describe. "write_1d_dataset"
 
-  call h5%create ( testfile )
-  call h5%create_group ( "/group", group_id)
-  call h5%write_1d_dataset ( "/group", "intdataset", int_arr )
-  call h5%write_1d_dataset ( "/group", "realdataset", real_arr )
-  call h5%write_1d_dataset ( "/group", "real8dataset", real8_arr )
-  call h5%close
+  h5 = h5_factory%generate()
+
+  call rhyme_hdf5_util_create( h5, testfile )
+  call rhyme_hdf5_util_create_group( h5, "/group", group_id)
+  call rhyme_hdf5_util_write_1d_dataset( h5, "/group", "intdataset", int_arr )
+  call rhyme_hdf5_util_write_1d_dataset( h5, "/group", "realdataset", real_arr )
+  call rhyme_hdf5_util_write_1d_dataset( h5, "/group", "real8dataset", real8_arr )
+  call rhyme_hdf5_util_close( h5 )
 
   call h5open_f ( hdferr )
   call h5fopen_f ( testfile, H5F_ACC_RDONLY_F, fid, hdferr )

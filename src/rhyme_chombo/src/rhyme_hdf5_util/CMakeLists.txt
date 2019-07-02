@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_hdf5_util )
@@ -13,6 +13,23 @@ set( deps )
 set( internal_deps )
 
 set( srcs
+  src/rhyme_hdf5_util_close.f90
+  src/rhyme_hdf5_util_read_2d_dataset.f90
+  src/rhyme_hdf5_util_read_1d_dataset.f90
+  src/rhyme_hdf5_util_write_2d_dataset.f90
+  src/rhyme_hdf5_util_write_1d_dataset.f90
+  src/rhyme_hdf5_util_read_group_comp_1d_array_attr.f90
+  src/rhyme_hdf5_util_read_group_1d_array_attr.f90
+  src/rhyme_hdf5_util_read_group_attr.f90
+  src/rhyme_hdf5_util_get_table_size.f90
+  src/rhyme_hdf5_util_read_table.f90
+  src/rhyme_hdf5_util_write_table.f90
+  src/rhyme_hdf5_util_write_group_comp_1d_array_attr.f90
+  src/rhyme_hdf5_util_write_group_1d_array_attr.f90
+  src/rhyme_hdf5_util_write_group_attr.f90
+  src/rhyme_hdf5_util_create_group.f90
+  src/rhyme_hdf5_util_create.f90
+  src/rhyme_hdf5_util_open.f90
   src/rhyme_hdf5_util.f90
 )
 

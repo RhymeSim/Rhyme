@@ -1,38 +1,38 @@
 logical function rhyme_hdf5_util_write_2d_dataset_test () result ( failed )
-  use rhyme_hdf5_util
+  use rhyme_hdf5_util_factory
   use rhyme_assertion
 
   implicit none
 
+  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_2d_dataset.h5"
+
   type ( assertion_t ) :: h5_tester
 
+  type ( hdf5_util_t ) :: h5
+
   ! Constants
-  character ( len=1024 ), parameter :: testfile = "./test_hdf5_util_write_2d_dataset.h5"
   integer :: int_arr(2,3), int_arr_read(2,3)
   real ( kind=4 ) :: real_arr(2,3), real_arr_read(2,3)
   real ( kind=8 ) :: real8_arr(2,3), real8_arr_read(2,3)
-
-  ! HDF5 related variables
   integer :: hdferr
   integer ( hid_t ) :: group_id, fid
   logical :: exists
-
-  ! rhymej_hdf5_util variables
-  type ( rhyme_hdf5_util_t ) :: h5
   integer ( hid_t ) :: dset_id
 
   h5_tester = .describe. "hdf5_util write_2d_dataset"
+
+  h5 = h5_factory%generate()
 
   int_arr = reshape ( [ 1, 2, 3, 4, 5, 6 ], [ 2, 3 ] )
   real_arr = reshape ( [ 1.e0, 2.e0, 3.e0, 4.e0, 5.e0, 6.e0 ], [ 2, 3 ] )
   real8_arr = reshape ( [ 1.d0, 2.d0, 3.d0, 4.d0, 5.d0, 6.d0 ], [ 2, 3 ] )
 
-  call h5%create ( testfile )
-  call h5%create_group ( "/dataset", group_id)
-  call h5%write_2d_dataset ( "/dataset", "int", int_arr )
-  call h5%write_2d_dataset ( "/dataset", "real", real_arr )
-  call h5%write_2d_dataset ( "/dataset", "real8", real8_arr )
-  call h5%close
+  call rhyme_hdf5_util_create( h5, testfile )
+  call rhyme_hdf5_util_create_group( h5, "/dataset", group_id)
+  call rhyme_hdf5_util_write_2d_dataset( h5, "/dataset", "int", int_arr )
+  call rhyme_hdf5_util_write_2d_dataset( h5, "/dataset", "real", real_arr )
+  call rhyme_hdf5_util_write_2d_dataset( h5, "/dataset", "real8", real8_arr )
+  call rhyme_hdf5_util_close( h5 )
 
   call h5open_f ( hdferr )
   call h5fopen_f ( testfile, H5F_ACC_RDONLY_F, fid, hdferr )
