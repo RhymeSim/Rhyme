@@ -1,6 +1,6 @@
 module rhyme_cfl
   use rhyme_samr
-  use rhyme_ideal_gas
+  use rhyme_thermo_base
 
   implicit none
 
@@ -10,10 +10,9 @@ module rhyme_cfl
 
 
   interface
-    pure module function rhyme_cfl_time_step ( cfl, ig, samr ) result ( dt )
-      class ( cfl_t ), intent(in) :: cfl
-      type ( ideal_gas_t ), intent(in) :: ig
-      type ( samr_t ), intent(in) :: samr
+    pure module function rhyme_cfl_time_step ( c, samr ) result ( dt )
+      real ( kind=8 ), intent ( in ) :: c
+      type ( samr_t ), intent ( in ) :: samr
       real ( kind=8 ) :: dt
     end function rhyme_cfl_time_step
   end interface

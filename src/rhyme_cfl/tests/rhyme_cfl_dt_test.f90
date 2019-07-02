@@ -1,6 +1,5 @@
 logical function rhyme_cfl_dt_test () result (failed)
   use rhyme_cfl_factory
-  use rhyme_ideal_gas_factory
   use rhyme_samr_factory
   use rhyme_assertion
 
@@ -9,30 +8,52 @@ logical function rhyme_cfl_dt_test () result (failed)
   type ( assertion_t ) :: cfl_tester
 
   type ( cfl_t ) :: cfl
-  type ( ideal_gas_t ) :: ig
   type ( samr_t ) :: samr
+
+#if NDIM == 1
+#define LOOP_J
+#define LOOP_K
+#define LOOP_J_END
+#define LOOP_K_END
+#define JDX
+#define KDX
+#elif NDIM == 2
+#define LOOP_J do j = 1, samr%levels(0)%boxes(1)%dims(2)
+#define LOOP_K
+#define LOOP_J_END end do
+#define LOOP_K_END
+#define JDX ,j
+#define KDX
+#elif NDIM == 3
+#define LOOP_J do j = 1, samr%levels(0)%boxes(1)%dims(2)
+#define LOOP_K do k = 1, samr%levels(0)%boxes(1)%dims(3)
+#define LOOP_J_END end do
+#define LOOP_K_END end do
+#define JDX ,j
+#define KDX ,k
+#endif
 
   real ( kind=8 ) :: dt, dt_expected
   real ( kind=8 ) :: v_cs, max_v_cs
-  integer :: i, j, k
+  integer :: i JDX KDX
 
   cfl_tester = .describe. "CFL"
 
-  ig = ig_factory%generate( igid%diatomic )
   samr = samr_factory%generate( physical=.true. )
+  cfl = cfl_factory%generate()
 
-  dt = rhyme_cfl_time_step( cfl, ig, samr )
+  dt = rhyme_cfl_time_step( cfl%courant_number, samr )
 
-  max_v_cs = calc_v_cs( samr%levels(0)%boxes(1)%hydro(1,1,1) )
+  max_v_cs = 0.d0
 
-  do k = 1, samr%levels(0)%boxes(1)%dims(3)
-    do j = 1, samr%levels(0)%boxes(1)%dims(2)
+  LOOP_K
+    LOOP_J
       do i = 1, samr%levels(0)%boxes(1)%dims(1)
-        v_cs = calc_v_cs( samr%levels(0)%boxes(1)%hydro(i, j, k) )
+        v_cs = calc_v_cs( samr%levels(0)%boxes(1)%cells( i JDX KDX, : ) )
         if ( v_cs > max_v_cs ) max_v_cs = v_cs
       end do
-    end do
-  end do
+    LOOP_J_END
+  LOOP_K_END
 
   dt_expected = cfl%courant_number * minval ( samr%levels(0)%dx ) / max_v_cs
 
@@ -41,13 +62,12 @@ logical function rhyme_cfl_dt_test () result (failed)
   failed = cfl_tester%failed()
 
 contains
-  real ( kind=8 ) function calc_v_cs ( U ) result ( v )
+  real ( kind=8 ) function calc_v_cs ( u ) result ( v )
     implicit none
 
-    type ( hydro_conserved_t ), intent ( in ) :: U
+    real ( kind=8 ), intent ( in ) :: u( cid%rho:cid%e_tot )
 
-    v = sqrt( sum( U%u( hyid%rho_u:hyid%rho_w )**2 / U%u( hyid%rho )**2 ) ) &
-      + ig%cs( U )
+    v = sqrt( sum( u( cid%rho_u:cid%rho_u+NDIM-1 )**2 )  / u( cid%rho )**2 ) &
+      + calc_cs( u )
   end function calc_v_cs
-
 end function rhyme_cfl_dt_test

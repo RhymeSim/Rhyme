@@ -27,14 +27,19 @@ contains
   end subroutine rhyme_cfl_factory_init
 
 
-  function rhyme_cfl_factory_generate ( this ) result ( cfl )
+  function rhyme_cfl_factory_generate ( this, c ) result ( cfl )
     implicit none
 
     class ( rhyme_cfl_factory_t ), intent ( inout ) :: this
+    real ( kind=8 ), intent ( in ), optional :: c
     type ( cfl_t ) :: cfl
 
     if ( .not. this%initialized ) call this%init
 
-    cfl%courant_number = this%courant_number
+    if ( present( c ) ) then
+      cfl%courant_number = c
+    else
+      cfl%courant_number = this%courant_number
+    end if
   end function rhyme_cfl_factory_generate
 end module rhyme_cfl_factory
