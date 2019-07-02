@@ -3,7 +3,7 @@ module rhyme_assertion
 
   implicit none
 
-  type assertion_indices_t
+  type, private :: assertion_indices_t
     integer :: nan = 0, int = 1, real = 2, double = 3, char = 4, log = 5, unknown = 6
     integer :: int_arr = 11, real_arr = 12, double_arr = 13, char_arr = 14, log_arr = 15
     integer :: unset = -1
@@ -11,13 +11,15 @@ module rhyme_assertion
 
   type ( assertion_indices_t ), parameter :: assertid = assertion_indices_t()
 
-  type assertion_constants_t
+
+  type, private :: assertion_constants_t
     character ( len=16 ) :: int_fmt = strcnst%int_fmt
     character ( len=16 ) :: real_fmt = strcnst%real_fmt
     character ( len=16 ) :: double_fmt = strcnst%double_fmt
   end type assertion_constants_t
 
   type ( assertion_constants_t ), parameter :: assertcnst = assertion_constants_t()
+
 
   type test_t
     integer :: type = assertid%unset
@@ -36,6 +38,7 @@ module rhyme_assertion
     procedure :: set_real_val => rhyme_assertion_test_set_real_val
   end type test_t
 
+
   type assertion_t
     character ( len=128 ) :: desc = ''
     type ( test_t ), pointer :: tests => null()
@@ -46,6 +49,7 @@ module rhyme_assertion
     procedure :: failed => rhyme_assertion_failed
     procedure :: reset => rhyme_assertion_reset
   end type assertion_t
+
 
   interface
     module subroutine rhyme_assertion_reset ( this )

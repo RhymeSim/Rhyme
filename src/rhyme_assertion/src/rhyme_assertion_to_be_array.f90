@@ -21,7 +21,7 @@ contains
 
       select type ( e => expect )
       type is ( integer )
-        idx = maxloc( v - e, dim=1 )
+        idx = maxloc( abs(v - e), dim=1 )
         test%real_val = real( v(idx), kind=8 )
         test%real_exp = real( e(idx), kind=8 )
         test%real_accuracy = abs( test%real_val - test%real_exp )
@@ -35,7 +35,7 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=4 ) )
-        idx = maxloc( v - e, dim=1 )
+        idx = maxloc( abs(v - e), dim=1 )
         test%real_val = real( v(idx), kind=8 )
         test%real_exp = real( e(idx), kind=8 )
         test%real_accuracy = abs( test%real_val - test%real_exp )
@@ -49,14 +49,14 @@ contains
 
       select type ( e => expect )
       type is ( real( kind=8 ) )
-        idx = maxloc( v - e, dim=1 )
+        idx = maxloc( abs(v - e), dim=1 )
         test%real_val = v(idx)
         test%real_exp = e(idx)
         test%real_accuracy = abs( test%real_val - test%real_exp )
         passed = all( abs( v - e ) < epsilon(0.d0) )
       type is ( real( kind=4 ) )
         ! TODO: set a warning
-        idx = maxloc( v - e, dim=1 )
+        idx = maxloc( abs(v - e), dim=1 )
         test%real_val = real( v(idx), kind=8 )
         test%real_exp = real( e(idx), kind=8 )
         test%real_accuracy = abs( test%real_val - test%real_exp )

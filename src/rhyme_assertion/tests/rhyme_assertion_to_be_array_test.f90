@@ -11,7 +11,7 @@ logical function rhyme_assertion_to_be_array_test () result ( failed )
 
   integer :: int_arr(5)
   real ( kind=4 ) :: real_arr(5)
-  real ( kind=8 ) :: double_arr(5)
+  real ( kind=8 ) :: double_arr(5), double_arr_changed(5)
   character ( len=32 ) :: char_arr(5)
   logical :: log_arr(5)
 
@@ -39,6 +39,13 @@ logical function rhyme_assertion_to_be_array_test () result ( failed )
   failed = &
   .not. test_d%is_passed &
   .or. test_d%type .ne. assertid%double_arr
+  if ( failed ) return
+
+  double_arr_changed = double_arr_value
+  double_arr_changed( 5 ) = double_arr_changed( 5 ) - 1e-7
+
+  test_d = double_arr_changed .toBe. double_arr_value
+  failed = test_d%is_passed
   if ( failed ) return
 
   char_arr = char_arr_value
