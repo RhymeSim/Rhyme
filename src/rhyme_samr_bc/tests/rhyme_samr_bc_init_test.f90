@@ -17,18 +17,34 @@ logical function rhyme_samr_bc_init_test () result (failed)
   bc%types = bc_factory%types()
   samr = samr_factory%generate()
 
-  call bc%init( samr, logger )
+  call rhyme_samr_bc_init( bc, samr, logger )
 
   box = samr%levels(0)%boxes(1)
 
-  call bc_tester%expect( bc%initialized .toBe. .true. )
-  call bc_tester%expect( box%flags(-samr%ghost_cells(1) + 1, 1, 1) .toBe. samrid%ghost )
-  call bc_tester%expect( box%flags(1, 1, 1) .notToBe. samrid%ghost )
-  call bc_tester%expect( box%flags(box%dims(1) + samr%ghost_cells(1), 1, 1) .toBe. samrid%ghost )
-  call bc_tester%expect( box%flags(box%dims(1), 1, 1) .notToBe. samrid%ghost )
-  call bc_tester%expect( box%flags(1, -samr%ghost_cells(2) + 1, 1) .toBe. samrid%ghost )
-  call bc_tester%expect( box%flags(1, box%dims(2) + samr%ghost_cells(2), 1) .toBe. samrid%ghost )
-  call bc_tester%expect( box%flags(1, box%dims(2), 1) .notToBe. samrid%ghost )
+#if NDIM == 1
+#define JKDX
+#define KDX
+#endif
+
+#if NDIM == 2
+#define JKDX , 1
+#define KDX
+#endif
+
+#if NDIM == 3
+#define JKDX , 1, 1
+#define KDX , 1
+#endif
+
+  call bc_tester%expect( box%flags(-samr%ghost_cells(1) + 1 JKDX ) .toBe. samrid%ghost )
+  call bc_tester%expect( box%flags(1 JKDX ) .notToBe. samrid%ghost )
+  call bc_tester%expect( box%flags(box%dims(1) + samr%ghost_cells(1) JKDX ) .toBe. samrid%ghost )
+  call bc_tester%expect( box%flags(box%dims(1) JKDX ) .notToBe. samrid%ghost )
+#if NDIM > 1
+  call bc_tester%expect( box%flags(1, -samr%ghost_cells(2) + 1 KDX ) .toBe. samrid%ghost )
+  call bc_tester%expect( box%flags(1, box%dims(2) + samr%ghost_cells(2) KDX ) .toBe. samrid%ghost )
+  call bc_tester%expect( box%flags(1, box%dims(2) KDX ) .notToBe. samrid%ghost )
+#endif
 
   failed = bc_tester%failed()
 end function rhyme_samr_bc_init_test

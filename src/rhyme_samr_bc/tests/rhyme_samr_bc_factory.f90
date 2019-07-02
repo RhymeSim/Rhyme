@@ -40,13 +40,17 @@ contains
     implicit none
 
     class ( rhyme_samr_bc_factory_t ), intent ( inout ) :: this
-    integer :: types(6)
+    integer :: types( 2*NDIM )
 
     if ( .not. this%initialized ) call this%init
 
-    types = [ &
-      bcid%reflective, bcid%outflow, bcid%periodic, &
-      bcid%reflective, bcid%outflow, bcid%periodic &
+    types = [ bcid%reflective, bcid%outflow &
+#if NDIM > 1
+      , bcid%periodic, bcid%reflective &
+#endif
+#if NDIM > 2
+      , bcid%outflow, bcid%periodic &
+#endif
     ]
   end function rhyme_samr_bc_factory_types
 end module rhyme_samr_bc_factory
