@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_slope_limiter )
@@ -10,7 +10,7 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
-  rhyme_hydro_base
+  rhyme_physics
   rhyme_log
 )
 

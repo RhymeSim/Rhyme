@@ -3,7 +3,6 @@ set( test_subject rhyme_slope_limiter )
 
 set( factories
   rhyme_hydro_base
-  rhyme_ideal_gas
 )
 
 set( test_deps
@@ -12,3 +11,6 @@ set( test_deps
 
 set( rhyme_src_dir ../.. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../CMakeGlobal/tests/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )

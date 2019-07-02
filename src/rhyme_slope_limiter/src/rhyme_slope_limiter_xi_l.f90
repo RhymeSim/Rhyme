@@ -1,6 +1,5 @@
 submodule ( rhyme_slope_limiter ) rhyme_sl_xi_l_smod
 contains
-
   pure module function rhyme_slope_limiter_xi_l ( sl, r ) result ( xi_l )
     implicit none
 

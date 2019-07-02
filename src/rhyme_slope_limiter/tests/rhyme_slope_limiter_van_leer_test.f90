@@ -1,7 +1,6 @@
 logical function rhyme_slope_limiter_van_leer_test () result (failed)
   use rhyme_slope_limiter_factory
   use rhyme_hydro_base_factory
-  use rhyme_ideal_gas_factory
   use rhyme_assertion
 
   implicit none
@@ -9,32 +8,32 @@ logical function rhyme_slope_limiter_van_leer_test () result (failed)
   type ( assertion_t ) :: sl_tester
 
   type ( slope_limiter_t ) :: sl
-  type ( hydro_conserved_t ) :: delta, cons, UL, UR, UM
+  real ( kind=8 ), dimension( cid%rho:cid%e_tot ) :: delta, cons, ul, ur, um
 
   sl_tester = .describe. "slope_limiter_van_leer"
 
-  cons = hy_factory%conserved()
+  cons = hy_factory%generate_conserved()
 
-  UL%u = cons%u
-  UR%u = cons%u
+  ul = cons
+  ur = cons
 
-  UM%u = cons%u * 1.23d0
+  um = cons * 1.23d0
   call rhyme_slope_limiter_van_leer( sl, ul, um, ur, delta )
-  call sl_tester%expect( delta%u .toBe. 0.d0 )
+  call sl_tester%expect( delta .toBe. 0.d0 )
 
-  UM%u = cons%u * (-2.34)
+  um = cons * (-2.34)
   call rhyme_slope_limiter_van_leer( sl, ul, um, ur, delta )
-  call sl_tester%expect( delta%u .toBe. 0.d0 )
+  call sl_tester%expect( delta .toBe. 0.d0 )
 
-  UM%u = cons%u * 1.23d0
-  UR%u = cons%u * 2.34d0
+  um = cons * 1.23d0
+  ur = cons * 2.34d0
   call rhyme_slope_limiter_van_leer( sl, ul, um, ur, delta )
-  call sl_tester%expect( delta%u .notToBe. 0.d0 )
+  call sl_tester%expect( delta .notToBe. 0.d0 )
 
-  UM%u = cons%u * (-1.23d0)
-  UR%u = cons%u * (-2.34d0)
+  um = cons * (-1.23d0)
+  ur = cons * (-2.34d0)
   call rhyme_slope_limiter_van_leer( sl, ul, um, ur, delta )
-  call sl_tester%expect( delta%u .notToBe. 0.d0 )
+  call sl_tester%expect( delta .notToBe. 0.d0 )
 
   failed = sl_tester%failed()
 end function rhyme_slope_limiter_van_leer_test
