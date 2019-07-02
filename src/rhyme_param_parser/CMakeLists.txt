@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_param_parser )
@@ -11,11 +11,11 @@ endif()
 
 set( deps
   rhyme_log
-  rhyme_units
+  rhyme_physics
   rhyme_string
   rhyme_samr_bc
   rhyme_cfl
-  rhyme_ideal_gas
+  rhyme_thermo_base
   rhyme_drawing
   rhyme_irs
   rhyme_slope_limiter
@@ -41,3 +41,6 @@ set( srcs
 
 set( rhyme_src_dir .. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )

@@ -1,10 +1,10 @@
 module rhyme_param_parser
   use rhyme_log
-  use rhyme_units
+  use rhyme_physics
   use rhyme_initial_condition
   use rhyme_samr_bc
   use rhyme_cfl
-  use rhyme_ideal_gas
+  use rhyme_thermo_base
   use rhyme_drawing
   use rhyme_irs
   use rhyme_slope_limiter
@@ -42,15 +42,15 @@ module rhyme_param_parser
 
 
   interface
-    module subroutine load_params ( param_file, logger, units, ic, bc, cfl, ig, &
-      draw, irs, sl, mh, chombo )
+    module subroutine load_params ( param_file, logger, physics, ic, bc, cfl, &
+      thermo, draw, irs, sl, mh, chombo )
       character (len=1024), intent ( in ) :: param_file
       type ( log_t ), intent ( inout ) :: logger
-      type ( rhyme_units_t ), intent ( inout ) :: units
+      type ( physics_t ), intent ( inout ) :: physics
       type ( initial_condition_t ), intent ( inout ) :: ic
       type ( samr_bc_t ), intent ( inout ) :: bc
       type ( cfl_t ), intent ( inout ) :: cfl
-      type ( ideal_gas_t ), intent ( inout ) :: ig
+      type ( thermo_base_t ), intent ( inout ) :: thermo
       type ( drawing_t ), intent ( inout ) :: draw
       type ( irs_t ), intent ( inout ) :: irs
       type ( slope_limiter_t ), intent ( inout ) :: sl

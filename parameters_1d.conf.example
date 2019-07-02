@@ -1,0 +1,140 @@
+# **Initial Condition**
+# - ic_type:
+# - implemented types: simple, snapshot
+# -                    simple: A simple uniform grid, initialized to zero
+# -                    snapshot: Loading a snapshot
+
+ic_type = simple
+
+# NB: For each kind of IC, you should chose specific IC options as it's
+#     explained below
+# Relevant options for simple IC:
+# - ic_grid: base_grid for the first level
+#            using 1 to reduce dimensionality, e.g. 128 1 1 for 1D simulation
+# - ic_nlevels: number of maximum levels ( refinement cannot exceed this limit )
+#   each level will be refined by a factor of two
+#   the minimum number of levels is 1
+# - example:
+#   ic_grid = 128
+#   ic_nlevels = 3
+#
+# Relevant options for snapshot IC:
+# - ic_snapshot_type:
+#   implemented types: rhyme
+# - ic_snapshot_path: path to the snapshot
+#
+# - example:
+#   ic_snapshot_type = rhyme
+#   ic_snapshot_path = /path/to/rhyme/chombo/snapshot
+
+ic_grid = 128
+ic_box_lengths = 1 "kpc"
+ic_nlevels = 3
+
+
+# **Runtime options**
+# Options:
+# - max_nboxes: Maximum number of boxes for each level
+# NB: In current implementation, the number of boxes cannot exceed these limits
+#     for each level
+
+max_nboxes = 1 10 100
+
+
+# **Units**
+# NB: These units will be used as internal/code units meaning different
+#     components of the code will be converted accordingly, e.g. kB
+#     Be careful, since the wrong choice of these units might lead to non-physical
+#     results
+density_unit = "kg / m^3"
+length_unit = "m"
+time_unit = "s"
+
+
+# **Boundary Conditions**
+# Implemented types:
+# - reflective, periodic, outflow
+#
+# You can set the boundary conditions of different sides separately by using
+# all or a subset of following options:
+# - left_bc, right_bc
+
+left_bc = reflective
+right_bc = outflow
+
+
+# **Ideal Gas**
+# Implemented types:
+# - monatomic, diatomic, polyatomic
+
+ideal_gas_type = diatomic
+
+
+# **CFL**
+
+courant_number = .81d0
+
+
+# **Iterative Riemann Solver**
+
+pressure_floor = 1.d-10
+tolerance = 1.d-6
+n_iteration = 100
+
+
+# **Slope Limiter**
+# Implemented slope limiters:
+# - van_leer, minmod, van_albada, superbee
+
+slope_limiter = van_leer
+slope_limiter_omega = 0.d0
+
+
+# **MUSCL-Hancock solver**
+# Implemented solvers:
+# - memory_intensive, cpu_intensive
+
+solver_type = cpu_intensive
+
+
+# **Drawing**
+# NB: All units are in pixels
+# NB: Positional units in perturbations are cell-centered
+#     for [ nx ], { 0.5, 1.5, ..., nx-0.5 } are cell centers in x-dir
+#
+# Implemented canvases:
+# - uniform, transparent
+# Implemented shapes:
+# - cuboid, sphere, prism, slab_2d
+# Implemented fillings:
+# - uniform
+# Implemented perturbations:
+# - harmonic, symmetric_decaying
+
+canvas = uniform .125d0 0.d0 .1d0
+
+shape = cuboid 1 56
+shape_filling = uniform 1.d0 0.d0 1.d0
+
+shape = sphere 3.d0 2.34d0
+shape_filling = uniform 1.d0 0.d0 1.d0
+
+perturb = harmonic cartesian x 0.05 32 0.d0 0.d0 1.d0
+
+
+# **Chombo Output**
+# You can use **prefix** option to drop output snapshot into a directory
+# **nickname** option use at the beginning of output filename following iteration number
+
+prefix = './prefix'
+nickname = 'hydro-simulation'
+
+
+# **Sources**
+# [PLACEHOLDER] Not yet implemented
+
+source_coordinate = 0.12d0 0.34d0 0.56d0
+opening_angle = 4 pi
+spectral_region = power_law 1.d0 2.d0 6.78d9 10 -1.7
+spectral_region = linear 2.d0 3.d0 5.67d8 15
+spectral_region = line 3.d0 3.01d0 4.56d7d8
