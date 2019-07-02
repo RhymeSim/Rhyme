@@ -7,27 +7,25 @@ contains
     type ( samr_t ), intent ( inout ) :: samr
     type ( log_t ), intent ( inout ) :: logger
 
-    integer, parameter :: ncomp = 5
-
     type ( chombo_t ) :: ch
     integer :: l, b, ofs
     integer :: nboxes, lboxes
-    integer :: bdims(3), ub(3), blen
+    integer :: bdims( NDIM ), ub( NDIM ), blen
     character ( len=16 ) :: level_name
     integer, allocatable :: boxes(:,:)
     real ( kind=8 ), allocatable :: data(:)
 
-    call ch%open( ic%snapshot_path )
+    call rhyme_hdf5_util_open( ch%file, ic%snapshot_path )
 
     do l = 0, samr%nlevels - 1
-      write ( level_name, '(A7,I0)') "/level_", l
+      write( level_name, '(A7,I0)') "/level_", l
 
       allocate( samr%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
 
-      nboxes = ch%get_table_size( trim(level_name)//'/boxes' )
+      nboxes = rhyme_hdf5_util_get_table_size( ch%file, trim(level_name)//'/boxes' )
       allocate( boxes( 6, nboxes ) )
 
-      call ch%read_table( trim(level_name), 'boxes', icid%boxes_headers, boxes )
+      call rhyme_hdf5_util_read_table( ch%file, trim(level_name), 'boxes', chid%boxes_headers, boxes )
 
       if ( nboxes > samr%levels(l)%max_nboxes ) then
         call logger%err( 'Number of boxes is less than maximum available', &
@@ -35,45 +33,60 @@ contains
         return
       end if
 
-      lboxes = sum( [ (product(boxes(4:6, b) + 1), b=1, nboxes ) ] )
+      lboxes = sum( [ (product(boxes(4:4+NDIM-1, b) + 1), b=1, nboxes ) ] )
 
       ! Reading data dataset
-      allocate( data( ncomp * lboxes ) )
-      call ch%read_1d_dataset( trim(level_name)//'/data:datatype=0', data )
+      allocate( data( NCMP * lboxes ) )
+      call rhyme_hdf5_util_read_1d_dataset( ch%file, trim(level_name)//'/data:datatype=0', data )
 
       ofs = 0
       do b = 1, nboxes
         samr%levels(l)%boxes(b)%level = l
         samr%levels(l)%boxes(b)%number = b
 
-        bdims = boxes(4:6, b) - boxes(1:3, b) + 1
+        bdims = boxes(4:4+NDIM-1, b) - boxes(1:NDIM , b) + 1
         blen = product( bdims )
         ub = bdims
 
-        call samr%init_box( l, b, bdims, boxes(1:3, b) + 1, boxes(4:6, b) + 1 )
+        call samr%init_box( l, b, bdims, boxes(1:NDIM , b) + 1, boxes(4:4+NDIM-1, b) + 1 )
 
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho) = &
+#if NDIM == 1
+#define RANGE_J
+#define RANGE_K
+#elif NDIM == 2
+#define RANGE_J ,1:ub(2)
+#define RANGE_K
+#elif NDIM == 3
+#define RANGE_J ,1:ub(2)
+#define RANGE_K ,1:ub(3)
+#endif
+
+        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho ) = &
         reshape( data( ofs+0*blen+1:ofs+1*blen ), bdims )
 
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_u) = &
+        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_u ) = &
         reshape( data( ofs+1*blen+1:ofs+2*blen ), bdims )
 
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_v) = &
+#if NDIM > 1
+        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_v ) = &
         reshape( data( ofs+2*blen+1:ofs+3*blen ), bdims )
+#endif
 
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%rho_w) = &
+#if NDIM > 2
+        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_w ) = &
         reshape( data( ofs+3*blen+1:ofs+4*blen ), bdims )
+#endif
 
-        samr%levels(l)%boxes(b)%hydro(1:ub(1),1:ub(2),1:ub(3))%u(hyid%e_tot) = &
-        reshape( data( ofs+4*blen+1:ofs+5*blen ), bdims )
+        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%e_tot ) = &
+        reshape( data( ofs+(NDIM+1)*blen+1:ofs+(NDIM+2)*blen ), bdims )
 
-        ofs = ofs + ncomp * blen
+        ofs = ofs + NCMP * blen
       end do
 
       deallocate( data )
       deallocate( boxes )
     end do
 
-    call ch%close
+    call rhyme_hdf5_util_close( ch%file )
   end subroutine rhyme_initial_condition_load_rhyme
 end submodule rhyme_ic_load_rhyme_smod

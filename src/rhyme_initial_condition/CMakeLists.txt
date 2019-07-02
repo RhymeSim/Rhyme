@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7 )
+cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
 project( rhyme_initial_condition )
@@ -10,7 +10,7 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
-  rhyme_units
+  rhyme_physics
   rhyme_samr
   rhyme_chombo
   rhyme_log
@@ -29,3 +29,6 @@ set( srcs
 
 set( rhyme_src_dir .. )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/../../CMakeGlobal/CMakeLists.txt )
+
+# Configs
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/configs/CMakeLists.txt )
