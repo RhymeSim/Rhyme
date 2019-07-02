@@ -4,16 +4,72 @@ module rhyme_physics
 
   implicit none
 
-  type components_indices_t
+#if NDIM == 1
+#define LABEL_V_J
+#define LABEL_V_K
+#define LABEL_V_J_UNIT
+#define LABEL_V_K_UNIT
+#define CMP_J
+#define CMP_K
+#elif NDIM == 2
+#define LABEL_V_J , 'rho_v'
+#define LABEL_V_K
+#define LABEL_V_J_UNIT , rho_v_unit
+#define LABEL_V_K_UNIT
+#define CMP_J , rho_v = 3, v = 3
+#define CMP_K
+#elif NDIM == 3
+#define LABEL_V_J , 'rho_v'
+#define LABEL_V_K , 'rho_w'
+#define LABEL_V_J_UNIT , rho_v_unit
+#define LABEL_V_K_UNIT , rho_v_unit
+#define CMP_J , rho_v = 3, v = 3
+#define CMP_K , rho_w = 4, w = 4
+#endif
+
+  real ( kind=8 ), parameter, private :: kb_value = 1.38064852e-23
+  character ( len=32 ), parameter, private :: kb_unit_str = 'm^2 * kg * s^-2 * K^-1'
+  real ( kind=8 ), parameter, private :: r_value = 8.314462618
+  character ( len=32 ), parameter, private :: r_unit_str = 'kg * ( m / s )^2 / ( mol * K )'
+  real ( kind=8 ), parameter, private :: amu_value = 1.6605e-27
+  character ( len=32 ), parameter, private :: amu_unit_str = 'kg'
+
+  character ( len=32 ), parameter, private :: rho_unit = 'kg / m^3'
+  character ( len=32 ), parameter, private :: rho_v_unit = 'kg / m^3 * m / s'
+  character ( len=32 ), parameter, private :: e_tot_unit = 'kg / m^3 * m^2 / s^2'
+  character ( len=32 ), parameter, private :: temp_unit = 'K'
+
+
+#if RT_SOLVER
+#define LABEL_T , 'temp '
+#define LABEL_T_UNIT , temp_unit
+#else
+#define LABEL_T
+#define LABEL_T_UNIT
+#endif
+
+
+  type, private :: components_indices_t
+    character ( len=16 ) :: labels( NCMP - NSPE ) = [ &
+#if HYDRO_SOLVER
+      'rho  ', 'rho_u' LABEL_V_J LABEL_V_K, 'e_tot' LABEL_T &
+#elif RT_SOLVER
+      'temp ' &
+#endif
+    ]
+
+    character ( len=32 ) :: base_units( NCMP - NSPE ) = [ &
+#if HYDRO_SOLVER
+      rho_unit, rho_v_unit LABEL_V_J_UNIT LABEL_V_K_UNIT, &
+      e_tot_unit LABEL_T_UNIT &
+#elif RT_SOLVER
+      temp_unit &
+#endif
+    ]
+
 #if HYDRO_SOLVER
     integer :: rho = 1
-    integer :: rho_u = 2, u = 2
-#if NDIM > 1
-    integer :: rho_v = 3, v = 3
-#endif
-#if NDIM > 2
-    integer :: rho_w = 4, w = 4
-#endif
+    integer :: rho_u = 2, u = 2 CMP_J CMP_K
     integer :: e_tot = 1 + NDIM + 1, p = 1 + NDIM + 1
 #if RT_SOLVER
     integer :: temp = 1 + NDIM + 1 + 1
@@ -47,12 +103,18 @@ module rhyme_physics
     integer :: rt = phid%none
 #endif
     character ( len=1024 ) :: rho_str, length_str, time_str
-    type( nombre_unit_t ), pointer :: rho => null()
-    type( nombre_unit_t ), pointer :: length => null()
-    type( nombre_unit_t ), pointer :: time => null()
-    type( nombre_unit_t ), pointer :: velocity => null()
-    type( nombre_unit_t ), pointer :: pressure => null()
-    type( nombre_unit_t ), pointer :: temperature => null()
+    type ( nombre_unit_t ), pointer :: rho => null()
+    type ( nombre_unit_t ), pointer :: length => null()
+    type ( nombre_unit_t ), pointer :: time => null()
+    type ( nombre_unit_t ), pointer :: velocity => null()
+    type ( nombre_unit_t ), pointer :: pressure => null()
+    type ( nombre_unit_t ), pointer :: temperature => null()
+
+    ! TODO: component units
+
+    type ( nombre_t ) :: kb ! Boltzmann constant, k_B
+    type ( nombre_t ) :: r ! Gas constant, R
+    type ( nombre_t ) :: amu ! 1 atomic mass unit (amu)
   end type physics_t
 
 

@@ -19,6 +19,9 @@ module rhyme_physics_factory
     type ( nombre_unit_t ), pointer :: velocity => null()
     type ( nombre_unit_t ), pointer :: pressure => null()
     type ( nombre_unit_t ), pointer :: temperature => null()
+    type ( nombre_unit_t ), pointer :: kb_unit => null()
+    type ( nombre_unit_t ), pointer :: r_unit => null()
+    type ( nombre_unit_t ), pointer :: amu_unit => null()
   contains
     procedure :: init => rhyme_physics_factory_init
     procedure :: generate => rhyme_physics_factory_generate
@@ -40,6 +43,10 @@ contains
     this%pressure => this%rho * this%length**2 / this%time**2
     this%temperature => rhyme_nombre_unit_clone( kel )
 
+    this%kb_unit => this%rho * this%length**5 / ( this%time**2 * kel )
+    this%r_unit => this%rho * this%length**5 / ( this%time**2 * mol * this%temperature )
+    this%amu_unit => this%rho * this%length**3
+
     this%initialized = .true.
   end subroutine rhyme_physics_factory_init
 
@@ -56,5 +63,17 @@ contains
     physics%length_str = this%length_str
     physics%time_str = this%time_str
 
+    physics%rho => this%rho
+    physics%length => this%length
+    physics%time => this%time
+    physics%velocity => this%velocity
+    physics%pressure => this%pressure
+    physics%temperature => this%temperature
+
+    physics%kb = 1.38064852e-23 .unit. meter**2 * kg / ( sec**2 * kel ) &
+     .to. this%kb_unit
+    physics%r = 8.314462618 .unit. kg * ( meter / sec )**2 / ( mol * kel ) &
+      .to. this%r_unit
+    physics%amu = 1.6605e-27 .u. kg .to. this%amu_unit
   end function rhyme_physics_factory_generate
 end module rhyme_physics_factory
