@@ -1,13 +1,13 @@
 submodule ( rhyme_drawing ) rhyme_drawing_smoothed_slab_2d_submodule
 contains
-  module subroutine rhyme_drawing_smoothed_slab_2d ( samr, shape, log )
+  module subroutine rhyme_drawing_smoothed_slab_2d ( samr, shape, logger )
     ! TODO: Add test
 
     implicit none
 
     type ( samr_t ), intent ( inout ) :: samr
     type ( shape_t ), intent ( in ) :: shape
-    type ( log_t ), intent ( inout ) :: log
+    type ( log_t ), intent ( inout ) :: logger
 
 #if NDIM > 1
 
@@ -48,7 +48,7 @@ contains
                 x = real( k - .5d0 + samr%levels(l)%boxes(b)%left_edge(3) - 1 ) / 2**l
 #endif
               case DEFAULT
-                call log%err( 'Unknown slab direction', 'axis', '=', [ shape%slab_2d%axis ] )
+                call logger%err( 'Unknown slab direction', 'axis', '=', [ shape%slab_2d%axis ] )
                 return
               end select
 

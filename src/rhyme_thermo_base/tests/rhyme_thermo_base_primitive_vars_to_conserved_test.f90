@@ -1,5 +1,6 @@
 logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( failed )
   use rhyme_thermo_base_factory
+  use rhyme_physics_factory
   use rhyme_hydro_base_factory
   use rhyme_log_factory
   use rhyme_assertion
@@ -8,6 +9,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( 
 
   type ( assertion_t ) :: th_tester
 
+  type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
   type ( log_t ) :: logger
   real ( kind=8 ), dimension( cid%rho:cid%e_tot ) :: u, u_interface, u_exp
@@ -16,14 +18,15 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( 
 
   th_tester = .describe. "primitive_vars_to_conserved"
 
+  physics = ph_factory%generate()
   logger = log_factory%generate()
   rho = hy_factory%rho
   v = hy_factory%v
   p = hy_factory%p
 
   do gas_type = thid%monatomic, thid%polyatomic
-    thermo = th_factory%generate( gas_type )
-    call rhyme_thermo_base_init( thermo, logger )
+    thermo = th_factory%generate( physics, gas_type )
+    call rhyme_thermo_base_init( thermo, physics, logger )
 
     call rhyme_thermo_base_primitive_vars_to_conserved( rho, v, p, u )
     call rhyme_ideal_gas_primitive_vars_to_conserved( ig_gamma( gas_type ), rho, v, p, u_exp )

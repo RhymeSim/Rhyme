@@ -3,7 +3,7 @@ module rhyme_nombre_units
 
   implicit none
 
-  type ( nombre_unit_t ), dimension ( 13 ), parameter :: nombre_units_chain = [ &
+  type ( nombre_unit_t ), dimension ( 14 ), parameter :: nombre_units_chain = [ &
     nombre_unit_t( one, "m", 1.d0, LengthDim ), &
     nombre_unit_t( kilo, "g", 1.d0, MassDim ), &
     nombre_unit_t( one, "s", 1.d0, TimeDim ), &
@@ -16,7 +16,8 @@ module rhyme_nombre_units
     nombre_unit_t( one, "Msun", 1.9885d33, MassDim ), &
     nombre_unit_t( one, "yr", 3.154d7, TimeDim ), &
     nombre_unit_t( one, "g", 1.d0, MassDim ), &
-    nombre_unit_t( one, "m_H", 1.6735575d-27, MassDim ) &
+    nombre_unit_t( one, "m_H", 1.6735575d-27, MassDim ), &
+    nombre_unit_t( one, "amu", 1.6605d-27, MassDim ) &
   ]
 
 
@@ -33,6 +34,7 @@ module rhyme_nombre_units
   type( nombre_unit_t ), target :: yr = nombre_units_chain(11)
   type( nombre_unit_t ), target :: gram = nombre_units_chain(12)
   type( nombre_unit_t ), target :: m_H = nombre_units_chain(13)
+  type( nombre_unit_t ), target :: amu = nombre_units_chain(14)
 
 
   interface

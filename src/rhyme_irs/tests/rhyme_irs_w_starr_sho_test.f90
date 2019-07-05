@@ -1,5 +1,6 @@
 logical function rhyme_irs_w_starr_sho_test () result ( failed )
   use rhyme_irs_factory
+  use rhyme_physics_factory
   use rhyme_hydro_base_factory
   use rhyme_thermo_base_factory
   use rhyme_log_factory
@@ -10,6 +11,7 @@ logical function rhyme_irs_w_starr_sho_test () result ( failed )
   type ( assertion_t ) :: irs_tester
 
   type ( irs_t ) :: irs
+  type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
   type ( log_t ) :: logger
   type ( riemann_problem_solution_t ) :: sol
@@ -20,10 +22,12 @@ logical function rhyme_irs_w_starr_sho_test () result ( failed )
 
   irs_tester = .describe. "irs_w_starr_sho"
 
+  physics = ph_factory%generate()
   irs = irs_factory%generate()
-  thermo = th_factory%generate( thid%diatomic )
 
-  call rhyme_thermo_base_init( thermo, logger )
+  thermo = th_factory%generate( physics, thid%diatomic )
+  call rhyme_thermo_base_init( thermo, physics, logger )
+
   call rhyme_irs_init( irs, logger )
 
   sol%star%right%shock%rho = hy_factory%rho

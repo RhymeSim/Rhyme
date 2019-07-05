@@ -35,18 +35,18 @@ contains
 
     physics%kb = kb_value .unit. kb_unit &
       .to. physics%rho * physics%length**5 / ( physics%time**2 * kel )
-    call logger%log( 'kB', physics%kb%v, '[ '//trim( physics%kb%u%p() )//' ]' )
+    call logger%log( 'kB = ', physics%kb%v, '[ '//trim( physics%kb%u%p() )//' ]' )
 
     r_unit => rhyme_nombre_units_parse( r_unit_str )
 
     physics%r = r_value .unit. r_unit &
       .to. physics%rho * physics%length**5 / ( physics%time**2 * mol * physics%temperature )
-    call logger%log( 'R', physics%r%v, '[ '//trim( physics%r%u%p() )//' ]' )
+    call logger%log( 'R = ', physics%r%v, '[ '//trim( physics%r%u%p() )//' ]' )
 
     amu_unit => rhyme_nombre_units_parse( amu_unit_str )
 
     physics%amu = amu_value .u. amu_unit .to. physics%rho * physics%length**3
-    call logger%log( '1 amu', physics%amu%v, '[ '//trim( physics%amu%u%p() )//' ]' )
+    call logger%log( '1 amu = ', physics%amu%v, '[ '//trim( physics%amu%u%p() )//' ]' )
 
     call logger%end_section
   end subroutine rhyme_physics_init

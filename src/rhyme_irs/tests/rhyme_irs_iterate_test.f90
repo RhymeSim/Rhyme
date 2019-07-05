@@ -1,5 +1,6 @@
 logical function rhyme_irs_iterate_test () result (failed)
   use rhyme_irs_factory
+  use rhyme_physics_factory
   use rhyme_irs_tests_factory
   use rhyme_thermo_base_factory
   use rhyme_log_factory
@@ -10,16 +11,19 @@ logical function rhyme_irs_iterate_test () result (failed)
   type ( assertion_t ) :: tester
 
   type ( irs_t ) :: irs
+  type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
   type ( log_t ) :: logger
 
   tester = .describe. "irs_iterate"
 
   irs = irs_factory%generate()
-  thermo = th_factory%generate( thid%diatomic )
+  physics = ph_factory%generate()
   logger = log_factory%generate()
 
-  call rhyme_thermo_base_init( thermo, logger )
+  thermo = th_factory%generate( physics, thid%diatomic )
+  call rhyme_thermo_base_init( thermo, physics, logger )
+
   call rhyme_irs_init( irs, logger )
 
   call rhyme_irs_iterate_test_cases( rhyme_irs_Sod_test, "Sod", 5 )

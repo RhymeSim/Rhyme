@@ -5,7 +5,6 @@ enable_language( Fortran )
 
 # Check config file (CMakeGlobal/config/CMakeLists.txt) before compiling
 
-
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
   add_compile_options( -warn all -fpp -O3 )
   set( CMAKE_Fortran_FLAGS "-stand f08" )

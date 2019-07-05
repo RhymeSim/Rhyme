@@ -6,6 +6,7 @@ contains
     real ( kind=8 ), intent ( in ) :: u( cid%rho:cid%e_tot )
     real ( kind=8 ) :: t_mu
 
-    t_mu = rhyme_ideal_gas_temperature_per_mu( rhyme_thermo_base_get_gamma(), u )
+    t_mu = rhyme_ideal_gas_temperature_per_mu( rhyme_thermo_base_get_gamma(), &
+      rhyme_thermo_base_kb_amu, u )
   end function rhyme_thermo_base_temperature_per_mu
 end submodule temperature_per_mu_smod

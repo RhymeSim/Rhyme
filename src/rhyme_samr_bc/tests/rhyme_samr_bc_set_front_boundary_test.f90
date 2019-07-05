@@ -7,10 +7,12 @@ logical function rhyme_samr_bc_set_front_boundary_test () result ( failed )
 
   type ( assertion_t ) :: bc_tester
 
+#if NDIM > 2
   type ( samr_bc_t ) :: bc
   type ( samr_t ) :: samr
   type ( samr_box_t ) :: b
   integer :: d( NDIM ), uid, sgn
+#endif
 
   bc_tester = .describe. "samr_bc_set_front_boundary"
 

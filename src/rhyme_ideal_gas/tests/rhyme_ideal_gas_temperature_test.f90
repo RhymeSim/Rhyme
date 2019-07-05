@@ -7,16 +7,17 @@ logical function rhyme_ideal_gas_temperature_test () result ( failed )
 
   type ( assertion_t ) :: ig_tester
 
-  real ( kind=8 ) :: u( cid%rho:cid%e_tot )
+  real ( kind=8 ) :: t, t_exp, u( cid%rho:cid%e_tot )
 
   ig_tester = .describe. "temperature"
 
   u = hy_factory%generate_conserved()
 
-  call ig_tester%expect( .notToBeNaN. rhyme_ideal_gas_temperature( 7.d0/5.d0, 2.34d0, u ) )
-  call ig_tester%expect( &
-    rhyme_ideal_gas_temperature( 7.d0/5.d0, 2.34d0, u ) &
-    .toBe. rhyme_ideal_gas_temperature_per_mu( 7.d0/5.d0, u ) * 2.34d0 .within. 15 )
+  t = rhyme_ideal_gas_temperature( hy_factory%g, hy_factory%kb_amu, hy_factory%mu, u )
+  t_exp = rhyme_ideal_gas_temperature_per_mu( hy_factory%g, hy_factory%kb_amu, u ) * hy_factory%mu
+
+  call ig_tester%expect( .notToBeNaN. t )
+  call ig_tester%expect( t .toBe. t_exp .within. 15 )
 
   failed = ig_tester%failed()
 end function rhyme_ideal_gas_temperature_test

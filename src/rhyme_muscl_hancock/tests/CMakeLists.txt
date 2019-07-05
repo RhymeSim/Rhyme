@@ -4,6 +4,7 @@ set( test_subject rhyme_muscl_hancock )
 set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
 
 set ( factories
+  rhyme_physics
   rhyme_thermo_base
   rhyme_cfl
   rhyme_samr

@@ -14,7 +14,7 @@ logical function rhyme_ideal_gas_flux_test () result ( failed )
 
   u = hy_factory%generate_conserved()
 
-  call rhyme_ideal_gas_flux( 7.d0/5.d0, u, axis, f )
+  call rhyme_ideal_gas_flux( hy_factory%g, hy_factory%kb_amu, u, axis, f )
 
   call ig_tester%expect( .notToBeNaN. f )
   call ig_tester%expect( f( cid%rho ) .toBe. hy_factory%rho * hy_factory%v(1) .within. 15 .hint. 'rho' )

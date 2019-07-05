@@ -63,7 +63,7 @@ program rhyme
 
   call rhyme_physics_init( physics, logger )
   call rhyme_chemistry_init( chemistry, physics, logger )
-  call rhyme_thermo_base_init( thermo, logger )
+  call rhyme_thermo_base_init( thermo, physics, logger )
   call rhyme_initial_condition_init( ic, samr, physics, logger )
   call rhyme_samr_bc_init( bc, samr, logger )
   call rhyme_irs_init( irs, logger )

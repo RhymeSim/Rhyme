@@ -68,9 +68,11 @@ contains
       logical :: harmonic_enabled
 #if NDIM > 1
       logical :: sym_decaying_enabled
+      real ( kind=8 ), dimension( cid%rho: cid%p ) :: d_term
+      real ( kind=8 ) :: x_Rs
 #endif
-      real ( kind=8 ), dimension( cid%rho: cid%p ) :: h_term, d_term, w
-      real ( kind=8 ) :: kx, x_Rs
+      real ( kind=8 ), dimension( cid%rho: cid%p ) :: h_term, w
+      real ( kind=8 ) :: kx
 
       harmonic_enabled = .false.
       h_term = 0.d0

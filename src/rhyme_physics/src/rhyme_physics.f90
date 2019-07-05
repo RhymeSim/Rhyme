@@ -87,8 +87,8 @@ module rhyme_physics
 
     ! TODO: component units
 
-    type ( nombre_t ) :: kb ! Boltzmann constant, k_B
     type ( nombre_t ) :: r ! Gas constant, R
+    type ( nombre_t ) :: kb ! Boltzmann constant, k_B
     type ( nombre_t ) :: amu ! 1 atomic mass unit (amu)
   end type physics_t
 

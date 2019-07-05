@@ -6,6 +6,7 @@ contains
     real ( kind=8 ), intent ( in ) :: u( cid%rho:cid%e_tot )
     real ( kind=8 ) :: cs
 
-    cs = rhyme_ideal_gas_speed_of_sound( rhyme_thermo_base_get_gamma(), u )
+    cs = rhyme_ideal_gas_speed_of_sound( rhyme_thermo_base_get_gamma(), &
+      rhyme_thermo_base_kb_amu, u )
   end function rhyme_thermo_base_speed_of_sound
 end submodule speed_of_sound_smod

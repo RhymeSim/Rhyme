@@ -22,10 +22,11 @@ module rhyme_thermo_base
 
   ! :(
   integer, private :: rhyme_thermo_base_state_of_matter = thid%unset
+  real ( kind=8 ), private :: rhyme_thermo_base_kb_amu = 0.d0
 
 
   type thermo_base_t
-    integer :: state_of_matter
+    integer :: state_of_matter = thid%unset
   end type thermo_base_t
 
 
@@ -107,16 +108,20 @@ module rhyme_thermo_base
   end interface calc_sp_int_e
 
 contains
-  module subroutine rhyme_thermo_base_init ( thermo, logger )
+  module subroutine rhyme_thermo_base_init ( thermo, physics, logger )
     implicit none
 
     type ( thermo_base_t ), intent ( in ) :: thermo
+    type ( physics_t ), intent ( in ) :: physics
     type ( log_t ), intent ( inout ) :: logger
 
     call logger%begin_section( 'thermo_base' )
 
     rhyme_thermo_base_state_of_matter = thermo%state_of_matter
-    call logger%log( '', 'state_of_matter', '=', [ thermo%state_of_matter ] )
+    call logger%log( '', 'state_of_matter', '=', [ rhyme_thermo_base_state_of_matter ] )
+
+    rhyme_thermo_base_kb_amu = physics%kb%v / physics%amu%v
+    call logger%log( '', 'kB / 1 amu', '=', [ rhyme_thermo_base_kb_amu ] )
 
     call logger%end_section
   end subroutine rhyme_thermo_base_init

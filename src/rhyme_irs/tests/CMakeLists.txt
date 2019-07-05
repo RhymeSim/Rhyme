@@ -8,6 +8,7 @@ configure_file(
 )
 
 set( factories
+  rhyme_physics
   rhyme_hydro_base
   rhyme_thermo_base
   rhyme_log

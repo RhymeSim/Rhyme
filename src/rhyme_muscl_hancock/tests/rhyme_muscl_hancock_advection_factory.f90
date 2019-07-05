@@ -1,5 +1,6 @@
 module rhyme_muscl_hancock_advection_factory
   use rhyme_muscl_hancock_factory
+  use rhyme_physics_factory
   use rhyme_thermo_base_factory
   use rhyme_samr_bc_factory
   use rhyme_samr_factory
@@ -33,6 +34,7 @@ module rhyme_muscl_hancock_advection_factory
     real ( kind=8 ) :: states( cid%rho:cid%e_tot, NDIM ), bg( cid%rho:cid%p, NDIM )
     real ( kind=8 ) :: dx( NDIM ), dt( NDIM ), box_length( NDIM )
     real ( kind=8 ) :: v( cid%u:cid%u+NDIM-1, NDIM )
+    type ( physics_t ) :: physics
     type ( thermo_base_t ) :: thermo
     type ( samr_t ) :: samr( NDIM )
     type ( samr_bc_t ) :: bc( NDIM )
@@ -86,11 +88,12 @@ contains
 
     this%dt = this%dx / v
 
+    this%physics = ph_factory%generate()
 
-    this%thermo = th_factory%generate( gas_type )
+    this%thermo = th_factory%generate( this%physics, gas_type )
     logger = log_factory%generate()
 
-    call rhyme_thermo_base_init( this%thermo, logger )
+    call rhyme_thermo_base_init( this%thermo, this%physics, logger )
 
 
     do d = 1, NDIM

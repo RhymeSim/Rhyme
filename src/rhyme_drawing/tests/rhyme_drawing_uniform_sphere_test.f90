@@ -1,5 +1,6 @@
 logical function rhyme_drawing_uniform_sphere_test () result ( failed )
   use rhyme_drawing
+  use rhyme_physics_factory
   use rhyme_samr_factory
   use rhyme_hydro_base_factory
   use rhyme_thermo_base_factory
@@ -35,6 +36,7 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
 
   type ( drawing_t ) :: draw
   type ( shape_t ), pointer :: shape
+  type ( physics_t ) :: physics
   type ( samr_t ) :: samr
   type ( thermo_base_t ) :: thermo
   type ( log_t ) :: logger
@@ -47,12 +49,15 @@ logical function rhyme_drawing_uniform_sphere_test () result ( failed )
 
   dr_tester = .describe. "drawing uniform_sphere"
 
+  physics = ph_factory%generate()
   samr = samr_factory%generate()
-  thermo = th_factory%generate( thid%diatomic )
   logger = log_factory%generate()
+
   prim = hy_factory%generate_primitive()
 
-  call rhyme_thermo_base_init( thermo, logger )
+  thermo = th_factory%generate( physics, thid%diatomic )
+  call rhyme_thermo_base_init( thermo, physics, logger )
+
   call conv_prim_to_cons( prim, cons )
 
   draw%type = drid%transparent_canvas

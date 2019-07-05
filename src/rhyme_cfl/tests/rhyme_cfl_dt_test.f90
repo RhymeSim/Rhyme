@@ -1,6 +1,9 @@
 logical function rhyme_cfl_dt_test () result (failed)
   use rhyme_cfl_factory
+  use rhyme_physics_factory
+  use rhyme_thermo_base_factory
   use rhyme_samr_factory
+  use rhyme_log_factory
   use rhyme_assertion
 
   implicit none
@@ -8,7 +11,10 @@ logical function rhyme_cfl_dt_test () result (failed)
   type ( assertion_t ) :: cfl_tester
 
   type ( cfl_t ) :: cfl
+  type ( physics_t ) :: physics
+  type ( thermo_base_t ) :: thermo
   type ( samr_t ) :: samr
+  type ( log_t ) :: logger
 
 #if NDIM == 1
 #define LOOP_J
@@ -39,8 +45,13 @@ logical function rhyme_cfl_dt_test () result (failed)
 
   cfl_tester = .describe. "CFL"
 
-  samr = samr_factory%generate( physical=.true. )
   cfl = cfl_factory%generate()
+  physics = ph_factory%generate()
+  samr = samr_factory%generate( physical=.true. )
+  logger = log_factory%generate()
+
+  thermo = th_factory%generate( physics )
+  call rhyme_thermo_base_init( thermo, physics, logger )
 
   dt = rhyme_cfl_time_step( cfl%courant_number, samr )
 

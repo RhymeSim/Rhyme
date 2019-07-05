@@ -1,5 +1,6 @@
 logical function rhyme_muscl_hancock_solve_cpu_intensive_test () result ( failed )
   use rhyme_muscl_hancock_advection_factory
+  use rhyme_physics_factory
   use rhyme_irs_factory
   use rhyme_slope_limiter_factory
   use rhyme_chombo_factory
@@ -21,6 +22,7 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test () result ( failed
   type ( muscl_hancock_advection_test_t ) :: mh_adv_test
   type ( muscl_hancock_t ) :: mh( NDIM )
   type ( mh_workspace_t ) :: ws( NDIM )
+  type ( physics_t ) :: physics
   type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( chombo_t ) :: ch( NDIM )
@@ -32,11 +34,12 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test () result ( failed
   mh_tester = .describe. "mh_solve_cpu_intensive"
 
   mh_adv_test = mh_adv_factory%generate( BASE_GRID_ARRAY )
+  physics = ph_factory%generate()
   irs = irs_factory%generate()
   sl = sl_factory%generate()
   logger = log_factory%generate()
 
-  call rhyme_thermo_base_init( mh_adv_test%thermo, logger )
+  call rhyme_thermo_base_init( mh_adv_test%thermo, physics, logger )
   call rhyme_irs_init( irs, logger )
 
   do d = 1, NDIM
