@@ -148,10 +148,10 @@ module rhyme_drawing
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_uniform_prism
 
-    module subroutine rhyme_drawing_smoothed_slab_2d ( samr, shape, log )
+    module subroutine rhyme_drawing_smoothed_slab_2d ( samr, shape, logger )
       type ( samr_t ), intent ( inout ) :: samr
       type ( shape_t ), intent ( in ) :: shape
-      type ( log_t ), intent ( inout ) :: log
+      type ( log_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_smoothed_slab_2d
 #endif
 
