@@ -38,10 +38,11 @@ module rhyme_logger_util
     character ( len=1024 ), dimension(10) :: colored_logo = ''
     character ( len=1024 ), dimension(10) :: logo = ''
     character ( len=32 ) :: sections(32) = ''
+    integer :: section_starts_at( 32, 8 ) = 0
     integer :: secid = 0
     integer :: logfile_unit = logger_util_const%closed
     integer :: errfile_unit = logger_util_const%closed
-    integer :: task_t(8), t(8)
+    integer :: t(8)
   contains
     procedure :: init => rhyme_logger_util_init
     procedure :: begin_section => rhyme_logger_util_begin_section
@@ -50,9 +51,6 @@ module rhyme_logger_util
     procedure :: log => rhyme_logger_util_log
     procedure :: warn => rhyme_logger_util_warn
     procedure :: err => rhyme_logger_util_err
-
-    procedure :: start_task => rhyme_logger_util_start_task
-    procedure :: done => rhyme_logger_util_done
 
     procedure :: update_time => rhyme_logger_util_update_time
     procedure :: time => rhyme_logger_util_time
@@ -92,16 +90,6 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ), optional :: ope
       class (*), intent ( in ), optional :: val(:)
     end subroutine rhyme_logger_util_err
-
-    module subroutine rhyme_logger_util_start_task ( this, task, msg )
-      class ( logger_util_t ), intent ( inout ) :: this
-      character ( len=* ), intent ( in ) :: task
-      character ( len=* ), intent ( in ), optional :: msg
-    end subroutine rhyme_logger_util_start_task
-
-    module subroutine rhyme_logger_util_done ( this )
-      class ( logger_util_t ), intent ( inout ) :: this
-    end subroutine rhyme_logger_util_done
 
     module subroutine rhyme_logger_util_update_time ( this )
       class ( logger_util_t ), intent ( inout ) :: this
@@ -148,8 +136,9 @@ module rhyme_logger_util
       character ( len=* ), intent ( in ) :: section
     end subroutine rhyme_logger_util_begin_section
 
-    module subroutine rhyme_logger_util_end_section ( this )
+    module subroutine rhyme_logger_util_end_section ( this, print_duration )
       class ( logger_util_t ), intent ( inout ) :: this
+      logical, intent ( in ), optional :: print_duration
     end subroutine rhyme_logger_util_end_section
   end interface
 
@@ -213,7 +202,8 @@ contains
 
     str = trim(adjustl( msg ))//' ' &
       //trim( adjustl( key ) )//' ' &
-      //trim( adjustl( clr ) )//trim( adjustl( op ) )//tc%nc//' ' &
+      //trim( adjustl( clr ) ) &
+      //trim( adjustl( op ) )//tc%nc//' ' &
       //trim( adjustl( val ) )
 
     str = trim( adjustl( str ) )

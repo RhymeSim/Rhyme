@@ -9,7 +9,7 @@ contains
 
     integer :: l
 
-    call logger%begin_section( 'mh_workspace' )
+    call logger%begin_section( 'workspace' )
 
     if ( mhws%initialized ) call logger%warn( &
       'Trying to re-initialize mh_workspace object' )

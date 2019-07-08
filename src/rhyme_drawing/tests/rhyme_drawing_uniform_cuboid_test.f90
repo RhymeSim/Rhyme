@@ -57,7 +57,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result ( failed )
 
   thermo = th_factory%generate( physics, thid%diatomic )
   call rhyme_thermo_base_init( thermo, physics, logger )
-  
+
   call conv_prim_to_cons( prim, cons )
 
   draw%type = drid%transparent_canvas

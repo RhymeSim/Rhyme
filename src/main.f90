@@ -85,29 +85,29 @@ program rhyme
     call logger%log( '', 't', '=', [ samr%levels(0)%t ] )
     call logger%log( '', 'dt', '=', [ samr%levels(0)%dt ] )
 
-    call logger%start_task( 'boundary-condition' )
+    call logger%begin_section( 'bc' )
     call rhyme_samr_bc_set_boundaries( bc, samr )
-    call logger%done
+    call logger%end_section( print_duration=.true. )
 
     ! Update structured AMR
     ! Update ghost cells of boxes
 
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
-      call logger%start_task( 'storing-snapshot')
+      call logger%begin_section( 'save-chombo' )
       call rhyme_chombo_write_samr( chombo, samr )
-      call logger%done
+      call logger%end_section( print_duration=.true. )
     end if
 
 
-    call logger%start_task( 'hydro-solver', 'MUSCL-Hancock Scheme')
+    call logger%begin_section( 'hydro-solver' )
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
           samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger )
       end do
     end do
-    call logger%done
+    call logger%end_section( print_duration=.true. )
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1
