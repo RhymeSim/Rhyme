@@ -33,8 +33,7 @@ contains
     real ( kind=4 ) :: dt
     integer :: now(8)
 
-
-    if ( this%secid .eq. 0 ) then
+    if ( this%secid .eq. 1 ) then
       call this%open_logfile
 
       write( stdout,* ) ''

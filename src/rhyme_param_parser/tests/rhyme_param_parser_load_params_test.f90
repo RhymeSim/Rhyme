@@ -42,8 +42,8 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 
   tester = .describe. "rhyme_param_parser_load_params"
 
-  call load_params( param_file, logger, physics, ic, bc, cfl, thermo, draw, irs, &
-  sl, mh, chombo )
+  call load_params( param_file, physics, ic, bc, cfl, thermo, draw, irs, &
+  sl, mh, chombo, logger )
 
   ! Structured AMR
   call tester%expect( ic%type .toBe. icid%simple )

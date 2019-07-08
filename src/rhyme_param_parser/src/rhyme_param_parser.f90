@@ -15,12 +15,12 @@ module rhyme_param_parser
 
   type config_t
     character ( len=1024 ) :: path
-    type ( log_t ) :: logger
   contains
     procedure :: init => rhyme_param_parser_init
     procedure :: occur => rhyme_param_parser_occurences
-    procedure :: read => rhyme_param_parser_read
+    procedure :: read_single => rhyme_param_parser_read_single
     procedure :: read_array => rhyme_param_parser_read_array
+    generic :: read => read_single, read_array
   end type config_t
 
 
@@ -42,10 +42,9 @@ module rhyme_param_parser
 
 
   interface
-    module subroutine load_params ( param_file, logger, physics, ic, bc, cfl, &
-      thermo, draw, irs, sl, mh, chombo )
+    module subroutine load_params ( param_file, physics, ic, bc, cfl, &
+      thermo, draw, irs, sl, mh, chombo, logger )
       character (len=1024), intent ( in ) :: param_file
-      type ( log_t ), intent ( inout ) :: logger
       type ( physics_t ), intent ( inout ) :: physics
       type ( initial_condition_t ), intent ( inout ) :: ic
       type ( samr_bc_t ), intent ( inout ) :: bc
@@ -56,25 +55,22 @@ module rhyme_param_parser
       type ( slope_limiter_t ), intent ( inout ) :: sl
       type ( muscl_hancock_t ), intent ( inout ) :: mh
       type ( chombo_t ), intent ( inout ) :: chombo
+      type ( log_t ), intent ( inout ) :: logger
     end subroutine load_params
 
-    pure module subroutine rhyme_param_parser_init ( this, path, logger )
-      class ( config_t ), intent ( inout ) :: this
-      character ( len=* ), intent ( in ) :: path
-      type ( log_t ), intent ( inout ) :: logger
-    end subroutine rhyme_param_parser_init
-
-    module subroutine rhyme_param_parser_read ( this, term, var, switch )
+    module subroutine rhyme_param_parser_read_single ( this, term, var, logger, switch )
       class ( config_t ), intent ( inout ) :: this
       type ( config_term_t ), intent ( in ) :: term
       class (*), intent ( inout ) :: var
+      type ( log_t ), intent ( inout ) :: logger
       type ( config_switch_t ), optional, intent ( in ) :: switch
-    end subroutine rhyme_param_parser_read
+    end subroutine rhyme_param_parser_read_single
 
-    module subroutine rhyme_param_parser_read_array ( this, term, var, switch )
+    module subroutine rhyme_param_parser_read_array ( this, term, var, logger, switch )
       class ( config_t ), intent ( inout ) :: this
       type ( config_term_t ), intent ( in ) :: term
       class (*), intent ( inout ) :: var(:)
+      type ( log_t ), intent ( inout ) :: logger
       type ( config_switch_t ), optional, intent ( in ) :: switch
     end subroutine rhyme_param_parser_read_array
 
@@ -120,4 +116,15 @@ module rhyme_param_parser
   interface operator ( .hint. )
     procedure rhyme_param_parser_add_hint
   end interface operator ( .hint. )
+
+contains
+  pure module subroutine rhyme_param_parser_init ( this, path )
+    implicit none
+
+    class ( config_t ), intent ( inout ) :: this
+    character ( len=* ), intent ( in ) :: path
+
+    this%path = trim( adjustl( path ) )
+  end subroutine rhyme_param_parser_init
+
 end module rhyme_param_parser

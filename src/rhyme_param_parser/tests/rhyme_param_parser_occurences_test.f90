@@ -7,12 +7,11 @@ logical function rhyme_param_parser_occurences_test () result ( failed )
   type ( assertion_t ) :: pp_tester
 
   type ( config_t ) :: config
-  type ( log_t ) :: logger
   integer :: n_occur
 
   pp_tester = .describe. "rhyme_param_parser_occurences"
 
-  call config%init( 'occurences.txt', logger )
+  call config%init( 'occurences.txt' )
   n_occur = config%occur( 'key1' )
 
   call pp_tester%expect( n_occur .toBe. 3 )

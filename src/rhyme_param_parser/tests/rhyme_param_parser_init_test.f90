@@ -9,12 +9,11 @@ logical function rhyme_param_parser_init_test() result ( failed )
   character ( len=32 ), parameter :: path = "/path/to/param/file"
 
   type ( config_t ) :: cfg
-  type ( log_t ) :: logger
 
   pp_tester = .describe. "rhyme_param_parser_init"
 
 
-  call cfg%init( path, logger )
+  call cfg%init( path )
 
   call pp_tester%expect( cfg%path .toBe. path )
 

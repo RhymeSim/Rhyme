@@ -54,7 +54,7 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call load_params( param_file, logger, physics, ic, bc, cfl, thermo, draw, irs, sl, mh, chombo )
+  call load_params( param_file, physics, ic, bc, cfl, thermo, draw, irs, sl, mh, chombo, logger )
 
 
   call logger%begin_section( 'init' )

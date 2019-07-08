@@ -1,6 +1,6 @@
 submodule ( rhyme_param_parser ) rhyme_param_parser_read_array_submodule
 contains
-  module subroutine rhyme_param_parser_read_array ( this, term, var, switch )
+  module subroutine rhyme_param_parser_read_array ( this, term, var, logger, switch )
     use rhyme_string
 
     implicit none
@@ -8,6 +8,7 @@ contains
     class ( config_t ), intent ( inout ) :: this
     type ( config_term_t ), intent ( in ) :: term
     class (*), intent ( inout ) :: var(:)
+    type ( log_t ), intent ( inout ) :: logger
     type ( config_switch_t ), optional, intent ( in ) :: switch
 
     character ( len=1024 ) :: key, op, str(10), switch_str( size( var ) )
@@ -47,33 +48,33 @@ contains
               end do
             end do
 
-            call this%logger%log( term%key, .toString. switch_str( 1:size(var) ), '=>', v )
+            call logger%log( '', term%key, '=>', [ .toString. switch_str( 1:size(var) ) ] )
 
           class default
             read( 1234, * )
-            call this%logger%err( 'Reading '//trim(term%key)//' with switch into non integer' )
+            call logger%err( 'Reading '//trim(term%key)//' with switch into non integer' )
           end select
 
         else
           select type ( v => var )
           type is ( integer )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
-            call this%logger%log( term%key, term%hint, '=', v )
+            call logger%log( term%key, term%hint, '=', v )
           type is ( real( kind=4 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
-            call this%logger%log( term%key, term%hint, '=', v )
+            call logger%log( term%key, term%hint, '=', v )
           type is ( real( kind=8 ) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
-            call this%logger%log( term%key, term%hint, '=', v )
+            call logger%log( term%key, term%hint, '=', v )
           type is ( character(*) )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
-            call this%logger%log( term%key, term%hint, '=', v )
+            call logger%log( term%key, term%hint, '=', v )
           type is ( logical )
             read( 1234, * ) key, op, str( 1:term%location-1 ), v( lb:ub )
-            call this%logger%log( term%key, term%hint, '=', v )
+            call logger%log( term%key, term%hint, '=', v )
             class default
             read( 1234, * )
-            call this%logger%err( 'Unknonw type', 'key', '=', [ term%key ] )
+            call logger%err( 'Unknonw type', 'key', '=', [ term%key ] )
           end select
         end if
 
