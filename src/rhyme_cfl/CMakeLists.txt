@@ -12,7 +12,6 @@ endif()
 set( deps
   rhyme_samr
   rhyme_thermo_base
-  rhyme_log
 )
 
 set( internal_deps )

@@ -11,7 +11,7 @@ endif()
 
 set( deps
   rhyme_nombre
-  rhyme_log
+  rhyme_logger
 )
 
 set( internal_deps )

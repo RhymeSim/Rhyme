@@ -4,7 +4,7 @@ set( test_subject rhyme_initial_condition )
 set( factories
   rhyme_samr
   rhyme_physics
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

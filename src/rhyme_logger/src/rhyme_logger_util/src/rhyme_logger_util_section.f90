@@ -10,16 +10,19 @@ contains
     implicit none
 
     class ( logger_util_t ), intent ( inout ) :: this
-    character ( len=* ), intent ( in ) :: section
+    class (*), intent ( in ) :: section
 
+    character ( len=2048 ) :: section_str
+
+    section_str = .toString. section
     this%secid = this%secid + 1
 
     call date_and_time( values=this%section_starts_at( this%secid, : ) )
 
-    if ( len_trim( section ) < 32 ) then
-      this%sections( this%secid ) = trim( section )
+    if ( len_trim( section_str ) < 32 ) then
+      this%sections( this%secid ) = trim( section_str )
     else
-      this%sections( this%secid ) = trim( section(:32) )
+      this%sections( this%secid ) = trim( section_str(:32) )
     end if
   end subroutine rhyme_logger_util_begin_section
 

@@ -2,7 +2,7 @@ project( rhyme_physics_tests )
 set( test_subject rhyme_physics )
 
 set( factories
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

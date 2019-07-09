@@ -1,5 +1,4 @@
 module rhyme_param_parser
-  use rhyme_log
   use rhyme_physics
   use rhyme_initial_condition
   use rhyme_samr_bc
@@ -10,6 +9,7 @@ module rhyme_param_parser
   use rhyme_slope_limiter
   use rhyme_muscl_hancock
   use rhyme_chombo
+  use rhyme_logger
 
   implicit none
 
@@ -55,14 +55,14 @@ module rhyme_param_parser
       type ( slope_limiter_t ), intent ( inout ) :: sl
       type ( muscl_hancock_t ), intent ( inout ) :: mh
       type ( chombo_t ), intent ( inout ) :: chombo
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine load_params
 
     module subroutine rhyme_param_parser_read_single ( this, term, var, logger, switch )
       class ( config_t ), intent ( inout ) :: this
       type ( config_term_t ), intent ( in ) :: term
       class (*), intent ( inout ) :: var
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
       type ( config_switch_t ), optional, intent ( in ) :: switch
     end subroutine rhyme_param_parser_read_single
 
@@ -70,7 +70,7 @@ module rhyme_param_parser
       class ( config_t ), intent ( inout ) :: this
       type ( config_term_t ), intent ( in ) :: term
       class (*), intent ( inout ) :: var(:)
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
       type ( config_switch_t ), optional, intent ( in ) :: switch
     end subroutine rhyme_param_parser_read_array
 

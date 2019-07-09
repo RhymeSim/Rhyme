@@ -1,7 +1,7 @@
 logical function rhyme_mh_workspace_init_test () result ( failed )
   use rhyme_mh_workspace
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_mh_workspace_init_test () result ( failed )
 
   type ( mh_workspace_t ) :: mhws
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   integer :: l
 
   logger = log_factory%generate()

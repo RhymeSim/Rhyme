@@ -2,7 +2,7 @@ module rhyme_initial_condition
   use rhyme_physics
   use rhyme_samr
   use rhyme_chombo
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -32,20 +32,20 @@ module rhyme_initial_condition
       type ( initial_condition_t ), intent ( inout ) :: ic
       type ( samr_t ), intent ( inout ) :: samr
       type ( physics_t ), intent ( in ) :: physics
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_init
 
     module subroutine rhyme_initial_condition_init_simple ( ic, samr, physics, logger )
       type ( initial_condition_t ), intent ( in ) :: ic
       type ( samr_t ), intent ( inout ) :: samr
       type ( physics_t ), intent ( in ) :: physics
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_init_simple
 
     module subroutine rhyme_initial_condition_load_snapshot ( ic, samr, logger )
       type ( initial_condition_t ), intent ( in ) :: ic
       type ( samr_t ), intent ( inout ) :: samr
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_load_snapshot
 
     module subroutine rhyme_initial_condition_load_headers ( ic, samr )
@@ -56,7 +56,7 @@ module rhyme_initial_condition
     module subroutine rhyme_initial_condition_load_rhyme ( ic, samr, logger )
       type ( initial_condition_t ), intent ( in ) :: ic
       type ( samr_t ), intent ( inout ) :: samr
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_load_rhyme
   end interface
 end module rhyme_initial_condition

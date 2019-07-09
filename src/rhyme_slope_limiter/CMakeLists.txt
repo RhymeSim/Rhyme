@@ -11,7 +11,6 @@ endif()
 
 set( deps
   rhyme_physics
-  rhyme_log
 )
 
 set( internal_deps )

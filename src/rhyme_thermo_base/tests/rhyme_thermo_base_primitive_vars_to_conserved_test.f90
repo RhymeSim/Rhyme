@@ -2,7 +2,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( 
   use rhyme_thermo_base_factory
   use rhyme_physics_factory
   use rhyme_hydro_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -11,7 +11,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( 
 
   type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   real ( kind=8 ), dimension( cid%rho:cid%e_tot ) :: u, u_interface, u_exp
   real ( kind=8 ) :: rho, v( NDIM ), p
   integer :: gas_type

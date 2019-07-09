@@ -55,14 +55,14 @@ contains
 
 
   subroutine muscl_hancock_advection_test_init ( this, grid )
-    use rhyme_log_factory
+    use rhyme_logger_factory
 
     implicit none
 
     class ( muscl_hancock_advection_test_t ), intent ( inout ) :: this
     integer, intent ( in ) :: grid( NDIM )
 
-    type ( log_t ) :: logger
+    type ( logger_t ) :: logger
     integer :: d
 
 #if NDIM == 1

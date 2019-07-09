@@ -4,7 +4,7 @@ module rhyme_drawing
   use rhyme_thermo_base
   use rhyme_hydro_base
   use rhyme_samr
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -151,20 +151,20 @@ module rhyme_drawing
     module subroutine rhyme_drawing_smoothed_slab_2d ( samr, shape, logger )
       type ( samr_t ), intent ( inout ) :: samr
       type ( shape_t ), intent ( in ) :: shape
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_smoothed_slab_2d
 #endif
 
     module subroutine rhyme_drawing_apply_perturbations ( samr, perturbs, logger )
       type ( samr_t ), intent ( inout ) :: samr
       type ( perturbation_t ), intent ( in ), pointer :: perturbs
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_apply_perturbations
 
     module subroutine rhyme_drawing_apply ( draw, samr, logger )
       type ( drawing_t ), intent ( inout ) :: draw
       type ( samr_t ), intent ( inout ) :: samr
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_apply
   end interface
 

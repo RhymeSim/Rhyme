@@ -6,7 +6,7 @@ contains
     type ( muscl_hancock_t ), intent ( inout ) :: mh
     type ( samr_t ), intent ( in ) :: samr
     type ( mh_workspace_t ), intent ( inout ) :: ws
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     call logger%begin_section( 'muscl_hancock' )
 

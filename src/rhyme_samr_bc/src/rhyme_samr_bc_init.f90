@@ -8,7 +8,7 @@ contains
 
     type ( samr_bc_t ), intent ( inout ) :: bc
     type ( samr_t ), intent ( inout ) :: samr
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
 #if NDIM == 1
 #define IFJ

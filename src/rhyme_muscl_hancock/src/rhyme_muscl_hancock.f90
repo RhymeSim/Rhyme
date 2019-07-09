@@ -3,7 +3,7 @@ module rhyme_muscl_hancock
   use rhyme_ideal_gas
   use rhyme_slope_limiter
   use rhyme_irs
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -24,7 +24,7 @@ module rhyme_muscl_hancock
       type ( muscl_hancock_t ), intent ( inout ) :: mh
       type ( samr_t ), intent ( in ) :: samr
       type ( mh_workspace_t ), intent ( inout ) :: ws
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_muscl_hancock_init
 
     pure module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
@@ -53,7 +53,7 @@ module rhyme_muscl_hancock
       type ( irs_t ), intent ( inout ) :: irs
       type ( slope_limiter_t ), intent ( in ) :: sl
       type ( mh_workspace_t ), intent ( inout ) :: ws
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_muscl_hancock_solve
 
     pure module subroutine rhyme_muscl_hancock_half_step_extrapolation ( &

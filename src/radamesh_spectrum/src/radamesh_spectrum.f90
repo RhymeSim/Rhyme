@@ -1,5 +1,5 @@
 module radamesh_spectrum
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -79,7 +79,7 @@ contains
     implicit none
 
     class ( spectrum_t ), intent ( inout ) :: this
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: nbins
     type ( spectral_region_t ), pointer :: region
@@ -119,7 +119,7 @@ contains
 
     class ( spectrum_t ), intent ( inout ) :: this
     type ( spectral_region_t ), pointer, intent ( in ) :: region
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: i
     real ( kind=8 ) :: width
@@ -146,7 +146,7 @@ contains
 
     class ( spectrum_t ), intent ( inout ) :: this
     type ( spectral_region_t ), pointer, intent ( in ) :: region
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: i
     real ( kind=8 ) :: width

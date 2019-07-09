@@ -5,7 +5,7 @@ contains
 
     type ( initial_condition_t ), intent ( in ) :: ic
     type ( samr_t ), intent ( inout ) :: samr
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     logical :: exist
 

@@ -15,7 +15,7 @@ contains
     type ( slope_limiter_t ), intent ( inout ) :: sl
     type ( muscl_hancock_t ), intent ( inout ) :: mh
     type ( chombo_t ), intent ( inout ) :: chombo
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     type ( config_t ) :: config
     type ( config_switch_t ) :: ic_types, ic_snapshot_types

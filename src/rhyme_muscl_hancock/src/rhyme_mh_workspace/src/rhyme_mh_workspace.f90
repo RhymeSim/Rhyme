@@ -1,7 +1,7 @@
 module rhyme_mh_workspace
   use rhyme_hydro_base
   use rhyme_samr
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -49,7 +49,7 @@ module rhyme_mh_workspace
     module subroutine rhyme_mh_workspace_init ( mhws, samr, logger )
       class ( mh_workspace_t ), intent ( inout ) :: mhws
       type ( samr_t ), intent ( in ) :: samr
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_mh_workspace_init
 
     pure module subroutine rhyme_mh_workspace_check ( mhws, box )

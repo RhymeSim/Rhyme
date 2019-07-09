@@ -1,6 +1,6 @@
 module rhyme_chemistry
   use rhyme_physics
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -40,7 +40,7 @@ module rhyme_chemistry
     module subroutine rhyme_chemistry_init ( chemistry, physics, logger )
       class ( chemistry_t ), intent ( inout ) :: chemistry
       type ( physics_t ), intent ( in ) :: physics
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_chemistry_init
   end interface
 end module rhyme_chemistry

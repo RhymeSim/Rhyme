@@ -3,7 +3,7 @@ module rhyme_irs
   use rhyme_physics
   use rhyme_hydro_base
   use rhyme_thermo_base
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -104,7 +104,7 @@ contains
     implicit none
 
     type ( irs_t ), intent ( inout ) :: irs
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     real ( kind=8 ) :: g
 

@@ -7,7 +7,7 @@ set( factories
   rhyme_ideal_gas
   rhyme_hydro_base
   rhyme_thermo_base
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

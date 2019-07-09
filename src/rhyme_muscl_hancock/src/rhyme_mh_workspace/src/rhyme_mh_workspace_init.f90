@@ -5,7 +5,7 @@ contains
 
     class ( mh_workspace_t ), intent ( inout ) :: mhws
     type ( samr_t ), intent ( in ) :: samr
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: l
 

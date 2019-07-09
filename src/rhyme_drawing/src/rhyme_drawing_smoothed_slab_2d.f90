@@ -7,7 +7,7 @@ contains
 
     type ( samr_t ), intent ( inout ) :: samr
     type ( shape_t ), intent ( in ) :: shape
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
 #if NDIM > 1
 

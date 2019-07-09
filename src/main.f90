@@ -1,5 +1,4 @@
 program rhyme
-  use rhyme_log
   use rhyme_nombre
   use rhyme_physics
   use rhyme_hydro_base
@@ -16,10 +15,10 @@ program rhyme
   use rhyme_param_parser
   use rhyme_chombo
   use rhyme_initial_condition
+  use rhyme_logger
 
   implicit none
 
-  type ( log_t ) :: logger
   type ( physics_t ) :: physics
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
@@ -33,6 +32,7 @@ program rhyme
   type ( mh_workspace_t ) :: mhws
   type ( chombo_t ) :: chombo
   type ( initial_condition_t ) :: ic
+  type ( logger_t ) :: logger
 
   integer :: l, b
   character ( len=1024 ) :: exe_filename, param_file
@@ -77,8 +77,8 @@ program rhyme
 
 
   ! Main loop
-  do while ( samr%levels(0)%t < 0.4d0 )
-    call logger%set_iteration_section( samr%levels(0)%iteration )
+  do while ( .true. )! samr%levels(0)%t < 0.4d0 )
+    call logger%begin_section( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = rhyme_cfl_time_step( cfl%courant_number, samr )
 
@@ -111,6 +111,8 @@ program rhyme
 
     samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
     samr%levels(0)%iteration = samr%levels(0)%iteration + 1
+
+    call logger%end_section( print_duration=.true. )
   end do
 
   ! Initialize cosmological variables (if COSMO is set)

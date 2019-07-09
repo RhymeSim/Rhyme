@@ -1,7 +1,7 @@
 logical function rhyme_initial_condition_init_simple_test () result ( failed )
   use rhyme_initial_condition_factory
   use rhyme_physics_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -11,7 +11,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
   type ( initial_condition_t ) :: simple
   type ( samr_t ) :: samr
   type ( physics_t ) :: physics
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   integer :: i, actual_grid_size( NDIM )
 
   ic_tester = .describe. "initial_condition_init_simple"

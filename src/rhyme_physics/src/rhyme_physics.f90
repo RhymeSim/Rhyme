@@ -1,6 +1,6 @@
 module rhyme_physics
   use rhyme_nombre
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -96,7 +96,7 @@ module rhyme_physics
   interface
     module subroutine rhyme_physics_init ( physics, logger )
       type ( physics_t ), intent ( inout ) :: physics
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_physics_init
   end interface
 end module rhyme_physics

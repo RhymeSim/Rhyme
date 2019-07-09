@@ -6,7 +6,7 @@ contains
     type ( initial_condition_t ), intent ( in ) :: ic
     type ( samr_t ), intent ( inout ) :: samr
     type ( physics_t ), intent ( in ) :: physics
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
 #if NDIM == 1
 #define LEDGES_ARRAY [ 1 ]

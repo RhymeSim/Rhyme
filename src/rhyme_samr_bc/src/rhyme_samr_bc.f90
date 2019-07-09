@@ -1,7 +1,7 @@
 module rhyme_samr_bc
   use rhyme_physics
   use rhyme_samr
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -29,7 +29,7 @@ module rhyme_samr_bc
     module subroutine rhyme_samr_bc_init ( bc, samr, logger )
       type ( samr_bc_t ), intent ( inout ) :: bc
       type ( samr_t ), intent ( inout ) :: samr
-      type ( log_t ), intent ( inout ) :: logger
+      type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_samr_bc_init
 
     pure module subroutine rhyme_samr_bc_set_boundaries ( bc, samr )

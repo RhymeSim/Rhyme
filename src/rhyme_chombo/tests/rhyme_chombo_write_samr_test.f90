@@ -1,7 +1,7 @@
 logical function rhyme_chombo_write_samr_test () result ( failed )
   use rhyme_chombo_factory
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
 
   type ( chombo_t ) :: ch
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   ! Chombo filename
   character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_samr"

@@ -1,6 +1,6 @@
 logical function rhyme_physics_init_test () result ( failed )
   use rhyme_physics_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -8,7 +8,7 @@ logical function rhyme_physics_init_test () result ( failed )
   type ( assertion_t ) :: ph_tester
 
   type ( physics_t ) :: physics
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   ph_tester = .describe. "rhyme_physics_init"
 

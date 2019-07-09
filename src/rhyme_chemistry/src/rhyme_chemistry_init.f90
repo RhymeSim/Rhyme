@@ -5,7 +5,7 @@ contains
 
     class ( chemistry_t ), intent ( inout ) :: chemistry
     type ( physics_t ), intent ( in ) :: physics
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     call logger%begin_section( 'chemistry' )
 

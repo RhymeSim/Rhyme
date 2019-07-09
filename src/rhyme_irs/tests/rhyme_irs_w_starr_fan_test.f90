@@ -3,7 +3,7 @@ logical function rhyme_irs_w_starr_fan_test () result ( failed )
   use rhyme_physics_factory
   use rhyme_hydro_base_factory
   use rhyme_thermo_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -13,7 +13,7 @@ logical function rhyme_irs_w_starr_fan_test () result ( failed )
   type ( irs_t ) :: irs
   type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   type ( riemann_problem_solution_t ) :: sol
   real ( kind=8 ), dimension ( cid%rho:cid%e_tot ) :: u, ex_u
 

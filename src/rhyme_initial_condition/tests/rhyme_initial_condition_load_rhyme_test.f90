@@ -1,7 +1,7 @@
 logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
   use rhyme_initial_condition_factory
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -14,7 +14,7 @@ logical function rhyme_initial_condition_load_rhyme_test () result ( failed )
   type ( initial_condition_t ) :: ic_read, ic_write
   type ( samr_t ) :: samr, samr_read
   type ( chombo_t ) :: ch
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   integer :: l, b, uid, ub( NDIM )
 

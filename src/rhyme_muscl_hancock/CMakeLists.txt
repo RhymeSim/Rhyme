@@ -14,7 +14,7 @@ set( deps
   rhyme_thermo_base
   rhyme_irs
   rhyme_slope_limiter
-  rhyme_log
+  rhyme_logger
 )
 
 set( internal_deps

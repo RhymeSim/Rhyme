@@ -3,7 +3,7 @@ logical function rhyme_cfl_dt_test () result (failed)
   use rhyme_physics_factory
   use rhyme_thermo_base_factory
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -14,7 +14,7 @@ logical function rhyme_cfl_dt_test () result (failed)
   type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
 #if NDIM == 1
 #define LOOP_J

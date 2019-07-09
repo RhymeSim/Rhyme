@@ -1,7 +1,7 @@
 logical function rhyme_muscl_hancock_test () result ( failed )
   use rhyme_muscl_hancock_factory
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -11,7 +11,7 @@ logical function rhyme_muscl_hancock_test () result ( failed )
   type ( muscl_hancock_t ) :: mh
   type ( mh_workspace_t ) :: mhws
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   mh_tester = .describe. "mh"
 

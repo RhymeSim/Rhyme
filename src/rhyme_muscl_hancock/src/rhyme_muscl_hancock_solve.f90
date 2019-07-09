@@ -10,7 +10,7 @@ contains
     type ( irs_t ), intent ( inout ) :: irs
     type ( slope_limiter_t ), intent ( in ) :: sl
     type ( mh_workspace_t ), intent ( inout ) :: ws
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     call logger%begin_section( 'MH_solver' )
 

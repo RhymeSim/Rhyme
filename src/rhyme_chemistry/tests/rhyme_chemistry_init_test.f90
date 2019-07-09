@@ -1,7 +1,7 @@
 logical function rhyme_chemistry_init_test () result (failed)
   use rhyme_chemistry_factory
   use rhyme_physics_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_chemistry_init_test () result (failed)
 
   type ( chemistry_t ) :: chemistry
   type ( physics_t ) :: physics
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   type ( nombre_unit_t ), pointer :: m__mol, m
 

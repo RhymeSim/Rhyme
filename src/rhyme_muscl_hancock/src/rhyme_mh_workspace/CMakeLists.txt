@@ -12,7 +12,7 @@ endif()
 set( deps
   rhyme_hydro_base
   rhyme_samr
-  rhyme_log
+  rhyme_logger
 )
 
 set( internal_deps )

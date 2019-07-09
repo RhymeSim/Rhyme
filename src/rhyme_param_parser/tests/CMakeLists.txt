@@ -1,7 +1,9 @@
 project( rhyme_param_parser_tests )
 set( test_subject rhyme_param_parser )
 
-set( factories )
+set( factories
+  rhyme_logger
+)
 
 set( test_deps
   rhyme_assertion

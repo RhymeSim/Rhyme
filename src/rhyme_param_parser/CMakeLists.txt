@@ -10,7 +10,6 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 set( deps
-  rhyme_log
   rhyme_physics
   rhyme_string
   rhyme_samr_bc
@@ -22,6 +21,7 @@ set( deps
   rhyme_muscl_hancock
   rhyme_chombo
   rhyme_initial_condition
+  rhyme_logger
 )
 
 set( internal_deps )

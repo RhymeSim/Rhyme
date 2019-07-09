@@ -3,7 +3,7 @@ set( test_subject rhyme_chemistry )
 
 set( factories
   rhyme_physics
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

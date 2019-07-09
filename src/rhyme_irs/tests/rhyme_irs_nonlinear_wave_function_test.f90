@@ -2,7 +2,7 @@ logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
   use rhyme_irs_factory
   use rhyme_physics_factory
   use rhyme_thermo_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -12,7 +12,7 @@ logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
   type ( irs_t ) :: irs
   type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   type ( rp_side_t ) :: state
   type ( rp_star_side_t ) :: star, prev_star

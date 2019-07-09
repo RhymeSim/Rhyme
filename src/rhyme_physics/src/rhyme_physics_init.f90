@@ -4,7 +4,7 @@ contains
     implicit none
 
     type ( physics_t ), intent ( inout ) :: physics
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     type ( nombre_unit_t ), pointer :: kb_unit, r_unit, amu_unit
 

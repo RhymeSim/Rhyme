@@ -13,7 +13,7 @@ set( deps
   rhyme_physics
   rhyme_samr
   rhyme_chombo
-  rhyme_log
+  rhyme_logger
 )
 
 set( internal_deps )

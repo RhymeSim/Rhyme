@@ -1,7 +1,7 @@
 logical function rhyme_mh_workspace_check_test () result ( failed )
   use rhyme_mh_workspace
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_mh_workspace_check_test () result ( failed )
 
   type ( mh_workspace_t ) :: ws
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   integer :: l, b, arr_size, n_hydro_comp
   integer :: lb( NDIM+1 ), ub( NDIM+1 ), lbws( NDIM+2 ), ubws( NDIM+2 ), dims( NDIM )
 

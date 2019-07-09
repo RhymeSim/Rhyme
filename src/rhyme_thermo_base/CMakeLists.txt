@@ -12,7 +12,7 @@ endif()
 set( deps
   rhyme_physics
   rhyme_ideal_gas
-  rhyme_log
+  rhyme_logger
 )
 
 set( internal_deps )

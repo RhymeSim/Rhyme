@@ -4,7 +4,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
   use rhyme_irs_factory
   use rhyme_slope_limiter_factory
   use rhyme_chombo_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -26,7 +26,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
   type ( irs_t ) :: irs
   type ( slope_limiter_t ) :: sl
   type ( chombo_t ) :: ch( NDIM )
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   integer :: i, d
   character ( len=32 ) :: nickname

@@ -6,7 +6,7 @@ contains
     type ( initial_condition_t ), intent ( inout ) :: ic
     type ( samr_t ), intent ( inout ) :: samr
     type ( physics_t ), intent ( in ) :: physics
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: d
 

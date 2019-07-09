@@ -37,7 +37,7 @@ set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 set( deps
-  rhyme_log
+  rhyme_logger
   rhyme_nombre
   rhyme_physics
   rhyme_hydro_base

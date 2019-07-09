@@ -4,7 +4,7 @@ set( test_subject rhyme_chombo )
 set( factories
   rhyme_physics
   rhyme_samr
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

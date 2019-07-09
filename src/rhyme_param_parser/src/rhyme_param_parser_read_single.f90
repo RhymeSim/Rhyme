@@ -6,7 +6,7 @@ contains
     class ( config_t ), intent ( inout ) :: this
     type ( config_term_t ), intent ( in ) :: term
     class (*), intent ( inout ) :: var
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
     type ( config_switch_t ), optional, intent ( in ) :: switch
 
     character ( len=1024 ) :: key, op, str(10), switch_str

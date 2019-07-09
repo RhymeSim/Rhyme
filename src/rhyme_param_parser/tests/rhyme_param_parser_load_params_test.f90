@@ -1,5 +1,6 @@
 logical function rhyme_param_parser_load_params_test () result ( failed )
   use rhyme_param_parser
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -26,7 +27,6 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 #define PRISM_VERTEX_3 [ 72.d0, 1.d0, 1.d0 ]
 #endif
 
-  type ( log_t ) :: logger
   type ( physics_t ) :: physics
   type ( initial_condition_t ) :: ic
   type ( samr_bc_t ) :: bc
@@ -37,10 +37,13 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
   type ( slope_limiter_t ) :: sl
   type ( muscl_hancock_t ) :: mh
   type ( chombo_t ) :: chombo
+  type ( logger_t ) :: logger
 
   character(len=1024), parameter :: param_file = PARAM_FILE_NAME
 
   tester = .describe. "rhyme_param_parser_load_params"
+
+  logger = log_factory%generate()
 
   call load_params( param_file, physics, ic, bc, cfl, thermo, draw, irs, &
   sl, mh, chombo, logger )

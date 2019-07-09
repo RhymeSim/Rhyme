@@ -2,7 +2,7 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test () result ( fa
   use rhyme_muscl_hancock_factory
   use rhyme_physics_factory
   use rhyme_thermo_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -11,7 +11,7 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test () result ( fa
 
   type ( physics_t ) :: physics
   type ( thermo_base_t ) :: thermo
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   real ( kind=8 ), dimension ( cid%rho:cid%e_tot ) :: u, delta, l, r, df
 

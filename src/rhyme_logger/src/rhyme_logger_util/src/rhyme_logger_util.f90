@@ -133,7 +133,7 @@ module rhyme_logger_util
 
     module subroutine rhyme_logger_util_begin_section ( this, section )
       class ( logger_util_t ), intent ( inout ) :: this
-      character ( len=* ), intent ( in ) :: section
+      class (*), intent ( in ) :: section
     end subroutine rhyme_logger_util_begin_section
 
     module subroutine rhyme_logger_util_end_section ( this, print_duration )

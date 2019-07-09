@@ -1,6 +1,7 @@
 logical function rhyme_samr_bc_init_test () result (failed)
   use rhyme_samr_bc_factory
   use rhyme_samr_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -9,13 +10,14 @@ logical function rhyme_samr_bc_init_test () result (failed)
 
   type ( samr_bc_t ) :: bc
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   type ( samr_box_t ) :: box
 
   bc_tester = .describe. "samr_bc_init"
 
   bc%types = bc_factory%types()
   samr = samr_factory%generate()
+  logger = log_factory%generate()
 
   call rhyme_samr_bc_init( bc, samr, logger )
 

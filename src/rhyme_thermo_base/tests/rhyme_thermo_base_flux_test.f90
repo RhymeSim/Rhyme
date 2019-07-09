@@ -2,7 +2,7 @@ logical function rhyme_thermo_base_flux_test () result ( failed )
   use rhyme_thermo_base_factory
   use rhyme_physics_factory
   use rhyme_hydro_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -11,7 +11,7 @@ logical function rhyme_thermo_base_flux_test () result ( failed )
 
   type ( thermo_base_t ) :: thermo
   type ( physics_t ) :: physics
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   real ( kind=8 ) :: u( cid%rho:cid%e_tot ), f( cid%rho:cid%p ), f_exp( cid%rho:cid%p )
 
   integer :: gas_type, axis = 1

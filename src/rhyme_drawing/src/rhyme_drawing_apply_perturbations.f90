@@ -7,7 +7,7 @@ contains
 
     type ( samr_t ), intent ( inout ) :: samr
     type ( perturbation_t ), pointer, intent ( in ) :: perturbs
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
 #if NDIM == 1
 #define JDX

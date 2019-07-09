@@ -5,7 +5,7 @@ contains
 
     type ( drawing_t ), intent ( inout ) :: draw
     type ( samr_t ), intent ( inout ) :: samr
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     type ( shape_t ), pointer :: shape
 

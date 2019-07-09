@@ -1,14 +1,14 @@
 submodule ( rhyme_assertion ) rhyme_assertion_passed_submodule
 contains
   logical module function rhyme_assertion_passed ( this ) result ( passed )
-    use rhyme_log
+    use rhyme_logger
 
     implicit none
 
     class ( assertion_t ), intent ( in ) :: this
 
     type ( test_t ), pointer :: test
-    type ( log_t ) :: logger
+    type ( logger_t ) :: logger
 
     integer :: nft, npt
     character ( len=128 ) :: msg

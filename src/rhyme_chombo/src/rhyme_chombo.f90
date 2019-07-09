@@ -2,7 +2,7 @@ module rhyme_chombo
   use rhyme_hdf5_util
   use rhyme_physics
   use rhyme_samr
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -70,7 +70,7 @@ contains
 
     type ( chombo_t ), intent ( inout ) :: chombo
     type ( samr_t ), intent ( in ) :: samr
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     integer :: l, b, i, length, max_length, max_nboxes
     logical :: exists

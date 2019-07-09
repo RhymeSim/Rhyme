@@ -5,7 +5,7 @@ set( factories
   rhyme_physics
   rhyme_thermo_base
   rhyme_samr
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps

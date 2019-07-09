@@ -1,7 +1,7 @@
 logical function rhyme_chombo_init_test () result ( failed )
   use rhyme_chombo_factory
   use rhyme_samr_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -10,7 +10,7 @@ logical function rhyme_chombo_init_test () result ( failed )
 
   type ( chombo_t ) :: chombo
   type ( samr_t ) :: samr
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
 
   logical :: exists
 

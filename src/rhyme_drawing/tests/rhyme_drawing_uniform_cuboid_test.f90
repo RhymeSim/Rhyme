@@ -4,7 +4,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result ( failed )
   use rhyme_samr_factory
   use rhyme_hydro_base_factory
   use rhyme_thermo_base_factory
-  use rhyme_log_factory
+  use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
@@ -39,7 +39,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result ( failed )
   type ( physics_t ) :: physics
   type ( samr_t ) :: samr
   type ( thermo_base_t ) :: thermo
-  type ( log_t ) :: logger
+  type ( logger_t ) :: logger
   real ( kind=8 ) :: prim( cid%rho:cid%p )
   real ( kind=8 ) :: cons( cid%rho:cid%e_tot )
 

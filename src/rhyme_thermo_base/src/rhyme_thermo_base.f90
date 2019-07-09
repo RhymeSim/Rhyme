@@ -1,7 +1,7 @@
 module rhyme_thermo_base
   use rhyme_physics
   use rhyme_ideal_gas
-  use rhyme_log
+  use rhyme_logger
 
   implicit none
 
@@ -113,7 +113,7 @@ contains
 
     type ( thermo_base_t ), intent ( in ) :: thermo
     type ( physics_t ), intent ( in ) :: physics
-    type ( log_t ), intent ( inout ) :: logger
+    type ( logger_t ), intent ( inout ) :: logger
 
     call logger%begin_section( 'thermo_base' )
 

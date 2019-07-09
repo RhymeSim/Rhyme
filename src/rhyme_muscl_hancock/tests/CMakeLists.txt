@@ -12,7 +12,7 @@ set ( factories
   rhyme_irs
   rhyme_slope_limiter
   rhyme_chombo
-  rhyme_log
+  rhyme_logger
 )
 
 set( test_deps
