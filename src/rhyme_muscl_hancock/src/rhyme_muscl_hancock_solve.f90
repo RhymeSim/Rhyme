@@ -12,14 +12,14 @@ contains
     type ( mh_workspace_t ), intent ( inout ) :: ws
     type ( logger_t ), intent ( inout ) :: logger
 
-    call logger%begin_section( 'MH_solver' )
+    call logger%begin_section( 'solver' )
 
     select case ( mh%solver_type )
     case ( mhid%cpu_intensive )
-      call logger%log( 'using cpu_intensive solver' )
+      call logger%log( 'cpu intensive' )
       call rhyme_muscl_hancock_solve_cpu_intensive( box, dx, dt, irs, sl, ws )
     case ( mhid%memory_intensive )
-      call logger%log( 'using memory_intensive solver' )
+      call logger%log( 'memory intensive' )
       call rhyme_muscl_hancock_solve_memory_intensive( box, dx, dt, irs, sl, ws )
     case DEFAULT
       call logger%err( 'Unknown solver type' )

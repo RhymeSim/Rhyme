@@ -54,11 +54,13 @@ program rhyme
 
 
   ! Reading parameters and converting them to code units
-  call load_params( param_file, physics, ic, bc, cfl, thermo, draw, irs, sl, mh, chombo, logger )
+  call load_params( param_file, physics, ic, bc, cfl, thermo, draw, &
+    irs, sl, mh, chombo, logger )
 
 
   call logger%begin_section( 'init' )
 
+  ! TODO: move mh_workspace into muscl_hancock module
   mhws%type = mh%solver_type
 
   call rhyme_physics_init( physics, logger )
@@ -72,12 +74,11 @@ program rhyme
 
   call logger%end_section
 
-
+  ! Drawing the initial condition (if necessary)
   call rhyme_drawing_apply( draw, samr, logger )
 
-
   ! Main loop
-  do while ( .true. )! samr%levels(0)%t < 0.4d0 )
+  do while ( .true. )
     call logger%begin_section( samr%levels(0)%iteration )
 
     samr%levels(0)%dt = rhyme_cfl_time_step( cfl%courant_number, samr )
@@ -100,7 +101,7 @@ program rhyme
     end if
 
 
-    call logger%begin_section( 'hydro-solver' )
+    call logger%begin_section( 'hydro' )
     do l = samr%nlevels - 1, 0, -1
       do b = 1, samr%levels(l)%nboxes
         call rhyme_muscl_hancock_solve( mh, samr%levels(l)%boxes(b), &
@@ -114,47 +115,4 @@ program rhyme
 
     call logger%end_section( print_duration=.true. )
   end do
-
-  ! Initialize cosmological variables (if COSMO is set)
-
-  ! Setup patch-based GRID
-
-  ! Creating emission spectra for ionizing sources
-
-  ! Initialize ionization cross section
-
-  ! Initialize coefficients
-
-  ! Initialize pre-existing HII regions
-
-  ! Drop a snapshot (if needed)
-
-  ! Create problem domain array (if needed)
-
-  ! Time evolution loop
-
-  !! Compute Timestep
-
-  !! if HYDRO is set
-  !!! Copy old hydro states to new ones
-  !!! Hydro loop
-  !!!! Setup boundary conditions
-  !!!! Gather neighboring cells (into a 6x6x6 array)
-  !!!! Calculating slope limiter
-  !!!! Extrapolate states to cell faces
-  !!!! Riemann solver
-  !!!! Sampling solution
-  !!!! Updating fluxes
-  !!! end Hydro loop
-  !!! Rewrite new hydro states into old ones
-  !! end if Hydro is set
-
-  !! Get active sources
-
-  !! Deoposite photons loop
-  !!! Ray tracing
-  !!! Solving the ionization equations
-  !! end Deposite photons loop
-
-  !! Drop snapshot (if needed)
 end program rhyme

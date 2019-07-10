@@ -62,7 +62,7 @@ logical function rhyme_assertion_not_to_be_nan_test () result ( failed )
 
   failed = .not. test%is_passed &
   .or. test%type .ne. assertid%char &
-  .or. test%val .ne. "'1234'"
+  .or. test%val .ne. "1234"
   if ( failed ) return
 
   l = .false.

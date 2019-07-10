@@ -39,7 +39,7 @@ contains
       type is ( real( kind=8 ) )
         write ( str, strcnst%double_fmt ) inp
       type is ( character (*) )
-        str = "'" // trim( adjustl(inp) ) // "'"
+        str = trim( adjustl(inp) )
       type is ( logical )
         if ( inp ) then
           str = '.true.'
