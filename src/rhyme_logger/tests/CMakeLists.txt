@@ -1,4 +1,4 @@
-project( rhyme_logger_tests )
+project ( rhyme_logger_tests )
 set( test_subject rhyme_logger )
 
 set( factories )

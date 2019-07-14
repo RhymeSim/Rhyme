@@ -1,5 +1,5 @@
-project ( rhyme_logger_util_tests )
-set( test_subject rhyme_logger_util )
+project ( rhyme_plotter_tests )
+set( test_subject rhyme_plotter )
 
 set( factories )
 set( test_deps )

@@ -1,9 +1,9 @@
-logical function rhyme_logger_util_warn_test () result ( failed )
-  use rhyme_logger_util
+logical function rhyme_logger_warn_test () result ( failed )
+  use rhyme_logger
 
   implicit none
 
-  type ( logger_util_t ) :: logger
+  type ( logger_t ) :: logger
 
   call logger%init( 'warn' )
   call logger%begin_section( 'test' )
@@ -25,4 +25,4 @@ logical function rhyme_logger_util_warn_test () result ( failed )
 
   ! To see the output set failed to .true.
   failed = .false.
-end function rhyme_logger_util_warn_test
+end function rhyme_logger_warn_test
