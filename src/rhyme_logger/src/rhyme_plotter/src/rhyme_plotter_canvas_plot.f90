@@ -1,16 +1,23 @@
 submodule ( rhyme_plotter ) canvas_plot_smod
 contains
-  module subroutine rhyme_plotter_canvas_plot ( canvas )
+  module subroutine rhyme_plotter_canvas_plot ( canvas, output )
     use iso_fortran_env
 
     implicit none
 
     class ( plotter_canvas_t ), intent ( inout ) :: canvas
+    integer, intent ( in ), optional :: output
 
-    integer :: i, j, lb, ub, xlen, row_len
+    integer :: i, j, lb, ub, xlen, row_len, out
     character ( len=2048, kind = ucs4 ) :: row
 
-    open( output_unit, encoding='UTF-8' )
+    if ( present( output ) ) then
+      out = output
+    else
+      out = output_unit
+    end if
+
+    open( out, encoding='UTF-8' )
 
     lb = lbound( canvas%table, dim=1 )
     ub = ubound( canvas%table, dim=1 )
@@ -31,7 +38,7 @@ contains
         end if
       end do
 
-      print *, trim( row )
+      write( out, * ) trim( row )
     end do
   end subroutine rhyme_plotter_canvas_plot
 end submodule canvas_plot_smod

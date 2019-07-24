@@ -4,7 +4,7 @@ module rhyme_plotter
   integer, parameter, private :: offset_x = 16
   integer, parameter, private :: offset_y = 4
   integer, parameter, private :: max_nticks = 16
-  integer, parameter, private :: max_nbins = 128
+  integer, parameter, private :: max_nbins = 256
 
   integer, parameter :: ucs4  = selected_char_kind( 'ISO_10646' )
 
@@ -21,6 +21,8 @@ module rhyme_plotter
     logical :: is_on = .false.
     real ( kind=8 ) :: dx = 0d0, min = 0d0, max = 0d0
     real ( kind=8 ) :: tick_width_px = 0d0
+    real ( kind=8 ) :: ticks( max_nticks )
+    character ( len=16 ) :: tick_labels( max_nticks )
     integer :: scale = plid%linear, n_ticks
     character ( len=12 ) :: color
   end type plotter_canvas_axis_t
@@ -33,6 +35,7 @@ module rhyme_plotter
     procedure :: init => rhyme_plotter_canvas_init
     procedure :: add_axis => rhyme_plotter_canvas_add_axis
     procedure :: plot => rhyme_plotter_canvas_plot
+    procedure :: reset => rhyme_plotter_canvas_reset
   end type plotter_canvas_t
 
 
@@ -46,16 +49,23 @@ module rhyme_plotter
 
 
   type, private :: terminal_colors_t
-    character ( len=12 ) :: rd = achar(27)//"[0;1;31;91m" ! Red
-    character ( len=12 ) :: gn = achar(27)//"[0;1;32;92m" ! Green
-    character ( len=12 ) :: yl = achar(27)//"[0;1;33;93m" ! Yellow
-    character ( len=12 ) :: ig = achar(27)//"[0;1;34;94m" ! Indigo
-    character ( len=12 ) :: vt = achar(27)//"[0;1;35;95m" ! Violet
-    character ( len=12 ) :: bl = achar(27)//"[0;1;36;96m" ! Blue
+    character ( len=12 ) :: red = achar(27)//"[0;1;31;91m"
+    character ( len=12 ) :: rd = achar(27)//"[0;1;31;91m"
+    character ( len=12 ) :: green = achar(27)//"[0;1;32;92m"
+    character ( len=12 ) :: gn = achar(27)//"[0;1;32;92m"
+    character ( len=12 ) :: yellow = achar(27)//"[0;1;33;93m"
+    character ( len=12 ) :: yl = achar(27)//"[0;1;33;93m"
+    character ( len=12 ) :: indigo = achar(27)//"[0;1;34;94m"
+    character ( len=12 ) :: ig = achar(27)//"[0;1;34;94m"
+    character ( len=12 ) :: violet = achar(27)//"[0;1;35;95m"
+    character ( len=12 ) :: vt = achar(27)//"[0;1;35;95m"
+    character ( len=12 ) :: blue = achar(27)//"[0;1;36;96m"
+    character ( len=12 ) :: bl = achar(27)//"[0;1;36;96m"
     character ( len=4 ) :: nc = achar(27)//"[0m" ! Reset
   end type terminal_colors_t
 
   type ( terminal_colors_t ), parameter :: tc = terminal_colors_t ()
+  type ( terminal_colors_t ), parameter :: colors = terminal_colors_t ()
 
 
   interface
@@ -73,9 +83,14 @@ module rhyme_plotter
       character ( len=* ), intent ( in ), optional :: label, color
     end subroutine rhyme_plotter_canvas_add_axis
 
-    module subroutine rhyme_plotter_canvas_plot ( canvas )
+    module subroutine rhyme_plotter_canvas_plot ( canvas, output )
       class ( plotter_canvas_t ), intent ( inout ) :: canvas
+      integer, intent ( in ), optional :: output
     end subroutine rhyme_plotter_canvas_plot
+
+    pure module subroutine rhyme_plotter_canvas_reset ( canvas )
+      class ( plotter_canvas_t ), intent ( inout ) :: canvas
+    end subroutine rhyme_plotter_canvas_reset
 
     pure module function rhyme_plotter_histogram_1d ( d, nbins, &
       scale, minmax, base, normalized ) result ( hist )
@@ -88,6 +103,28 @@ module rhyme_plotter
       type ( plotter_histogram_t ) :: hist
     end function rhyme_plotter_histogram_1d
 
+    pure module function rhyme_plotter_histogram_2d ( d, nbins, &
+      scale, minmax, base, normalized ) result ( hist )
+      real ( kind=8 ), intent ( in ) :: d(:, :)
+      integer, intent ( in ) :: nbins
+      integer, intent ( in ) :: scale
+      real ( kind=8 ), intent ( in ), optional :: minmax(2)
+      real ( kind=8 ), intent ( in ), optional :: base
+      logical, intent ( in ), optional :: normalized
+      type ( plotter_histogram_t ) :: hist
+    end function rhyme_plotter_histogram_2d
+
+    pure module function rhyme_plotter_histogram_3d ( d, nbins, &
+      scale, minmax, base, normalized ) result ( hist )
+      real ( kind=8 ), intent ( in ) :: d(:, :, :)
+      integer, intent ( in ) :: nbins
+      integer, intent ( in ) :: scale
+      real ( kind=8 ), intent ( in ), optional :: minmax(2)
+      real ( kind=8 ), intent ( in ), optional :: base
+      logical, intent ( in ), optional :: normalized
+      type ( plotter_histogram_t ) :: hist
+    end function rhyme_plotter_histogram_3d
+
     module subroutine rhyme_plotter_histogram_draw_on ( hist, canvas, &
       xaxis, yaxis, color )
       class ( plotter_histogram_t ), intent ( in ) :: hist
@@ -99,5 +136,7 @@ module rhyme_plotter
 
   interface rhyme_plotter_histogram
     procedure rhyme_plotter_histogram_1d
+    procedure rhyme_plotter_histogram_2d
+    procedure rhyme_plotter_histogram_3d
   end interface rhyme_plotter_histogram
 end module rhyme_plotter
