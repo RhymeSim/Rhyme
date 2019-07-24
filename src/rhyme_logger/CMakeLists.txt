@@ -13,7 +13,9 @@ set( deps
   rhyme_string
 )
 
-set( internal_deps )
+set( internal_deps
+  rhyme_plotter
+)
 
 set( srcs
   src/rhyme_logger.f90

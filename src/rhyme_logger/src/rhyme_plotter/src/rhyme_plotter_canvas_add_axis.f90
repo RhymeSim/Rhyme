@@ -1,113 +1,134 @@
 submodule ( rhyme_plotter ) canvas_add_axis_smod
 contains
 
-  module subroutine rhyme_plotter_canvas_add_axis ( canvas, pos, n_ticks, &
-    minmax, scale, label )
+  module subroutine rhyme_plotter_canvas_add_axis ( canvas, axis, n_ticks, &
+    minmax, scale, label, color )
     implicit none
 
     class ( plotter_canvas_t ), intent ( inout ) :: canvas
-    integer, intent ( in ) :: pos, n_ticks
+    integer, intent ( in ) :: axis, n_ticks
     real ( kind=8 ), intent ( in ) :: minmax(2)
     integer, intent ( in ), optional :: scale
-    character ( len=* ), intent ( in ), optional :: label
+    character ( len=* ), intent ( in ), optional :: label, color
 
     integer :: ntick
     character ( len=16 ) :: tick_labels( max_nticks )
 
-    canvas%axes(pos)%is_on = .true.
-    canvas%axes(pos)%n_ticks = min( n_ticks, max_nticks )
-    canvas%axes(pos)%min = minmax(1)
-    canvas%axes(pos)%max = minmax(2)
+    canvas%axes(axis)%is_on = .true.
+    canvas%axes(axis)%n_ticks = min( n_ticks, max_nticks )
+    canvas%axes(axis)%min = minmax(1)
+    canvas%axes(axis)%max = minmax(2)
 
-    if ( present( scale ) ) then
-      canvas%axes(pos)%scale = scale
+    if ( present( color ) ) then
+      canvas%axes(axis)%color = color
     else
-      canvas%axes(pos)%scale = plid%linear
+      canvas%axes(axis)%color = ''
     end if
 
-    select case ( canvas%axes(pos)%scale )
+    if ( present( scale ) ) then
+      canvas%axes(axis)%scale = scale
+    else
+      canvas%axes(axis)%scale = plid%linear
+    end if
+
+    select case ( canvas%axes(axis)%scale )
     case ( plid%linear )
-      canvas%axes(pos)%dx = ( canvas%axes(pos)%max - canvas%axes(pos)%min ) &
-        / ( canvas%axes(pos)%n_ticks - 1 )
+      canvas%axes(axis)%dx = ( canvas%axes(axis)%max - canvas%axes(axis)%min ) &
+        / ( canvas%axes(axis)%n_ticks - 1 )
     case ( plid%log )
-      canvas%axes(pos)%dx = 1d1**( &
-        log10( canvas%axes(pos)%max / canvas%axes(pos)%min ) &
-        / ( canvas%axes(pos)%n_ticks - 1 ) &
+      canvas%axes(axis)%dx = 1d1**( &
+        log10( canvas%axes(axis)%max / canvas%axes(axis)%min ) &
+        / ( canvas%axes(axis)%n_ticks - 1 ) &
       )
     case default
-      canvas%axes(pos)%dx = ( canvas%axes(pos)%max - canvas%axes(pos)%min ) &
-        / ( canvas%axes(pos)%n_ticks - 1 )
+      canvas%axes(axis)%dx = ( canvas%axes(axis)%max - canvas%axes(axis)%min ) &
+        / ( canvas%axes(axis)%n_ticks - 1 )
     end select
 
     tick_labels = ''
 
-    do ntick = 1, canvas%axes(pos)%n_ticks
-      select case ( canvas%axes(pos)%scale )
+    do ntick = 1, canvas%axes(axis)%n_ticks
+      select case ( canvas%axes(axis)%scale )
       case ( plid%linear )
         write( tick_labels(ntick), '(ES10.2)' ) &
-          canvas%axes(pos)%min + canvas%axes(pos)%dx * ( ntick - 1 )
+          canvas%axes(axis)%min + canvas%axes(axis)%dx * ( ntick - 1 )
       case ( plid%log )
         write( tick_labels(ntick), '(ES10.2)' ) &
-          canvas%axes(pos)%min * canvas%axes(pos)%dx**( ntick - 1 )
+          canvas%axes(axis)%min * canvas%axes(axis)%dx**( ntick - 1 )
       case default
         write( tick_labels(ntick), '(ES10.2)' ) &
-          canvas%axes(pos)%min + canvas%axes(pos)%dx * ( ntick - 1 )
+          canvas%axes(axis)%min + canvas%axes(axis)%dx * ( ntick - 1 )
       end select
     end do
 
-    if ( pos .eq. plid%left .or. pos .eq. plid%right ) then
-      canvas%axes(pos)%tick_width_px = real( canvas%y, kind=8 ) &
-        / ( canvas%axes(pos)%n_ticks - 1 )
+    if ( axis .eq. plid%left .or. axis .eq. plid%right ) then
+      canvas%axes(axis)%tick_width_px = real( canvas%y, kind=8 ) &
+        / ( canvas%axes(axis)%n_ticks - 1 )
     else
-      canvas%axes(pos)%tick_width_px = real( canvas%x, kind=8 ) &
-        / ( canvas%axes(pos)%n_ticks - 1 )
+      canvas%axes(axis)%tick_width_px = real( canvas%x, kind=8 ) &
+        / ( canvas%axes(axis)%n_ticks - 1 )
     end if
 
-    select case ( pos )
+    select case ( axis )
     case ( plid%left )
-      call rhyme_plotter_canvas_add_vertical_axis( plid%left )
+      call rhyme_plotter_canvas_add_vertical_axis( plid%left, color )
     case ( plid%bottom )
-      call rhyme_plotter_canvas_add_horizontal_axis( plid%bottom )
+      call rhyme_plotter_canvas_add_horizontal_axis( plid%bottom, color )
     case ( plid%right )
-      call rhyme_plotter_canvas_add_vertical_axis( plid%right )
+      call rhyme_plotter_canvas_add_vertical_axis( plid%right, color )
     case ( plid%top )
-      call rhyme_plotter_canvas_add_horizontal_axis( plid%top )
+      call rhyme_plotter_canvas_add_horizontal_axis( plid%top, color )
     end select
 
   contains
 
-    subroutine rhyme_plotter_canvas_add_vertical_axis ( side )
+    subroutine rhyme_plotter_canvas_add_vertical_axis ( axis, color )
       implicit none
 
-      integer, intent ( in ) :: side
+      integer, intent ( in ) :: axis
+      character ( len=* ), intent ( in ), optional :: color
 
       integer :: x, y, nbin
       integer :: axis_col, label_col
       integer :: label_start, label_end
-      character ( len=1, kind=plid%ucs4 ) :: tick_char
+      character ( len=17, kind=ucs4 ) :: tick_char, axis_char
 
-      select case ( side )
+      select case ( axis )
       case ( plid%left )
         axis_col = 0
-        label_col = -14
-        label_start = -11
-        label_end = -2
-        tick_char = char( int( z'2524' ), plid%ucs4 )
+        label_col = -15
+        label_start = -12
+        label_end = -3
+        if ( present( color ) ) then
+          write( tick_char, '(A12,A1,A4)' ) color, char( int( z'2524' ), ucs4 ), tc%nc
+        else
+          write( tick_char, '(A1)' ) char( int( z'2524' ), ucs4 )
+        end if
       case ( plid%right )
         axis_col = canvas%x + 1
         label_col = canvas%x+16
-        label_start = canvas%x + 3
-        label_end = canvas%x + 12
-        tick_char = char( int( z'251C' ), plid%ucs4 )
+        label_start = canvas%x + 2
+        label_end = canvas%x + 11
+        if ( present( color ) ) then
+          write( tick_char, '(A12,A1,A4)' ) color, char( int( z'251C' ), ucs4 ), tc%nc
+        else
+          write( tick_char, '(A1)' ) char( int( z'251C' ), ucs4 )
+        end if
       case default
         return
       end select
 
-      canvas%table( axis_col, 1:canvas%y ) = char( int( z'2502' ), plid%ucs4 )
+      if ( present( color ) ) then
+        write( axis_char, '(A12,A1,A4)' ) color, char( int( z'2502' ), ucs4 ), tc%nc
+      else
+        write( axis_char, '(A1)' ) char( int( z'2502' ), ucs4 )
+      end if
+
+      canvas%table( axis_col, 1:canvas%y ) = axis_char
 
       nbin = 0
       do y = 1, canvas%y
-        if ( y .eq. int( nbin * canvas%axes(pos)%tick_width_px ) + 1 .or. y .eq. canvas%y ) then
+        if ( y .eq. int( nbin * canvas%axes(axis)%tick_width_px ) + 1 .or. y .eq. canvas%y ) then
           nbin = nbin + 1
 
           do x = label_start, label_end
@@ -128,38 +149,56 @@ contains
     end subroutine rhyme_plotter_canvas_add_vertical_axis
 
 
-    subroutine rhyme_plotter_canvas_add_horizontal_axis ( side )
+    subroutine rhyme_plotter_canvas_add_horizontal_axis ( axis, color )
       implicit none
 
-      integer, intent ( in ) :: side
+      integer, intent ( in ) :: axis
+      character ( len=* ), intent ( in ), optional :: color
 
       integer :: x, xl, nbin
       integer :: axis_row, labels_row, label_row
       integer :: label_start, label_end, label_len
+      character ( len=17, kind=ucs4 ) :: tick_char, axis_char
 
-      if ( side .eq. plid%bottom ) then
+      if ( axis .eq. plid%bottom ) then
         axis_row = canvas%y + 1
         labels_row = canvas%y + 2
         label_row = canvas%y + 4
-      else if ( side .eq. plid%top ) then
+        if ( present( color ) ) then
+          write( tick_char, '(A12,A1,A4)' ) color, char( int( z'252C' ), ucs4 ), tc%nc
+        else
+          write( tick_char, '(A1)' ) char( int( z'252C' ), ucs4 )
+        end if
+      else if ( axis .eq. plid%top ) then
         axis_row = 0
         labels_row = -1
         label_row = -3
+        if ( present( color ) ) then
+          write( tick_char, '(A12,A1,A4)' ) color, char( int( z'2534' ), ucs4 ), tc%nc
+        else
+          write( tick_char, '(A1)' ) char( int( z'2534' ), ucs4 )
+        end if
       else
         return
       end if
 
-      canvas%table( 1:canvas%x, axis_row ) = char( int( z'2500' ), plid%ucs4 )
+      if ( present( color ) ) then
+        write( axis_char, '(A12,A1,A4)' ) color, char( int( z'2500' ), ucs4 ), tc%nc
+      else
+        write( axis_char, '(A1)' ) char( int( z'2500' ), ucs4 )
+      end if
+
+      canvas%table( 1:canvas%x, axis_row ) = axis_char
 
       nbin = 0
       do x = 1, canvas%x
-        if ( x .eq. int( nbin * canvas%axes(pos)%tick_width_px ) + 1 .or. x .eq. canvas%x ) then
+        if ( x .eq. int( nbin * canvas%axes(axis)%tick_width_px ) + 1 .or. x .eq. canvas%x ) then
           nbin = nbin + 1
 
-          canvas%table( x, axis_row ) = char( int( z'252C' ), plid%ucs4 )
+          canvas%table( x, axis_row ) = tick_char
 
-          label_start = int( x - canvas%axes(pos)%tick_width_px / 2 - 1 )
-          label_len = int( canvas%axes(pos)%tick_width_px )
+          label_start = int( x - canvas%axes(axis)%tick_width_px / 2 - 1 )
+          label_len = int( canvas%axes(axis)%tick_width_px )
 
           do xl = label_start, label_start + label_len - 1
             canvas%table( xl, labels_row ) = tick_labels(nbin)( xl-label_start+1:xl-label_start+1 )

@@ -1,5 +1,6 @@
 module rhyme_logger
   use, intrinsic :: iso_fortran_env, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
+  use rhyme_plotter
   use rhyme_string
 
   implicit none
@@ -16,19 +17,6 @@ module rhyme_logger
   end type logger_const_t
 
   type ( logger_const_t ), parameter :: logger_const = logger_const_t ()
-
-
-  type, private :: terminal_colors_t
-    character ( len=12 ) :: rd = achar(27)//"[0;1;31;91m" ! Red
-    character ( len=12 ) :: gn = achar(27)//"[0;1;32;92m" ! Green
-    character ( len=12 ) :: yl = achar(27)//"[0;1;33;93m" ! Yellow
-    character ( len=12 ) :: ig = achar(27)//"[0;1;34;94m" ! Indigo
-    character ( len=12 ) :: vt = achar(27)//"[0;1;35;95m" ! Violet
-    character ( len=12 ) :: bl = achar(27)//"[0;1;36;96m" ! Blue
-    character ( len=4 ) :: nc = achar(27)//"[0m" ! Reset
-  end type terminal_colors_t
-
-  type ( terminal_colors_t ), parameter :: tc = terminal_colors_t ()
 
 
   type logger_t

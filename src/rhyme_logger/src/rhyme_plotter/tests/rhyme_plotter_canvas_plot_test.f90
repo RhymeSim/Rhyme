@@ -10,7 +10,7 @@ logical function rhyme_plotter_canvas_plot_test () result ( failed )
 
   do j = 1, 20
     do i = 1, 80
-      canvas%table = char( int( z'0041' ), plid%ucs4 )
+      canvas%table = char( int( z'0041' ), ucs4 )
     end do
   end do
 
