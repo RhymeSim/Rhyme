@@ -53,7 +53,7 @@ logical function rhyme_plotter_test () result ( failed )
   call canvas%plot
 
   open( 1234, file='plot1d.txt', action='write' )
-  call canvas%plot(1234)
+  call canvas%plot(1234, colored=.false. )
   close(1234)
 
   call canvas%clear
@@ -89,7 +89,7 @@ logical function rhyme_plotter_test () result ( failed )
   call canvas%plot
 
   open( 1234, file='plot2d.txt', action='write' )
-  call canvas%plot(1234)
+  call canvas%plot(1234, colored=.false. )
   close(1234)
 
   call canvas%clear
@@ -122,7 +122,7 @@ logical function rhyme_plotter_test () result ( failed )
   call canvas%plot
 
   open( 1234, file='plot3d.txt', action='write' )
-  call canvas%plot(1234)
+  call canvas%plot(1234, colored=.false. )
   close(1234)
 
   call canvas%clear

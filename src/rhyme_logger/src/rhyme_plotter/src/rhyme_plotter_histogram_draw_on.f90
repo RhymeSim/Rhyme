@@ -12,7 +12,7 @@ contains
     integer :: x, y, nbin, xa, ya, bar_tip
     real ( kind=8 ) :: bar_height
     character ( len=1, kind=ucs4 ) :: block_elem
-    character ( len=17, kind=ucs4 ) :: block_elem_colored
+    character ( len=17, kind=ucs4 ) :: block_elem_clr
     character ( len=12, kind=ucs4 ) :: clr
     character ( len=4, kind=ucs4 ) :: nc
 
@@ -62,11 +62,11 @@ contains
 
         do y = canvas%y, bar_tip + 1, -1
           if ( present( color ) ) then
-            write( canvas%clr( x, y ), '(A12,A1,A4)' ) color, char( int( z'2588' ), ucs4 ), colors%nc
+            write( canvas%grid( x, y, plid%clr ), '(A12,A1,A4)' ) color, char( int( z'2588' ), ucs4 ), colors%nc
           else
-            canvas%clr( x, y ) = char( int( z'2588' ), ucs4 )
+            canvas%grid( x, y, plid%clr ) = char( int( z'2588' ), ucs4 )
           end if
-          canvas%bw( x, y ) = char( int( z'2588' ), ucs4 )
+          canvas%grid( x, y, plid%bw ) = char( int( z'2588' ), ucs4 )
         end do
 
         if ( bar_height - floor( bar_height ) < .125d0 ) then
@@ -88,13 +88,13 @@ contains
         end if
 
         if ( present( color ) ) then
-          write( block_elem_colored, '(A12,A1,A4)' ) color, block_elem, colors%nc
+          write( block_elem_clr, '(A12,A1,A4)' ) color, block_elem, colors%nc
         else
-          block_elem_colored = block_elem
+          block_elem_clr = block_elem
         end if
 
-        canvas%clr(x, bar_tip) = block_elem_colored
-        canvas%bw(x, bar_tip) = block_elem
+        canvas%grid(x, bar_tip, plid%clr) = block_elem_clr
+        canvas%grid(x, bar_tip, plid%bw) = block_elem
       end if
 
     end do
@@ -109,19 +109,19 @@ contains
 
     if ( xa .eq. plid%bottom ) then
       if ( ya .eq. plid%left ) then
-        canvas%clr(0, canvas%y+1) = trim(clr)//char( int( z'2514' ), ucs4 )//trim(nc)
-        canvas%bw(0, canvas%y+1) = char( int( z'2514' ), ucs4 )
+        canvas%grid(0, canvas%y+1, plid%clr) = trim(clr)//char( int( z'2514' ), ucs4 )//trim(nc)
+        canvas%grid(0, canvas%y+1, plid%bw) = char( int( z'2514' ), ucs4 )
       else if ( ya .eq. plid%right ) then
-        canvas%clr(canvas%x+1, canvas%y+1) = trim(clr)//char( int( z'2518' ), ucs4 )//trim(nc)
-        canvas%bw(canvas%x+1, canvas%y+1) = char( int( z'2518' ), ucs4 )
+        canvas%grid(canvas%x+1, canvas%y+1, plid%clr) = trim(clr)//char( int( z'2518' ), ucs4 )//trim(nc)
+        canvas%grid(canvas%x+1, canvas%y+1, plid%bw) = char( int( z'2518' ), ucs4 )
       end if
     else if ( xa .eq. plid%top ) then
       if ( ya .eq. plid%left ) then
-        canvas%clr(0, 0) = trim(clr)//char( int( z'250C' ), ucs4 )//trim(nc)
-        canvas%bw(0, 0) = char( int( z'250C' ), ucs4 )
+        canvas%grid(0, 0, plid%clr) = trim(clr)//char( int( z'250C' ), ucs4 )//trim(nc)
+        canvas%grid(0, 0, plid%bw) = char( int( z'250C' ), ucs4 )
       else if ( ya .eq. plid%right ) then
-        canvas%clr(canvas%x+1, 0) = trim(clr)//char( int( z'2510' ), ucs4 )//trim(nc)
-        canvas%bw(canvas%x+1, 0) = char( int( z'2510' ), ucs4 )
+        canvas%grid(canvas%x+1, 0, plid%clr) = trim(clr)//char( int( z'2510' ), ucs4 )//trim(nc)
+        canvas%grid(canvas%x+1, 0, plid%bw) = char( int( z'2510' ), ucs4 )
       end if
     end if
   end subroutine rhyme_plotter_histogram_draw_on

@@ -5,7 +5,6 @@ contains
 
     class ( plotter_canvas_t ), intent ( inout ) :: canvas
 
-    canvas%bw = ''
-    canvas%clr = ''
+    canvas%grid = ''
   end subroutine rhyme_plotter_canvas_clear
 end submodule canvas_clear_smod

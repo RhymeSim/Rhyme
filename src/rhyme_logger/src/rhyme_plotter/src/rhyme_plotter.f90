@@ -12,6 +12,8 @@ module rhyme_plotter
     integer :: unset = 0
     integer :: top = 1, bottom = 2, left = 3, right = 4
     integer :: log = 100, linear = 101
+    integer :: black_and_white = 1, bw = 1
+    integer :: colored = 2, clr = 2
   end type rhyme_plotter_indices
 
   type ( rhyme_plotter_indices ), parameter :: plid = rhyme_plotter_indices()
@@ -29,9 +31,10 @@ module rhyme_plotter
 
   type plotter_canvas_t
     integer :: x = plid%unset, y = plid%unset
+    integer :: lbound_x = plid%unset, ubound_x = plid%unset
+    integer :: lbound_y = plid%unset, ubound_y = plid%unset
     type ( plotter_canvas_axis_t ) :: axes(4)
-    character ( len=1, kind=ucs4 ), allocatable :: bw(:, :)
-    character ( len=32, kind=ucs4 ), allocatable :: clr(:, :)
+    character ( len=32, kind=ucs4 ), allocatable :: grid(:, :, :)
   contains
     procedure :: init => rhyme_plotter_canvas_init
     procedure :: add_axis => rhyme_plotter_canvas_add_axis
@@ -84,9 +87,10 @@ module rhyme_plotter
       character ( len=* ), intent ( in ), optional :: label, color
     end subroutine rhyme_plotter_canvas_add_axis
 
-    module subroutine rhyme_plotter_canvas_plot ( canvas, output )
+    module subroutine rhyme_plotter_canvas_plot ( canvas, output, colored )
       class ( plotter_canvas_t ), intent ( inout ) :: canvas
       integer, intent ( in ), optional :: output
+      logical, intent ( in ), optional :: colored
     end subroutine rhyme_plotter_canvas_plot
 
     pure module subroutine rhyme_plotter_canvas_clear ( canvas )

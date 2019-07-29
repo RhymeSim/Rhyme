@@ -84,7 +84,7 @@ contains
       integer :: x, y, nbin
       integer :: axis_col, label_col
       integer :: ls, le ! label_start, label_end
-      character ( len=17, kind=ucs4 ) :: tick_char_colored, axis_char_colored
+      character ( len=17, kind=ucs4 ) :: tick_char_clr, axis_char_clr
       character ( len=1, kind=ucs4 ) :: tick_char, axis_char
 
       if ( axis .eq. plid%left ) then
@@ -93,9 +93,9 @@ contains
         ls = -12
         le = -3
         if ( present( color ) ) then
-          write( tick_char_colored, '(A12,A1,A4)' ) color, char( int( z'2524' ), ucs4 ), colors%nc
+          write( tick_char_clr, '(A12,A1,A4)' ) color, char( int( z'2524' ), ucs4 ), colors%nc
         else
-          tick_char_colored = char( int( z'2524' ), ucs4 )
+          tick_char_clr = char( int( z'2524' ), ucs4 )
         end if
         tick_char = char( int( z'2524' ), ucs4 )
       else if ( axis .eq. plid%right ) then
@@ -104,9 +104,9 @@ contains
         ls = canvas%x + 2
         le = canvas%x + 11
         if ( present( color ) ) then
-          write( tick_char_colored, '(A12,A1,A4)' ) color, char( int( z'251C' ), ucs4 ), colors%nc
+          write( tick_char_clr, '(A12,A1,A4)' ) color, char( int( z'251C' ), ucs4 ), colors%nc
         else
-          tick_char_colored = char( int( z'251C' ), ucs4 )
+          tick_char_clr = char( int( z'251C' ), ucs4 )
         end if
         tick_char = char( int( z'251C' ), ucs4 )
       else
@@ -114,15 +114,15 @@ contains
       end if
 
       if ( present( color ) ) then
-        write( axis_char_colored, '(A12,A1,A4)' ) color, char( int( z'2502' ), ucs4 ), colors%nc
+        write( axis_char_clr, '(A12,A1,A4)' ) color, char( int( z'2502' ), ucs4 ), colors%nc
       else
-        axis_char_colored = char( int( z'2502' ), ucs4 )
+        axis_char_clr = char( int( z'2502' ), ucs4 )
       end if
 
       axis_char = char( int( z'2502' ), ucs4 )
 
-      canvas%bw( axis_col, 1:canvas%y ) = axis_char
-      canvas%clr( axis_col, 1:canvas%y ) = axis_char_colored
+      canvas%grid( axis_col, 1:canvas%y, plid%bw ) = axis_char
+      canvas%grid( axis_col, 1:canvas%y, plid%clr ) = axis_char_clr
 
       nbin = 0
       do y = 1, canvas%y
@@ -130,12 +130,11 @@ contains
           nbin = nbin + 1
 
           do x = ls, le
-            canvas%bw( x, canvas%y - y + 1 ) = canvas%axes(axis)%tick_labels(nbin)( 1+x-ls:1+x-ls )
-            canvas%clr( x, canvas%y - y + 1 ) = canvas%axes(axis)%tick_labels(nbin)( 1+x-ls:1+x-ls )
+            canvas%grid( x, canvas%y-y+1, : ) = canvas%axes(axis)%tick_labels(nbin)( 1+x-ls:1+x-ls )
           end do
 
-          canvas%bw( axis_col, canvas%y-y+1 ) = tick_char
-          canvas%clr( axis_col, canvas%y-y+1 ) = tick_char_colored
+          canvas%grid( axis_col, canvas%y-y+1, plid%bw ) = tick_char
+          canvas%grid( axis_col, canvas%y-y+1, plid%clr ) = tick_char_clr
         end if
       end do
 
@@ -144,8 +143,7 @@ contains
         le = min( ls + len_trim( label ) - 1, canvas%y )
 
         do y = ls, le
-          canvas%bw( label_col, y ) = label( y-ls+1:y-ls+1 )
-          canvas%clr( label_col, y ) = label( y-ls+1:y-ls+1 )
+          canvas%grid( label_col, y, : ) = label( y-ls+1:y-ls+1 )
         end do
       end if
     end subroutine rhyme_plotter_canvas_add_vertical_axis
@@ -159,7 +157,7 @@ contains
       integer :: x, xl, nbin
       integer :: axis_row, labels_row, label_row
       integer :: ls, le ! ls, le
-      character ( len=17, kind=ucs4 ) :: tick_char_colored, axis_char_colored
+      character ( len=17, kind=ucs4 ) :: tick_char_clr, axis_char_clr
       character ( len=1, kind=ucs4 ) :: tick_char, axis_char
 
       if ( axis .eq. plid%bottom ) then
@@ -167,9 +165,9 @@ contains
         labels_row = canvas%y + 2
         label_row = canvas%y + 4
         if ( present( color ) ) then
-          write( tick_char_colored, '(A12,A1,A4)' ) color, char( int( z'252C' ), ucs4 ), colors%nc
+          write( tick_char_clr, '(A12,A1,A4)' ) color, char( int( z'252C' ), ucs4 ), colors%nc
         else
-          tick_char_colored = char( int( z'252C' ), ucs4 )
+          tick_char_clr = char( int( z'252C' ), ucs4 )
         end if
         tick_char = char( int( z'252C' ), ucs4 )
       else if ( axis .eq. plid%top ) then
@@ -177,9 +175,9 @@ contains
         labels_row = -1
         label_row = -3
         if ( present( color ) ) then
-          write( tick_char_colored, '(A12,A1,A4)' ) color, char( int( z'2534' ), ucs4 ), colors%nc
+          write( tick_char_clr, '(A12,A1,A4)' ) color, char( int( z'2534' ), ucs4 ), colors%nc
         else
-          tick_char_colored = char( int( z'2534' ), ucs4 )
+          tick_char_clr = char( int( z'2534' ), ucs4 )
         end if
         tick_char = char( int( z'2534' ), ucs4 )
       else
@@ -187,22 +185,22 @@ contains
       end if
 
       if ( present( color ) ) then
-        write( axis_char_colored, '(A12,A1,A4)' ) color, char( int( z'2500' ), ucs4 ), colors%nc
+        write( axis_char_clr, '(A12,A1,A4)' ) color, char( int( z'2500' ), ucs4 ), colors%nc
       else
-        axis_char_colored = char( int( z'2500' ), ucs4 )
+        axis_char_clr = char( int( z'2500' ), ucs4 )
       end if
       axis_char = char( int( z'2500' ), ucs4 )
 
-      canvas%bw( 1:canvas%x, axis_row ) = axis_char
-      canvas%clr( 1:canvas%x, axis_row ) = axis_char_colored
+      canvas%grid( 1:canvas%x, axis_row, plid%bw ) = axis_char
+      canvas%grid( 1:canvas%x, axis_row, plid%clr ) = axis_char_clr
 
       nbin = 0
       do x = 1, canvas%x
         if ( x .eq. int( nbin * canvas%axes(axis)%tick_width_px ) + 1 .or. x .eq. canvas%x ) then
           nbin = nbin + 1
 
-          canvas%bw( x, axis_row ) = tick_char
-          canvas%clr( x, axis_row ) = tick_char_colored
+          canvas%grid( x, axis_row, plid%bw ) = tick_char
+          canvas%grid( x, axis_row, plid%clr ) = tick_char_clr
 
           ls = max( &
             int( x - len_trim( canvas%axes(axis)%tick_labels(nbin) ) / 2 ) - 1, &
@@ -214,8 +212,7 @@ contains
             canvas%x + offset_x )
 
           do xl = ls, le
-            canvas%bw( xl, labels_row ) = canvas%axes(axis)%tick_labels(nbin)( 1+xl-ls:1+xl-ls )
-            canvas%clr( xl, labels_row ) = canvas%axes(axis)%tick_labels(nbin)( 1+xl-ls:1+xl-ls )
+            canvas%grid( xl, labels_row, : ) = canvas%axes(axis)%tick_labels(nbin)( 1+xl-ls:1+xl-ls )
           end do
         end if
       end do
@@ -225,8 +222,7 @@ contains
         le = min( ls + len_trim( label ) - 1, canvas%x )
 
         do xl = ls, le
-          canvas%bw( xl, label_row ) = label( 1+xl-ls:1+xl-ls )
-          canvas%clr( xl, label_row ) = label( 1+xl-ls:1+xl-ls )
+          canvas%grid( xl, label_row, : ) = label( 1+xl-ls:1+xl-ls )
         end do
       end if
     end subroutine rhyme_plotter_canvas_add_horizontal_axis

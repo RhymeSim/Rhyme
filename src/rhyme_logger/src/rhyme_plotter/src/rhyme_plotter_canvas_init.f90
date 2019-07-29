@@ -9,20 +9,21 @@ contains
     canvas%x = x
     canvas%y = y
 
+    canvas%lbound_x = 1 - offset_x
+    canvas%ubound_x = x + offset_x
+    canvas%lbound_y = 1 - offset_y
+    canvas%ubound_y = y + offset_y
+
+    ! default values
     canvas%axes%is_on = .false.
     canvas%axes%scale = plid%linear
 
-    if ( allocated( canvas%bw ) ) deallocate( canvas%bw )
-    if ( allocated( canvas%clr ) ) deallocate( canvas%clr )
+    if ( allocated( canvas%grid ) ) deallocate( canvas%grid )
 
-    allocate( canvas%bw( &
-      1-offset_x:x+offset_x, &
-      1-offset_y:y+offset_y &
-    ))
-
-    allocate( canvas%clr( &
-      1-offset_x:x+offset_x, &
-      1-offset_y:y+offset_y &
+    allocate( canvas%grid( &
+      canvas%lbound_x:canvas%ubound_x, &
+      canvas%lbound_y:canvas%ubound_y, &
+      2 &
     ))
 
     call canvas%clear
