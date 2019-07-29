@@ -16,7 +16,7 @@ set( internal_deps )
 set( srcs
   src/rhyme_plotter_histogram_draw_on.f90
   src/rhyme_plotter_histogram.f90
-  src/rhyme_plotter_canvas_reset.f90
+  src/rhyme_plotter_canvas_clear.f90
   src/rhyme_plotter_canvas_plot.f90
   src/rhyme_plotter_canvas_add_axis.f90
   src/rhyme_plotter_canvas_init.f90

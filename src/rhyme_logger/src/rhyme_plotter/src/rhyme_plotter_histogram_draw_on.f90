@@ -10,8 +10,11 @@ contains
     character ( len=* ), intent ( in ), optional :: color
 
     integer :: x, y, nbin, xa, ya, bar_tip
-    real ( kind=8 ) :: bar_height, fit_to_width
+    real ( kind=8 ) :: bar_height
     character ( len=1, kind=ucs4 ) :: block_elem
+    character ( len=17, kind=ucs4 ) :: block_elem_colored
+    character ( len=12, kind=ucs4 ) :: clr
+    character ( len=4, kind=ucs4 ) :: nc
 
     if ( present( xaxis ) ) then
       xa = xaxis
@@ -25,7 +28,6 @@ contains
       ya = plid%left
     end if
 
-    fit_to_width = canvas%axes(xa)%tick_width_px
 
     do nbin = 1, hist%nbins
       if ( hist%counts(nbin) < canvas%axes(ya)%min ) cycle
@@ -36,12 +38,12 @@ contains
       select case ( canvas%axes(xa)%scale )
       case ( plid%linear )
         x = floor( ( hist%bin_centers(nbin) - canvas%axes(xa)%min ) &
-          / canvas%axes(xa)%dx * fit_to_width ) + 1
+          / canvas%axes(xa)%dx * canvas%axes(xa)%tick_width_px ) + 1
       case ( plid%log )
         x = floor( &
           ( log10( hist%bin_centers(nbin) / canvas%axes(xa)%min ) ) &
           / log10( canvas%axes(xa)%dx ) &
-          * fit_to_width &
+          * canvas%axes(xa)%tick_width_px &
         ) + 1
       case default
         return
@@ -56,15 +58,16 @@ contains
 
 
       if ( floor( bar_height ) > 0 ) then
-        do y = canvas%y, canvas%y - floor( bar_height ) + 1, -1
-          if ( present( color ) ) then
-            write( canvas%table( x, y ), '(A12,A1,A4)' ) color, char( int( z'2588' ), ucs4 ), colors%nc
-          else
-            write( canvas%table( x, y ), '(A1)' ) char( int( z'2588' ), ucs4 )
-          end if
-        end do
-
         bar_tip = canvas%y - floor( bar_height ) + 1
+
+        do y = canvas%y, bar_tip + 1, -1
+          if ( present( color ) ) then
+            write( canvas%clr( x, y ), '(A12,A1,A4)' ) color, char( int( z'2588' ), ucs4 ), colors%nc
+          else
+            canvas%clr( x, y ) = char( int( z'2588' ), ucs4 )
+          end if
+          canvas%bw( x, y ) = char( int( z'2588' ), ucs4 )
+        end do
 
         if ( bar_height - floor( bar_height ) < .125d0 ) then
           block_elem = char( int( z'2581' ), ucs4 )
@@ -85,43 +88,41 @@ contains
         end if
 
         if ( present( color ) ) then
-          write( canvas%table(x, bar_tip), '(A12,A1,A4)' ) color, block_elem, colors%nc
+          write( block_elem_colored, '(A12,A1,A4)' ) color, block_elem, colors%nc
         else
-          write( canvas%table(x, bar_tip), '(A1)' ) block_elem
+          block_elem_colored = block_elem
         end if
+
+        canvas%clr(x, bar_tip) = block_elem_colored
+        canvas%bw(x, bar_tip) = block_elem
       end if
 
     end do
 
+    if ( len_trim( canvas%axes(xa)%color ) > 0 ) then
+      clr = canvas%axes(xa)%color
+      nc = colors%nc
+    else
+      clr = ''
+      nc = ''
+    end if
+
     if ( xa .eq. plid%bottom ) then
       if ( ya .eq. plid%left ) then
-        if ( len_trim( canvas%axes(xa)%color ) > 0 ) then
-          write( canvas%table(0, canvas%y+1), '(A12,A1,A4)' ) canvas%axes(xa)%color, char( int( z'2514' ), ucs4 ), colors%nc
-        else
-          write( canvas%table(0, canvas%y+1), '(A1)' ) char( int( z'2514' ), ucs4 )
-        end if
+        canvas%clr(0, canvas%y+1) = trim(clr)//char( int( z'2514' ), ucs4 )//trim(nc)
+        canvas%bw(0, canvas%y+1) = char( int( z'2514' ), ucs4 )
       else if ( ya .eq. plid%right ) then
-        if ( len_trim( canvas%axes(xa)%color ) > 0 ) then
-          write( canvas%table(canvas%x+1, canvas%y+1), '(A12,A1,A4)' ) canvas%axes(xa)%color, char( int( z'2518' ), ucs4 ), colors%nc
-        else
-          write( canvas%table(canvas%x+1, canvas%y+1), '(A1)' ) char( int( z'2518' ), ucs4 )
-        end if
+        canvas%clr(canvas%x+1, canvas%y+1) = trim(clr)//char( int( z'2518' ), ucs4 )//trim(nc)
+        canvas%bw(canvas%x+1, canvas%y+1) = char( int( z'2518' ), ucs4 )
       end if
     else if ( xa .eq. plid%top ) then
       if ( ya .eq. plid%left ) then
-        if ( len_trim( canvas%axes(xa)%color ) > 0 ) then
-          write( canvas%table(0, 0), '(A12,A1,A4)' ) canvas%axes(xa)%color, char( int( z'250C' ), ucs4 ), colors%nc
-        else
-          write( canvas%table(0, 0), '(A1)' ) char( int( z'250C' ), ucs4 )
-        end if
+        canvas%clr(0, 0) = trim(clr)//char( int( z'250C' ), ucs4 )//trim(nc)
+        canvas%bw(0, 0) = char( int( z'250C' ), ucs4 )
       else if ( ya .eq. plid%right ) then
-        if ( len_trim( canvas%axes(xa)%color ) > 0 ) then
-          write( canvas%table(canvas%x+1, 0), '(A12,A1,A4)' ) canvas%axes(xa)%color, char( int( z'2510' ), ucs4 ), colors%nc
-        else
-          write( canvas%table(canvas%x+1, 0), '(A1)' ) char( int( z'2510' ), ucs4 )
-        end if
+        canvas%clr(canvas%x+1, 0) = trim(clr)//char( int( z'2510' ), ucs4 )//trim(nc)
+        canvas%bw(canvas%x+1, 0) = char( int( z'2510' ), ucs4 )
       end if
     end if
-
   end subroutine rhyme_plotter_histogram_draw_on
 end submodule histogram_draw_on_smod

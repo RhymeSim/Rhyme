@@ -19,22 +19,22 @@ contains
 
     open( out, encoding='UTF-8' )
 
-    lb = lbound( canvas%table, dim=1 )
-    ub = ubound( canvas%table, dim=1 )
+    lb = lbound( canvas%clr, dim=1 )
+    ub = ubound( canvas%clr, dim=1 )
 
     xlen = ub - lb + 1
 
-    do j = 1 - offset_y, canvas%y + offset_y
+    do j = lbound( canvas%clr, dim=2 ), ubound( canvas%clr, dim=2 )
       row = ''
       row_len = 1
 
       do i = lb, ub
-        if ( len_trim( canvas%table(i,j) ) < 1 ) then
+        if ( len_trim( canvas%clr(i,j) ) .eq. 0 ) then
           row = row(1:row_len)//char( int( z'0020' ), ucs4 )
           row_len = row_len + 1
         else
-          row = row(1:row_len)//trim( canvas%table(i,j) )
-          row_len = row_len + len_trim( canvas%table(i,j) )
+          row = row(1:row_len)//trim( canvas%clr(i,j) )
+          row_len = row_len + len_trim( canvas%clr(i,j) )
         end if
       end do
 

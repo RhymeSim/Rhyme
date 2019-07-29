@@ -30,12 +30,13 @@ module rhyme_plotter
   type plotter_canvas_t
     integer :: x = plid%unset, y = plid%unset
     type ( plotter_canvas_axis_t ) :: axes(4)
-    character ( len=32, kind=ucs4 ), allocatable :: table(:, :)
+    character ( len=1, kind=ucs4 ), allocatable :: bw(:, :)
+    character ( len=32, kind=ucs4 ), allocatable :: clr(:, :)
   contains
     procedure :: init => rhyme_plotter_canvas_init
     procedure :: add_axis => rhyme_plotter_canvas_add_axis
     procedure :: plot => rhyme_plotter_canvas_plot
-    procedure :: reset => rhyme_plotter_canvas_reset
+    procedure :: clear => rhyme_plotter_canvas_clear
   end type plotter_canvas_t
 
 
@@ -88,9 +89,9 @@ module rhyme_plotter
       integer, intent ( in ), optional :: output
     end subroutine rhyme_plotter_canvas_plot
 
-    pure module subroutine rhyme_plotter_canvas_reset ( canvas )
+    pure module subroutine rhyme_plotter_canvas_clear ( canvas )
       class ( plotter_canvas_t ), intent ( inout ) :: canvas
-    end subroutine rhyme_plotter_canvas_reset
+    end subroutine rhyme_plotter_canvas_clear
 
     pure module function rhyme_plotter_histogram_1d ( d, nbins, &
       scale, minmax, base, normalized ) result ( hist )

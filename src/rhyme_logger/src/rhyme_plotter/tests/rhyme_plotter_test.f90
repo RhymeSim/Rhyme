@@ -56,8 +56,7 @@ logical function rhyme_plotter_test () result ( failed )
   call canvas%plot(1234)
   close(1234)
 
-  call canvas%reset
-
+  call canvas%clear
 
   ! 2D
   call random_number( d2 )
@@ -68,22 +67,22 @@ logical function rhyme_plotter_test () result ( failed )
   hist2_dr = rhyme_plotter_histogram( dr2, 256, plid%log, normalized=.false. )
   hist2_d = rhyme_plotter_histogram( d2, 256, plid%log, normalized=.false. )
 
-  call canvas%add_axis( plid%left, 6, &
+  call canvas%add_axis( plid%left, 5, &
     [ minval(hist2_dr%counts), maxval(hist2_dr%counts) ], &
     scale=plid%linear, label='rho (kg / m^3)', color=colors%yellow )
 
-  call canvas%add_axis( plid%top, 8, &
-    [ 1d-3, maxval(dr) ], scale=plid%log, label='P (Pa)', color=colors%yellow )
+  call canvas%add_axis( plid%top, 7, &
+    [ 1d4 * minval(dr), maxval(dr) ], scale=plid%log, label='P (Pa)', color=colors%yellow )
 
   call hist2_dr%draw_on( canvas, xaxis=plid%top, color=colors%yellow )
 
 
-  call canvas%add_axis( plid%right, 6, &
+  call canvas%add_axis( plid%right, 5, &
     [ minval(hist2_d%counts), maxval(hist2_d%counts) ], &
     scale=plid%linear, label='rho (kg / m^3)', color=colors%indigo )
 
-  call canvas%add_axis( plid%bottom, 8, &
-    [ 1d-2, maxval(d) ], scale=plid%log, label='T (K)', color=colors%indigo )
+  call canvas%add_axis( plid%bottom, 7, &
+    [ 1d4 * minval(d), maxval(d) ], scale=plid%log, label='T (K)', color=colors%indigo )
 
   call hist2_d%draw_on( canvas, yaxis=plid%right, color=colors%indigo )
 
@@ -93,7 +92,7 @@ logical function rhyme_plotter_test () result ( failed )
   call canvas%plot(1234)
   close(1234)
 
-  call canvas%reset
+  call canvas%clear
 
 
   ! 3D
@@ -102,21 +101,21 @@ logical function rhyme_plotter_test () result ( failed )
 
   dr3 = d3 * r3
 
-  hist3_dr = rhyme_plotter_histogram( dr3, 128, plid%log, normalized=.false. )
+  hist3_dr = rhyme_plotter_histogram( dr3, 256, plid%log, normalized=.false. )
 
-  call canvas%add_axis( plid%right, 6, &
+  call canvas%add_axis( plid%right, 7, &
     [ minval(hist3_d%counts), maxval(hist3_d%counts) ], &
     scale=plid%linear, label='rho (kg / m^3)', color=colors%blue )
 
-  call canvas%add_axis( plid%top, 8, &
-    [ minval(d), maxval(d) ], scale=plid%log, label='T (K)', color=colors%blue )
+  call canvas%add_axis( plid%top, 4, &
+    [ minval(d), maxval(d) ], scale=plid%log, label='T (K)' )
 
-  call canvas%add_axis( plid%left, 6, &
+  call canvas%add_axis( plid%left, 7, &
     [ minval(hist3_dr%counts), maxval(hist3_dr%counts) ], &
     scale=plid%linear, label='rho (kg / m^3)', color=colors%violet )
 
-  call canvas%add_axis( plid%bottom, 8, &
-    [ minval(dr) * 1e3, maxval(dr) ], scale=plid%log, label='P (Pa)', color=colors%violet )
+  call canvas%add_axis( plid%bottom, 9, &
+    [ 1d5 * minval(dr), maxval(dr) ], scale=plid%log, label='P (Pa)', color=colors%violet )
 
   call hist3_dr%draw_on( canvas, color=colors%violet )
 
@@ -125,6 +124,8 @@ logical function rhyme_plotter_test () result ( failed )
   open( 1234, file='plot3d.txt', action='write' )
   call canvas%plot(1234)
   close(1234)
+
+  call canvas%clear
 
 
   ! To see the output set failed to .true.

@@ -12,13 +12,19 @@ contains
     canvas%axes%is_on = .false.
     canvas%axes%scale = plid%linear
 
-    if ( allocated( canvas%table ) ) deallocate( canvas%table )
+    if ( allocated( canvas%bw ) ) deallocate( canvas%bw )
+    if ( allocated( canvas%clr ) ) deallocate( canvas%clr )
 
-    allocate( canvas%table( &
+    allocate( canvas%bw( &
       1-offset_x:x+offset_x, &
       1-offset_y:y+offset_y &
     ))
 
-    canvas%table = ''
+    allocate( canvas%clr( &
+      1-offset_x:x+offset_x, &
+      1-offset_y:y+offset_y &
+    ))
+
+    call canvas%clear
   end subroutine rhyme_plotter_canvas_init
 end submodule canvas_init_smod
