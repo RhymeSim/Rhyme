@@ -108,7 +108,7 @@ logical function rhyme_plotter_test () result ( failed )
     scale=plid%linear, label='rho (kg / m^3)', color=colors%blue )
 
   call canvas%add_axis( plid%top, 4, &
-    [ minval(d), maxval(d) ], scale=plid%log, label='T (K)' )
+    [ minval(d), maxval(d) ], scale=plid%log, label='T (K)', color=colors%blue )
 
   call canvas%add_axis( plid%left, 7, &
     [ minval(hist3_dr%counts), maxval(hist3_dr%counts) ], &
@@ -129,5 +129,5 @@ logical function rhyme_plotter_test () result ( failed )
 
 
   ! To see the output set failed to .true.
-  failed = .true.
+  failed = .false.
 end function rhyme_plotter_test

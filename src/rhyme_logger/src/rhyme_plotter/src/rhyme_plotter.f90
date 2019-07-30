@@ -1,8 +1,9 @@
 module rhyme_plotter
   implicit none
 
-  integer, parameter, private :: offset_x = 16
+  integer, parameter, private :: offset_x = 15
   integer, parameter, private :: offset_y = 4
+  integer, parameter, private :: canvas_border = 2
   integer, parameter, private :: max_nticks = 16
   integer, parameter, private :: max_nbins = 256
 

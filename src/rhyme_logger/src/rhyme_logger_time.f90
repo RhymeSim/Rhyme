@@ -45,7 +45,7 @@ contains
 
     do i = 1, this%secid
       if ( i > 1 ) then
-      tas_str = trim( tas_str )//'»'//trim( this%sections( i ) )
+      tas_str = trim( tas_str )//'》'//trim( this%sections( i ) )
       else
       tas_str = trim( tas_str )//' '//trim( this%sections( i ) )
       end if

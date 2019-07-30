@@ -9,10 +9,10 @@ contains
     canvas%x = x
     canvas%y = y
 
-    canvas%lbound_x = 1 - offset_x
-    canvas%ubound_x = x + offset_x
-    canvas%lbound_y = 1 - offset_y
-    canvas%ubound_y = y + offset_y
+    canvas%lbound_x = 1 - offset_x - canvas_border
+    canvas%ubound_x = x + offset_x + canvas_border
+    canvas%lbound_y = 1 - offset_y - canvas_border
+    canvas%ubound_y = y + offset_y + canvas_border
 
     ! default values
     canvas%axes%is_on = .false.
