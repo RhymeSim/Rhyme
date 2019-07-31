@@ -9,7 +9,7 @@ contains
 
     type ( nombre_unit_t ), pointer :: u
 
-    u => rhyme_nombre_unit_clone( n%u )
+    u => rhyme_nombre_units_clone( n%u )
 
     select type ( d => div )
     type is ( integer )
@@ -31,11 +31,11 @@ contains
 
     type ( nombre_unit_t ), pointer :: u, u_div
 
-    u => rhyme_nombre_unit_clone( n%u )
+    u => rhyme_nombre_units_clone( n%u )
 
     select type ( d => div )
     type is ( nombre_t )
-      u_div => rhyme_nombre_unit_clone( d%u )
+      u_div => rhyme_nombre_units_clone( d%u )
       n_new = nombre_t( d%v / n%v, u_div / u )
     type is ( integer )
       n_new = nombre_t( real( d, kind=8 ) / n%v, u**(-1d0) )

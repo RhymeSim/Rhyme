@@ -9,14 +9,14 @@ logical function rhyme_nombre_unit_prefix_mul_test () result ( failed )
 
   n_tester = .describe. "rhyme_nombre_unit_prefix_mul"
 
-  u => rhyme_nombre_unit_head( mega * sec )
+  u => rhyme_nombre_units_head( mega * sec )
   call n_tester%expect( associated( u%prev ) .toBe. .false. )
   call n_tester%expect( u%symb .toBe. 's' )
   call n_tester%expect( u%pow .toBe. 1.d0 )
   call n_tester%expect( u%prefix%symb .toBe. 'M' )
   call n_tester%expect( associated( u%next ) .toBe. .false. )
 
-  u => rhyme_nombre_unit_head( kilo * u )
+  u => rhyme_nombre_units_head( kilo * u )
   call n_tester%expect( associated( u%prev ) .toBe. .false. )
   call n_tester%expect( u%symb .toBe. 's' )
   call n_tester%expect( u%pow .toBe. 1.d0 )

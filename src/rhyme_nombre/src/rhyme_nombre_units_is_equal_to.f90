@@ -9,6 +9,8 @@ contains
 
     is_equal = .false.
 
-    if ( trim( u1%p()) .eq. trim( u2%p() ) ) is_equal = .true.
+    if ( trim( rhyme_nombre_units_print(u1) ) &
+      .eq. trim( rhyme_nombre_units_print(u2) ) &
+    ) is_equal = .true.
   end function rhyme_nombre_units_is_equal_to
 end submodule units_is_equal_to_smod

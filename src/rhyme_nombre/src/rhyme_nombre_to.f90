@@ -9,8 +9,8 @@ contains
 
     real ( kind=8 ) :: co, cn
 
-    co = nombre_unit_get_conv( n%u )
-    cn = nombre_unit_get_conv( u_new )
+    co = rhyme_nombre_units_conv_factor( n%u )
+    cn = rhyme_nombre_units_conv_factor( u_new )
 
     n_new%v = n%v * co / cn
 

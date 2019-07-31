@@ -1,4 +1,4 @@
-logical function rhyme_nombre_unit_pow_test () result (failed)
+logical function rhyme_nombre_units_pow_test () result (failed)
   use rhyme_nombre_units
   use rhyme_assertion
 
@@ -7,11 +7,11 @@ logical function rhyme_nombre_unit_pow_test () result (failed)
   type ( assertion_t ) :: n_tester
   type ( nombre_unit_t ), pointer :: u
 
-  n_tester = .describe. "rhyme_nombre_unit_pow"
+  n_tester = .describe. "rhyme_nombre_units_pow"
 
   u => kg * meter / sec
 
-  u => rhyme_nombre_unit_head( u**2.d0 )
+  u => rhyme_nombre_units_head( u**2.d0 )
 
   call n_tester%expect( associated( u%prev ) .toBe. .false. )
   call n_tester%expect( u%symb .toBe. 'g' )
@@ -25,7 +25,7 @@ logical function rhyme_nombre_unit_pow_test () result (failed)
   call n_tester%expect( u%next%next%prefix%symb .toBe. '' )
   call n_tester%expect( associated( u%next%next%next ) .toBe. .false. )
 
-  u => rhyme_nombre_unit_head( u**3 )
+  u => rhyme_nombre_units_head( u**3 )
   call n_tester%expect( associated( u%prev ) .toBe. .false. )
   call n_tester%expect( u%pow .toBe. 6.d0 )
   call n_tester%expect( u%next%pow .toBe. 6.d0 )
@@ -33,4 +33,4 @@ logical function rhyme_nombre_unit_pow_test () result (failed)
   call n_tester%expect( associated( u%next%next%next ) .toBe. .false. )
 
   failed = n_tester%failed()
-end function rhyme_nombre_unit_pow_test
+end function rhyme_nombre_units_pow_test

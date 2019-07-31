@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_unit ) unit_pow_smod
+submodule ( rhyme_nombre_units ) pow_smod
 contains
-  module function rhyme_nombre_unit_pow ( u, pow ) result ( new_u )
+  module function rhyme_nombre_units_pow ( u, pow ) result ( new_u )
     implicit none
 
     type ( nombre_unit_t ), intent ( in ), target :: u
@@ -8,7 +8,7 @@ contains
 
     type ( nombre_unit_t ), pointer :: new_u
 
-    new_u => rhyme_nombre_unit_tail( rhyme_nombre_unit_clone( u ) )
+    new_u => rhyme_nombre_units_tail( rhyme_nombre_units_clone( u ) )
 
     do while ( associated( new_u ) )
 
@@ -27,5 +27,5 @@ contains
         exit
       end if
     end do
-  end function rhyme_nombre_unit_pow
-end submodule unit_pow_smod
+  end function rhyme_nombre_units_pow
+end submodule pow_smod

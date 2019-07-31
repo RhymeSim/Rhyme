@@ -21,7 +21,7 @@ logical function rhyme_nombre_units_parse_test () result (failed)
   exponents = [ 1.d0, -2.d0, 2.d0, 4.d0, 1.d0 ]
 
   unit => rhyme_nombre_units_parse( str )
-  unit => rhyme_nombre_unit_head( unit )
+  unit => rhyme_nombre_units_head( unit )
 
   i = 1
   do while ( associated( unit%next ) )

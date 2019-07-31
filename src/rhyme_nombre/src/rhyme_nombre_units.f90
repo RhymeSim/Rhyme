@@ -38,6 +38,48 @@ module rhyme_nombre_units
 
 
   interface
+    module function rhyme_nombre_units_clone ( u ) result ( clone )
+      type ( nombre_unit_t ), intent ( in ), target :: u
+      type ( nombre_unit_t ), pointer :: clone
+    end function rhyme_nombre_units_clone
+
+    module function rhyme_nombre_units_mul ( u, mul ) result ( new_u_tail )
+      type ( nombre_unit_t ), intent ( in ), target :: u
+      class (*), intent ( in ) :: mul
+      type ( nombre_unit_t ), pointer :: new_u_tail
+    end function rhyme_nombre_units_mul
+
+    module function rhyme_nombre_units_div ( u1, u2 ) result ( u2_tail )
+      type ( nombre_unit_t ), intent ( in ), target :: u1, u2
+      type ( nombre_unit_t ), pointer :: u2_tail
+    end function rhyme_nombre_units_div
+
+    module function rhyme_nombre_units_pow ( u, pow ) result ( new_u )
+      type ( nombre_unit_t ), intent ( in ), target :: u
+      class (*), intent ( in ) :: pow
+      type ( nombre_unit_t ), pointer :: new_u
+    end function rhyme_nombre_units_pow
+
+    module function rhyme_nombre_units_conv_factor ( u ) result ( conv )
+      type ( nombre_unit_t ), target, intent ( in ) :: u
+      real ( kind=8 ) :: conv
+    end function rhyme_nombre_units_conv_factor
+
+    module function rhyme_nombre_units_print ( u ) result ( str )
+      class ( nombre_unit_t ), target, intent ( in ) :: u
+      character ( len=64 ) :: str
+    end function rhyme_nombre_units_print
+
+    module function rhyme_nombre_units_head ( u ) result ( head )
+      type ( nombre_unit_t ), pointer, intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: head
+    end function rhyme_nombre_units_head
+
+    module function rhyme_nombre_units_tail ( u ) result ( tail )
+      type ( nombre_unit_t ), pointer, intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: tail
+    end function rhyme_nombre_units_tail
+
     module function rhyme_nombre_units_is_equal_to ( u1, u2 ) result ( is_equal )
       type ( nombre_unit_t ), pointer, intent ( in ) :: u1, u2
       logical :: is_equal
@@ -52,10 +94,31 @@ module rhyme_nombre_units
       character ( len=* ), intent ( in ) :: str
       type ( nombre_unit_t ), pointer :: u
     end function rhyme_nombre_units_parse
+
+    module function rhyme_nombre_units_simplify ( u ) result ( u_simp )
+      type ( nombre_unit_t ), pointer, intent ( inout ) :: u
+      type ( nombre_unit_t ), pointer :: u_simp
+    end function rhyme_nombre_units_simplify
   end interface
 
+
+  interface operator ( ** )
+    procedure rhyme_nombre_units_pow
+  end interface operator ( ** )
+
+  interface operator ( * )
+    procedure rhyme_nombre_units_mul
+  end interface operator ( * )
+
+  interface operator ( / )
+    procedure rhyme_nombre_units_div
+  end interface operator ( / )
 
   interface operator ( .unitEqualsTo. )
     procedure rhyme_nombre_units_is_equal_to
   end interface operator ( .unitEqualsTo. )
+
+  interface operator ( .printUnit. )
+    procedure rhyme_nombre_units_print
+  end interface operator ( .printUnit. )
 end module rhyme_nombre_units

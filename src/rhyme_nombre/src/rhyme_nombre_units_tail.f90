@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_unit ) unit_tail_smod
+submodule ( rhyme_nombre_units ) tail_smod
 contains
-  module function rhyme_nombre_unit_tail ( u ) result ( tail )
+  module function rhyme_nombre_units_tail ( u ) result ( tail )
     implicit none
 
     type ( nombre_unit_t ), pointer, intent ( in ) :: u
@@ -11,5 +11,5 @@ contains
     do while ( associated( tail%next ) )
       tail => tail%next
     end do
-  end function rhyme_nombre_unit_tail
-end submodule unit_tail_smod
+  end function rhyme_nombre_units_tail
+end submodule tail_smod

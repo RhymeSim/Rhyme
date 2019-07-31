@@ -19,19 +19,22 @@ set( srcs
   src/rhyme_nombre_prefix_mul.f90
   src/rhyme_nombre_prefix.f90
 
-  src/rhyme_nombre_unit_tail.f90
-  src/rhyme_nombre_unit_head.f90
-  src/rhyme_nombre_unit_clone.f90
-  src/rhyme_nombre_unit_print.f90
-  src/rhyme_nombre_unit_div.f90
   src/rhyme_nombre_unit_prefix_mul.f90
-  src/rhyme_nombre_unit_mul.f90
-  src/rhyme_nombre_unit_pow.f90
+  src/rhyme_nombre_unit_clone.f90
   src/rhyme_nombre_unit.f90
 
+  src/rhyme_nombre_units_simplify.f90
+  src/rhyme_nombre_units_clone.f90
   src/rhyme_nombre_units_parse.f90
   src/rhyme_nombre_units_parse_single_term.f90
   src/rhyme_nombre_units_is_equal_to.f90
+  src/rhyme_nombre_units_tail.f90
+  src/rhyme_nombre_units_head.f90
+  src/rhyme_nombre_units_print.f90
+  src/rhyme_nombre_units_conv_factor.f90
+  src/rhyme_nombre_units_div.f90
+  src/rhyme_nombre_units_mul.f90
+  src/rhyme_nombre_units_pow.f90
   src/rhyme_nombre_units.f90
 
   src/rhyme_nombre_get_value.f90

@@ -1,4 +1,4 @@
-logical function rhyme_nombre_unit_head_test () result ( failed )
+logical function rhyme_nombre_units_head_test () result ( failed )
   use rhyme_nombre_units
   use rhyme_assertion
 
@@ -9,10 +9,10 @@ logical function rhyme_nombre_unit_head_test () result ( failed )
 
   u => ( kilo * gram ) * meter / sec**2
 
-  n_tester = .describe. "rhyme_nombre_unit_head"
+  n_tester = .describe. "rhyme_nombre_units_head"
 
-  head => rhyme_nombre_unit_head( u )
+  head => rhyme_nombre_units_head( u )
   call n_tester%expect( head%symb .toBe. 'g' )
 
   failed = n_tester%failed()
-end function rhyme_nombre_unit_head_test
+end function rhyme_nombre_units_head_test

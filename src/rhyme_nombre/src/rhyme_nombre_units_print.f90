@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_unit ) unit_print_smod
+submodule ( rhyme_nombre_units ) print_smod
 contains
-  module function rhyme_nombre_unit_print ( u ) result ( str )
+  module function rhyme_nombre_units_print ( u ) result ( str )
     implicit none
 
     class ( nombre_unit_t ), target, intent ( in ) :: u
@@ -11,7 +11,7 @@ contains
     str = ''
 
     u_head => u
-    u_head => rhyme_nombre_unit_head( u_head )
+    u_head => rhyme_nombre_units_head( u_head )
 
     do while ( associated( u_head ) )
       write( str, fmt="(A,A,A,A)" ) trim(str), ' ', trim( u_head%prefix%symb ), trim( u_head%symb )
@@ -28,5 +28,5 @@ contains
     end do
 
     str = adjustl( trim( str ) )
-  end function rhyme_nombre_unit_print
-end submodule unit_print_smod
+  end function rhyme_nombre_units_print
+end submodule print_smod
