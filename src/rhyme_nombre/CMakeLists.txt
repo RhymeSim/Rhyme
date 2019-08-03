@@ -19,6 +19,7 @@ set( srcs
   src/rhyme_nombre_prefix_mul.f90
   src/rhyme_nombre_prefix.f90
 
+  src/rhyme_nombre_unit_print.f90
   src/rhyme_nombre_unit_prefix_mul.f90
   src/rhyme_nombre_unit_clone.f90
   src/rhyme_nombre_unit.f90
@@ -31,6 +32,7 @@ set( srcs
   src/rhyme_nombre_units_tail.f90
   src/rhyme_nombre_units_head.f90
   src/rhyme_nombre_units_print.f90
+  src/rhyme_nombre_units_print_dim.f90
   src/rhyme_nombre_units_conv_factor.f90
   src/rhyme_nombre_units_div.f90
   src/rhyme_nombre_units_mul.f90

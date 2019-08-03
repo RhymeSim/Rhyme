@@ -6,30 +6,23 @@ contains
     type ( nombre_unit_t ), intent ( in ), target :: u
     type ( nombre_unit_t ), pointer :: clone
 
-    type ( nombre_unit_t ), pointer :: u_ptr
+    type ( nombre_unit_t ), pointer :: u_ptr, u_prev
 
-    allocate( clone )
     u_ptr => rhyme_nombre_units_head( u )
+    u_prev => null()
 
     do while ( associated( u_ptr ) )
-      clone%cloned = .true.
+      clone => rhyme_nombre_unit_clone( u_ptr )
 
-      clone%prefix = u_ptr%prefix
-      clone%symb = u_ptr%symb
-      clone%conv = u_ptr%conv
-      clone%dim = u_ptr%dim
-      clone%pow = u_ptr%pow
-
-      if ( associated( u_ptr%next ) ) then
-        allocate( clone%next )
-        clone%next%prev => clone
-        clone => clone%next
+      if ( associated( u_prev ) ) then
+        clone%prev => u_prev
+        clone%prev%next => clone
       end if
 
+      u_prev => clone
       u_ptr => u_ptr%next
     end do
 
     clone => rhyme_nombre_units_head( clone )
-
   end function rhyme_nombre_units_clone
 end submodule clone_smod

@@ -18,6 +18,10 @@ logical function rhyme_nombre_units_clone_test () result ( failed )
   call n_tester%expect( associated( u%next, u_cloned%next ) .toBe. .false. )
   call n_tester%expect( associated( u%next%next, u_cloned%next%next ) .toBe. .false. )
 
+  call n_tester%expect( u_cloned%dim%powers .toBe. dimid%mass%powers )
+  call n_tester%expect( u_cloned%next%dim%powers .toBe. dimid%length%powers )
+  call n_tester%expect( u_cloned%next%next%dim%powers .toBe. dimid%time%powers )
+
   u_cloned => rhyme_nombre_units_clone( meter )
   call n_tester%expect( u_cloned .unitEqualsTo. meter .toBe. .true. )
   call n_tester%expect( associated( u_cloned, meter ) .toBe. .false. )

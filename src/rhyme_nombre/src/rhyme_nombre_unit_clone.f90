@@ -8,8 +8,6 @@ contains
 
     allocate( clone )
 
-    clone%cloned = .true.
-
     clone%prefix = u%prefix
     clone%symb = u%symb
     clone%conv = u%conv

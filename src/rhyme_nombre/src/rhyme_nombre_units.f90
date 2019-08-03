@@ -3,38 +3,59 @@ module rhyme_nombre_units
 
   implicit none
 
+  type, private :: rhyme_nombre_unit_chain_t
+    ! Essential units
+    type ( nombre_unit_t ) :: kg = nombre_unit_t( kilo, "g", 1.d0, dimid%mass )
+    type ( nombre_unit_t ) :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
+    type ( nombre_unit_t ) :: sec = nombre_unit_t( one, "s", 1.d0, dimid%time )
+    type ( nombre_unit_t ) :: kel = nombre_unit_t( one, "K", 1.d0, dimid%theta )
+    type ( nombre_unit_t ) :: ampere = nombre_unit_t( one, "A", 1.d0, dimid%electric_current )
+    type ( nombre_unit_t ) :: mol = nombre_unit_t( one, "mol", 1.d0, dimid%amount_of_substance )
+
+    ! Mass
+    type ( nombre_unit_t ) :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
+    type ( nombre_unit_t ) :: m_sun = nombre_unit_t( one, "Msun", 1.9885d33, dimid%mass )
+    type ( nombre_unit_t ) :: m_h = nombre_unit_t( one, "m_H", 1.6735575d-27, dimid%mass )
+    type ( nombre_unit_t ) :: amu = nombre_unit_t( one, "amu", 1.6605d-27, dimid%mass )
+
+    ! Length
+    type ( nombre_unit_t ) :: pc = nombre_unit_t( one, "pc", 3.086d16, dimid%length )
+    type ( nombre_unit_t ) :: ly = nombre_unit_t( one, "ly", 9.461d15, dimid%length )
+    type ( nombre_unit_t ) :: au = nombre_unit_t( one, "AU", 1.496d11, dimid%length )
+
+    ! Time
+    type ( nombre_unit_t ) :: yr = nombre_unit_t( one, "yr", 3.154d7, dimid%time )
+  end type rhyme_nombre_unit_chain_t
+
+  type ( rhyme_nombre_unit_chain_t ), parameter, private :: units = rhyme_nombre_unit_chain_t()
+
+
+
   type ( nombre_unit_t ), dimension ( 14 ), parameter :: nombre_units_chain = [ &
-    nombre_unit_t( one, "m", 1.d0, LengthDim ), &
-    nombre_unit_t( kilo, "g", 1.d0, MassDim ), &
-    nombre_unit_t( one, "s", 1.d0, TimeDim ), &
-    nombre_unit_t( one, "K", 1.d0, TemperatureDim ), &
-    nombre_unit_t( one, "A", 1.d0, ElectricCurrentDim ), &
-    nombre_unit_t( one, "mol", 1.d0, AmountOfSubstanceDim ), &
-    nombre_unit_t( one, "pc", 3.086d16, LengthDim ), &
-    nombre_unit_t( one, "ly", 9.461d15, LengthDim ), &
-    nombre_unit_t( one, "AU", 1.496d11, LengthDim ), &
-    nombre_unit_t( one, "Msun", 1.9885d33, MassDim ), &
-    nombre_unit_t( one, "yr", 3.154d7, TimeDim ), &
-    nombre_unit_t( one, "g", 1.d0, MassDim ), &
-    nombre_unit_t( one, "m_H", 1.6735575d-27, MassDim ), &
-    nombre_unit_t( one, "amu", 1.6605d-27, MassDim ) &
+    units%kg, units%meter, units%sec, units%kel, units%ampere, units%mol, &
+    units%gram, units%m_sun, units%m_h, units%amu, &
+    units%pc, units%ly, units%au, &
+    units%yr &
   ]
 
 
-  type( nombre_unit_t ), target :: meter = nombre_units_chain(1)
-  type( nombre_unit_t ), target :: kg = nombre_units_chain(2)
-  type( nombre_unit_t ), target :: sec = nombre_units_chain(3)
-  type( nombre_unit_t ), target :: kel = nombre_units_chain(4)
-  type( nombre_unit_t ), target :: ampere = nombre_units_chain(5)
-  type( nombre_unit_t ), target :: mol = nombre_units_chain(6)
-  type( nombre_unit_t ), target :: pc = nombre_units_chain(7)
-  type( nombre_unit_t ), target :: ly = nombre_units_chain(8)
-  type( nombre_unit_t ), target :: au = nombre_units_chain(9)
-  type( nombre_unit_t ), target :: m_sun = nombre_units_chain(10)
-  type( nombre_unit_t ), target :: yr = nombre_units_chain(11)
-  type( nombre_unit_t ), target :: gram = nombre_units_chain(12)
-  type( nombre_unit_t ), target :: m_H = nombre_units_chain(13)
-  type( nombre_unit_t ), target :: amu = nombre_units_chain(14)
+  type( nombre_unit_t ), target :: kg = units%kg
+  type( nombre_unit_t ), target :: meter = units%meter
+  type( nombre_unit_t ), target :: sec = units%sec
+  type( nombre_unit_t ), target :: kel = units%kel
+  type( nombre_unit_t ), target :: ampere = units%ampere
+  type( nombre_unit_t ), target :: mol = units%mol
+
+  type( nombre_unit_t ), target :: gram = units%gram
+  type( nombre_unit_t ), target :: m_sun = units%m_sun
+  type( nombre_unit_t ), target :: m_h = units%m_h
+  type( nombre_unit_t ), target :: amu = units%amu
+
+  type( nombre_unit_t ), target :: pc = units%pc
+  type( nombre_unit_t ), target :: ly = units%ly
+  type( nombre_unit_t ), target :: au = units%au
+
+  type( nombre_unit_t ), target :: yr = units%yr
 
 
   interface
@@ -70,6 +91,11 @@ module rhyme_nombre_units
       character ( len=64 ) :: str
     end function rhyme_nombre_units_print
 
+    module function rhyme_nombre_units_print_dim ( u ) result ( str )
+      class ( nombre_unit_t ), target, intent ( in ) :: u
+      character ( len=64 ) :: str
+    end function rhyme_nombre_units_print_dim
+
     module function rhyme_nombre_units_head ( u ) result ( head )
       type ( nombre_unit_t ), pointer, intent ( in ) :: u
       type ( nombre_unit_t ), pointer :: head
@@ -95,10 +121,9 @@ module rhyme_nombre_units
       type ( nombre_unit_t ), pointer :: u
     end function rhyme_nombre_units_parse
 
-    module function rhyme_nombre_units_simplify ( u ) result ( u_simp )
+    module subroutine rhyme_nombre_units_simplify ( u )
       type ( nombre_unit_t ), pointer, intent ( inout ) :: u
-      type ( nombre_unit_t ), pointer :: u_simp
-    end function rhyme_nombre_units_simplify
+    end subroutine rhyme_nombre_units_simplify
   end interface
 
 

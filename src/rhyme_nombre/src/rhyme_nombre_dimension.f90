@@ -2,29 +2,32 @@ module rhyme_nombre_dimension
 
   implicit none
 
+  integer, parameter, private :: powers_len = 7
+
+
   type nombre_dimension_t
-    integer :: id
-    character ( len=8 ) :: name
-    real ( kind=8 ) :: to_SI
+    real ( kind=8 ) :: powers( powers_len )
+    character ( len=8 ) :: symb
   end type nombre_dimension_t
 
 
-  type ( nombre_dimension_t ), dimension(7), parameter :: SI_sys = (/ &
-    nombre_dimension_t( 1, "L", 1.d0 ), &
-    nombre_dimension_t( 2, "M", 1.d0 ), &
-    nombre_dimension_t( 3, "T", 1.d0 ), &
-    nombre_dimension_t( 4, "I", 1.d0 ), &
-    nombre_dimension_t( 5, "Theta", 1.d0 ), &
-    nombre_dimension_t( 6, "N", 1.d0 ), &
-    nombre_dimension_t( 7, "J", 1.d0 ) &
-  /)
+  type, private :: nombre_dimension_indices_t
+    type ( nombre_dimension_t ) :: mass                = nombre_dimension_t( [ 1, 0, 0, 0, 0, 0, 0 ], "M" )
+    type ( nombre_dimension_t ) :: length              = nombre_dimension_t( [ 0, 1, 0, 0, 0, 0, 0 ], "L" )
+    type ( nombre_dimension_t ) :: time                = nombre_dimension_t( [ 0, 0, 1, 0, 0, 0, 0 ], "T" )
+    type ( nombre_dimension_t ) :: theta               = nombre_dimension_t( [ 0, 0, 0, 1, 0, 0, 0 ], "Theta" )
+    type ( nombre_dimension_t ) :: electric_current    = nombre_dimension_t( [ 0, 0, 0, 0, 1, 0, 0 ], "I" )
+    type ( nombre_dimension_t ) :: amount_of_substance = nombre_dimension_t( [ 0, 0, 0, 0, 0, 1, 0 ], "N" )
+    type ( nombre_dimension_t ) :: luminocity          = nombre_dimension_t( [ 0, 0, 0, 0, 0, 0, 1 ], "J" )
+  end type nombre_dimension_indices_t
+
+  type ( nombre_dimension_indices_t ), parameter :: dimid = nombre_dimension_indices_t()
 
 
-  type( nombre_dimension_t ), parameter :: LengthDim = SI_sys(1)
-  type( nombre_dimension_t ), parameter :: MassDim = SI_sys(2)
-  type( nombre_dimension_t ), parameter :: TimeDim = SI_sys(3)
-  type( nombre_dimension_t ), parameter :: ElectricCurrentDim = SI_sys(4)
-  type( nombre_dimension_t ), parameter :: TemperatureDim = SI_sys(5)
-  type( nombre_dimension_t ), parameter :: AmountOfSubstanceDim = SI_sys(6)
-  type( nombre_dimension_t ), parameter :: LuminocityDim = SI_sys(7)
+  ! NB: The order of elements in the following parameter matters
+  !     DO NOT change it (I know, it's the root of all evils)
+  type ( nombre_dimension_t ), parameter :: dimension_chain( powers_len ) = [ &
+    dimid%mass, dimid%length, dimid%time, dimid%theta, dimid%electric_current, &
+    dimid%amount_of_substance, dimid%luminocity &
+  ]
 end module rhyme_nombre_dimension
