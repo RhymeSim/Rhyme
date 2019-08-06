@@ -14,6 +14,7 @@ set( deps )
 set( internal_deps )
 
 set( srcs
+  src/rhyme_nombre_dimension_compare.f90
   src/rhyme_nombre_dimension.f90
 
   src/rhyme_nombre_prefix_mul.f90
@@ -33,6 +34,7 @@ set( srcs
   src/rhyme_nombre_units_head.f90
   src/rhyme_nombre_units_print.f90
   src/rhyme_nombre_units_print_dim.f90
+  src/rhyme_nombre_units_get_dim.f90
   src/rhyme_nombre_units_conv_factor.f90
   src/rhyme_nombre_units_div.f90
   src/rhyme_nombre_units_mul.f90

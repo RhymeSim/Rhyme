@@ -91,6 +91,11 @@ module rhyme_nombre_units
       character ( len=64 ) :: str
     end function rhyme_nombre_units_print
 
+    module function rhyme_nombre_units_get_dim ( u ) result ( dim )
+      class ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_dimension_t ) :: dim
+    end function rhyme_nombre_units_get_dim
+
     module function rhyme_nombre_units_print_dim ( u ) result ( str )
       class ( nombre_unit_t ), target, intent ( in ) :: u
       character ( len=64 ) :: str

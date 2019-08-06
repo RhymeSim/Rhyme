@@ -7,7 +7,7 @@ module rhyme_nombre_dimension
 
   type nombre_dimension_t
     real ( kind=8 ) :: powers( powers_len )
-    character ( len=8 ) :: symb
+    character ( len=64 ) :: symb
   end type nombre_dimension_t
 
 
@@ -24,10 +24,21 @@ module rhyme_nombre_dimension
   type ( nombre_dimension_indices_t ), parameter :: dimid = nombre_dimension_indices_t()
 
 
-  ! NB: The order of elements in the following parameter matters
-  !     DO NOT change it (I know, it's the root of all evils)
+  ! NB: The order of elements in dimension_chain matters
+  !     DO NOT CHANGE IT! (I know, it's the root of all evils)
   type ( nombre_dimension_t ), parameter :: dimension_chain( powers_len ) = [ &
     dimid%mass, dimid%length, dimid%time, dimid%theta, dimid%electric_current, &
     dimid%amount_of_substance, dimid%luminocity &
   ]
+
+  interface
+    module function rhyme_nombre_dimension_compare ( d1, d2 ) result ( cmp )
+      type ( nombre_dimension_t ), intent ( in ) :: d1, d2
+      logical :: cmp
+    end function rhyme_nombre_dimension_compare
+  end interface
+
+  interface operator ( == )
+    procedure rhyme_nombre_dimension_compare
+  end interface operator ( == )
 end module rhyme_nombre_dimension
