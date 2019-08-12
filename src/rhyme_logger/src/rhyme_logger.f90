@@ -9,9 +9,6 @@ module rhyme_logger
   type, private :: logger_const_t
     integer :: closed = -10
     character ( len=45 ) :: time_fmt = "(A,I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)"
-    character ( len=4 ) :: int_fmt = "(I0)"
-    character ( len=7 ) :: real_fmt = "(E16.5)"
-    character ( len=7 ) :: real8_fmt = "(E16.7)"
     character ( len=7 ) :: default_logfile = "log.txt"
     character ( len=7 ) :: default_errfile = "err.txt"
   end type logger_const_t
