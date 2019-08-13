@@ -75,7 +75,7 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
   call tester%expect( physics%time_str .toBe. 's' )
 
   ! CFL
-  call tester%expect( cfl%courant_number .toBe. .81d0 )
+  call tester%expect( cfl%courant_number .toBe. .2d0 )
 
   ! Ideal Gas
   call tester%expect( thermo%state_of_matter .toBe. thid%diatomic )
