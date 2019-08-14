@@ -1,141 +1,50 @@
-# **Parameters Tree**
-#
 # **Initial Condition**
-# └── ic_types
-#     ├── simple: uniform grid initialised to zero
-#     │   ├── ic_grid ( 128 )
-#     │   │   Grid dimensionality for the first level
-#     │   ├── ic_box_lengths ( 1d0 'kpc' )
-#     │   │   Physical box lengths with their unit
-#     │   └── ic_nlevels ( 3 )
-#     │       Maximum level of refinement ( currently each level is refined by a factor of 2 in resolution )
-#     └── snapshot: loading a given snapshot
-#         ├── ic_box_lengths ( 1d0 'kpc' )
-#         │   Physical box lengths with their unit
-#         ├── ic_nlevels ( 3 )
-#         │   Maximum level of refinement ( currently each level is refined by a factor of 2 in resolution )
-#         ├── ic_snapshot_type
-#         │   ├── rhyme
-#         │   └── radamesh
-#         └── ic_snapshot_path
-#
-# **Runtime Options**
-# └── max_nboxes ( 1 10 100 )
-#     Maxumum number of boxes for each level
-#
-# **Internal Units**
-# NB: Be careful, wrong choice of these units might lead to non-physical results
-# ├── density_unit ( 'kg / m^3 ')
-# ├── length_unit ( 'm' )
-# └── time_unit ( 's' )
-#
-# **Boundary Condition**
-# Implemented types: reflective, periodic, outflow
-# ├── left_bc
-# └── right_bc
-#
-# **Thermodynamics**
-# └── ideal_gas_type
-#     Implemented types: monatomic, diatomic, polyatomic
-#
-# **CFL**
-# └── courant_number ( 2d-1 )
-#
-# **Iterative Riemann Solver**
-# ├── pressure_floor ( 1d-10 )
-# ├── tolerance ( 1d-6 )
-# └── n_iteration ( 100 )
-#
-# **Slope Limiter**
-# ├── slope_limiter
-# │   Implemented types: van_leer, minmod, van_albada, superbee
-# └── slope_limiter_omega ( 0d0 )
-#     ω ∈ [-1, 1]
-#
-# **MUSCL-Hancock solver**
-# └── solver_type
-#     Implemented types: memory_intensive, cpu_intensive
-#
-# **Drawing**
-# NB: All units are in pixels
-# NB: Positional units in smoothed_slab_2d and perturb are cell-centred
-# ├── canvas
-# │   ├── transparent
-# │   └── uniform ( uniform  .125d0 0.d0 .1d0 )
-# │       Format: uniform rho u p
-# ├── shape
-# │   ├── cuboid ( cuboid  1  56 )
-# │   │   Format: cuboid ledge_x len_x
-# │   │   └── shape_filling
-# │   │       └── uniform ( uniform  1.d0 0.d0 1.d0 )
-# │   └── sphere ( sphere  3d0 2.34d0 )
-# │       Format: sphere origin_x radius
-# │       └── shape_filling
-# │           └── uniform ( uniform  1.d0 0.d0 1.d0 )
-# └── perturb
-#     └── harmonic ( harmonic cartesian x 0.05 32 0.d0 0.d0 0.d0 1.d0 )
-#         Format: harmonic coordinate_type direction A lambda rho u v p
-#
-# **Chombo Output**
-# ├── prefix ( './prefix' )
-# └── nickname ( 'hydro-simulation' )
-#
-# **Sources**
-# Not yet implemented
-# ├── source_coordinate ( 12d-1 )
-# ├── source_opening_angle ( 4 pi )
-# └── source_spectral_region
-#     ├── power_law ( power_law 1d0 2d0 6.78d9 10 -1.7 )
-#     │   Format: power_law start_freq end_freq total_energy resolution slope
-#     ├── linear ( linear 2.d0 3.d0 5.67d8 15 -1 )
-#     │   Format: linear start_freq end_freq total_energy resolution slope
-#     └── line
-#         ├── gaussian ( line gaussian 3.d0 4.56d7d8 10 )
-#         │   Format: line guassian freq total_energy resolution
-#         └── voigt ( line voigt 3.d0 4.56d7d8 10 )
-#             Format: line voigt freq total_energy resolution
-
-
-#Example
-
 ic_type = simple
-
 
 ic_grid = 128
 ic_box_lengths = 1 "kpc"
 ic_nlevels = 3
 
 
+# **Runtime Options**
 max_nboxes = 1 10 100
 
 
+# **Internal Units**
 density_unit = "kg / m^3"
 length_unit = "m"
 time_unit = "s"
 
 
+# **Boundary Condition**
 left_bc = reflective
 right_bc = outflow
 
 
+# **Thermodynamics**
 ideal_gas_type = diatomic
 
 
+# **CFL**
 courant_number = .2d0
 
 
+# **Exact Riemann Solver**
 pressure_floor = 1.d-10
 tolerance = 1.d-6
 n_iteration = 100
 
 
+# **Slope Limiter**
 slope_limiter = van_leer
 slope_limiter_omega = 0.d0
 
 
+# **MUSCL-Hancock solver**
 solver_type = cpu_intensive
 
 
+# **Drawing**
 canvas = uniform .125d0 0.d0 .1d0
 
 shape = cuboid 1 56
@@ -147,5 +56,6 @@ shape_filling = uniform 1.d0 0.d0 1.d0
 perturb = harmonic cartesian x 0.05 32 0.d0 0.d0 1.d0
 
 
+# **Chombo Output**
 prefix = './prefix'
 nickname = 'hydro-simulation'

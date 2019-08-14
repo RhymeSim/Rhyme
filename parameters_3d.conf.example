@@ -1,130 +1,22 @@
-# **Parameters Tree**
-#
 # **Initial Condition**
-# └── ic_types
-#     ├── simple: uniform grid initialised to zero
-#     │   ├── ic_grid ( 128 128 128 )
-#     │   │   Grid dimensionality for the first level
-#     │   ├── ic_box_lengths ( 1d0 1d0 1d0 'kpc' )
-#     │   │   Physical box lengths with their unit
-#     │   └── ic_nlevels ( 3 )
-#     │       Maximum level of refinement ( currently each level is refined by a factor of 2 in resolution )
-#     └── snapshot: loading a given snapshot
-#         ├── ic_box_lengths ( 1d0 1d0 1d0 'kpc' )
-#         │   Physical box lengths with their unit
-#         ├── ic_nlevels ( 3 )
-#         │   Maximum level of refinement ( currently each level is refined by a factor of 2 in resolution )
-#         ├── ic_snapshot_type
-#         │   ├── rhyme
-#         │   └── radamesh
-#         └── ic_snapshot_path
-#
-# **Runtime Options**
-# └── max_nboxes ( 1 10 100 )
-#     Maxumum number of boxes for each level
-#
-# **Internal Units**
-# NB: Be careful, wrong choice of these units might lead to non-physical results
-# ├── density_unit ( 'kg / m^3 ')
-# ├── length_unit ( 'm' )
-# └── time_unit ( 's' )
-#
-# **Boundary Condition**
-# Implemented types: reflective, periodic, outflow
-# ├── left_bc
-# ├── rigth_bc
-# ├── bottom_bc
-# ├── top_bc
-# ├── back_bc
-# └── front_bc
-#
-# **Thermodynamics**
-# └── ideal_gas_type
-#     Implemented types: monatomic, diatomic, polyatomic
-#
-# **CFL**
-# └── courant_number ( 2d-1 )
-#
-# **Iterative Riemann Solver**
-# ├── pressure_floor ( 1d-10 )
-# ├── tolerance ( 1d-6 )
-# └── n_iteration ( 100 )
-#
-# **Slope Limiter**
-# ├── slope_limiter
-# │   Implemented types: van_leer, minmod, van_albada, superbee
-# └── slope_limiter_omega ( 0d0 )
-#     ω ∈ [-1, 1]
-#
-# **MUSCL-Hancock solver**
-# └── solver_type
-#     Implemented types: memory_intensive, cpu_intensive
-#
-# **Drawing**
-# NB: All units are in pixels
-# NB: Positional units in smoothed_slab_2d and perturb are cell-centred
-# ├── canvas
-# │   ├── transparent
-# │   └── uniform ( uniform  .125d0 0.d0 0.d0 0.d0 .1d0 )
-# ├── shape
-# │   ├── cuboid ( cuboid  1 1 1  56 128 1 )
-# │   │   Format: cuboid ledge_x ledge_y ledge_z len_x len_y len_z
-# │   │   └── shape_filling
-# │   │       └── uniform ( uniform  1.d0 0.d0 0.d0 0.d0 1.d0 )
-# │   ├── sphere ( sphere  3d0 4d0 5d0 2.34d0 )
-# │   │   Format: sphere origin_x origin_y origin_z radius
-# │   │   └── shape_filling
-# │   │       └── uniform ( uniform  1.d0 0.d0 0.d0 0.d0 1.d0 )
-# │   ├── prism ( prism  56 1 1  56 128 1  72 1 1  1 )
-# │   │   Format: prism v1_x v1_y v1_z v2_x v2_y v2_z v3_x v3_y v3_z thickness
-# │   │   └── shape_filling
-# │   │       └── uniform ( uniform  1.d0 0.d0 0.d0 0.d0 1.d0 )
-# │   └── smoothed_slab_2d ( smoothed_slab_2d  x  56 72  2d-1 4d-1 )
-# │       Format: smoothed_slab_2d  direction  left_pixel right_pixel  left_sigma right_sigma
-# │       └── shape_filling
-# │           └── uniform ( uniform  1.d0 0.d0 0.d0 0.d0 1.d0 )
-# └── perturb
-#     ├── harmonic ( harmonic cartesian x 0.05 32 0.d0 0.d0 0.d0 0.d0 1.d0 )
-#     │   Format: harmonic coordinate_type direction A lambda rho u v w p
-#     └── symmetric_decaying ( symmetric_decaying cartesian y 1.d0 72 8 0.d0 0.d0 0.d0 0.d0 1.d0 )
-#         Format: symmetric_decaying coordinate_type direction A pixel sigma rho u v w p
-#
-# **Chombo Output**
-# ├── prefix ( './prefix' )
-# └── nickname ( 'hydro-simulation' )
-#
-# **Sources**
-# Not yet implemented
-# ├── source_coordinate ( 12d-1 34d-1 56d-1 )
-# ├── source_opening_angle ( 4 pi )
-# └── source_spectral_region
-#     ├── power_law ( power_law 1d0 2d0 6.78d9 10 -1.7 )
-#     │   Format: power_law start_freq end_freq total_energy resolution slope
-#     ├── linear ( linear 2.d0 3.d0 5.67d8 15 -1 )
-#     │   Format: linear start_freq end_freq total_energy resolution slope
-#     └── line
-#         ├── gaussian ( line gaussian 3.d0 4.56d7d8 10 )
-#         │   Format: line guassian freq total_energy resolution
-#         └── voigt ( line voigt 3.d0 4.56d7d8 10 )
-#             Format: line voigt freq total_energy resolution
-
-
-# Example:
-
 ic_type = simple
+
 ic_grid = 128 128 128
 ic_box_lengths = 1d0 1d0 1d0 "kpc"
 ic_nlevels = 3
 
 
+# **Runtime Options**
 max_nboxes = 1 10 100
 
 
+# **Internal Units**
 density_unit = "kg / m^3"
 length_unit = "m"
 time_unit = "s"
 
 
+# **Boundary Condition**
 left_bc = reflective
 right_bc = outflow
 bottom_bc = periodic
@@ -133,24 +25,30 @@ back_bc = outflow
 front_bc = periodic
 
 
+# **Thermodynamics**
 ideal_gas_type = diatomic
 
 
+# **CFL**
 courant_number = 2d-1
 
 
+# **Exact Riemann Solver**
 pressure_floor = 1.d-10
 tolerance = 1.d-6
 n_iteration = 100
 
 
+# **Slope Limiter**
 slope_limiter = van_leer
 slope_limiter_omega = 0.d0
 
 
+# **MUSCL-Hancock solver**
 solver_type = cpu_intensive
 
 
+# **Drawing**
 canvas = uniform .125d0 0.d0 0.d0 0.d0 .1d0
 
 shape = cuboid 1 1 1 56 128 1
@@ -170,5 +68,6 @@ perturb = symmetric_decaying cartesian y 1.d0 56 2 0.d0 0.d0 0.d0 0.d0 1.d0
 perturb = symmetric_decaying cartesian y 1.d0 72 8 0.d0 0.d0 0.d0 0.d0 1.d0
 
 
+# **Chombo Output**
 prefix = './prefix'
 nickname = 'hydro-simulation'
