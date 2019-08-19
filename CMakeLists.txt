@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.12 )
 
-project( rhyme )
+project( Rhyme )
 enable_language( Fortran )
 
 # Check config file (CMakeGlobal/config/CMakeLists.txt) before compiling
@@ -26,14 +26,14 @@ set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
 # find_package( OpenMP )
-#
-# if( OPENMP_FOUND )
-#   set( CMAKE_Fortran_FLAGS
-#     "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}" )
-#   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
-#   set( CMAKE_EXE_LINKER_FLAGS
-#     "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" )
-# endif()
+
+if( OPENMP_FOUND )
+  set( CMAKE_Fortran_FLAGS
+  "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}" )
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
+  set( CMAKE_EXE_LINKER_FLAGS
+  "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" )
+endif()
 
 
 set( deps
@@ -64,14 +64,9 @@ foreach( dep ${deps} )
 endforeach( dep )
 
 
-file( GLOB internal_modules RELATIVE ${PROJECT_SOURCE_DIR} src/*_module.f90 )
+set( ${PROJECT_NAME}_deps ${deps} PARENT_SCOPE )
 
-
-set( srcs
-  src/main.f90
-)
-
-add_executable( rhyme_${NUMBER_OF_DIM}d ${srcs} ${internal_modules} )
-target_link_libraries( rhyme_${NUMBER_OF_DIM}d ${deps} )
+add_executable( ${PROJECT_NAME}_${NUMBER_OF_DIM}d src/main.f90 )
+target_link_libraries( ${PROJECT_NAME}_${NUMBER_OF_DIM}d ${deps} )
 
 enable_testing()
