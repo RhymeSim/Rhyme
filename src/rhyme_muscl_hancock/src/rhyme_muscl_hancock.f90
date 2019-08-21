@@ -27,7 +27,7 @@ module rhyme_muscl_hancock
       type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_muscl_hancock_init
 
-    pure module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
+    module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
       box, dx, dt, irs, sl, ws )
       type ( samr_box_t ), intent ( inout ) :: box
       real ( kind=8 ), intent ( in ) :: dx( NDIM ), dt

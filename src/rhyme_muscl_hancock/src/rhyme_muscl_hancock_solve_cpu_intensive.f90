@@ -1,6 +1,6 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_cpu_intensive_submodule
 contains
-  pure module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
+  module subroutine rhyme_muscl_hancock_solve_cpu_intensive ( &
     box, dx, dt, irs, sl, ws )
     implicit none
 
@@ -52,6 +52,8 @@ contains
 
     call rhyme_mh_workspace_check( ws, box )
 
+    !$OMP PARALLEL DO SHARED(box, dx, dt, irs, sl, ws, l, b) &
+    !$OMP& PRIVATE(idx, axis, ub, delta, half_step_left, half_step_right, edge_state, flux, df)
     LOOP_K
       LOOP_J
         do i = 1, box%dims(1)
@@ -130,6 +132,7 @@ contains
         end do
       LOOP_J_END
     LOOP_K_END
+    !$OMP END PARALLEL DO
 
 #if NDIM == 1
 #define RANGE_J

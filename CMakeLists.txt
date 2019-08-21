@@ -25,7 +25,7 @@ set( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
-# find_package( OpenMP )
+find_package( OpenMP )
 
 if( OPENMP_FOUND )
   set( CMAKE_Fortran_FLAGS
