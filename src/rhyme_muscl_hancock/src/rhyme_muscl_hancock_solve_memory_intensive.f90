@@ -1,6 +1,6 @@
 submodule ( rhyme_muscl_hancock ) rhyme_mh_solve_memory_intensive_submodule
 contains
-  pure module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
+  module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
     box, dx, dt, irs, sl, ws )
     implicit none
 
@@ -49,6 +49,9 @@ contains
     lb = 0
     ub = box%dims + 1
 
+    !$OMP PARALLEL DO &
+    !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub) &
+    !$OMP& PRIVATE(delta)
     LOOP_K
       LOOP_J
         do i = lb(1), ub(1)
@@ -88,10 +91,14 @@ contains
         end do
       LOOP_J_END
     LOOP_K_END
+    !$OMP END PARALLEL DO
 
     lb = 0
     ub = box%dims
 
+    !$OMP PARALLEL DO &
+    !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub) &
+    !$OMP& PRIVATE(evolved_state)
     LOOP_K
       LOOP_J
         do i = lb(1), ub(1)
@@ -122,10 +129,13 @@ contains
         end do
       LOOP_J_END
     LOOP_K_END
+    !$OMP END PARALLEL DO
 
     lb = 1
     ub = box%dims
 
+    !$OMP PARALLEL DO &
+    !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub)
     LOOP_K
       LOOP_J
         do i = 1, box%dims(1)
@@ -158,5 +168,6 @@ contains
         end do
       LOOP_J_END
     LOOP_K_END
+    !$OMP END PARALLEL DO
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
 end submodule rhyme_mh_solve_memory_intensive_submodule

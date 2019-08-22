@@ -36,7 +36,7 @@ module rhyme_muscl_hancock
       type ( mh_workspace_t ), intent ( inout ) :: ws
     end subroutine rhyme_muscl_hancock_solve_cpu_intensive
 
-    pure module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
+    module subroutine rhyme_muscl_hancock_solve_memory_intensive ( &
       box, dx, dt, irs, sl, ws )
       type ( samr_box_t ), intent ( inout ) :: box
       real ( kind=8 ), intent ( in ) :: dx( NDIM ), dt
