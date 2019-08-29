@@ -21,7 +21,8 @@ set( srcs
   src/rhyme_nombre_prefix.f90
 
   src/rhyme_nombre_unit_print.f90
-  src/rhyme_nombre_unit_prefix_mul.f90
+  src/rhyme_nombre_unit_update_symbol.f90
+  src/rhyme_nombre_unit_mul.f90
   src/rhyme_nombre_unit_clone.f90
   src/rhyme_nombre_unit.f90
 

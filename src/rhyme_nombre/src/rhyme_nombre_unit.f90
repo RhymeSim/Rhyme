@@ -19,11 +19,17 @@ module rhyme_nombre_unit
       type ( nombre_unit_t ), pointer :: clone
     end function rhyme_nombre_unit_clone
 
-    module function rhyme_nombre_unit_prefix_mul ( p, u ) result ( new_u )
-      type ( nombre_prefix_t ), intent ( in ) :: p
+    module function rhyme_nombre_unit_mul ( multiplier, u ) result ( new_u )
+      class (*), intent ( in ) :: multiplier
       type ( nombre_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_t ), pointer :: new_u
-    end function rhyme_nombre_unit_prefix_mul
+    end function rhyme_nombre_unit_mul
+
+    module function rhyme_nombre_unit_update_symbol ( u, symb ) result ( new_u )
+      type ( nombre_unit_t ), target, intent ( in ) :: u
+      character ( len=* ), intent ( in ) :: symb
+      type ( nombre_unit_t ), pointer :: new_u
+    end function rhyme_nombre_unit_update_symbol
 
     module function rhyme_nombre_unit_print ( u ) result ( str )
       class ( nombre_unit_t ), target, intent ( in ) :: u
@@ -33,8 +39,11 @@ module rhyme_nombre_unit
 
 
   interface operator ( * )
-    procedure rhyme_nombre_unit_prefix_mul
+    procedure rhyme_nombre_unit_mul
   end interface operator ( * )
-contains
+
+  interface operator ( .updatesymb. )
+    procedure rhyme_nombre_unit_update_symbol
+  end interface operator ( .updatesymb. )
 
 end module rhyme_nombre_unit
