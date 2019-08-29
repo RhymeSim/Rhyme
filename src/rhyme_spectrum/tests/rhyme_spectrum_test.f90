@@ -1,5 +1,5 @@
-logical function radamesh_spectrum_test () result ( failed )
-  use radamesh_spectrum
+logical function rhyme_spectrum_test () result ( failed )
+  use rhyme_spectrum
   use rhyme_assertion
 
   implicit none
@@ -18,4 +18,4 @@ logical function radamesh_spectrum_test () result ( failed )
   call sp_tester%expect( spec%filled_bins .toBe. 0 .hint. "" )
 
   failed = sp_tester%failed()
-end function radamesh_spectrum_test
+end function rhyme_spectrum_test

@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.12 )
 enable_language( Fortran )
 
-project( radamesh_spectrum )
+project( rhyme_spectrum )
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
   set( CMAKE_Fortran_FLAGS "-stand f08" )
@@ -16,7 +16,11 @@ set( deps
 set( internal_deps )
 
 set( srcs
-  src/radamesh_spectrum.f90
+  src/rhyme_spectrum_dispatch_logarithmic_region.f90
+  src/rhyme_spectrum_dispatch_linear_region.f90
+  src/rhyme_spectrum_dispatch_regions.f90
+  src/rhyme_spectrum_new_region.f90
+  src/rhyme_spectrum.f90
 )
 
 set( rhyme_src_dir .. )

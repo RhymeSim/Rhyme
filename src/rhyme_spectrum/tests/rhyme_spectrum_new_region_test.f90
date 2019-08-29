@@ -1,5 +1,5 @@
-logical function radamesh_spectrum_new_region_test () result ( failed )
-  use radamesh_spectrum
+logical function rhyme_spectrum_new_region_test () result ( failed )
+  use rhyme_spectrum
   use rhyme_assertion
 
   implicit none
@@ -13,7 +13,7 @@ logical function radamesh_spectrum_new_region_test () result ( failed )
 
   call sp_tester%expect( associated( spec%regions ) .toBe. .false. .hint. 'regions should be initially null')
 
-  region => spec%new_region( spid%lin_space, spid%power_law )
+  region => rhyme_spectrum_new_region( spec, spid%lin_space, spid%power_law )
   call sp_tester%expect( region%binning_type .toBe. spid%lin_space .hint. "region1 binning_type" )
   call sp_tester%expect( region%spectrum_type .toBe. spid%power_law .hint. "region1 spectrum_type" )
   call sp_tester%expect( region%slope .toBe. 0.d0 .hint. "region1 slope" )
@@ -21,7 +21,7 @@ logical function radamesh_spectrum_new_region_test () result ( failed )
   call sp_tester%expect( spec%regions%spectrum_type .toBe. spid%power_law .hint. "initial spectrum_type" )
   call sp_tester%expect( spec%regions%slope .toBe. 0.d0 .hint. "initial slope" )
 
-  region => spec%new_region( spid%log_space, spid%blackbody )
+  region => rhyme_spectrum_new_region( spec, spid%log_space, spid%blackbody )
   call sp_tester%expect( spec%regions%binning_type .toBe. spid%lin_space .hint. "" )
   call sp_tester%expect( spec%regions%spectrum_type .toBe. spid%power_law .hint. "" )
   call sp_tester%expect( spec%regions%slope .toBe. 0.d0 .hint. "" )
@@ -34,4 +34,4 @@ logical function radamesh_spectrum_new_region_test () result ( failed )
   call sp_tester%expect( region%slope .toBe. 0.d0 .hint. "" )
 
   failed = sp_tester%failed()
-end function radamesh_spectrum_new_region_test
+end function rhyme_spectrum_new_region_test

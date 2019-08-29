@@ -54,7 +54,7 @@ set( deps
   rhyme_muscl_hancock
   rhyme_chombo
   rhyme_initial_condition
-  radamesh_spectrum
+  rhyme_spectrum
 )
 
 foreach( dep ${deps} )
@@ -66,7 +66,14 @@ endforeach( dep )
 
 set( ${PROJECT_NAME}_deps ${deps} PARENT_SCOPE )
 
-add_executable( ${PROJECT_NAME}_${NUMBER_OF_DIM}d src/main.f90 )
-target_link_libraries( ${PROJECT_NAME}_${NUMBER_OF_DIM}d ${deps} )
+
+if( OPENMP_FOUND )
+  set( exe "${PROJECT_NAME}_omp_${NUMBER_OF_DIM}d")
+else()
+  set( exe "${PROJECT_NAME}_${NUMBER_OF_DIM}d")
+endif()
+
+add_executable( ${exe} src/main.f90 )
+target_link_libraries( ${exe} ${deps} )
 
 enable_testing()

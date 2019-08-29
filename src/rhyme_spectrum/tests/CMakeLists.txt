@@ -1,5 +1,5 @@
-project( radamesh_spectrum_tests )
-set( test_subject radamesh_spectrum )
+project( rhyme_spectrum_tests )
+set( test_subject rhyme_spectrum )
 
 set( factories )
 
