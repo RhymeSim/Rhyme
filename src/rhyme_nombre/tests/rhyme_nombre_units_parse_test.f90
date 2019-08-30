@@ -15,6 +15,8 @@ logical function rhyme_nombre_units_parse_test () result (failed)
 
   n_tester = .describe. "nombre_units_parse"
 
+  call rhyme_nombre_units_init
+
   str = "(Msun / (Mpc / K)^2 * s^4 * kg)"
   prefixes = [ "        ", "M       ", "        ", "        ", "k       " ]
   symbs = [ "Msun    ", "pc      ", "K       ", "s       ", "g       " ]

@@ -9,6 +9,8 @@ logical function rhyme_nombre_units_div_test () result ( failed )
 
   n_tester = .describe. "rhyme_nombre_units_div"
 
+  call rhyme_nombre_units_init
+
   u => rhyme_nombre_units_head( kg / sec )
   call n_tester%expect( associated( u%prev ) .toBe. .false. )
   call n_tester%expect( u%symb .toBe. 'g' )

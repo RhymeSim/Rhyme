@@ -11,6 +11,8 @@ logical function rhyme_nombre_div_test () result (failed)
 
   n_tester = .describe. "rhyme_nombre_div"
 
+  call rhyme_nombre_init
+
   n1 = nombre_t( 1.23d0, kg * meter )
   n2 = nombre_t( 2.34d0, sec**2 )
 

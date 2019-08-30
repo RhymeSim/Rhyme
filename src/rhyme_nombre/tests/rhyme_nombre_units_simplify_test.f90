@@ -10,6 +10,8 @@ logical function rhyme_nombre_units_simplify_test () result ( failed )
 
   tester = .describe. "nombre_units_simplify"
 
+  call rhyme_nombre_units_init
+
   u => rhyme_nombre_units_head( kg**2 * (mega * gram) )
   u_exp => rhyme_nombre_units_head( kg**3 )
 

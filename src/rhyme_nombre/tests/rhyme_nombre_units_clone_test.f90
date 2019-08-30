@@ -10,6 +10,8 @@ logical function rhyme_nombre_units_clone_test () result ( failed )
 
   n_tester = .describe. "rhyme_nombre_units_clone"
 
+  call rhyme_nombre_units_init
+
   u => rhyme_nombre_units_head( kg * meter / sec )
 
   u_cloned => rhyme_nombre_units_clone( u )

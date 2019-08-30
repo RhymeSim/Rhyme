@@ -11,6 +11,8 @@ logical function rhyme_nombre_units_print_dim_test () result ( failed )
 
   tester = .describe. "nombre_units_print_dim"
 
+  call rhyme_nombre_units_init
+
   u => rhyme_nombre_units_head( kg * meter**2 / sec**2.001 )
   str = rhyme_nombre_units_print_dim( u )
 

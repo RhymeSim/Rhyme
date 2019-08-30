@@ -11,6 +11,8 @@ logical function rhyme_nombre_units_parse_single_term_test () result (failed)
 
   n_tester = .describe. "rhyme_nombre_units_parse_single_term"
 
+  call rhyme_nombre_units_init
+
   lb = lbound( prfx_si )
   ub = ubound( prfx_si )
 

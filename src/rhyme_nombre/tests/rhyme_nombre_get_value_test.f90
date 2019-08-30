@@ -9,6 +9,8 @@ logical function rhyme_nombre_get_value_test () result ( failed )
 
   n_tester = .describe. "nombre_get_value"
 
+  call rhyme_nombre_init
+
   n = 1.23d4 .u. kg * meter / sec**2
 
   call n_tester%expect( rhyme_nombre_get_value( n ) .toBe. 1.23d4 )

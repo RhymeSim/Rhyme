@@ -84,4 +84,12 @@ module rhyme_nombre
     procedure rhyme_nombre_div
     procedure rhyme_nombre_div_rev
   end interface operator ( / )
+
+contains
+
+  module subroutine rhyme_nombre_init ()
+    implicit none
+
+    call rhyme_nombre_units_init
+  end subroutine rhyme_nombre_init
 end module rhyme_nombre

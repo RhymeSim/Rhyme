@@ -7,9 +7,11 @@ logical function rhyme_nombre_units_head_test () result ( failed )
   type ( assertion_t ) :: n_tester
   type ( nombre_unit_t ), pointer :: u, head
 
-  u => ( kilo * gram ) * meter / sec**2
-
   n_tester = .describe. "rhyme_nombre_units_head"
+
+  call rhyme_nombre_units_init
+
+  u => ( kilo * gram ) * meter / sec**2
 
   head => rhyme_nombre_units_head( u )
   call n_tester%expect( head%symb .toBe. 'g' )

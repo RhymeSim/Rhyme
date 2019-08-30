@@ -11,6 +11,8 @@ logical function rhyme_nombre_units_get_dim_test () result ( failed )
 
   tester = .describe. "nombre_units_get_dim"
 
+  call rhyme_nombre_units_init
+
   u => kg * meter / sec**2
 
   dim = rhyme_nombre_units_get_dim( u )

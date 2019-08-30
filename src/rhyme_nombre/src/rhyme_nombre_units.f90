@@ -3,59 +3,37 @@ module rhyme_nombre_units
 
   implicit none
 
-  type, private :: rhyme_nombre_unit_chain_t
-    ! Essential units
-    type ( nombre_unit_t ) :: kg = nombre_unit_t( kilo, "g", 1.d0, dimid%mass )
+  type, private :: rhyme_nombre_essential_units_t
+    type ( nombre_unit_t ) :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
     type ( nombre_unit_t ) :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
     type ( nombre_unit_t ) :: sec = nombre_unit_t( one, "s", 1.d0, dimid%time )
     type ( nombre_unit_t ) :: kel = nombre_unit_t( one, "K", 1.d0, dimid%theta )
     type ( nombre_unit_t ) :: ampere = nombre_unit_t( one, "A", 1.d0, dimid%electric_current )
     type ( nombre_unit_t ) :: mol = nombre_unit_t( one, "mol", 1.d0, dimid%amount_of_substance )
+  end type rhyme_nombre_essential_units_t
 
-    ! Mass
-    type ( nombre_unit_t ) :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
-    type ( nombre_unit_t ) :: m_sun = nombre_unit_t( one, "Msun", 1.9885d33, dimid%mass )
-    type ( nombre_unit_t ) :: m_h = nombre_unit_t( one, "m_H", 1.6735575d-27, dimid%mass )
-    type ( nombre_unit_t ) :: amu = nombre_unit_t( one, "amu", 1.6605d-27, dimid%mass )
+  type ( rhyme_nombre_essential_units_t ), parameter, private :: units = rhyme_nombre_essential_units_t()
 
-    ! Length
-    type ( nombre_unit_t ) :: pc = nombre_unit_t( one, "pc", 3.086d16, dimid%length )
-    type ( nombre_unit_t ) :: ly = nombre_unit_t( one, "ly", 9.461d15, dimid%length )
-    type ( nombre_unit_t ) :: au = nombre_unit_t( one, "AU", 1.496d11, dimid%length )
-
-    ! Time
-    type ( nombre_unit_t ) :: yr = nombre_unit_t( one, "yr", 3.154d7, dimid%time )
-  end type rhyme_nombre_unit_chain_t
-
-  type ( rhyme_nombre_unit_chain_t ), parameter, private :: units = rhyme_nombre_unit_chain_t()
+  type ( nombre_unit_t ) :: nombre_units_chain( 14 )
 
 
-
-  type ( nombre_unit_t ), dimension ( 14 ), parameter :: nombre_units_chain = [ &
-    units%kg, units%meter, units%sec, units%kel, units%ampere, units%mol, &
-    units%gram, units%m_sun, units%m_h, units%amu, &
-    units%pc, units%ly, units%au, &
-    units%yr &
-  ]
-
-
-  type( nombre_unit_t ), target :: kg = units%kg
+  type( nombre_unit_t ), target :: gram = units%gram
   type( nombre_unit_t ), target :: meter = units%meter
   type( nombre_unit_t ), target :: sec = units%sec
   type( nombre_unit_t ), target :: kel = units%kel
   type( nombre_unit_t ), target :: ampere = units%ampere
   type( nombre_unit_t ), target :: mol = units%mol
 
-  type( nombre_unit_t ), target :: gram = units%gram
-  type( nombre_unit_t ), target :: m_sun = units%m_sun
-  type( nombre_unit_t ), target :: m_h = units%m_h
-  type( nombre_unit_t ), target :: amu = units%amu
+  type( nombre_unit_t ), pointer :: kg
+  type( nombre_unit_t ), pointer :: m_sun
+  type( nombre_unit_t ), pointer :: m_h
+  type( nombre_unit_t ), pointer :: amu
 
-  type( nombre_unit_t ), target :: pc = units%pc
-  type( nombre_unit_t ), target :: ly = units%ly
-  type( nombre_unit_t ), target :: au = units%au
+  type( nombre_unit_t ), pointer :: pc
+  type( nombre_unit_t ), pointer :: ly
+  type( nombre_unit_t ), pointer :: au
 
-  type( nombre_unit_t ), target :: yr = units%yr
+  type( nombre_unit_t ), pointer :: yr
 
 
   interface
@@ -151,4 +129,28 @@ module rhyme_nombre_units
   interface operator ( .printUnit. )
     procedure rhyme_nombre_units_print
   end interface operator ( .printUnit. )
+
+contains
+
+  module subroutine rhyme_nombre_units_init ()
+    implicit none
+
+    kg => kilo * gram
+    m_sun => 1.9885d33 * gram .updatesymb. 'Msun'
+    m_h => 1.6735575d-27 * gram .updatesymb. 'm_H'
+    amu => 1.6605d-27 * gram .updatesymb. 'amu'
+
+    pc => 3.086d16 * meter .updatesymb. 'pc'
+    ly => 9.461d15 * meter .updatesymb. 'ly'
+    au => 1.496d11 * meter .updatesymb. 'AU'
+
+    yr => 3.154d7 * sec .updatesymb. 'yr'
+
+    nombre_units_chain = [ &
+      kg, units%meter, units%sec, units%kel, units%ampere, units%mol, &
+      units%gram, m_sun, m_h, amu, &
+      pc, ly, au, &
+      yr &
+    ]
+  end subroutine rhyme_nombre_units_init
 end module rhyme_nombre_units

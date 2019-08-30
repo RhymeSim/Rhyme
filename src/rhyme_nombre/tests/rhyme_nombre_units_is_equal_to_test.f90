@@ -10,6 +10,8 @@ logical function rhyme_nombre_units_is_equal_to_test () result (failed)
 
   n_tester = .describe. "nombre_units_is_equal_to"
 
+  call rhyme_nombre_units_init
+
   u1 => kg * ( meter / sec )**2
   u2 => kg
 

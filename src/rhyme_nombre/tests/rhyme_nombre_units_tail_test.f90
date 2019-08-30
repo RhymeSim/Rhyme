@@ -9,6 +9,8 @@ logical function rhyme_nombre_units_tail_test () result ( failed )
 
   n_tester = .describe. "rhyme_nombre_units_tail"
 
+  call rhyme_nombre_units_init
+
   u => meter**2 * ( kilo * gram ) / sec**2 / kel
 
   tail => rhyme_nombre_units_tail( u )

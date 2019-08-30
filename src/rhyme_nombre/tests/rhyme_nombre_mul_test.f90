@@ -11,6 +11,8 @@ logical function rhyme_nombre_mul_test () result (failed)
 
   n_tester = .describe. "nombre_mul"
 
+  call rhyme_nombre_init
+
   u_H => kilo * meter / sec / (Mega * pc)
 
   H = 66.7d0 .u. u_H

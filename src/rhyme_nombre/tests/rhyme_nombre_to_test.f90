@@ -10,6 +10,8 @@ logical function rhyme_nombre_to_test () result (failed)
 
   n_tester = .describe. "nombre"
 
+  call rhyme_nombre_init
+
   H_hz = 66.7d0 .u. kilo * meter / sec / (mega * pc) .to. sec**(-1)
 
   call n_tester%expect( H_hz%v .toBe. 2.16137e-018 )

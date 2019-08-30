@@ -10,6 +10,8 @@ logical function rhyme_nombre_new_test () result (failed)
 
   n_tester = .describe. "nombre_new"
 
+  call rhyme_nombre_init
+
   Hr8 = 66.7d0 .u. kilo * meter / sec / (mega * pc)
   Hr = 66.7e0 .u. kilo * meter / sec / (mega * pc)
   Hi = 66 .u. kilo * meter / sec / (mega * pc)
