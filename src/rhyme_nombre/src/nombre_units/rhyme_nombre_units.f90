@@ -3,36 +3,19 @@ module rhyme_nombre_units
 
   implicit none
 
-  type, private :: rhyme_nombre_essential_units_t
-    type ( nombre_unit_t ) :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
-    type ( nombre_unit_t ) :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
-    type ( nombre_unit_t ) :: sec = nombre_unit_t( one, "s", 1.d0, dimid%time )
-    type ( nombre_unit_t ) :: kel = nombre_unit_t( one, "K", 1.d0, dimid%theta )
-    type ( nombre_unit_t ) :: ampere = nombre_unit_t( one, "A", 1.d0, dimid%electric_current )
-    type ( nombre_unit_t ) :: mol = nombre_unit_t( one, "mol", 1.d0, dimid%amount_of_substance )
-  end type rhyme_nombre_essential_units_t
-
-  type ( rhyme_nombre_essential_units_t ), parameter, private :: units = rhyme_nombre_essential_units_t()
-
   type ( nombre_unit_t ) :: nombre_units_chain( 14 )
 
-
-  type( nombre_unit_t ), target :: gram = units%gram
-  type( nombre_unit_t ), target :: meter = units%meter
-  type( nombre_unit_t ), target :: sec = units%sec
-  type( nombre_unit_t ), target :: kel = units%kel
-  type( nombre_unit_t ), target :: ampere = units%ampere
-  type( nombre_unit_t ), target :: mol = units%mol
-
-  type( nombre_unit_t ), pointer :: kg
+  ! Mass
   type( nombre_unit_t ), pointer :: m_sun
   type( nombre_unit_t ), pointer :: m_h
   type( nombre_unit_t ), pointer :: amu
 
+  ! Length
   type( nombre_unit_t ), pointer :: pc
   type( nombre_unit_t ), pointer :: ly
   type( nombre_unit_t ), pointer :: au
 
+  ! Time
   type( nombre_unit_t ), pointer :: yr
 
 
@@ -135,7 +118,6 @@ contains
   module subroutine rhyme_nombre_units_init ()
     implicit none
 
-    kg => kilo * gram
     m_sun => 1.9885d33 * gram .updatesymb. 'Msun'
     m_h => 1.6735575d-27 * gram .updatesymb. 'm_H'
     amu => 1.6605d-27 * gram .updatesymb. 'amu'
@@ -147,8 +129,8 @@ contains
     yr => 3.154d7 * sec .updatesymb. 'yr'
 
     nombre_units_chain = [ &
-      kg, units%meter, units%sec, units%kel, units%ampere, units%mol, &
-      units%gram, m_sun, m_h, amu, &
+      kg, meter, sec, kel, ampere, mol, &
+      gram, m_sun, m_h, amu, &
       pc, ly, au, &
       yr &
     ]

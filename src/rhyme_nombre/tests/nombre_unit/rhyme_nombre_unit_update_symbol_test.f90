@@ -7,8 +7,6 @@ logical function rhyme_nombre_unit_update_symbol_test () result ( failed )
   type ( assertion_t ) :: tester
   type ( nombre_unit_t ), pointer :: updated
 
-  type ( nombre_unit_t ) :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
-
   tester = .describe. "unit_update_symbol"
 
   updated => meter .updatesymb. 'updated'

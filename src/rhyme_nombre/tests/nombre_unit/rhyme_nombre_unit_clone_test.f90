@@ -6,12 +6,9 @@ logical function rhyme_nombre_unit_clone_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_unit_t ) :: kg
   type ( nombre_unit_t ), pointer :: kg_cloned
 
   tester = .describe. "nombre_unit_clone"
-
-  kg = nombre_unit_t( kilo, "g", 1.d0, dimid%mass )
 
   kg_cloned => rhyme_nombre_unit_clone( kg )
 

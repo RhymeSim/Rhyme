@@ -13,6 +13,16 @@ module rhyme_nombre_unit
     type ( nombre_unit_t ), pointer :: next => null(), prev => null()
   end type nombre_unit_t
 
+
+  type ( nombre_unit_t ), target :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
+  type ( nombre_unit_t ), target :: kg = nombre_unit_t( kilo, "g", 1.d0, dimid%mass )
+  type ( nombre_unit_t ), target :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
+  type ( nombre_unit_t ), target :: sec = nombre_unit_t( one, "s", 1.d0, dimid%time )
+  type ( nombre_unit_t ), target :: kel = nombre_unit_t( one, "K", 1.d0, dimid%theta )
+  type ( nombre_unit_t ), target :: ampere = nombre_unit_t( one, "A", 1.d0, dimid%electric_current )
+  type ( nombre_unit_t ), target :: mol = nombre_unit_t( one, "mol", 1.d0, dimid%amount_of_substance )
+
+
   interface
     module function rhyme_nombre_unit_clone ( u ) result ( clone )
       type ( nombre_unit_t ), intent ( in ), target :: u

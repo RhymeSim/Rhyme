@@ -7,8 +7,6 @@ logical function rhyme_nombre_unit_mul_test () result ( failed )
   type ( assertion_t ) :: tester
   type ( nombre_unit_t ), pointer :: mega_meter, giga_meter, pc
 
-  type ( nombre_unit_t ) :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
-
   tester = .describe. "rhyme_nombre_unit_mul"
 
   pc => 3.086d16 * meter
