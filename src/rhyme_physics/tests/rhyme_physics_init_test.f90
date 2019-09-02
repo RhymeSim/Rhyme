@@ -12,6 +12,8 @@ logical function rhyme_physics_init_test () result ( failed )
 
   ph_tester = .describe. "rhyme_physics_init"
 
+  call rhyme_nombre_units_init
+
   physics = ph_factory%generate()
   logger = log_factory%generate()
 

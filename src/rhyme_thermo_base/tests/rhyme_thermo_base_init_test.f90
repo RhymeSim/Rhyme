@@ -14,6 +14,8 @@ logical function rhyme_thermo_base_init_test () result ( failed )
 
   th_tester = .describe. "init"
 
+  call rhyme_nombre_units_init
+
   physics = ph_factory%generate()
   logger = log_factory%generate()
 

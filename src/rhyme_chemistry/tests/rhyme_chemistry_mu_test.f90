@@ -15,6 +15,8 @@ logical function rhyme_chemistry_mu_test () result (failed)
 
   ch_tester = .describe. "chemistry mu"
 
+  call rhyme_nombre_units_init
+
   chemistry = ch_factory%generate()
   physics = ph_factory%generate()
   logger = log_factory%generate()

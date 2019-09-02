@@ -45,6 +45,8 @@ logical function rhyme_cfl_dt_test () result (failed)
 
   cfl_tester = .describe. "CFL"
 
+  call rhyme_nombre_units_init
+
   cfl = cfl_factory%generate()
   physics = ph_factory%generate()
   samr = samr_factory%generate( physical=.true. )

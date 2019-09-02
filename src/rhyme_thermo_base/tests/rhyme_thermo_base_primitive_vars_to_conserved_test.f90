@@ -18,6 +18,8 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test () result ( 
 
   th_tester = .describe. "primitive_vars_to_conserved"
 
+  call rhyme_nombre_units_init
+
   physics = ph_factory%generate()
   logger = log_factory%generate()
   rho = hy_factory%rho

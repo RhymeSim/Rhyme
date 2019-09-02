@@ -47,7 +47,7 @@ add_custom_target( ${PROJECT_NAME}_watch
   inotifywait --excludei /*build*/ -m -r -e close_write -e create -e delete -e move ${CMAKE_CURRENT_SOURCE_DIR} \
   | while read -r path action file; do \
     echo \"$path $action $file\"; \
-    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 100; \
+    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 3; \
   done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )

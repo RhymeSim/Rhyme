@@ -17,6 +17,8 @@ logical function rhyme_irs_solve_test () result ( failed )
 
   irs_tester = .describe. "irs_solve"
 
+  call rhyme_nombre_units_init
+
   irs = irs_factory%generate()
   physics = ph_factory%generate()
   logger = log_factory%generate()

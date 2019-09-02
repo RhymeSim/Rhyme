@@ -33,6 +33,8 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test () result ( failed
 
   mh_tester = .describe. "mh_solve_cpu_intensive"
 
+  call rhyme_nombre_units_init
+
   mh_adv_test = mh_adv_factory%generate( BASE_GRID_ARRAY )
   physics = ph_factory%generate()
   irs = irs_factory%generate()

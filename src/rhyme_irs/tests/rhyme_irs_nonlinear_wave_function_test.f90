@@ -21,6 +21,8 @@ logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
 
   irs_tester = .describe. "irs_nonlinear_wave_function"
 
+  call rhyme_nombre_units_init
+
   irs = irs_factory%generate()
   physics = ph_factory%generate()
   logger = log_factory%generate()

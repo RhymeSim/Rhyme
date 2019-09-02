@@ -18,6 +18,8 @@ logical function rhyme_thermo_base_specific_internal_energy_test () result ( fai
 
   th_tester = .describe. "specific_internal_energy"
 
+  call rhyme_nombre_units_init
+
   physics = ph_factory%generate()
   logger = log_factory%generate()
   u = hy_factory%generate_conserved()
