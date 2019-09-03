@@ -70,6 +70,6 @@ contains
       end if
     end do
 
-    p = one
+    p = null_prefix
   end function rhyme_nombre_units_find_prefix
 end submodule units_parse_single_term_smod

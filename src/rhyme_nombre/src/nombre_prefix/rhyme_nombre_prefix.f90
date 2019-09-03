@@ -38,7 +38,7 @@ module rhyme_nombre_prefix
   type( nombre_prefix_t ), parameter :: kilo = prfx_si(3)
   type( nombre_prefix_t ), parameter :: hecto = prfx_si(2)
   type( nombre_prefix_t ), parameter :: deca = prfx_si(1)
-  type( nombre_prefix_t ), parameter :: one = prfx_si(0)
+  type( nombre_prefix_t ), parameter :: null_prefix = prfx_si(0)
   type( nombre_prefix_t ), parameter :: deci = prfx_si(-1)
   type( nombre_prefix_t ), parameter :: centi = prfx_si(-2)
   type( nombre_prefix_t ), parameter :: mili = prfx_si(-3)
@@ -56,10 +56,19 @@ module rhyme_nombre_prefix
       type ( nombre_prefix_t ), target, intent ( in ) :: p1, p2
       type ( nombre_prefix_t ) :: p
     end function rhyme_nombre_prefix_mul
+
+    pure module function rhyme_nombre_prefix_equality ( p1, p2 ) result ( eq )
+      type ( nombre_prefix_t ), intent ( in ) :: p1, p2
+      logical :: eq
+    end function rhyme_nombre_prefix_equality
   end interface
 
 
   interface operator ( * )
     procedure rhyme_nombre_prefix_mul
   end interface operator ( * )
+
+  interface operator ( == )
+    procedure rhyme_nombre_prefix_equality
+  end interface operator ( == )
 end module rhyme_nombre_prefix

@@ -9,7 +9,7 @@ logical function rhyme_nombre_unit_update_symbol_test () result ( failed )
 
   tester = .describe. "unit_update_symbol"
 
-  updated => meter .updatesymb. 'updated'
+  updated => meter .as. 'updated'
 
   call tester%expect( updated%prefix%base_10 .toBe. meter%prefix%base_10 .hint. 'prefix' )
   call tester%expect( updated%symb .toBe. 'updated' .hint. 'symbole' )

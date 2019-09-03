@@ -12,13 +12,14 @@ module rhyme_nombre_dimension
 
 
   type, private :: nombre_dimension_indices_t
-    type ( nombre_dimension_t ) :: mass                = nombre_dimension_t( [ 1, 0, 0, 0, 0, 0, 0 ], "M" )
-    type ( nombre_dimension_t ) :: length              = nombre_dimension_t( [ 0, 1, 0, 0, 0, 0, 0 ], "L" )
-    type ( nombre_dimension_t ) :: time                = nombre_dimension_t( [ 0, 0, 1, 0, 0, 0, 0 ], "T" )
-    type ( nombre_dimension_t ) :: theta               = nombre_dimension_t( [ 0, 0, 0, 1, 0, 0, 0 ], "Theta" )
-    type ( nombre_dimension_t ) :: electric_current    = nombre_dimension_t( [ 0, 0, 0, 0, 1, 0, 0 ], "I" )
-    type ( nombre_dimension_t ) :: amount_of_substance = nombre_dimension_t( [ 0, 0, 0, 0, 0, 1, 0 ], "N" )
-    type ( nombre_dimension_t ) :: luminocity          = nombre_dimension_t( [ 0, 0, 0, 0, 0, 0, 1 ], "J" )
+    type ( nombre_dimension_t ) :: null                = nombre_dimension_t( [ 0, 0, 0, 0, 0, 0, 0 ], '' )
+    type ( nombre_dimension_t ) :: mass                = nombre_dimension_t( [ 1, 0, 0, 0, 0, 0, 0 ], 'M' )
+    type ( nombre_dimension_t ) :: length              = nombre_dimension_t( [ 0, 1, 0, 0, 0, 0, 0 ], 'L' )
+    type ( nombre_dimension_t ) :: time                = nombre_dimension_t( [ 0, 0, 1, 0, 0, 0, 0 ], 'T' )
+    type ( nombre_dimension_t ) :: theta               = nombre_dimension_t( [ 0, 0, 0, 1, 0, 0, 0 ], 'Theta' )
+    type ( nombre_dimension_t ) :: electric_current    = nombre_dimension_t( [ 0, 0, 0, 0, 1, 0, 0 ], 'I' )
+    type ( nombre_dimension_t ) :: amount_of_substance = nombre_dimension_t( [ 0, 0, 0, 0, 0, 1, 0 ], 'N' )
+    type ( nombre_dimension_t ) :: luminocity          = nombre_dimension_t( [ 0, 0, 0, 0, 0, 0, 1 ], 'J' )
   end type nombre_dimension_indices_t
 
   type ( nombre_dimension_indices_t ), parameter :: dimid = nombre_dimension_indices_t()
@@ -32,13 +33,13 @@ module rhyme_nombre_dimension
   ]
 
   interface
-    module function rhyme_nombre_dimension_compare ( d1, d2 ) result ( cmp )
+    pure module function rhyme_nombre_dimension_equality ( d1, d2 ) result ( cmp )
       type ( nombre_dimension_t ), intent ( in ) :: d1, d2
       logical :: cmp
-    end function rhyme_nombre_dimension_compare
+    end function rhyme_nombre_dimension_equality
   end interface
 
   interface operator ( == )
-    procedure rhyme_nombre_dimension_compare
+    procedure rhyme_nombre_dimension_equality
   end interface operator ( == )
 end module rhyme_nombre_dimension

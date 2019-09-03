@@ -13,5 +13,8 @@ contains
     clone%conv = u%conv
     clone%dim = u%dim
     clone%pow = u%pow
+
+    clone%next => null()
+    clone%prev => null()
   end function rhyme_nombre_unit_clone
 end submodule unit_clone_smod

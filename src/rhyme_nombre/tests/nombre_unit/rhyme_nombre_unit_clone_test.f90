@@ -12,12 +12,11 @@ logical function rhyme_nombre_unit_clone_test () result ( failed )
 
   kg_cloned => rhyme_nombre_unit_clone( kg )
 
-  call tester%expect( kg_cloned%prefix%symb .toBe. 'k' )
-  call tester%expect( kg_cloned%symb .toBe. 'g' )
-  call tester%expect( kg_cloned%conv .toBe. 1d0 )
-  call tester%expect( kg_cloned%dim%powers .toBe. dimid%mass%powers )
-  call tester%expect( kg_cloned%dim%symb .toBe. dimid%mass%symb )
-  call tester%expect( kg_cloned%pow .toBe. 1d0 )
+  call tester%expect( kg_cloned == kg .toBe. .true. )
+  call tester%expect( associated( kg_cloned, kg ) .toBe. .false. )
+
+  call tester%expect( associated( kg_cloned%next ) .toBe. .false. )
+  call tester%expect( associated( kg_cloned%prev ) .toBe. .false. )
 
   failed = tester%failed()
 end function rhyme_nombre_unit_clone_test

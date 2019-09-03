@@ -9,6 +9,11 @@ logical function rhyme_nombre_dimension_test () result ( failed )
   tester = .describe. "dimension"
 
   call tester%expect( &
+    dimid%null%powers .toBe. [0d0, 0d0, 0d0, 0d0, 0d0, 0d0, 0d0] &
+    .hint. 'null powers' )
+  call tester%expect( dimid%null%symb .toBe. '' .hint. 'null symbol' )
+
+  call tester%expect( &
     dimid%mass%powers .toBe. [1d0, 0d0, 0d0, 0d0, 0d0, 0d0, 0d0] &
     .hint. 'mass powers' )
   call tester%expect( dimid%mass%symb .toBe. 'M' .hint. 'mass symbol' )

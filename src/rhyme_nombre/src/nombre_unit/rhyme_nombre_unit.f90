@@ -14,26 +14,49 @@ module rhyme_nombre_unit
   end type nombre_unit_t
 
 
-  type ( nombre_unit_t ), target :: gram = nombre_unit_t( one, "g", 1.d0, dimid%mass )
+  type ( nombre_unit_t ), target :: gram = nombre_unit_t( null_prefix, "g", 1.d0, dimid%mass )
   type ( nombre_unit_t ), target :: kg = nombre_unit_t( kilo, "g", 1.d0, dimid%mass )
-  type ( nombre_unit_t ), target :: meter = nombre_unit_t( one, 'm', 1.d0, dimid%length )
-  type ( nombre_unit_t ), target :: sec = nombre_unit_t( one, "s", 1.d0, dimid%time )
-  type ( nombre_unit_t ), target :: kel = nombre_unit_t( one, "K", 1.d0, dimid%theta )
-  type ( nombre_unit_t ), target :: ampere = nombre_unit_t( one, "A", 1.d0, dimid%electric_current )
-  type ( nombre_unit_t ), target :: mol = nombre_unit_t( one, "mol", 1.d0, dimid%amount_of_substance )
+  type ( nombre_unit_t ), target :: meter = nombre_unit_t( null_prefix, 'm', 1.d0, dimid%length )
+  type ( nombre_unit_t ), target :: sec = nombre_unit_t( null_prefix, "s", 1.d0, dimid%time )
+  type ( nombre_unit_t ), target :: kel = nombre_unit_t( null_prefix, "K", 1.d0, dimid%theta )
+  type ( nombre_unit_t ), target :: ampere = nombre_unit_t( null_prefix, "A", 1.d0, dimid%electric_current )
+  type ( nombre_unit_t ), target :: mol = nombre_unit_t( null_prefix, "mol", 1.d0, dimid%amount_of_substance )
 
 
   interface
+    pure module function rhyme_nombre_unit_equality ( u1, u2 ) result ( eq )
+      type ( nombre_unit_t ), intent ( in ) :: u1, u2
+      logical :: eq
+    end function rhyme_nombre_unit_equality
+
     module function rhyme_nombre_unit_clone ( u ) result ( clone )
       type ( nombre_unit_t ), intent ( in ), target :: u
       type ( nombre_unit_t ), pointer :: clone
     end function rhyme_nombre_unit_clone
 
-    module function rhyme_nombre_unit_mul ( multiplier, u ) result ( new_u )
-      class (*), intent ( in ) :: multiplier
-      type ( nombre_unit_t ), target, intent ( in ) :: u
-      type ( nombre_unit_t ), pointer :: new_u
-    end function rhyme_nombre_unit_mul
+    module function rhyme_nombre_unit_mul_iu ( i, u ) result ( new )
+      integer, intent ( in ) :: i
+      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_mul_iu
+
+    module function rhyme_nombre_unit_mul_ru ( r, u ) result ( new )
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_mul_ru
+
+    module function rhyme_nombre_unit_mul_r8u ( r8, u ) result ( new )
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_mul_r8u
+
+    module function rhyme_nombre_unit_mul_pu ( p, u ) result ( new )
+      type ( nombre_prefix_t ), intent ( in ) :: p
+      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_mul_pu
 
     module function rhyme_nombre_unit_update_symbol ( u, symb ) result ( new_u )
       type ( nombre_unit_t ), target, intent ( in ) :: u
@@ -49,11 +72,17 @@ module rhyme_nombre_unit
 
 
   interface operator ( * )
-    procedure rhyme_nombre_unit_mul
+    procedure rhyme_nombre_unit_mul_iu
+    procedure rhyme_nombre_unit_mul_ru
+    procedure rhyme_nombre_unit_mul_r8u
+    procedure rhyme_nombre_unit_mul_pu
   end interface operator ( * )
 
-  interface operator ( .updatesymb. )
+  interface operator ( .as. )
     procedure rhyme_nombre_unit_update_symbol
-  end interface operator ( .updatesymb. )
+  end interface operator ( .as. )
 
+  interface operator ( == )
+    procedure rhyme_nombre_unit_equality
+  end interface operator ( == )
 end module rhyme_nombre_unit

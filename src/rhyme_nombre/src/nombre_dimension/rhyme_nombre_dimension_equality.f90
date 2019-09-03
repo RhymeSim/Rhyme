@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_dimension ) compare_smod
+submodule ( rhyme_nombre_dimension ) equality_smod
 contains
-  module function rhyme_nombre_dimension_compare ( d1, d2 ) result ( cmp )
+  pure module function rhyme_nombre_dimension_equality ( d1, d2 ) result ( cmp )
     implicit none
 
     type ( nombre_dimension_t ), intent ( in ) :: d1, d2
@@ -11,5 +11,5 @@ contains
     else
       cmp = .true.
     end if
-  end function rhyme_nombre_dimension_compare
-end submodule compare_smod
+  end function rhyme_nombre_dimension_equality
+end submodule equality_smod

@@ -118,15 +118,15 @@ contains
   module subroutine rhyme_nombre_units_init ()
     implicit none
 
-    m_sun => 1.9885d33 * gram .updatesymb. 'Msun'
-    m_h => 1.6735575d-27 * gram .updatesymb. 'm_H'
-    amu => 1.6605d-27 * gram .updatesymb. 'amu'
+    m_sun => 1.9885d33 * gram .as. 'Msun'
+    m_h => 1.6735575d-27 * gram .as. 'm_H'
+    amu => 1.6605d-27 * gram .as. 'amu'
 
-    pc => 3.086d16 * meter .updatesymb. 'pc'
-    ly => 9.461d15 * meter .updatesymb. 'ly'
-    au => 1.496d11 * meter .updatesymb. 'AU'
+    pc => 3.086d16 * meter .as. 'pc'
+    ly => 9.461d15 * meter .as. 'ly'
+    au => 1.496d11 * meter .as. 'AU'
 
-    yr => 3.154d7 * sec .updatesymb. 'yr'
+    yr => 3.154d7 * sec .as. 'yr'
 
     nombre_units_chain = [ &
       kg, meter, sec, kel, ampere, mol, &
