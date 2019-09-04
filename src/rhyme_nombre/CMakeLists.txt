@@ -27,14 +27,20 @@ set( srcs
   src/nombre_unit/rhyme_nombre_unit_mul.f90
   src/nombre_unit/rhyme_nombre_unit_clone.f90
   src/nombre_unit/rhyme_nombre_unit_equality.f90
+  src/nombre_unit/rhyme_nombre_unit_head.f90
+  src/nombre_unit/rhyme_nombre_unit_tail.f90
   src/nombre_unit/rhyme_nombre_unit.f90
 
   src/nombre_unit_chain/rhyme_nombre_unit_chain_div.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_mul.f90
+  src/nombre_unit_chain/rhyme_nombre_unit_chain_head.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_tail.f90
+  src/nombre_unit_chain/rhyme_nombre_unit_chain_equality.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_clone.f90
+  src/nombre_unit_chain/rhyme_nombre_unit_chain_update_symbol.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_get_dim.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_new.f90
+  src/nombre_unit_chain/rhyme_nombre_unit_chain_assignment.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain.f90
 
 #   src/nombre_units/rhyme_nombre_units_simplify.f90

@@ -34,6 +34,16 @@ module rhyme_nombre_unit
       type ( nombre_unit_t ), pointer :: clone
     end function rhyme_nombre_unit_clone
 
+    module function rhyme_nombre_unit_head ( u ) result ( head )
+      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: head
+    end function rhyme_nombre_unit_head
+
+    module function rhyme_nombre_unit_tail ( u ) result ( tail )
+      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_unit_t ), pointer :: tail
+    end function rhyme_nombre_unit_tail
+
     module function rhyme_nombre_unit_mul_iu ( i, u ) result ( new )
       integer, intent ( in ) :: i
       type ( nombre_unit_t ), intent ( in ) :: u

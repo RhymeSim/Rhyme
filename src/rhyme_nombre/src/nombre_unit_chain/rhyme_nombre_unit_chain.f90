@@ -19,6 +19,11 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_new
 
+    module subroutine rhyme_nombre_unit_chain_assignment ( c, u )
+      type ( nombre_unit_chain_t ), pointer, intent ( inout ) :: c
+      type ( nombre_unit_t ), target, intent ( in ) :: u
+    end subroutine rhyme_nombre_unit_chain_assignment
+
     module function rhyme_nombre_unit_chain_get_dim ( c ) result ( dim )
       type ( nombre_unit_chain_t ), intent ( in ) :: c
       type ( nombre_dimension_t ) :: dim
@@ -29,9 +34,20 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_chain_t ), pointer :: clone
     end function rhyme_nombre_unit_chain_clone
 
-    module function rhyme_nombre_unit_chain_tail ( c ) result ( tail )
+    module function rhyme_nombre_unit_chain_equality ( c1, c2 ) result ( eq )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c1, c2
+      logical :: eq
+    end function rhyme_nombre_unit_chain_equality
+
+    module function rhyme_nombre_unit_chain_update_symbol ( c, s ) result ( new )
       type ( nombre_unit_chain_t ), intent ( in ) :: c
-      type ( nombre_unit_t ), pointer :: tail
+      character ( len=* ), intent ( in ) :: s
+      type ( nombre_unit_chain_t ), pointer :: new
+    end function rhyme_nombre_unit_chain_update_symbol
+
+    module function rhyme_nombre_unit_chain_tail ( c ) result ( tail )
+      type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+      type ( nombre_unit_chain_t ), pointer :: tail
     end function rhyme_nombre_unit_chain_tail
 
     module function rhyme_nombre_unit_chain_mul_uu ( u1, u2 ) result ( chain )
@@ -58,16 +74,28 @@ module rhyme_nombre_unit_chain
   end interface
 
   interface rhyme_nombre_unit_chain_mul
-    procedure rhyme_nombre_unit_chain_mul_uu
+    module procedure rhyme_nombre_unit_chain_mul_uu
   end interface rhyme_nombre_unit_chain_mul
 
   interface operator ( * )
-    procedure rhyme_nombre_unit_chain_mul_uu
-    procedure rhyme_nombre_unit_chain_mul_cu
+    module procedure rhyme_nombre_unit_chain_mul_uu
+    module procedure rhyme_nombre_unit_chain_mul_cu
   end interface operator ( * )
 
   interface operator ( / )
-    procedure rhyme_nombre_unit_chain_div_uu
-    procedure rhyme_nombre_unit_chain_div_cu
+    module procedure rhyme_nombre_unit_chain_div_uu
+    module procedure rhyme_nombre_unit_chain_div_cu
   end interface operator ( / )
+
+  interface operator ( .as. )
+    module procedure rhyme_nombre_unit_chain_update_symbol
+  end interface operator ( .as. )
+
+  interface operator ( == )
+    module procedure rhyme_nombre_unit_chain_equality
+  end interface operator ( == )
+
+  interface assignment ( = )
+    module procedure rhyme_nombre_unit_chain_assignment
+  end interface
 end module rhyme_nombre_unit_chain

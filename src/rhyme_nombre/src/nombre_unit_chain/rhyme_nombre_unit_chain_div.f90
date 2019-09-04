@@ -24,7 +24,7 @@ contains
     type ( nombre_unit_t ), pointer :: tail
 
     chain => rhyme_nombre_unit_chain_clone( c )
-    tail => rhyme_nombre_unit_chain_tail( chain )
+    tail => rhyme_nombre_unit_tail( chain%head )
 
     tail%next => rhyme_nombre_unit_clone( u**(-1d0/chain%pow))
     tail%next%prev => tail

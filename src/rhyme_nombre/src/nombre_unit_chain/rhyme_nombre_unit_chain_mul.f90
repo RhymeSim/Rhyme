@@ -24,11 +24,19 @@ contains
     type ( nombre_unit_t ), pointer :: tail
 
     chain => rhyme_nombre_unit_chain_clone( c )
-    tail => rhyme_nombre_unit_chain_tail( chain )
+    tail => rhyme_nombre_unit_tail( chain%head )
 
     tail%next => rhyme_nombre_unit_clone( u**(1d0/chain%pow) )
     tail%next%prev => tail
 
     chain%dim = rhyme_nombre_unit_chain_get_dim( chain )
   end function rhyme_nombre_unit_chain_mul_cu
+
+  module function rhyme_nombre_unit_chain_mul_cc ( c1, c2 ) result ( chain )
+    implicit none
+
+    type ( nombre_unit_chain_t ), target, intent ( in ) :: c1, c2
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+  end function rhyme_nombre_unit_chain_mul_cc
 end submodule mul_smod
