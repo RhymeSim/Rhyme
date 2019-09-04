@@ -58,6 +58,26 @@ module rhyme_nombre_unit
       type ( nombre_unit_t ), pointer :: new
     end function rhyme_nombre_unit_mul_pu
 
+    module function rhyme_nombre_unit_pow_ui ( u, i ) result ( new )
+      implicit none
+
+      type ( nombre_unit_t ), intent ( in ) :: u
+      integer, intent ( in ) :: i
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_pow_ui
+
+    module function rhyme_nombre_unit_pow_ur ( u, r ) result ( new )
+      type ( nombre_unit_t ), intent ( in ) :: u
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_pow_ur
+
+    module function rhyme_nombre_unit_pow_ur8 ( u, r8 ) result ( new )
+      type ( nombre_unit_t ), intent ( in ) :: u
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_unit_t ), pointer :: new
+    end function rhyme_nombre_unit_pow_ur8
+
     module function rhyme_nombre_unit_update_symbol ( u, symb ) result ( new_u )
       type ( nombre_unit_t ), target, intent ( in ) :: u
       character ( len=* ), intent ( in ) :: symb
@@ -77,6 +97,12 @@ module rhyme_nombre_unit
     procedure rhyme_nombre_unit_mul_r8u
     procedure rhyme_nombre_unit_mul_pu
   end interface operator ( * )
+
+  interface operator ( ** )
+    procedure rhyme_nombre_unit_pow_ui
+    procedure rhyme_nombre_unit_pow_ur
+    procedure rhyme_nombre_unit_pow_ur8
+  end interface operator ( ** )
 
   interface operator ( .as. )
     procedure rhyme_nombre_unit_update_symbol

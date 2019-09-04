@@ -19,6 +19,11 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_new
 
+    module function rhyme_nombre_unit_chain_get_dim ( c ) result ( dim )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      type ( nombre_dimension_t ) :: dim
+    end function rhyme_nombre_unit_chain_get_dim
+
     module function rhyme_nombre_unit_chain_clone ( chain ) result ( clone )
       type ( nombre_unit_chain_t ), intent ( in ) :: chain
       type ( nombre_unit_chain_t ), pointer :: clone
@@ -39,6 +44,17 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_cu
+
+    module function rhyme_nombre_unit_chain_div_uu ( u1, u2 ) result ( chain )
+      type ( nombre_unit_t ), intent ( in ) :: u1, u2
+      type ( nombre_unit_chain_t ), pointer :: chain
+    end function rhyme_nombre_unit_chain_div_uu
+
+    module function rhyme_nombre_unit_chain_div_cu ( c, u ) result ( chain )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_unit_chain_t ), pointer :: chain
+    end function rhyme_nombre_unit_chain_div_cu
   end interface
 
   interface rhyme_nombre_unit_chain_mul
@@ -49,4 +65,9 @@ module rhyme_nombre_unit_chain
     procedure rhyme_nombre_unit_chain_mul_uu
     procedure rhyme_nombre_unit_chain_mul_cu
   end interface operator ( * )
+
+  interface operator ( / )
+    procedure rhyme_nombre_unit_chain_div_uu
+    procedure rhyme_nombre_unit_chain_div_cu
+  end interface operator ( / )
 end module rhyme_nombre_unit_chain
