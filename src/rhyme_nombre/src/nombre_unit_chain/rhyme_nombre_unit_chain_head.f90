@@ -4,9 +4,9 @@ contains
     implicit none
 
     type ( nombre_unit_chain_t ), target, intent ( in ) :: c
-    type ( nombre_unit_t ), pointer :: head
+    type ( nombre_unit_chain_t ), pointer :: head
 
-    head => c%head
+    head => c
 
     do while ( associated( head%prev ) )
       head => head%prev

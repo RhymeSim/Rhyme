@@ -38,5 +38,15 @@ contains
     type ( nombre_unit_chain_t ), target, intent ( in ) :: c1, c2
     type ( nombre_unit_chain_t ), pointer :: chain
 
+    type ( nombre_unit_chain_t ), pointer :: c1tail, c2head
+
+    ! TODO: clone first
+    c1tail => rhyme_nombre_unit_chain_tail( c1 )
+    c2head => rhyme_nombre_unit_chain_head( c2 )
+
+    c1tail%next => c2head
+    c2head%prev => c1tail
+
+    chain => rhyme_nombre_unit_chain_tail( c2head )
   end function rhyme_nombre_unit_chain_mul_cc
 end submodule mul_smod

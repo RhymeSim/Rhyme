@@ -10,22 +10,23 @@ logical function rhyme_nombre_unit_chain_tail_test () result ( failed )
 
   tester = .describe. "nombre_unit_chain_tail"
 
-  ! c1 => sec**(-1) .as. 'Hz'
-  ! c2 => meter / meter .as. 'rad'
-  ! c3 => kg * meter / sec**2 .as. 'N'
-  !
-  ! c1%next => c2
-  ! c2%next => c3
-  ! c3%prev => c2
-  ! c2%prev => c1
-  !
-  ! tail => rhyme_nombre_unit_chain_tail( c1 )
-  ! call tester%expect( tail == kg .toBe. .true. )
+  c1 => 1 / sec .as. 'Hz'
+  c2 => meter / meter .as. 'rad'
+  c3 => kg * meter / sec**2 .as. 'N'
 
-  ! chain => meter * kg
-  !
-  ! tail_ptr => rhyme_nombre_unit_chain_tail( chain )
-  !
+  c1%next => c2
+  c2%next => c3
+  c3%prev => c2
+  c2%prev => c1
+
+  tail => rhyme_nombre_unit_chain_tail( c1 )
+  call tester%expect( tail == c3 .toBe. .true. )
+
+  tail => rhyme_nombre_unit_chain_tail( c2 )
+  call tester%expect( tail == c3 .toBe. .true. )
+
+  tail => rhyme_nombre_unit_chain_tail( c3 )
+  call tester%expect( tail == c3 .toBe. .true. )
 
   failed = tester%failed()
 end function rhyme_nombre_unit_chain_tail_test

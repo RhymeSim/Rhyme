@@ -40,7 +40,6 @@ set( srcs
   src/nombre_unit_chain/rhyme_nombre_unit_chain_update_symbol.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_get_dim.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain_new.f90
-  src/nombre_unit_chain/rhyme_nombre_unit_chain_assignment.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain.f90
 
 #   src/nombre_units/rhyme_nombre_units_simplify.f90
