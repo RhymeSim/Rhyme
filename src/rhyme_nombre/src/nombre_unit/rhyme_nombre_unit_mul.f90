@@ -7,8 +7,6 @@ contains
     type ( nombre_unit_t ), intent ( in ) :: u
     type ( nombre_unit_t ), pointer :: new
 
-    logical :: out_of_upper_limit, out_of_lower_limit, no_prefix_label
-
     new => rhyme_nombre_unit_clone( u )
     new%prefix = p * new%prefix
   end function rhyme_nombre_unit_mul_pu

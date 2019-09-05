@@ -1,6 +1,6 @@
 module rhyme_nombre_dimension
-
   implicit none
+  ! TODO: dimension arithmatics
 
   integer, parameter, private :: powers_len = 7
 
@@ -28,8 +28,14 @@ module rhyme_nombre_dimension
   ! NB: The order of elements in dimension_chain matters
   !     DO NOT CHANGE IT! (I know, it's the root of all evils)
   type ( nombre_dimension_t ), parameter :: dimension_chain( powers_len ) = [ &
-    dimid%mass, dimid%length, dimid%time, dimid%theta, dimid%electric_current, &
-    dimid%amount_of_substance, dimid%luminous_intensity ]
+    dimid%mass, &
+    dimid%length, &
+    dimid%time, &
+    dimid%theta, &
+    dimid%electric_current, &
+    dimid%amount_of_substance, &
+    dimid%luminous_intensity &
+  ]
 
   interface
     pure module function rhyme_nombre_dimension_equality ( d1, d2 ) result ( cmp )

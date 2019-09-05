@@ -41,9 +41,12 @@ logical function rhyme_nombre_unit_chain_mul_test () result ( failed )
 
   call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c2 unit' )
 
-  c4 => c1 * c2
-  call tester%expect( c1%next == c2 .toBe. .true. .hint. 'c1 * c2 next' )
-  call tester%expect( c2%prev == c1 .toBe. .true. .hint. 'c1 * c2 prev' )
+  c4 => c1 * c2 * c3
+  call tester%expect( c4 == c1 .toBe. .true. .hint. 'c4' )
+  call tester%expect( c4%next == c2 .toBe. .true. .hint. 'c4%next' )
+  call tester%expect( c4%next%next == c3 .toBe. .true. .hint. 'c4%next%next' )
+  call tester%expect( associated( c4%prev ) .toBe. .false. .hint. 'c4%prev' )
+  call tester%expect( associated( c4%next%next%next ) .toBe. .false. .hint. 'c4%next%next%next' )
 
   pc => 3.086d16 * meter
   call tester%expect( pc%conv .toBe. 3.086d16 .hint. 'pc conv' )

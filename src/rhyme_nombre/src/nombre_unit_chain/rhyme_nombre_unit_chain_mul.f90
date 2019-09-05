@@ -80,16 +80,46 @@ contains
     type ( nombre_unit_chain_t ), target, intent ( in ) :: c1, c2
     type ( nombre_unit_chain_t ), pointer :: chain
 
-    type ( nombre_unit_chain_t ), pointer :: c1tail, c2head
+    type ( nombre_unit_chain_t ), pointer :: c1_ptr, c2_ptr
+    type ( nombre_unit_chain_t ), pointer :: c1clone_ptr, c2clone_ptr
+    type ( nombre_unit_chain_t ), pointer :: c1clone_tail, c2clone_head
 
-    ! TODO: clone first
-    c1tail => rhyme_nombre_unit_chain_tail( c1 )
-    c2head => rhyme_nombre_unit_chain_head( c2 )
+    c1clone_ptr => null()
+    c2clone_ptr => null()
 
-    c1tail%next => c2head
-    c2head%prev => c1tail
+    c1_ptr => rhyme_nombre_unit_chain_head( c1 )
+    if ( associated( c1_ptr ) ) then
+      c1clone_ptr => rhyme_nombre_unit_chain_clone( c1_ptr )
 
-    chain => rhyme_nombre_unit_chain_tail( c2head )
+      do while ( associated( c1_ptr%next ) )
+        c1clone_ptr%next => rhyme_nombre_unit_chain_clone( c1_ptr%next )
+        c1clone_ptr%next%prev => c1clone_ptr
+
+        c1_ptr => c1_ptr%next
+        c1clone_ptr => c1clone_ptr%next
+      end do
+    end if
+
+    c2_ptr => rhyme_nombre_unit_chain_head( c2 )
+    if ( associated( c2_ptr ) ) then
+      c2clone_ptr => rhyme_nombre_unit_chain_clone( c2_ptr )
+
+      do while ( associated( c2_ptr%next ) )
+        c2clone_ptr%next => rhyme_nombre_unit_chain_clone( c2_ptr%next )
+        c2clone_ptr%next%prev => c2clone_ptr
+
+        c2_ptr => c2_ptr%next
+        c2clone_ptr => c2clone_ptr%next
+      end do
+    end if
+
+    c1clone_tail => rhyme_nombre_unit_chain_tail( c1clone_ptr )
+    c2clone_head => rhyme_nombre_unit_chain_tail( c2clone_ptr )
+
+    c1clone_tail%next => c2clone_head
+    c2clone_head%prev => c1clone_tail
+
+    chain => rhyme_nombre_unit_chain_head( c2clone_head )
   end function rhyme_nombre_unit_chain_mul_cc
 
   module function rhyme_nombre_unit_chain_mul_ic ( i, c ) result ( chain )
