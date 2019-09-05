@@ -11,7 +11,6 @@ contains
     if ( &
     u1%prefix == u2%prefix &
     .and. u1%symb == u2%symb &
-    .and. abs( u1%conv - u2%conv ) < tiny( 0d0 ) &
     .and. u1%dim == u2%dim &
     .and. abs( u1%pow - u2%pow ) < tiny( 0d0 ) &
     ) eq = .true.

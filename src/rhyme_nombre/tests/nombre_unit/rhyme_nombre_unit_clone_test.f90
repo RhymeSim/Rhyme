@@ -10,10 +10,9 @@ logical function rhyme_nombre_unit_clone_test () result ( failed )
 
   tester = .describe. "nombre_unit_clone"
 
-  kg_cloned => rhyme_nombre_unit_clone( kg )
+  kg_cloned => rhyme_nombre_unit_clone( kilogram )
 
-  call tester%expect( kg_cloned == kg .toBe. .true. )
-  call tester%expect( associated( kg_cloned, kg ) .toBe. .false. )
+  call tester%expect( kg_cloned == kilogram .toBe. .true. )
 
   call tester%expect( associated( kg_cloned%next ) .toBe. .false. )
   call tester%expect( associated( kg_cloned%prev ) .toBe. .false. )

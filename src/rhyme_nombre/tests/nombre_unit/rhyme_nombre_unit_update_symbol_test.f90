@@ -13,7 +13,6 @@ logical function rhyme_nombre_unit_update_symbol_test () result ( failed )
 
   call tester%expect( updated%prefix%base_10 .toBe. meter%prefix%base_10 .hint. 'prefix' )
   call tester%expect( updated%symb .toBe. 'updated' .hint. 'symbole' )
-  call tester%expect( updated%conv .toBe. meter%conv .hint. 'conversion factor' )
   call tester%expect( updated%dim%powers .toBe. meter%dim%powers .hint. 'dimension' )
   call tester%expect( updated%pow .toBe. meter%pow .hint. 'power' )
 

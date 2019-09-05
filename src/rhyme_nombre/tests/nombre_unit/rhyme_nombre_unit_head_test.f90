@@ -10,20 +10,20 @@ logical function rhyme_nombre_unit_head_test () result ( failed )
 
   tester = .describe. "nombre_unit_head"
 
-  units => rhyme_nombre_unit_clone( kg )
+  units => rhyme_nombre_unit_clone( kilogram )
   units%next => rhyme_nombre_unit_clone( meter )
   units%next%prev => units
-  units%next%next => rhyme_nombre_unit_clone( sec**(-2) )
+  units%next%next => rhyme_nombre_unit_clone( second**(-2) )
   units%next%next%prev => units%next
 
   head => rhyme_nombre_unit_head( units )
-  call tester%expect( head == kg .toBe. .true. )
+  call tester%expect( head == kilogram .toBe. .true. )
 
   head => rhyme_nombre_unit_head( units%next )
-  call tester%expect( head == kg .toBe. .true. )
+  call tester%expect( head == kilogram .toBe. .true. )
 
   head => rhyme_nombre_unit_head( units%next%next )
-  call tester%expect( head == kg .toBe. .true. )
+  call tester%expect( head == kilogram .toBe. .true. )
 
   failed = tester%failed()
 end function rhyme_nombre_unit_head_test

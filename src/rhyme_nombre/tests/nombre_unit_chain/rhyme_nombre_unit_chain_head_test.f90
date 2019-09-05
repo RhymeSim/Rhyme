@@ -10,9 +10,9 @@ logical function rhyme_nombre_unit_chain_head_test () result ( failed )
 
   tester = .describe. "nombre_unit_chain_head"
 
-  c1 => 1 / sec .as. 'Hz'
+  c1 => 1 / second .as. 'Hz'
   c2 => meter / meter .as. 'rad'
-  c3 => kg * meter / sec**2 .as. 'N'
+  c3 => kilogram * meter / second**2 .as. 'N'
 
   c1%next => c2
   c2%next => c3

@@ -14,7 +14,7 @@ logical function rhyme_nombre_unit_pow_test () result ( failed )
   tester = .describe. "nombre_unit_pow"
 
   do i = -67, 97, 7
-    u => kg**i
+    u => kilogram**i
     call tester%expect( u%pow .toBe. real( i, kind=8 ) )
 
     r = i * 1.23e0
@@ -22,7 +22,7 @@ logical function rhyme_nombre_unit_pow_test () result ( failed )
     call tester%expect( u%pow .toBe. real( r, kind=8 ) )
 
     r8 = i * 2.34d0
-    u => kel**r8
+    u => kelvin**r8
     call tester%expect( u%pow .toBe. r8 )
   end do
 

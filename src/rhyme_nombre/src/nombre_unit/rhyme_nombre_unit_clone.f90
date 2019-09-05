@@ -10,7 +10,6 @@ contains
 
     clone%prefix = u%prefix
     clone%symb = u%symb
-    clone%conv = u%conv
     clone%dim = u%dim
     clone%pow = u%pow
 

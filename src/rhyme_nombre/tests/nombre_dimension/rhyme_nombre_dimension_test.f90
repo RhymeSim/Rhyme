@@ -46,10 +46,10 @@ logical function rhyme_nombre_dimension_test () result ( failed )
     .hint. 'amount_of_substance symbol' )
 
   call tester%expect( &
-    dimid%luminocity%powers .toBe. [0d0, 0d0, 0d0, 0d0, 0d0, 0d0, 1d0] &
-    .hint. 'luminocity powers' )
-  call tester%expect( dimid%luminocity%symb .toBe. 'J' &
-    .hint. 'luminocity symbol' )
+    dimid%luminous_intensity%powers .toBe. [0d0, 0d0, 0d0, 0d0, 0d0, 0d0, 1d0] &
+    .hint. 'luminous_intensity powers' )
+  call tester%expect( dimid%luminous_intensity%symb .toBe. 'J' &
+    .hint. 'luminous_intensity symbol' )
 
   failed = tester%failed()
 end function rhyme_nombre_dimension_test

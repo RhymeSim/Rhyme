@@ -1,5 +1,47 @@
 submodule ( rhyme_nombre_unit_chain ) mul_smod
 contains
+  module function rhyme_nombre_unit_chain_mul_iu ( i, u ) result ( chain )
+    implicit none
+
+    integer, intent ( in ) :: i
+    type ( nombre_unit_t ), target, intent ( in ) :: u
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_new()
+    chain%conv = i
+    chain%head => rhyme_nombre_unit_clone( u )
+
+    chain%dim = rhyme_nombre_unit_chain_get_dim( chain )
+  end function rhyme_nombre_unit_chain_mul_iu
+
+  module function rhyme_nombre_unit_chain_mul_ru ( r, u ) result ( chain )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: r
+    type ( nombre_unit_t ), target, intent ( in ) :: u
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_new()
+    chain%conv = real( r, kind=8 )
+    chain%head => rhyme_nombre_unit_clone( u )
+
+    chain%dim = rhyme_nombre_unit_chain_get_dim( chain )
+  end function rhyme_nombre_unit_chain_mul_ru
+
+  module function rhyme_nombre_unit_chain_mul_r8u ( r8, u ) result ( chain )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: r8
+    type ( nombre_unit_t ), target, intent ( in ) :: u
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_new()
+    chain%conv = r8
+    chain%head => rhyme_nombre_unit_clone( u )
+
+    chain%dim = rhyme_nombre_unit_chain_get_dim( chain )
+  end function rhyme_nombre_unit_chain_mul_r8u
+
   module function rhyme_nombre_unit_chain_mul_uu ( u1, u2 ) result ( chain )
     implicit none
 
@@ -49,4 +91,37 @@ contains
 
     chain => rhyme_nombre_unit_chain_tail( c2head )
   end function rhyme_nombre_unit_chain_mul_cc
+
+  module function rhyme_nombre_unit_chain_mul_ic ( i, c ) result ( chain )
+    implicit none
+
+    integer, intent ( in ) :: i
+    type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_clone( c )
+    chain%conv = chain%conv * i
+  end function rhyme_nombre_unit_chain_mul_ic
+
+  module function rhyme_nombre_unit_chain_mul_rc ( r, c ) result ( chain )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: r
+    type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_clone( c )
+    chain%conv = chain%conv * real( r, kind=8 )
+  end function rhyme_nombre_unit_chain_mul_rc
+
+  module function rhyme_nombre_unit_chain_mul_r8c ( r8, c ) result ( chain )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: r8
+    type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_clone( c )
+    chain%conv = chain%conv * r8
+  end function rhyme_nombre_unit_chain_mul_r8c
 end submodule mul_smod

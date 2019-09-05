@@ -9,49 +9,49 @@ logical function rhyme_nombre_unit_chain_div_test () result ( failed )
 
   tester = .describe. "nombre_unit_chain_div"
 
-  c1 => meter / sec
+  c1 => meter / second
   call tester%expect( c1%head == meter .toBe. .true. .hint. 'c1 head' )
   call tester%expect( associated( c1%head%prev ) .toBe. .false. .hint. 'c1 head%prev' )
-  call tester%expect( c1%head%next == sec**(-1) .toBe. .true. .hint. 'c1 head%next' )
+  call tester%expect( c1%head%next == second**(-1) .toBe. .true. .hint. 'c1 head%next' )
   call tester%expect( c1%head%next%prev == meter .toBe. .true. .hint. 'c1 head%next%prev' )
   call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 head%next%next' )
 
   call tester%expect( c1%dim == rhyme_nombre_unit_chain_get_dim( c1 ) .toBe. .true. .hint. 'c1 dim')
 
-  c2 => c1 / kel
+  c2 => c1 / kelvin
   call tester%expect( c1%head == meter .toBe. .true. .hint. 'c1 head' )
   call tester%expect( associated( c1%head%prev ) .toBe. .false. .hint. 'c1 head%prev' )
-  call tester%expect( c1%head%next == sec**(-1) .toBe. .true. .hint. 'c1 head%next' )
+  call tester%expect( c1%head%next == second**(-1) .toBe. .true. .hint. 'c1 head%next' )
   call tester%expect( c1%head%next%prev == meter .toBe. .true. .hint. 'c1 head%next%prev' )
   call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 head%next%next' )
 
   call tester%expect( c2%head == meter .toBe. .true. .hint. 'c2 head' )
   call tester%expect( associated( c2%head%prev ) .toBe. .false. .hint. 'c2 head%prev' )
-  call tester%expect( c2%head%next == sec**(-1) .toBe. .true. .hint. 'c2 head%next' )
+  call tester%expect( c2%head%next == second**(-1) .toBe. .true. .hint. 'c2 head%next' )
   call tester%expect( c2%head%next%prev == meter .toBe. .true. .hint. 'c2 head%next%prev' )
-  call tester%expect( c2%head%next%next == kel**(-1) .toBe. .true. .hint. 'c2 head%next%next' )
-  call tester%expect( c2%head%next%next%prev == sec**(-1) .toBe. .true. .hint. 'c2 head%next%next%prev' )
+  call tester%expect( c2%head%next%next == kelvin**(-1) .toBe. .true. .hint. 'c2 head%next%next' )
+  call tester%expect( c2%head%next%next%prev == second**(-1) .toBe. .true. .hint. 'c2 head%next%next%prev' )
   call tester%expect( associated( c2%head%next%next%next ) .toBe. .false. .hint. 'c2 head%next%next%next' )
 
   call tester%expect( c2%dim == rhyme_nombre_unit_chain_get_dim( c2 ) .toBe. .true. .hint. 'c2 dim')
 
-  c3 => 2 / sec
+  c3 => 2 / second
   call tester%expect( c3%conv .toBe. 2d0 .hint. 'c3 conv')
-  call tester%expect( c3%head == sec**(-1) .toBe. .true. .hint. 'c3 head')
+  call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
   call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
 
-  c3 => 1.23e0 / sec
+  c3 => 1.23e0 / second
   call tester%expect( c3%conv .toBe. 1.23e0 .hint. 'c3 conv')
-  call tester%expect( c3%head == sec**(-1) .toBe. .true. .hint. 'c3 head')
+  call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
   call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
 
-  c3 => 2.34d0 / sec
+  c3 => 2.34d0 / second
   call tester%expect( c3%conv .toBe. 2.34d0 .hint. 'c3 conv')
-  call tester%expect( c3%head == sec**(-1) .toBe. .true. .hint. 'c3 head')
+  call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
   call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
