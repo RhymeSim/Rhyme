@@ -42,6 +42,11 @@ set( srcs
   src/nombre_unit_chain/rhyme_nombre_unit_chain_new.f90
   src/nombre_unit_chain/rhyme_nombre_unit_chain.f90
 
+  src/nombre_parse/rhyme_nombre_parse_find_unit.f90
+  src/nombre_parse/rhyme_nombre_parse_close_par_loc.f90
+  src/nombre_parse/rhyme_nombre_parse_tokenize.f90
+  src/nombre_parse/rhyme_nombre_parse.f90
+
 #   src/nombre_units/rhyme_nombre_units_simplify.f90
 #   src/nombre_units/rhyme_nombre_units_clone.f90
 #   src/nombre_units/rhyme_nombre_units_parse.f90

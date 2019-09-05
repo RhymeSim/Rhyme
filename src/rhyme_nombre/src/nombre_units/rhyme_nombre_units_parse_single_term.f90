@@ -1,6 +1,5 @@
 submodule ( rhyme_nombre_units ) units_parse_single_term_smod
 contains
-
   module function rhyme_nombre_units_parse_single_term ( symb ) result ( u )
     implicit none
 

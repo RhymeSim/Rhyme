@@ -87,20 +87,24 @@ module rhyme_nombre_unit
 
 
   interface operator ( * )
-    procedure rhyme_nombre_unit_mul_pu
+    module procedure rhyme_nombre_unit_mul_pu
   end interface operator ( * )
 
   interface operator ( ** )
-    procedure rhyme_nombre_unit_pow_ui
-    procedure rhyme_nombre_unit_pow_ur
-    procedure rhyme_nombre_unit_pow_ur8
+    module procedure rhyme_nombre_unit_pow_ui
+    module procedure rhyme_nombre_unit_pow_ur
+    module procedure rhyme_nombre_unit_pow_ur8
   end interface operator ( ** )
 
   interface operator ( == )
-    procedure rhyme_nombre_unit_equality
+    module procedure rhyme_nombre_unit_equality
   end interface operator ( == )
 
   interface operator ( .as. )
-    procedure rhyme_nombre_unit_update_symbol
+    module procedure rhyme_nombre_unit_update_symbol
   end interface operator ( .as. )
+
+  interface operator ( .print. )
+    module procedure rhyme_nombre_unit_print
+  end interface operator ( .print. )
 end module rhyme_nombre_unit
