@@ -1,4 +1,4 @@
-logical function rhyme_nombre_derived_unit_tail_test () result ( failed )
+logical function rhyme_nombre_derived_unit_chain_tail_test () result ( failed )
   use rhyme_nombre_derived_unit
   use rhyme_assertion
 
@@ -8,7 +8,7 @@ logical function rhyme_nombre_derived_unit_tail_test () result ( failed )
   type ( nombre_derived_unit_t ), pointer :: c1, c2, c3
   type ( nombre_derived_unit_t ), pointer :: tail
 
-  tester = .describe. "nombre_derived_unit_tail"
+  tester = .describe. "nombre_derived_unit_chain_tail"
 
   c1 => 1 / second .as. 'Hz'
   c2 => meter / meter .as. 'rad'
@@ -19,14 +19,14 @@ logical function rhyme_nombre_derived_unit_tail_test () result ( failed )
   c3%prev => c2
   c2%prev => c1
 
-  tail => rhyme_nombre_derived_unit_tail( c1 )
+  tail => rhyme_nombre_derived_unit_chain_tail( c1 )
   call tester%expect( tail == c3 .toBe. .true. )
 
-  tail => rhyme_nombre_derived_unit_tail( c2 )
+  tail => rhyme_nombre_derived_unit_chain_tail( c2 )
   call tester%expect( tail == c3 .toBe. .true. )
 
-  tail => rhyme_nombre_derived_unit_tail( c3 )
+  tail => rhyme_nombre_derived_unit_chain_tail( c3 )
   call tester%expect( tail == c3 .toBe. .true. )
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_tail_test
+end function rhyme_nombre_derived_unit_chain_tail_test

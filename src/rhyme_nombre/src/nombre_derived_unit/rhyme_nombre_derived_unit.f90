@@ -79,15 +79,15 @@ module rhyme_nombre_derived_unit
       character ( len=64 ) :: str
     end function rhyme_nombre_derived_unit_print
 
-    module function rhyme_nombre_derived_unit_head ( c ) result ( head )
+    module function rhyme_nombre_derived_unit_chain_head ( c ) result ( head )
       type ( nombre_derived_unit_t ), target, intent ( in ) :: c
       type ( nombre_derived_unit_t ), pointer :: head
-    end function rhyme_nombre_derived_unit_head
+    end function rhyme_nombre_derived_unit_chain_head
 
-    module function rhyme_nombre_derived_unit_tail ( c ) result ( tail )
+    module function rhyme_nombre_derived_unit_chain_tail ( c ) result ( tail )
       type ( nombre_derived_unit_t ), target, intent ( in ) :: c
       type ( nombre_derived_unit_t ), pointer :: tail
-    end function rhyme_nombre_derived_unit_tail
+    end function rhyme_nombre_derived_unit_chain_tail
 
     module function rhyme_nombre_derived_unit_mul_iu ( i, u ) result ( chain )
       integer, intent ( in ) :: i

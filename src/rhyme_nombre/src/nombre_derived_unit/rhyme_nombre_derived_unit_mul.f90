@@ -87,7 +87,7 @@ contains
     c1clone_ptr => null()
     c2clone_ptr => null()
 
-    c1_ptr => rhyme_nombre_derived_unit_head( c1 )
+    c1_ptr => rhyme_nombre_derived_unit_chain_head( c1 )
     if ( associated( c1_ptr ) ) then
       c1clone_ptr => rhyme_nombre_derived_unit_clone( c1_ptr )
 
@@ -100,7 +100,7 @@ contains
       end do
     end if
 
-    c2_ptr => rhyme_nombre_derived_unit_head( c2 )
+    c2_ptr => rhyme_nombre_derived_unit_chain_head( c2 )
     if ( associated( c2_ptr ) ) then
       c2clone_ptr => rhyme_nombre_derived_unit_clone( c2_ptr )
 
@@ -113,13 +113,13 @@ contains
       end do
     end if
 
-    c1clone_tail => rhyme_nombre_derived_unit_tail( c1clone_ptr )
-    c2clone_head => rhyme_nombre_derived_unit_tail( c2clone_ptr )
+    c1clone_tail => rhyme_nombre_derived_unit_chain_tail( c1clone_ptr )
+    c2clone_head => rhyme_nombre_derived_unit_chain_head( c2clone_ptr )
 
     c1clone_tail%next => c2clone_head
     c2clone_head%prev => c1clone_tail
 
-    chain => rhyme_nombre_derived_unit_head( c2clone_head )
+    chain => rhyme_nombre_derived_unit_chain_head( c2clone_head )
   end function rhyme_nombre_derived_unit_mul_cc
 
   module function rhyme_nombre_derived_unit_mul_ic ( i, c ) result ( chain )

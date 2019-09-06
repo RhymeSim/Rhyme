@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_derived_unit ) head_smod
+submodule ( rhyme_nombre_derived_unit ) chain_head_smod
 contains
-  module function rhyme_nombre_derived_unit_head ( c ) result ( head )
+  module function rhyme_nombre_derived_unit_chain_head ( c ) result ( head )
     implicit none
 
     type ( nombre_derived_unit_t ), target, intent ( in ) :: c
@@ -11,5 +11,5 @@ contains
     do while ( associated( head%prev ) )
       head => head%prev
     end do
-  end function rhyme_nombre_derived_unit_head
-end submodule head_smod
+  end function rhyme_nombre_derived_unit_chain_head
+end submodule chain_head_smod
