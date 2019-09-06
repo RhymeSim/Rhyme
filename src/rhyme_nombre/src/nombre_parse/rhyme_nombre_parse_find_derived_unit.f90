@@ -4,16 +4,16 @@ contains
     implicit none
 
     character ( len=* ), intent ( in ) :: str
-    type ( nombre_unit_chain_t ), pointer :: dunit
+    type ( nombre_derived_unit_t ), pointer :: dunit
 
     integer :: u, p
-    type ( nombre_unit_chain_t ), pointer :: new_dunit
+    type ( nombre_derived_unit_t ), pointer :: new_dunit
 
     dunit => null()
 
     do u = 1, size( derived_units )
       if ( str .eq. .print. derived_units(u) ) then
-        dunit => rhyme_nombre_unit_chain_clone( derived_units(u) )
+        dunit => rhyme_nombre_derived_unit_clone( derived_units(u) )
         exit
       end if
     end do

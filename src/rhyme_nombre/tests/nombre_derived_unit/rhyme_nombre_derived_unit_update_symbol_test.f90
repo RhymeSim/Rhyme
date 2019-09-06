@@ -1,14 +1,14 @@
-logical function rhyme_nombre_unit_chain_update_symbol_test () result ( failed )
-  use rhyme_nombre_unit_chain
+logical function rhyme_nombre_derived_unit_update_symbol_test () result ( failed )
+  use rhyme_nombre_derived_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_unit_chain_t ), pointer :: chain
+  type ( nombre_derived_unit_t ), pointer :: chain
 
-  tester = .describe. "nombre_unit_chain_update_symbol"
+  tester = .describe. "nombre_derived_unit_update_symbol"
 
   chain => kilogram * meter**2 / second**2 .as. 'J'
 
@@ -18,4 +18,4 @@ logical function rhyme_nombre_unit_chain_update_symbol_test () result ( failed )
   call tester%expect( chain%head%next%next == second**(-2) .toBe. .true. .hint. 'sec' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_chain_update_symbol_test
+end function rhyme_nombre_derived_unit_update_symbol_test

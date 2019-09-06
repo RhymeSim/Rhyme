@@ -1,9 +1,9 @@
-submodule ( rhyme_nombre_unit_chain ) get_dim_smod
+submodule ( rhyme_nombre_derived_unit ) get_dim_smod
 contains
-  module function rhyme_nombre_unit_chain_get_dim ( c ) result ( dim )
+  module function rhyme_nombre_derived_unit_get_dim ( c ) result ( dim )
     implicit none
 
-    type ( nombre_unit_chain_t ), intent ( in ) :: c
+    type ( nombre_derived_unit_t ), intent ( in ) :: c
     type ( nombre_dimension_t ) :: dim
 
     type ( nombre_base_unit_t ), pointer :: u_ptr
@@ -28,5 +28,5 @@ contains
 
       u_ptr => u_ptr%next
     end do
-  end function rhyme_nombre_unit_chain_get_dim
+  end function rhyme_nombre_derived_unit_get_dim
 end submodule get_dim_smod

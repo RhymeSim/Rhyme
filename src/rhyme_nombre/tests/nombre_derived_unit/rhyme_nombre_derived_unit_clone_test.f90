@@ -1,13 +1,13 @@
-logical function rhyme_nombre_unit_chain_clone_test () result ( failed )
-  use rhyme_nombre_unit_chain
+logical function rhyme_nombre_derived_unit_clone_test () result ( failed )
+  use rhyme_nombre_derived_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_chain_t ), pointer :: c1, clone
+  type ( nombre_derived_unit_t ), pointer :: c1, clone
 
-  tester = .describe. "nombre_unit_chain_clone"
+  tester = .describe. "nombre_derived_unit_clone"
 
   c1 => kilogram * meter
   c1%prefix = kilo
@@ -16,7 +16,7 @@ logical function rhyme_nombre_unit_chain_clone_test () result ( failed )
   c1%dim = dimid%mass
   c1%pow = 2.34d0
 
-  clone => rhyme_nombre_unit_chain_clone( c1 )
+  clone => rhyme_nombre_derived_unit_clone( c1 )
 
   call tester%expect( clone%prefix == kilo .toBe. .true. .hint. 'prefix' )
   call tester%expect( clone%symb .toBe. 'c1' .hint. 'symbol' )
@@ -32,4 +32,4 @@ logical function rhyme_nombre_unit_chain_clone_test () result ( failed )
   call tester%expect( associated( clone%head%next%next ) .toBe. .false. .hint. 'meter next' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_chain_clone_test
+end function rhyme_nombre_derived_unit_clone_test

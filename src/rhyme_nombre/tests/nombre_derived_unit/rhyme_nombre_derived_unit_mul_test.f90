@@ -1,14 +1,14 @@
-logical function rhyme_nombre_unit_chain_mul_test () result ( failed )
-  use rhyme_nombre_unit_chain
+logical function rhyme_nombre_derived_unit_mul_test () result ( failed )
+  use rhyme_nombre_derived_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_chain_t ), pointer :: c1, c2, c3, c4
-  type ( nombre_unit_chain_t ), pointer :: pc, m_sun, yr
+  type ( nombre_derived_unit_t ), pointer :: c1, c2, c3, c4
+  type ( nombre_derived_unit_t ), pointer :: pc, m_sun, yr
 
-  tester = .describe. "nombre_unit_chain_mul"
+  tester = .describe. "nombre_derived_unit_mul"
 
   c1 => kilogram * meter
   call tester%expect( c1%head == kilogram .toBe. .true. .hint. 'c1 head to be kg' )
@@ -17,7 +17,7 @@ logical function rhyme_nombre_unit_chain_mul_test () result ( failed )
   call tester%expect( c1%head%next%prev == kilogram .toBe. .true. .hint. 'c1 next%prev to be kg' )
   call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 next%next to be null' )
 
-  call tester%expect( c1%dim == rhyme_nombre_unit_chain_get_dim( c1 ) .toBe. .true. .hint. 'c1 unit' )
+  call tester%expect( c1%dim == rhyme_nombre_derived_unit_get_dim( c1 ) .toBe. .true. .hint. 'c1 unit' )
 
   c2 => c1 * second
   call tester%expect( c1%head == kilogram .toBe. .true. .hint. 'c1 head to be kg' )
@@ -39,7 +39,7 @@ logical function rhyme_nombre_unit_chain_mul_test () result ( failed )
   call tester%expect( c3%head%next%next%pow .toBe. 2d0 .hint. 'c3 next%next%pow to be 2d0' )
   call tester%expect( c3%head%next%next%prev == meter .toBe. .true. .hint. 'c3 next%next%prev to be meter' )
 
-  call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c2 unit' )
+  call tester%expect( c3%dim == rhyme_nombre_derived_unit_get_dim( c3 ) .toBe. .true. .hint. 'c2 unit' )
 
   c4 => c1 * c2 * c3
   call tester%expect( c4 == c1 .toBe. .true. .hint. 'c4' )
@@ -64,4 +64,4 @@ logical function rhyme_nombre_unit_chain_mul_test () result ( failed )
   call tester%expect( associated( m_sun%head%next ) .toBe. .false. .hint. 'm_sun head%next' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_chain_mul_test
+end function rhyme_nombre_derived_unit_mul_test

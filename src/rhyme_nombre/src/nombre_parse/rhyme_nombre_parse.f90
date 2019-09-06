@@ -1,5 +1,5 @@
 module rhyme_nombre_parse
-  use rhyme_nombre_unit_chain
+  use rhyme_nombre_derived_unit
 
   implicit none
 
@@ -22,7 +22,7 @@ module rhyme_nombre_parse
 
     module function rhyme_nombre_parse_find_derived_unit ( str ) result ( dunit )
       character ( len=* ), intent ( in ) :: str
-      type ( nombre_unit_chain_t ), pointer :: dunit
+      type ( nombre_derived_unit_t ), pointer :: dunit
     end function rhyme_nombre_parse_find_derived_unit
   end interface
 end module rhyme_nombre_parse

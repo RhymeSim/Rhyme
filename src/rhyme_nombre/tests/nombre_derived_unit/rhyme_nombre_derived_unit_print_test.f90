@@ -1,17 +1,17 @@
-logical function rhyme_nombre_unit_chain_print_test () result ( failed )
-  use rhyme_nombre_unit_chain
+logical function rhyme_nombre_derived_unit_print_test () result ( failed )
+  use rhyme_nombre_derived_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_unit_chain_t ), pointer :: du
+  type ( nombre_derived_unit_t ), pointer :: du
   character ( len=64 ) :: str
 
-  tester = .describe. "nombre_unit_chain_print"
+  tester = .describe. "nombre_derived_unit_print"
 
-  call rhyme_nombre_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   str = .print. solar_mass
   call tester%expect( str .toBe. 'Msun' )
@@ -28,4 +28,4 @@ logical function rhyme_nombre_unit_chain_print_test () result ( failed )
   call tester%expect( str .toBe. 'nMsun^.50' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_chain_print_test
+end function rhyme_nombre_derived_unit_print_test

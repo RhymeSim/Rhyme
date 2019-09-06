@@ -1,9 +1,9 @@
-submodule ( rhyme_nombre_unit_chain ) equality_smod
+submodule ( rhyme_nombre_derived_unit ) equality_smod
 contains
-  module function rhyme_nombre_unit_chain_equality ( c1, c2 ) result ( eq )
+  module function rhyme_nombre_derived_unit_equality ( c1, c2 ) result ( eq )
     implicit none
 
-    type ( nombre_unit_chain_t ), intent ( in ) :: c1, c2
+    type ( nombre_derived_unit_t ), intent ( in ) :: c1, c2
     logical :: eq
 
     type ( nombre_base_unit_t ), pointer :: u1_ptr, u2_ptr
@@ -38,5 +38,5 @@ contains
 
       if( unit_eq ) eq = .true.
     end if
-  end function rhyme_nombre_unit_chain_equality
+  end function rhyme_nombre_derived_unit_equality
 end submodule equality_smod

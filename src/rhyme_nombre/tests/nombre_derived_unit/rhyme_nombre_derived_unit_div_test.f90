@@ -1,13 +1,13 @@
-logical function rhyme_nombre_unit_chain_div_test () result ( failed )
-  use rhyme_nombre_unit_chain
+logical function rhyme_nombre_derived_unit_div_test () result ( failed )
+  use rhyme_nombre_derived_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_chain_t ), pointer :: c1, c2, c3
+  type ( nombre_derived_unit_t ), pointer :: c1, c2, c3
 
-  tester = .describe. "nombre_unit_chain_div"
+  tester = .describe. "nombre_derived_unit_div"
 
   c1 => meter / second
   call tester%expect( c1%head == meter .toBe. .true. .hint. 'c1 head' )
@@ -16,7 +16,7 @@ logical function rhyme_nombre_unit_chain_div_test () result ( failed )
   call tester%expect( c1%head%next%prev == meter .toBe. .true. .hint. 'c1 head%next%prev' )
   call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 head%next%next' )
 
-  call tester%expect( c1%dim == rhyme_nombre_unit_chain_get_dim( c1 ) .toBe. .true. .hint. 'c1 dim')
+  call tester%expect( c1%dim == rhyme_nombre_derived_unit_get_dim( c1 ) .toBe. .true. .hint. 'c1 dim')
 
   c2 => c1 / kelvin
   call tester%expect( c1%head == meter .toBe. .true. .hint. 'c1 head' )
@@ -33,28 +33,28 @@ logical function rhyme_nombre_unit_chain_div_test () result ( failed )
   call tester%expect( c2%head%next%next%prev == second**(-1) .toBe. .true. .hint. 'c2 head%next%next%prev' )
   call tester%expect( associated( c2%head%next%next%next ) .toBe. .false. .hint. 'c2 head%next%next%next' )
 
-  call tester%expect( c2%dim == rhyme_nombre_unit_chain_get_dim( c2 ) .toBe. .true. .hint. 'c2 dim')
+  call tester%expect( c2%dim == rhyme_nombre_derived_unit_get_dim( c2 ) .toBe. .true. .hint. 'c2 dim')
 
   c3 => 2 / second
   call tester%expect( c3%conv .toBe. 2d0 .hint. 'c3 conv')
   call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
-  call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
+  call tester%expect( c3%dim == rhyme_nombre_derived_unit_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
 
   c3 => 1.23e0 / second
   call tester%expect( c3%conv .toBe. 1.23e0 .hint. 'c3 conv')
   call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
-  call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
+  call tester%expect( c3%dim == rhyme_nombre_derived_unit_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
 
   c3 => 2.34d0 / second
   call tester%expect( c3%conv .toBe. 2.34d0 .hint. 'c3 conv')
   call tester%expect( c3%head == second**(-1) .toBe. .true. .hint. 'c3 head')
   call tester%expect( associated( c3%head%next) .toBe. .false. .hint. 'c3 head%next to be null')
 
-  call tester%expect( c3%dim == rhyme_nombre_unit_chain_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
+  call tester%expect( c3%dim == rhyme_nombre_derived_unit_get_dim( c3 ) .toBe. .true. .hint. 'c3 dim')
 
   failed = tester%failed()
-end function rhyme_nombre_unit_chain_div_test
+end function rhyme_nombre_derived_unit_div_test
