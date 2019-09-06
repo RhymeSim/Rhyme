@@ -27,5 +27,9 @@ logical function rhyme_nombre_derived_unit_print_test () result ( failed )
   str = .print. du
   call tester%expect( str .toBe. 'nMsun^.50' )
 
+  du => 1 / second * kilogram / ( kilo * meter**2.5 )
+  str = .print. du
+  call tester%expect( str .toBe. 's^-1 kg km^-2.50' )
+
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_print_test
