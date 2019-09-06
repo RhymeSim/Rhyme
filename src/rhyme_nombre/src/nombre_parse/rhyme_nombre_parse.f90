@@ -19,5 +19,10 @@ module rhyme_nombre_parse
       character ( len=* ), intent ( in ) :: str
       type ( nombre_unit_t ), pointer :: unit
     end function rhyme_nombre_parse_find_unit
+
+    module function rhyme_nombre_parse_find_derived_unit ( str ) result ( dunit )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_unit_chain_t ), pointer :: dunit
+    end function rhyme_nombre_parse_find_derived_unit
   end interface
 end module rhyme_nombre_parse

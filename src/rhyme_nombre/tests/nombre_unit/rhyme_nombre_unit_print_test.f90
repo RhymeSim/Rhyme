@@ -5,6 +5,7 @@ logical function rhyme_nombre_unit_print_test () result ( failed )
   implicit none
 
   type ( assertion_t ) :: tester
+  
   type ( nombre_unit_t ), pointer :: u
   character ( len=64 ) :: str
 

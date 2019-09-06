@@ -154,4 +154,15 @@ contains
     chain => rhyme_nombre_unit_chain_clone( c )
     chain%conv = chain%conv * r8
   end function rhyme_nombre_unit_chain_mul_r8c
+
+  module function rhyme_nombre_unit_chain_mul_pc ( p, c ) result ( chain )
+    implicit none
+
+    type ( nombre_prefix_t ), intent ( in ) :: p
+    type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+    type ( nombre_unit_chain_t ), pointer :: chain
+
+    chain => rhyme_nombre_unit_chain_clone( c )
+    chain%prefix = p
+  end function rhyme_nombre_unit_chain_mul_pc
 end submodule mul_smod

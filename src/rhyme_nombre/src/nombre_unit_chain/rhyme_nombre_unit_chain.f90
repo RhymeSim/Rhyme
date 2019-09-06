@@ -74,6 +74,11 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_chain_t ), pointer :: new
     end function rhyme_nombre_unit_chain_update_symbol
 
+    module function rhyme_nombre_unit_chain_print ( c ) result ( str )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      character ( len=64 ) :: str
+    end function rhyme_nombre_unit_chain_print
+
     module function rhyme_nombre_unit_chain_head ( c ) result ( head )
       type ( nombre_unit_chain_t ), target, intent ( in ) :: c
       type ( nombre_unit_chain_t ), pointer :: head
@@ -136,6 +141,30 @@ module rhyme_nombre_unit_chain
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_r8c
 
+    module function rhyme_nombre_unit_chain_mul_pc ( p, c ) result ( chain )
+      type ( nombre_prefix_t ), intent ( in ) :: p
+      type ( nombre_unit_chain_t ), target, intent ( in ) :: c
+      type ( nombre_unit_chain_t ), pointer :: chain
+    end function rhyme_nombre_unit_chain_mul_pc
+
+    module function rhyme_nombre_unit_chain_pow_ci ( c, i ) result ( new )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      integer, intent ( in ) :: i
+      type ( nombre_unit_chain_t ), pointer :: new
+    end function rhyme_nombre_unit_chain_pow_ci
+
+    module function rhyme_nombre_unit_chain_pow_cr ( c, r ) result ( new )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_unit_chain_t ), pointer :: new
+    end function rhyme_nombre_unit_chain_pow_cr
+
+    module function rhyme_nombre_unit_chain_pow_cr8 ( c, r8 ) result ( new )
+      type ( nombre_unit_chain_t ), intent ( in ) :: c
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_unit_chain_t ), pointer :: new
+    end function rhyme_nombre_unit_chain_pow_cr8
+
     module function rhyme_nombre_unit_chain_div_uu ( u1, u2 ) result ( chain )
       type ( nombre_unit_t ), intent ( in ) :: u1, u2
       type ( nombre_unit_chain_t ), pointer :: chain
@@ -176,7 +205,14 @@ module rhyme_nombre_unit_chain
     module procedure rhyme_nombre_unit_chain_mul_ic
     module procedure rhyme_nombre_unit_chain_mul_rc
     module procedure rhyme_nombre_unit_chain_mul_r8c
+    module procedure rhyme_nombre_unit_chain_mul_pc
   end interface operator ( * )
+
+  interface operator ( ** )
+    module procedure rhyme_nombre_unit_chain_pow_ci
+    module procedure rhyme_nombre_unit_chain_pow_cr
+    module procedure rhyme_nombre_unit_chain_pow_cr8
+  end interface operator ( ** )
 
   interface operator ( / )
     module procedure rhyme_nombre_unit_chain_div_uu
@@ -186,10 +222,6 @@ module rhyme_nombre_unit_chain
     module procedure rhyme_nombre_unit_chain_div_r8u
   end interface operator ( / )
 
-  interface operator ( .as. )
-    module procedure rhyme_nombre_unit_chain_update_symbol
-  end interface operator ( .as. )
-
   interface operator ( == )
     module procedure rhyme_nombre_unit_chain_equality
   end interface operator ( == )
@@ -197,6 +229,14 @@ module rhyme_nombre_unit_chain
   interface assignment ( = )
     module procedure rhyme_nombre_unit_chain_assignment
   end interface
+
+  interface operator ( .as. )
+    module procedure rhyme_nombre_unit_chain_update_symbol
+  end interface operator ( .as. )
+
+  interface operator ( .print. )
+    module procedure rhyme_nombre_unit_chain_print
+  end interface operator ( .print. )
 
 contains
 

@@ -8,6 +8,7 @@ logical function rhyme_nombre_parse_find_unit_test () result ( failed )
   type ( nombre_unit_t ), pointer :: unit, new_unit
 
   integer :: u, p
+  character ( len=128 ) :: msg
 
 
   tester = .describe. "nombre_parse_find_unit"
@@ -43,10 +44,14 @@ logical function rhyme_nombre_parse_find_unit_test () result ( failed )
     if ( len_trim( prfx_si(p)%symb ) .eq. 0 ) cycle
 
     do u = 1, size( si_base_units )
+      if ( si_base_units(u) == kilogram ) cycle
+      
       new_unit => prfx_si(p) * si_base_units(u)
       unit => rhyme_nombre_parse_find_unit( .print. new_unit )
 
-      call tester%expect( unit == new_unit .toBe. .true. )
+      write ( msg, * ) trim((.print. unit)), ' == ', trim((.print. new_unit))
+
+      call tester%expect( unit == new_unit .toBe. .true. .hint. msg )
     end do
   end do
 
