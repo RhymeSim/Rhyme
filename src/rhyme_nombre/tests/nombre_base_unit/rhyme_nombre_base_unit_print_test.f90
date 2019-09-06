@@ -1,15 +1,15 @@
-logical function rhyme_nombre_unit_print_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_print_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  
-  type ( nombre_unit_t ), pointer :: u
+
+  type ( nombre_base_unit_t ), pointer :: u
   character ( len=64 ) :: str
 
-  tester = .describe. "nombre_unit_print"
+  tester = .describe. "nombre_base_unit_print"
 
   str = .print. gram
   call tester%expect( str .toBe. 'g' )
@@ -48,4 +48,4 @@ logical function rhyme_nombre_unit_print_test () result ( failed )
   call tester%expect( str .toBe. 'nK^-4' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_print_test
+end function rhyme_nombre_base_unit_print_test

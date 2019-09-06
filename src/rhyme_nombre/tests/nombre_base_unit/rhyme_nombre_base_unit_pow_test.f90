@@ -1,17 +1,17 @@
-logical function rhyme_nombre_unit_pow_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_pow_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_t ), pointer :: u
+  type ( nombre_base_unit_t ), pointer :: u
 
   integer :: i
   real ( kind=4 ) :: r
   real ( kind=8 ) :: r8
 
-  tester = .describe. "nombre_unit_pow"
+  tester = .describe. "nombre_base_unit_pow"
 
   do i = -67, 97, 7
     u => kilogram**i
@@ -27,4 +27,4 @@ logical function rhyme_nombre_unit_pow_test () result ( failed )
   end do
 
   failed = tester%failed()
-end function rhyme_nombre_unit_pow_test
+end function rhyme_nombre_base_unit_pow_test

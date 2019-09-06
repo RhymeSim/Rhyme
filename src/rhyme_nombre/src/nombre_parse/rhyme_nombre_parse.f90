@@ -17,7 +17,7 @@ module rhyme_nombre_parse
 
     module function rhyme_nombre_parse_find_unit ( str ) result ( unit )
       character ( len=* ), intent ( in ) :: str
-      type ( nombre_unit_t ), pointer :: unit
+      type ( nombre_base_unit_t ), pointer :: unit
     end function rhyme_nombre_parse_find_unit
 
     module function rhyme_nombre_parse_find_derived_unit ( str ) result ( dunit )

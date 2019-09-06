@@ -1,12 +1,12 @@
-logical function rhyme_nombre_unit_equality_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_equality_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  tester = .describe. "nombre_unit_equality"
+  tester = .describe. "nombre_base_unit_equality"
 
   call tester%expect( kilogram == meter .toBe. .false. .hint. 'kg == meter' )
   call tester%expect( kelvin == ampere .toBe. .false. .hint. 'kel == ampere' )
@@ -22,4 +22,4 @@ logical function rhyme_nombre_unit_equality_test () result ( failed )
   call tester%expect( mole == mole .toBe. .true. .hint. 'mol == mol' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_equality_test
+end function rhyme_nombre_base_unit_equality_test

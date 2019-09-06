@@ -6,7 +6,7 @@ contains
     type ( nombre_unit_chain_t ), intent ( in ) :: c1, c2
     logical :: eq
 
-    type ( nombre_unit_t ), pointer :: u1_ptr, u2_ptr
+    type ( nombre_base_unit_t ), pointer :: u1_ptr, u2_ptr
     logical :: unit_eq
 
     eq = .false.

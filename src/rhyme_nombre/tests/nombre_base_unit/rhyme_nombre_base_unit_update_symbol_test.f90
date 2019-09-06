@@ -1,11 +1,11 @@
-logical function rhyme_nombre_unit_update_symbol_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_update_symbol_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_t ), pointer :: updated
+  type ( nombre_base_unit_t ), pointer :: updated
 
   tester = .describe. "unit_update_symbol"
 
@@ -17,4 +17,4 @@ logical function rhyme_nombre_unit_update_symbol_test () result ( failed )
   call tester%expect( updated%pow .toBe. meter%pow .hint. 'power' )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_update_symbol_test
+end function rhyme_nombre_base_unit_update_symbol_test

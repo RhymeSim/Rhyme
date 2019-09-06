@@ -1,12 +1,12 @@
-logical function rhyme_nombre_unit_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  tester = .describe. "nombre_unit"
+  tester = .describe. "nombre_base_unit"
 
   call tester%expect( gram%prefix%base_10 .toBe. 0 .hint. 'gram prefix' )
   call tester%expect( gram%symb .toBe. 'g' .hint. 'gram symbol' )
@@ -44,4 +44,4 @@ logical function rhyme_nombre_unit_test () result ( failed )
   call tester%expect( mole%dim%powers .toBe. dimid%amount_of_substance%powers .hint. 'mol dimension' )
 
   failed = tester %failed()
-end function rhyme_nombre_unit_test
+end function rhyme_nombre_base_unit_test

@@ -5,7 +5,7 @@ logical function rhyme_nombre_parse_find_unit_test () result ( failed )
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_t ), pointer :: unit, new_unit
+  type ( nombre_base_unit_t ), pointer :: unit, new_unit
 
   integer :: u, p
   character ( len=128 ) :: msg
@@ -45,7 +45,7 @@ logical function rhyme_nombre_parse_find_unit_test () result ( failed )
 
     do u = 1, size( si_base_units )
       if ( si_base_units(u) == kilogram ) cycle
-      
+
       new_unit => prfx_si(p) * si_base_units(u)
       unit => rhyme_nombre_parse_find_unit( .print. new_unit )
 

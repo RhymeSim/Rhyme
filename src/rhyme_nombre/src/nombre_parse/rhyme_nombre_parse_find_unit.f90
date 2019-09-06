@@ -4,16 +4,16 @@ contains
     implicit none
 
     character ( len=* ), intent ( in ) :: str
-    type ( nombre_unit_t ), pointer :: unit
+    type ( nombre_base_unit_t ), pointer :: unit
 
     integer :: u, p
-    type ( nombre_unit_t ), pointer :: new_unit
+    type ( nombre_base_unit_t ), pointer :: new_unit
 
     unit => null()
 
     do u = 1, size( si_base_units )
       if ( str .eq. .print. si_base_units(u) ) then
-        unit => rhyme_nombre_unit_clone( si_base_units(u) )
+        unit => rhyme_nombre_base_unit_clone( si_base_units(u) )
         exit
       end if
     end do

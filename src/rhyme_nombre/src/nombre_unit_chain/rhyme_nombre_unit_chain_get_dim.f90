@@ -6,7 +6,7 @@ contains
     type ( nombre_unit_chain_t ), intent ( in ) :: c
     type ( nombre_dimension_t ) :: dim
 
-    type ( nombre_unit_t ), pointer :: u_ptr
+    type ( nombre_base_unit_t ), pointer :: u_ptr
 
     u_ptr => c%head
     dim = dimid%null

@@ -1,5 +1,5 @@
 module rhyme_nombre_unit_chain
-  use rhyme_nombre_unit
+  use rhyme_nombre_base_unit
 
   implicit none
 
@@ -10,7 +10,7 @@ module rhyme_nombre_unit_chain
     type ( nombre_dimension_t ) :: dim
     real ( kind=8 ) :: pow = 1d0
     type ( nombre_unit_chain_t ), pointer :: next => null(), prev => null()
-    type ( nombre_unit_t ), pointer :: head => null()
+    type ( nombre_base_unit_t ), pointer :: head => null()
   end type nombre_unit_chain_t
 
   ! Mass
@@ -50,7 +50,7 @@ module rhyme_nombre_unit_chain
 
     module subroutine rhyme_nombre_unit_chain_assignment ( c, u )
       type ( nombre_unit_chain_t ), pointer, intent ( inout ) :: c
-      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
     end subroutine rhyme_nombre_unit_chain_assignment
 
     module function rhyme_nombre_unit_chain_get_dim ( c ) result ( dim )
@@ -91,30 +91,30 @@ module rhyme_nombre_unit_chain
 
     module function rhyme_nombre_unit_chain_mul_iu ( i, u ) result ( chain )
       integer, intent ( in ) :: i
-      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_iu
 
     module function rhyme_nombre_unit_chain_mul_ru ( r, u ) result ( chain )
       real ( kind=4 ), intent ( in ) :: r
-      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_ru
 
     module function rhyme_nombre_unit_chain_mul_r8u ( r8, u ) result ( chain )
       real ( kind=8 ), intent ( in ) :: r8
-      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_r8u
 
     module function rhyme_nombre_unit_chain_mul_uu ( u1, u2 ) result ( chain )
-      type ( nombre_unit_t ), target, intent ( in ) :: u1, u2
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_uu
 
     module function rhyme_nombre_unit_chain_mul_cu ( c, u ) result ( chain )
       type ( nombre_unit_chain_t ), target, intent ( in ) :: c
-      type ( nombre_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_mul_cu
 
@@ -166,31 +166,31 @@ module rhyme_nombre_unit_chain
     end function rhyme_nombre_unit_chain_pow_cr8
 
     module function rhyme_nombre_unit_chain_div_uu ( u1, u2 ) result ( chain )
-      type ( nombre_unit_t ), intent ( in ) :: u1, u2
+      type ( nombre_base_unit_t ), intent ( in ) :: u1, u2
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_div_uu
 
     module function rhyme_nombre_unit_chain_div_cu ( c, u ) result ( chain )
       type ( nombre_unit_chain_t ), intent ( in ) :: c
-      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_div_cu
 
     module function rhyme_nombre_unit_chain_div_iu ( i, u ) result ( chain )
       integer, intent ( in ) :: i
-      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_div_iu
 
     module function rhyme_nombre_unit_chain_div_ru ( r, u ) result ( chain )
       real ( kind=4 ), intent ( in ) :: r
-      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_div_ru
 
     module function rhyme_nombre_unit_chain_div_r8u ( r8, u ) result ( chain )
       real ( kind=8 ), intent ( in ) :: r8
-      type ( nombre_unit_t ), intent ( in ) :: u
+      type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_unit_chain_t ), pointer :: chain
     end function rhyme_nombre_unit_chain_div_r8u
   end interface

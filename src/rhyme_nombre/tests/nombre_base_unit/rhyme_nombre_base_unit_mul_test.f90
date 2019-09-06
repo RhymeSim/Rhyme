@@ -1,13 +1,13 @@
-logical function rhyme_nombre_unit_mul_test () result ( failed )
-  use rhyme_nombre_unit
+logical function rhyme_nombre_base_unit_mul_test () result ( failed )
+  use rhyme_nombre_base_unit
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_unit_t ), pointer :: mega_meter, giga_meter
+  type ( nombre_base_unit_t ), pointer :: mega_meter, giga_meter
 
-  tester = .describe. "rhyme_nombre_unit_mul"
+  tester = .describe. "rhyme_nombre_base_unit_mul"
 
   mega_meter => mega * meter
   call tester%expect( mega_meter%symb .toBe. 'm' .hint. 'Mm symbol' )
@@ -22,4 +22,4 @@ logical function rhyme_nombre_unit_mul_test () result ( failed )
   call tester%expect( associated( giga_meter%next ) .toBe. .false. )
 
   failed = tester%failed()
-end function rhyme_nombre_unit_mul_test
+end function rhyme_nombre_base_unit_mul_test
