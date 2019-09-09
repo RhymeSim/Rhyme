@@ -76,35 +76,6 @@ module rhyme_nombre_derived_unit
 
 
 
-    module function rhyme_nombre_derived_unit_mul_iu ( i, u ) result ( chain )
-      integer, intent ( in ) :: i
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_iu
-
-    module function rhyme_nombre_derived_unit_mul_ru ( r, u ) result ( chain )
-      real ( kind=4 ), intent ( in ) :: r
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_ru
-
-    module function rhyme_nombre_derived_unit_mul_r8u ( r8, u ) result ( chain )
-      real ( kind=8 ), intent ( in ) :: r8
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_r8u
-
-    module function rhyme_nombre_derived_unit_mul_uu ( u1, u2 ) result ( chain )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_uu
-
-    module function rhyme_nombre_derived_unit_mul_cu ( dunit, u ) result ( chain )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_cu
-
     module function rhyme_nombre_derived_unit_mul_ic ( i, dunit ) result ( chain )
       integer, intent ( in ) :: i
       type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
@@ -128,6 +99,29 @@ module rhyme_nombre_derived_unit
       type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
       type ( nombre_derived_unit_t ), pointer :: chain
     end function rhyme_nombre_derived_unit_mul_pc
+
+    module function rhyme_nombre_derived_unit_mul_iu ( i, u ) result ( chain )
+      integer, intent ( in ) :: i
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_mul_iu
+
+    module function rhyme_nombre_derived_unit_mul_ru ( r, u ) result ( chain )
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_mul_ru
+
+    module function rhyme_nombre_derived_unit_mul_r8u ( r8, u ) result ( chain )
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_mul_r8u
+
+    module function rhyme_nombre_derived_unit_mul_uu ( u1, u2 ) result ( chain )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_mul_uu
 
 
 
@@ -186,7 +180,6 @@ module rhyme_nombre_derived_unit
     module procedure rhyme_nombre_derived_unit_mul_ru
     module procedure rhyme_nombre_derived_unit_mul_r8u
     module procedure rhyme_nombre_derived_unit_mul_uu
-    module procedure rhyme_nombre_derived_unit_mul_cu
     module procedure rhyme_nombre_derived_unit_mul_ic
     module procedure rhyme_nombre_derived_unit_mul_rc
     module procedure rhyme_nombre_derived_unit_mul_r8c

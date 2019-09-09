@@ -5,56 +5,64 @@ logical function rhyme_nombre_derived_unit_mul_test () result ( failed )
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_derived_unit_t ), pointer :: c1, c2, c3
-  type ( nombre_derived_unit_t ), pointer :: pc, m_sun, yr
+  type ( nombre_derived_unit_t ), pointer :: ic, rc, r8c, pc
+  type ( nombre_derived_unit_t ), pointer :: iu, ru, r8u, uu
 
   tester = .describe. "nombre_derived_unit_mul"
 
-  c1 => kilogram * meter
-  call tester%expect( c1%head == kilogram .toBe. .true. .hint. 'c1 head to be kg' )
-  call tester%expect( associated( c1%head%prev ) .toBe. .false. .hint. 'c1 head%prev to be null' )
-  call tester%expect( c1%head%next == meter .toBe. .true. .hint. 'c1 next to be meter' )
-  call tester%expect( c1%head%next%prev == kilogram .toBe. .true. .hint. 'c1 next%prev to be kg' )
-  call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 next%next to be null' )
+  call rhyme_nombre_derived_unit_init
 
-  call tester%expect( c1%dim == rhyme_nombre_derived_unit_get_dim( c1 ) .toBe. .true. .hint. 'c1 unit' )
+  ic => 123 * newton
+  call tester%expect( ic%conv .toBe. 1.23d2 .hint. 'ic conv' )
+  call tester%expect( ic%head == kilogram .toBe. .true. .hint. 'ic kg' )
+  call tester%expect( ic%head%next == meter .toBe. .true. .hint. 'ic m' )
+  call tester%expect( ic%head%next%next == second**(-2) .toBe. .true. .hint. 'ic s^-2' )
+  call tester%expect( associated( ic%head%next%next%next ) .toBe. .false. .hint. 'ic null' )
 
-  c2 => c1 * second
-  call tester%expect( c1%head == kilogram .toBe. .true. .hint. 'c1 head to be kg' )
-  call tester%expect( associated( c1%head%prev ) .toBe. .false. .hint. 'c1 head%prev to be null' )
-  call tester%expect( c1%head%next == meter .toBe. .true. .hint. 'c1 next to be meter' )
-  call tester%expect( c1%head%next%prev == kilogram .toBe. .true. .hint. 'c1 next%prev to be kg' )
-  call tester%expect( associated( c1%head%next%next ) .toBe. .false. .hint. 'c1 next%next to be null' )
+  rc => 2.34e5 * radian
+  call tester%expect( rc%conv .toBe. 2.34e5 .hint. 'rc conv' )
+  call tester%expect( rc%head == meter .toBe. .true. .hint. 'rc m' )
+  call tester%expect( rc%head%next == meter**(-1) .toBe. .true. .hint. 'rc m^-1' )
+  call tester%expect( associated( rc%head%next%next ) .toBe. .false. .hint. 'rc null' )
 
-  call tester%expect( c2%head == kilogram .toBe. .true. .hint. 'c2 head to be kg' )
-  call tester%expect( associated( c2%head%prev ) .toBe. .false. .hint. 'c2 head%prev to be null' )
-  call tester%expect( c2%head%next == meter .toBe. .true. .hint. 'c2 next to be meter' )
-  call tester%expect( c2%head%next%prev == kilogram .toBe. .true. .hint. 'c2 next%prev to be kg' )
-  call tester%expect( c2%head%next%next == second .toBe. .true. .hint. 'c2 next%next to be sec' )
-  call tester%expect( c2%head%next%next%prev == meter .toBe. .true. .hint. 'c2 next%next%prev to be meter' )
+  r8c => 3.45d2 * joule
+  call tester%expect( r8c%conv .toBe. 3.45d2 .hint. 'r8c conv' )
+  call tester%expect( r8c%head == kilogram .toBe. .true. .hint. 'r8c kg' )
+  call tester%expect( r8c%head%next == meter**2 .toBe. .true. .hint. 'r8c m^2' )
+  call tester%expect( r8c%head%next%next == second**(-2) .toBe. .true. .hint. 'r8c s^-2' )
+  call tester%expect( associated( r8c%head%next%next%next ) .toBe. .false. .hint. 'r8c null' )
 
-  c1%pow = 5d-1
-  c3 => c1 * kelvin
-  call tester%expect( c3%head%next%next == kelvin**2 .toBe. .true. .hint. 'c3 next%next to be kel' )
-  call tester%expect( c3%head%next%next%pow .toBe. 2d0 .hint. 'c3 next%next%pow to be 2d0' )
-  call tester%expect( c3%head%next%next%prev == meter .toBe. .true. .hint. 'c3 next%next%prev to be meter' )
+  pc => kilo * watt
+  call tester%expect( pc%prefix == kilo .toBe. .true. .hint. 'pc prefix' )
+  call tester%expect( pc%conv .toBe. 1d0 .hint. 'pc conv' )
+  call tester%expect( pc%head == kilogram .toBe. .true. .hint. 'pc kg' )
+  call tester%expect( pc%head%next == meter**2 .toBe. .true. .hint. 'pc m^2' )
+  call tester%expect( pc%head%next%next == second**(-3) .toBe. .true. .hint. 'pc s^-3' )
+  call tester%expect( associated( pc%head%next%next%next ) .toBe. .false. .hint. 'pc null' )
 
-  call tester%expect( c3%dim == rhyme_nombre_derived_unit_get_dim( c3 ) .toBe. .true. .hint. 'c2 unit' )
+  iu => 1000 * kilogram
+  call tester%expect( iu%conv .toBe. 1e3 .hint. 'iu conv' )
+  call tester%expect( iu%head == kilogram .toBe. .true. .hint. 'iu head' )
+  call tester%expect( associated( iu%head%next ) .toBe. .false. .hint. 'iu head%next' )
 
-  pc => 3.086d16 * meter
-  call tester%expect( pc%conv .toBe. 3.086d16 .hint. 'pc conv' )
-  call tester%expect( pc%head == meter .toBe. .true. .hint. 'pc head' )
-  call tester%expect( associated( pc%head%next ) .toBe. .false. .hint. 'pc head%next' )
+  ru => 3.154e7 * second
+  call tester%expect( ru%conv .toBe. 3.154e7 .hint. 'ru conv' )
+  call tester%expect( ru%head == second .toBe. .true. .hint. 'ru head' )
+  call tester%expect( associated( ru%head%next ) .toBe. .false. .hint. 'ru head%next' )
 
-  yr => 3.154e7 * second
-  call tester%expect( yr%conv .toBe. 3.154e7 .hint. 'yr conv' )
-  call tester%expect( yr%head == second .toBe. .true. .hint. 'yr head' )
-  call tester%expect( associated( yr%head%next ) .toBe. .false. .hint. 'yr head%next' )
+  r8u => 3.086d16 * meter
+  call tester%expect( r8u%conv .toBe. 3.086d16 .hint. 'r8u conv' )
+  call tester%expect( r8u%head == meter .toBe. .true. .hint. 'r8u head' )
+  call tester%expect( associated( r8u%head%next ) .toBe. .false. .hint. 'r8u head%next' )
 
-  m_sun => 3 * kilogram
-  call tester%expect( m_sun%conv .toBe. 3d0 .hint. 'm_sun conv' )
-  call tester%expect( m_sun%head == kilogram .toBe. .true. .hint. 'm_sun head' )
-  call tester%expect( associated( m_sun%head%next ) .toBe. .false. .hint. 'm_sun head%next' )
+  uu => kilogram * meter
+  call tester%expect( uu%head == kilogram .toBe. .true. .hint. 'uu head to be kg' )
+  call tester%expect( associated( uu%head%prev ) .toBe. .false. .hint. 'uu head%prev to be null' )
+  call tester%expect( uu%head%next == meter .toBe. .true. .hint. 'uu next to be meter' )
+  call tester%expect( uu%head%next%prev == kilogram .toBe. .true. .hint. 'uu next%prev to be kg' )
+  call tester%expect( associated( uu%head%next%next ) .toBe. .false. .hint. 'uu next%next to be null' )
+
+  call tester%expect( uu%dim == rhyme_nombre_derived_unit_get_dim( uu ) .toBe. .true. .hint. 'uu unit' )
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_mul_test

@@ -4,6 +4,12 @@ module rhyme_nombre_derived_unit_chain
   implicit none
 
   type nombre_derived_unit_chain_t
+    type ( nombre_prefix_t ) :: prefix
+    character ( len=8 ) :: symb
+    type ( nombre_dimension_t ) :: dim
+    real ( kind=8 ) :: pow = 1d0
+    type ( nombre_derived_unit_t ) :: chain
+    type ( nombre_derived_unit_chain_t ), pointer :: next => null(), prev => null()
   end type nombre_derived_unit_chain_t
 
 
@@ -24,14 +30,29 @@ module rhyme_nombre_derived_unit_chain
     end function rhyme_nombre_derived_unit_chain_clone
 
 
-    module function rhyme_nombre_derived_unit_chain_mul_cc ( dunit1, dunit2 ) result ( chain )
+
+    module function rhyme_nombre_derived_unit_chain_mul_dudu ( dunit1, dunit2 ) result ( chain )
       type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit1, dunit2
       type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_chain_mul_cc
+    end function rhyme_nombre_derived_unit_chain_mul_dudu
+
+    module function rhyme_nombre_derived_unit_chain_mul_duu ( c, u ) result ( chain )
+      type ( nombre_derived_unit_t ), target, intent ( in ) :: c
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_chain_mul_duu
+
+    module function rhyme_nombre_derived_unit_chain_mul_udu ( u, c ) result ( chain )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_derived_unit_t ), target, intent ( in ) :: c
+      type ( nombre_derived_unit_t ), pointer :: chain
+    end function rhyme_nombre_derived_unit_chain_mul_udu
   end interface
 
 
   interface operator ( * )
-    module procedure rhyme_nombre_derived_unit_chain_mul_cc
+    module procedure rhyme_nombre_derived_unit_chain_mul_dudu
+    module procedure rhyme_nombre_derived_unit_chain_mul_duu
+    module procedure rhyme_nombre_derived_unit_chain_mul_udu
   end interface operator ( * )
 end module rhyme_nombre_derived_unit_chain
