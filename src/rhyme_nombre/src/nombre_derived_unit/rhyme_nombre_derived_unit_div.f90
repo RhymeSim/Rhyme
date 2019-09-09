@@ -14,16 +14,16 @@ contains
     chain%dim = rhyme_nombre_derived_unit_get_dim( chain )
   end function rhyme_nombre_derived_unit_div_uu
 
-  module function rhyme_nombre_derived_unit_div_cu ( c, u ) result ( chain )
+  module function rhyme_nombre_derived_unit_div_cu ( dunit, u ) result ( chain )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: c
+    type ( nombre_derived_unit_t ), intent ( in ) :: dunit
     type ( nombre_base_unit_t ), intent ( in ) :: u
     type ( nombre_derived_unit_t ), pointer :: chain
 
     type ( nombre_base_unit_t ), pointer :: tail
 
-    chain => rhyme_nombre_derived_unit_clone( c )
+    chain => rhyme_nombre_derived_unit_clone( dunit )
     tail => rhyme_nombre_base_unit_tail( chain%head )
 
     tail%next => rhyme_nombre_base_unit_clone( u**(-1d0/chain%pow))

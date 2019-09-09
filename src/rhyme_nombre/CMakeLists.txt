@@ -34,6 +34,7 @@ set( srcs
   src/nombre_base_unit/rhyme_nombre_base_unit.f90
 
 
+  src/nombre_derived_unit/rhyme_nombre_derived_unit_chain_clone.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_chain_tail.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_chain_head.f90
 

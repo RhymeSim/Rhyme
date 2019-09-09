@@ -1,12 +1,12 @@
 submodule ( rhyme_nombre_derived_unit ) chain_tail_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_tail ( c ) result ( tail )
+  module function rhyme_nombre_derived_unit_chain_tail ( chain ) result ( tail )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: c
+    type ( nombre_derived_unit_t ), target, intent ( in ) :: chain
     type ( nombre_derived_unit_t ), pointer :: tail
 
-    tail => c
+    tail => chain
 
     do while ( associated( tail%next ) )
       tail => tail%next
