@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_derived_unit ) chain_clone_smod
+submodule ( rhyme_nombre_derived_unit_chain ) chain_clone_smod
 contains
   module function rhyme_nombre_derived_unit_chain_clone ( chain ) result ( clone )
     implicit none

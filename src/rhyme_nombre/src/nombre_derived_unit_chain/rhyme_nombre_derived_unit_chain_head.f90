@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_derived_unit ) chain_head_smod
+submodule ( rhyme_nombre_derived_unit_chain ) chain_head_smod
 contains
   module function rhyme_nombre_derived_unit_chain_head ( chain ) result ( head )
     implicit none

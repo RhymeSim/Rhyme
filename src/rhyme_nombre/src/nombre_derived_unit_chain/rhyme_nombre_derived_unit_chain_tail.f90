@@ -1,4 +1,4 @@
-submodule ( rhyme_nombre_derived_unit ) chain_tail_smod
+submodule ( rhyme_nombre_derived_unit_chain ) chain_tail_smod
 contains
   module function rhyme_nombre_derived_unit_chain_tail ( chain ) result ( tail )
     implicit none

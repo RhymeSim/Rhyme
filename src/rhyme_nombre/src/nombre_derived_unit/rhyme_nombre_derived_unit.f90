@@ -105,11 +105,6 @@ module rhyme_nombre_derived_unit
       type ( nombre_derived_unit_t ), pointer :: chain
     end function rhyme_nombre_derived_unit_mul_cu
 
-    module function rhyme_nombre_derived_unit_mul_cc ( dunit1, dunit2 ) result ( chain )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit1, dunit2
-      type ( nombre_derived_unit_t ), pointer :: chain
-    end function rhyme_nombre_derived_unit_mul_cc
-
     module function rhyme_nombre_derived_unit_mul_ic ( i, dunit ) result ( chain )
       integer, intent ( in ) :: i
       type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
@@ -184,23 +179,6 @@ module rhyme_nombre_derived_unit
       type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_derived_unit_t ), pointer :: chain
     end function rhyme_nombre_derived_unit_div_r8u
-
-
-
-    module function rhyme_nombre_derived_unit_chain_head ( chain ) result ( head )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: chain
-      type ( nombre_derived_unit_t ), pointer :: head
-    end function rhyme_nombre_derived_unit_chain_head
-
-    module function rhyme_nombre_derived_unit_chain_tail ( chain ) result ( tail )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: chain
-      type ( nombre_derived_unit_t ), pointer :: tail
-    end function rhyme_nombre_derived_unit_chain_tail
-
-    module function rhyme_nombre_derived_unit_chain_clone ( chain ) result ( clone )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: chain
-      type ( nombre_derived_unit_t ), pointer :: clone
-    end function rhyme_nombre_derived_unit_chain_clone
   end interface
 
   interface operator ( * )
@@ -209,7 +187,6 @@ module rhyme_nombre_derived_unit
     module procedure rhyme_nombre_derived_unit_mul_r8u
     module procedure rhyme_nombre_derived_unit_mul_uu
     module procedure rhyme_nombre_derived_unit_mul_cu
-    module procedure rhyme_nombre_derived_unit_mul_cc
     module procedure rhyme_nombre_derived_unit_mul_ic
     module procedure rhyme_nombre_derived_unit_mul_rc
     module procedure rhyme_nombre_derived_unit_mul_r8c
