@@ -20,18 +20,17 @@ contains
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
 
-    type ( nombre_base_unit_t ), pointer :: base_unit
-
     this%initialized = .true.
   end subroutine rhyme_nombre_derived_unit_factory_init
 
 
-  function rhyme_nombre_derived_unit_factory_generate ( this, bases, symb ) result ( dunit )
+  function rhyme_nombre_derived_unit_factory_generate ( this, bases, symb, pow ) result ( dunit )
     implicit none
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
     type ( nombre_base_unit_t ), intent ( in ) :: bases(:)
     character ( len=* ), intent ( in ), optional :: symb
+    real ( kind=8 ), intent ( in ), optional :: pow
     type ( nombre_derived_unit_t ), pointer :: dunit
 
     if ( .not. this%initialized ) call this%init
@@ -44,6 +43,9 @@ contains
       dunit%symb = symb
     end if
 
+    if ( present( pow ) ) then
+      dunit%pow = pow
+    end if
   end function rhyme_nombre_derived_unit_factory_generate
 
 
@@ -57,6 +59,8 @@ contains
     integer :: i
 
     if ( .not. this%initialized ) call this%init
+
+    unit_chain => null()
 
     if ( size( units ) > 0 ) then
       unit_chain => rhyme_nombre_base_unit_clone( units(1) )

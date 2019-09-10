@@ -24,13 +24,15 @@ contains
   end subroutine rhyme_nombre_derived_unit_chain_factory_init
 
 
-  function rhyme_nombre_derived_unit_chain_factory_generate ( this ) result ( du_chain)
+  function rhyme_nombre_derived_unit_chain_factory_generate ( this ) result ( du_chain )
     implicit none
 
     class ( rhyme_nombre_derived_unit_chain_factory_t ), intent ( inout ) :: this
     type ( nombre_derived_unit_chain_t ), pointer :: du_chain
 
     if ( .not. this%initialized ) call this%init
+
+    du_chain => null()
   end function rhyme_nombre_derived_unit_chain_factory_generate
 
 

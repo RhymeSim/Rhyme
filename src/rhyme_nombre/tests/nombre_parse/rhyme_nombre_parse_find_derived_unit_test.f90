@@ -6,13 +6,13 @@ logical function rhyme_nombre_parse_find_derived_unit_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: dunit, new_dunit
-  character ( len=128 ) :: msg
-  integer :: u, p
+  ! type ( nombre_derived_unit_t ), pointer :: dunit, new_dunit
+  ! character ( len=128 ) :: msg
+  ! integer :: u, p
 
   tester = .describe. "nombre_parse_find_derived_unit"
 
-  call rhyme_nombre_derived_unit_chain_init
+  ! call rhyme_nombre_derived_unit_chain_init
 
   ! do u = 1, size( derived_units )
   !   dunit => rhyme_nombre_parse_find_derived_unit( trim( .print. derived_units(u) ) )

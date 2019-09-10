@@ -13,10 +13,12 @@ logical function rhyme_nombre_derived_unit_print_test () result ( failed )
   du => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
   call tester%expect( .print. du .toBe. 'J' )
 
-  kdu2 => kilo * du**2
+  kdu2 => kilo * du
+  kdu2%pow = 2
   call tester%expect( .print. kdu2 .toBe. 'kJ^2' )
 
-  ndu5 => nano * du**5d-1
+  ndu5 => nano * du
+  ndu5%pow = 5d-1
   call tester%expect( .print. ndu5 .toBe. 'nJ^.50' )
 
   du%symb = ''

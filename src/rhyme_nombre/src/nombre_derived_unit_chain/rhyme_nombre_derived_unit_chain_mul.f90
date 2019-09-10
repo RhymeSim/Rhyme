@@ -36,7 +36,7 @@ contains
 
     if ( len_trim( duc_new_tail%symb ) .eq. 0 ) then
       unit_tail => rhyme_nombre_base_unit_tail( duc_new_tail%head )
-      unit_tail%next => rhyme_nombre_base_unit_clone( u )
+      unit_tail%next => rhyme_nombre_base_unit_clone( u**(1d0 / duc_new_tail%pow) )
       unit_tail%next%prev => unit_tail
     else
       duc_new_tail%next => rhyme_nombre_derived_unit_new()
@@ -67,7 +67,7 @@ contains
     if ( len_trim( duc_new_head%symb ) .eq. 0 ) then
       unit_head => rhyme_nombre_base_unit_head( duc_new_head%head )
 
-      duc_new_head%head => rhyme_nombre_base_unit_clone( u )
+      duc_new_head%head => rhyme_nombre_base_unit_clone( u**(1d0 / duc_new_head%pow) )
       duc_new_head%head%next => unit_head
       duc_new_head%head%next%prev => duc_new_head%head
     else

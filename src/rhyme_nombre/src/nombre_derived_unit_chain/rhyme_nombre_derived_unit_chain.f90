@@ -79,11 +79,42 @@ module rhyme_nombre_derived_unit_chain
 
 
 
+    module function rhyme_nombre_derived_unit_chain_div_ducduc ( duc1, duc2 ) result ( ducduc )
+      type ( nombre_derived_unit_t ), intent ( in ) :: duc1, duc2
+      type ( nombre_derived_unit_t ), pointer :: ducduc
+    end function rhyme_nombre_derived_unit_chain_div_ducduc
+
     module function rhyme_nombre_derived_unit_chain_div_ducu ( duc, u ) result ( duc_new )
       type ( nombre_derived_unit_t ), intent ( in ) :: duc
       type ( nombre_base_unit_t ), intent ( in ) :: u
       type ( nombre_derived_unit_t ), pointer :: duc_new
     end function rhyme_nombre_derived_unit_chain_div_ducu
+
+    module function rhyme_nombre_derived_unit_chain_div_uduc ( u, duc ) result ( duc_new )
+      type ( nombre_base_unit_t ), intent ( in ) :: u
+      type ( nombre_derived_unit_t ), intent ( in ) :: duc
+      type ( nombre_derived_unit_t ), pointer :: duc_new
+    end function rhyme_nombre_derived_unit_chain_div_uduc
+
+
+
+    module function rhyme_nombre_derived_unit_chain_pow_duci ( duc, i ) result ( new_duc )
+      type ( nombre_derived_unit_t ), intent ( in ) :: duc
+      integer, intent ( in ) :: i
+      type ( nombre_derived_unit_t ), pointer :: new_duc
+    end function rhyme_nombre_derived_unit_chain_pow_duci
+
+    module function rhyme_nombre_derived_unit_chain_pow_ducr ( duc, r ) result ( new_duc )
+      type ( nombre_derived_unit_t ), intent ( in ) :: duc
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_derived_unit_t ), pointer :: new_duc
+    end function rhyme_nombre_derived_unit_chain_pow_ducr
+
+    module function rhyme_nombre_derived_unit_chain_pow_ducr8 ( duc, r8 ) result ( new_duc )
+      type ( nombre_derived_unit_t ), intent ( in ) :: duc
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_derived_unit_t ), pointer :: new_duc
+    end function rhyme_nombre_derived_unit_chain_pow_ducr8
   end interface
 
 
@@ -94,8 +125,16 @@ module rhyme_nombre_derived_unit_chain
   end interface operator ( * )
 
   interface operator ( / )
+    module procedure rhyme_nombre_derived_unit_chain_div_ducduc
     module procedure rhyme_nombre_derived_unit_chain_div_ducu
+    module procedure rhyme_nombre_derived_unit_chain_div_uduc
   end interface operator ( / )
+
+  interface operator ( ** )
+    module procedure rhyme_nombre_derived_unit_chain_pow_duci
+    module procedure rhyme_nombre_derived_unit_chain_pow_ducr
+    module procedure rhyme_nombre_derived_unit_chain_pow_ducr8
+  end interface operator ( ** )
 
 contains
 

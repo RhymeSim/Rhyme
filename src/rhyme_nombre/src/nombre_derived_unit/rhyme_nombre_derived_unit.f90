@@ -96,26 +96,6 @@ module rhyme_nombre_derived_unit
 
 
 
-    module function rhyme_nombre_derived_unit_pow_ci ( dunit, i ) result ( new )
-      type ( nombre_derived_unit_t ), intent ( in ) :: dunit
-      integer, intent ( in ) :: i
-      type ( nombre_derived_unit_t ), pointer :: new
-    end function rhyme_nombre_derived_unit_pow_ci
-
-    module function rhyme_nombre_derived_unit_pow_cr ( dunit, r ) result ( new )
-      type ( nombre_derived_unit_t ), intent ( in ) :: dunit
-      real ( kind=4 ), intent ( in ) :: r
-      type ( nombre_derived_unit_t ), pointer :: new
-    end function rhyme_nombre_derived_unit_pow_cr
-
-    module function rhyme_nombre_derived_unit_pow_cr8 ( dunit, r8 ) result ( new )
-      type ( nombre_derived_unit_t ), intent ( in ) :: dunit
-      real ( kind=8 ), intent ( in ) :: r8
-      type ( nombre_derived_unit_t ), pointer :: new
-    end function rhyme_nombre_derived_unit_pow_cr8
-
-
-
     module function rhyme_nombre_derived_unit_div_uu ( u1, u2 ) result ( dunit_new )
       type ( nombre_base_unit_t ), intent ( in ) :: u1, u2
       type ( nombre_derived_unit_t ), pointer :: dunit_new
@@ -150,12 +130,6 @@ module rhyme_nombre_derived_unit
     module procedure rhyme_nombre_derived_unit_mul_r8du
     module procedure rhyme_nombre_derived_unit_mul_pdu
   end interface operator ( * )
-
-  interface operator ( ** )
-    module procedure rhyme_nombre_derived_unit_pow_ci
-    module procedure rhyme_nombre_derived_unit_pow_cr
-    module procedure rhyme_nombre_derived_unit_pow_cr8
-  end interface operator ( ** )
 
   interface operator ( / )
     module procedure rhyme_nombre_derived_unit_div_uu

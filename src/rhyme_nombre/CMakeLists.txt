@@ -36,7 +36,6 @@ set( srcs
 
   src/nombre_derived_unit/rhyme_nombre_derived_unit_print.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_div.f90
-  src/nombre_derived_unit/rhyme_nombre_derived_unit_pow.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_mul.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_equality.f90
   src/nombre_derived_unit/rhyme_nombre_derived_unit_clone.f90
@@ -46,6 +45,7 @@ set( srcs
   src/nombre_derived_unit/rhyme_nombre_derived_unit.f90
 
 
+  src/nombre_derived_unit_chain/rhyme_nombre_derived_unit_chain_pow.f90
   src/nombre_derived_unit_chain/rhyme_nombre_derived_unit_chain_div.f90
   src/nombre_derived_unit_chain/rhyme_nombre_derived_unit_chain_mul.f90
   src/nombre_derived_unit_chain/rhyme_nombre_derived_unit_chain_clone.f90
