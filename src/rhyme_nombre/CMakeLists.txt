@@ -27,11 +27,15 @@ set( srcs
   src/nombre_base_unit/rhyme_nombre_base_unit_update_symbol.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_pow.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_mul.f90
-  src/nombre_base_unit/rhyme_nombre_base_unit_clone.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_equality.f90
-  src/nombre_base_unit/rhyme_nombre_base_unit_head.f90
-  src/nombre_base_unit/rhyme_nombre_base_unit_tail.f90
+  src/nombre_base_unit/rhyme_nombre_base_unit_clone.f90
   src/nombre_base_unit/rhyme_nombre_base_unit.f90
+
+
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_clone.f90
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_tail.f90
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_head.f90
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain.f90
 
 
   src/nombre_derived_unit/rhyme_nombre_derived_unit_print.f90

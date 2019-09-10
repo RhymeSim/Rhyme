@@ -13,7 +13,7 @@ contains
 
     do u = 1, size( derived_units )
       if ( str .eq. .print. derived_units(u) ) then
-        dunit => rhyme_nombre_derived_unit_clone( derived_units(u) )
+        dunit => .clone. derived_units(u)
         exit
       end if
     end do

@@ -50,7 +50,7 @@ contains
     dunit_chain => null()
 
     if ( size( bases ) > 0 ) then
-      dunit_chain => rhyme_nombre_derived_unit_clone( bases(1) )
+      dunit_chain => .clone. bases(1)
 
       do i = 2, size( bases )
         dunit_chain%next => rhyme_nombre_derived_unit_clone( bases(i) )
@@ -59,6 +59,6 @@ contains
       end do
     end if
 
-    dunit_chain => rhyme_nombre_derived_unit_chain_head( dunit_chain )
+    dunit_chain => .head. dunit_chain
   end function rhyme_nombre_derived_unit_chain_factory_generate_chain
 end module rhyme_nombre_derived_unit_chain_factory

@@ -7,7 +7,7 @@ contains
     character ( len=* ), intent ( in ) :: s
     type ( nombre_derived_unit_t ), pointer :: new
 
-    new => rhyme_nombre_derived_unit_clone( dunit )
+    new => .clone. dunit
     new%symb = s
   end function rhyme_nombre_derived_unit_update_symbol
 end submodule update_symbol_smod

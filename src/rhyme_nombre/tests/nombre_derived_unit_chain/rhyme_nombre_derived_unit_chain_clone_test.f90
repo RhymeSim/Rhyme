@@ -13,7 +13,7 @@ logical function rhyme_nombre_derived_unit_chain_clone_test () result ( failed )
   call rhyme_nombre_derived_unit_chain_init
 
   chain => nom_duc_factory%generate_chain( [ solar_mass, parsec, year, joule, watt ] )
-  clone => rhyme_nombre_derived_unit_chain_clone( chain )
+  clone => .clonechain. chain
 
   call tester%expect( associated( clone%prev ) .toBe. .false. )
   call tester%expect( clone == solar_mass .toBe. .true. )

@@ -1,5 +1,5 @@
 module rhyme_nombre_derived_unit
-  use rhyme_nombre_base_unit
+  use rhyme_nombre_base_unit_chain
 
   implicit none
 
@@ -149,4 +149,8 @@ module rhyme_nombre_derived_unit
   interface operator ( .print. )
     module procedure rhyme_nombre_derived_unit_print
   end interface operator ( .print. )
+
+  interface operator ( .clone. )
+    module procedure rhyme_nombre_derived_unit_clone
+  end interface operator ( .clone. )
 end module rhyme_nombre_derived_unit

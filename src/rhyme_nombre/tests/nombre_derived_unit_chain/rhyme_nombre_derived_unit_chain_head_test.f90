@@ -13,16 +13,16 @@ logical function rhyme_nombre_derived_unit_chain_head_test () result ( failed )
 
   chain => nom_duc_factory%generate_chain( [ pascal, hertz, radian, newton ] )
 
-  head => rhyme_nombre_derived_unit_chain_head( chain )
+  head => .head. chain
   call tester%expect( head == pascal .toBe. .true. )
 
-  head => rhyme_nombre_derived_unit_chain_head( chain%next )
+  head => .head. chain%next
   call tester%expect( head == pascal .toBe. .true. )
 
-  head => rhyme_nombre_derived_unit_chain_head( chain%next%next )
+  head => .head. chain%next%next
   call tester%expect( head == pascal .toBe. .true. )
 
-  head => rhyme_nombre_derived_unit_chain_head( chain%next%next%next )
+  head => .head. chain%next%next%next
   call tester%expect( head == pascal .toBe. .true. )
 
   failed = tester%failed()

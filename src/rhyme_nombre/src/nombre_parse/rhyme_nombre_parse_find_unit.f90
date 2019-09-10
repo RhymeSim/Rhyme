@@ -13,7 +13,7 @@ contains
 
     do u = 1, size( si_base_units )
       if ( str .eq. .print. si_base_units(u) ) then
-        unit => rhyme_nombre_base_unit_clone( si_base_units(u) )
+        unit => .clone. si_base_units(u)
         exit
       end if
     end do

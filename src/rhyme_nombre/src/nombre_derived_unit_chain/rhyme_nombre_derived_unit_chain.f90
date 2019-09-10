@@ -136,6 +136,18 @@ module rhyme_nombre_derived_unit_chain
     module procedure rhyme_nombre_derived_unit_chain_pow_ducr8
   end interface operator ( ** )
 
+  interface operator ( .clonechain. )
+    module procedure rhyme_nombre_derived_unit_chain_clone
+  end interface operator ( .clonechain. )
+
+  interface operator ( .head. )
+    module procedure rhyme_nombre_derived_unit_chain_head
+  end interface operator ( .head. )
+
+  interface operator ( .tail. )
+    module procedure rhyme_nombre_derived_unit_chain_tail
+  end interface operator ( .tail. )
+
 contains
 
   module subroutine rhyme_nombre_derived_unit_chain_init ()

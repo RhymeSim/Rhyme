@@ -27,25 +27,15 @@ module rhyme_nombre_base_unit
 
 
   interface
+    module function rhyme_nombre_base_unit_clone ( u ) result ( clone )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      type ( nombre_base_unit_t ), pointer :: clone
+    end function rhyme_nombre_base_unit_clone
+
     pure module function rhyme_nombre_base_unit_equality ( u1, u2 ) result ( eq )
       type ( nombre_base_unit_t ), intent ( in ) :: u1, u2
       logical :: eq
     end function rhyme_nombre_base_unit_equality
-
-    module function rhyme_nombre_base_unit_clone ( u ) result ( clone )
-      type ( nombre_base_unit_t ), intent ( in ), target :: u
-      type ( nombre_base_unit_t ), pointer :: clone
-    end function rhyme_nombre_base_unit_clone
-
-    module function rhyme_nombre_base_unit_head ( u ) result ( head )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_base_unit_t ), pointer :: head
-    end function rhyme_nombre_base_unit_head
-
-    module function rhyme_nombre_base_unit_tail ( u ) result ( tail )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_base_unit_t ), pointer :: tail
-    end function rhyme_nombre_base_unit_tail
 
     module function rhyme_nombre_base_unit_mul_pu ( p, u ) result ( new )
       type ( nombre_prefix_t ), intent ( in ) :: p
@@ -107,4 +97,8 @@ module rhyme_nombre_base_unit
   interface operator ( .print. )
     module procedure rhyme_nombre_base_unit_print
   end interface operator ( .print. )
+
+  interface operator ( .clone. )
+    module procedure rhyme_nombre_base_unit_clone
+  end interface operator ( .clone. )
 end module rhyme_nombre_base_unit

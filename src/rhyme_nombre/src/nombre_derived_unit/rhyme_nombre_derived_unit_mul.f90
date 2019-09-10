@@ -7,7 +7,7 @@ contains
     type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
     type ( nombre_derived_unit_t ), pointer :: chain
 
-    chain => rhyme_nombre_derived_unit_clone( dunit )
+    chain => .clone. dunit
     chain%conv = chain%conv * i
   end function rhyme_nombre_derived_unit_mul_idu
 
@@ -18,7 +18,7 @@ contains
     type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
     type ( nombre_derived_unit_t ), pointer :: chain
 
-    chain => rhyme_nombre_derived_unit_clone( dunit )
+    chain => .clone. dunit
     chain%conv = chain%conv * real( r, kind=8 )
   end function rhyme_nombre_derived_unit_mul_rdu
 
@@ -29,7 +29,7 @@ contains
     type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
     type ( nombre_derived_unit_t ), pointer :: chain
 
-    chain => rhyme_nombre_derived_unit_clone( dunit )
+    chain => .clone. dunit
     chain%conv = chain%conv * r8
   end function rhyme_nombre_derived_unit_mul_r8du
 
@@ -40,7 +40,7 @@ contains
     type ( nombre_derived_unit_t ), target, intent ( in ) :: dunit
     type ( nombre_derived_unit_t ), pointer :: chain
 
-    chain => rhyme_nombre_derived_unit_clone( dunit )
+    chain => .clone. dunit
     chain%prefix = p
   end function rhyme_nombre_derived_unit_mul_pdu
 
@@ -53,7 +53,7 @@ contains
 
     chain => rhyme_nombre_derived_unit_new()
     chain%conv = i
-    chain%head => rhyme_nombre_base_unit_clone( u )
+    chain%head => .clone. u
 
     chain%dim = rhyme_nombre_derived_unit_get_dim( chain )
   end function rhyme_nombre_derived_unit_mul_iu
@@ -67,7 +67,7 @@ contains
 
     chain => rhyme_nombre_derived_unit_new()
     chain%conv = real( r, kind=8 )
-    chain%head => rhyme_nombre_base_unit_clone( u )
+    chain%head => .clone. u
 
     chain%dim = rhyme_nombre_derived_unit_get_dim( chain )
   end function rhyme_nombre_derived_unit_mul_ru
@@ -81,7 +81,7 @@ contains
 
     chain => rhyme_nombre_derived_unit_new()
     chain%conv = r8
-    chain%head => rhyme_nombre_base_unit_clone( u )
+    chain%head => .clone. u
 
     chain%dim = rhyme_nombre_derived_unit_get_dim( chain )
   end function rhyme_nombre_derived_unit_mul_r8u
@@ -93,8 +93,8 @@ contains
     type ( nombre_derived_unit_t ), pointer :: chain
 
     chain => rhyme_nombre_derived_unit_new()
-    chain%head => rhyme_nombre_base_unit_clone( u1 )
-    chain%head%next => rhyme_nombre_base_unit_clone( u2 )
+    chain%head => .clone. u1
+    chain%head%next => .clone. u2
     chain%head%next%prev => chain%head
 
     chain%dim = rhyme_nombre_derived_unit_get_dim( chain )

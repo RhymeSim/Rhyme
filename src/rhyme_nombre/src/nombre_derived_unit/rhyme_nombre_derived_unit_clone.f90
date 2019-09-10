@@ -19,13 +19,13 @@ contains
     new%pow = dunit%pow
 
     if ( associated( dunit%head ) ) then
-      new%head => rhyme_nombre_base_unit_clone( dunit%head )
+      new%head => .clone. dunit%head
 
       dunit_u_ptr => dunit%head
       new_u_ptr => new%head
 
       do while ( associated( dunit_u_ptr%next ) )
-        new_u_ptr%next => rhyme_nombre_base_unit_clone( dunit_u_ptr%next )
+        new_u_ptr%next => .clone. dunit_u_ptr%next
         new_u_ptr%next%prev => new_u_ptr
 
         dunit_u_ptr => dunit_u_ptr%next

@@ -63,15 +63,15 @@ contains
     unit_chain => null()
 
     if ( size( units ) > 0 ) then
-      unit_chain => rhyme_nombre_base_unit_clone( units(1) )
+      unit_chain => .clone. units(1)
 
       do i = 2, size( units )
-        unit_chain%next => rhyme_nombre_base_unit_clone( units(i) )
+        unit_chain%next => .clone. units(i)
         unit_chain%next%prev => unit_chain
         unit_chain => unit_chain%next
       end do
     end if
 
-    unit_chain => rhyme_nombre_base_unit_head( unit_chain )
+    unit_chain => .head. unit_chain
   end function rhyme_nombre_derived_unit_factory_generate_chain
 end module rhyme_nombre_derived_unit_factory

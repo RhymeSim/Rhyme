@@ -16,7 +16,7 @@ logical function rhyme_nombre_derived_unit_clone_test () result ( failed )
   c1%dim = dimid%mass
   c1%pow = 2.34d0
 
-  clone => rhyme_nombre_derived_unit_clone( c1 )
+  clone => .clone. c1
 
   call tester%expect( clone%prefix == kilo .toBe. .true. .hint. 'prefix' )
   call tester%expect( clone%symb .toBe. 'c1' .hint. 'symbol' )

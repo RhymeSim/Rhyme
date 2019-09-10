@@ -7,7 +7,7 @@ contains
     integer, intent ( in ) :: i
     type ( nombre_derived_unit_t ), pointer :: new_du
 
-    new_du => rhyme_nombre_derived_unit_clone( du )
+    new_du => .clone. du
     new_du%pow = new_du%pow * i
   end function rhyme_nombre_derived_unit_pow_dui
 
@@ -18,7 +18,7 @@ contains
     real ( kind=4 ), intent ( in ) :: r
     type ( nombre_derived_unit_t ), pointer :: new_du
 
-    new_du => rhyme_nombre_derived_unit_clone( du )
+    new_du => .clone. du
     new_du%pow = new_du%pow * real( r, kind=8)
   end function rhyme_nombre_derived_unit_pow_dur
 
@@ -29,7 +29,7 @@ contains
     real ( kind=8 ), intent ( in ) :: r8
     type ( nombre_derived_unit_t ), pointer :: new_du
 
-    new_du => rhyme_nombre_derived_unit_clone( du )
+    new_du => .clone. du
     new_du%pow = new_du%pow * r8
   end function rhyme_nombre_derived_unit_pow_dur8
 end submodule pow_smod

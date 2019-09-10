@@ -13,13 +13,13 @@ logical function rhyme_nombre_derived_unit_chain_tail_test () result ( failed )
 
   chain => nom_duc_factory%generate_chain( [ hydrogen_mass, light_year, electron_volt ] )
 
-  tail => rhyme_nombre_derived_unit_chain_tail( chain )
+  tail => .tail. chain
   call tester%expect( tail == electron_volt .toBe. .true. )
 
-  tail => rhyme_nombre_derived_unit_chain_tail( chain%next )
+  tail => .tail. chain%next
   call tester%expect( tail == electron_volt .toBe. .true. )
 
-  tail => rhyme_nombre_derived_unit_chain_tail( chain%next%next )
+  tail => .tail. chain%next%next
   call tester%expect( tail == electron_volt .toBe. .true. )
 
   failed = tester%failed()
