@@ -6,33 +6,25 @@ contains
     type ( spectrum_t ), intent ( inout ) :: spectrum
     type ( logger_t ), intent ( inout ) :: logger
 
-    integer :: nbins
     type ( spectral_region_t ), pointer :: region
 
-    nbins = 0
+    spectrum%bins = 0d0
 
     region => spectrum%regions
-    if ( .not. associated( region ) ) call logger%warn( 'No regions to dispatch' )
-
 
     do while ( associated( region ) )
-      nbins = nbins + region%nbins
-      region => region%next
-    end do
-
-    allocate ( spectrum%bins( nbins ) )
-
-
-    region => spectrum%regions
-    do while ( associated( region ) )
-      if ( region%binning_type .eq. spid%lin_space ) then
+      select case ( region%binning_type )
+      case ( spid%lin_space )
         call rhyme_spectrum_dispatch_linear_region( spectrum, region, logger )
-      else if ( region%binning_type .eq. spid%log_space ) then
+
+      case ( spid%log_space )
         call rhyme_spectrum_dispatch_logarithmic_region( spectrum, region, logger )
-      else
-        call logger%warn( 'Unknown binning type', &
-          'binning_type', '=', [ region%binning_type ] )
-      end if
+
+      case default
+        call logger%err( &
+        'Unknown binning type', 'binning_type', '=', [ region%binning_type ] )
+
+      end select
 
       region => region%next
     end do

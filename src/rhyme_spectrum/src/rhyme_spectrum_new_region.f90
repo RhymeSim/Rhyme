@@ -29,5 +29,6 @@ contains
     region%bmax = 0.d0
     region%lum_at_bmin = 0.d0
     region%slope = 0.d0
+
   end function rhyme_spectrum_new_region
 end submodule new_region_smod

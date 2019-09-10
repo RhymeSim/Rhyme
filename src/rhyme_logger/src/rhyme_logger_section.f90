@@ -34,13 +34,15 @@ contains
     logical, intent ( in ), optional :: print_duration
 
     real ( kind=4 ) :: dt
+    character ( len=32 ) :: dt_str
     integer :: now(8)
 
     if ( present( print_duration ) .and. print_duration .eqv. .true. ) then
       call date_and_time( values=now )
 
       dt = sum( ( now - this%section_starts_at( this%secid, : ) ) * to_seconds )
-      call rhyme_logger_log( this, 'done in', dt, 'sec' )
+      write( dt_str, '(F0.3)' ) dt
+      call rhyme_logger_log( this, 'done in', dt_str, 'sec' )
     endif
 
     this%sections( this%secid ) = ''

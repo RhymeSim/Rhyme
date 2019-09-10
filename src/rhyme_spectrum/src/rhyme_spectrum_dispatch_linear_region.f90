@@ -13,16 +13,11 @@ contains
     width = abs( region%bmax - region%bmin ) / region%nbins
 
     do i = spectrum%filled_bins, spectrum%filled_bins + region%nbins
-      spectrum%bins(i)%width = width
-      spectrum%bins(i)%min = (i - spectrum%filled_bins ) * width
-      spectrum%bins(i)%max = spectrum%bins(i)%min + width
-      spectrum%bins(i)%center = ( spectrum%bins(i)%min + spectrum%bins(i)%max ) / 2
-
-      if ( region%spectrum_type .eq. spid%power_law ) then
-      else
-        call logger%warn( 'Unknown spectrum type', &
-          'spectrum_type', '=', [ region%spectrum_type ] )
-      end if
+      spectrum%bins(i, spid%width) = width
+      spectrum%bins(i, spid%min) = (i - spectrum%filled_bins ) * width
+      spectrum%bins(i, spid%max) = spectrum%bins(i, spid%min) + width
+      spectrum%bins(i, spid%center) = ( spectrum%bins(i, spid%min) + spectrum%bins(i, spid%max) ) / 2
     end do
+
   end subroutine rhyme_spectrum_dispatch_linear_region
 end submodule dispatch_linear_region_smod

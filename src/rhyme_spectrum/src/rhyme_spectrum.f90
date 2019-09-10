@@ -1,12 +1,23 @@
 module rhyme_spectrum
+  use rhyme_nombre
   use rhyme_logger
 
   implicit none
 
   type spectrum_indices_t
-    integer :: power_law = 1, blackbody = 2, line = 3 ! spectrum types
-    integer :: lin_space = -1, log_space = -2 ! binning types
-    integer :: max_n_bins = 100
+    ! spectrum types
+    integer :: power_law = 1, blackbody = 2, line_guassian = 3, line_voigt = 4
+
+    ! binning types
+    integer :: lin_space = -1, log_space = -2
+
+    ! Max length/resolution of each spectrum
+    integer :: max_n_bins = 512
+
+    ! spectral bins indices (NB: flux should always be the last one)
+    integer :: min = 1, max = 2, width = 3, center = 4
+    integer :: energy = 5, n_photons = 6
+    integer :: flux = 7
   end type spectrum_indices_t
 
   type ( spectrum_indices_t ), parameter :: spid = spectrum_indices_t ()
@@ -16,29 +27,25 @@ module rhyme_spectrum
     integer :: binning_type = spid%lin_space
     integer :: spectrum_type = spid%power_law
     integer :: nbins = 10
-    real ( kind=8 ) :: bmin, bmax ! in eV
+    real ( kind=8 ) :: bmin, bmax
     real ( kind=8 ) :: lum_at_bmin = 0.d0
     real ( kind=8 ) :: slope = 0.d0
     type ( spectral_region_t ), pointer :: next => null()
   end type spectral_region_t
 
 
-  type spectral_bin_t
-    real ( kind=8 ) :: min, max, width, center
-    real ( kind=8 ) :: energy, flux
-  end type spectral_bin_t
-
   type spectrum_t
-    logical :: initialized = .false.
     integer :: filled_bins = 0
-    type ( spectral_bin_t ), allocatable :: bins(:)
+
+    real ( kind=8 ) :: total_energy, total_n_photons, total_flux
+
+    character ( len=256 ) :: lambda_unit_str, energy_unit_str, flux_unit_str
+    type ( nombre_unit_t ), pointer :: lambda_unit, energy_unit, flux_unit
+
+    real ( kind=8 ) :: bins( spid%max_n_bins, spid%flux )
     type ( spectral_region_t ), pointer :: regions => null()
-  ! contains
-  !   procedure :: new_region => rhyme_spectrum_new_region
-  !   procedure :: dispatch_regions => rhyme_spectrum_dispatch_regions
-  !   procedure :: dispatch_linear_region => rhyme_spectrum_dispatch_linear_region
-  !   procedure :: dispatch_logarithmic_region => rhyme_spectrum_dispatch_logarithmic_region
   end type spectrum_t
+
 
   interface
     module function rhyme_spectrum_new_region ( spectrum, btype, stype ) result ( region )

@@ -111,10 +111,10 @@ The complete list of parameters (`keywords` and *values*).
   - `source_coordinate`: (e.g. 12d-1 34d-1 56d-1)
   - `source_opening_angle`: (e.g. 2 pi 1d0 2d0 3d0)
   - `source_spectral_region`:
-    - *power_law freq_start freq_end total_energy resolution slope*: (e.g. power_law 1d0 2d0 6.78d9 10 -1.7)
-    - *linear freq_start freq_end total_energy resolution slope*: (e.g. linear 2.d0 3.d0 5.67d8 15 -1)
-    - *line guassian freq total_energy resolution*: (e.g. line gaussian 3.d0 4.56d7d8 10)
-    - *line voigt freq total_energy resolution*: (e.g. line voigt 3.d0 4.56d7d8 10)
+    - *power_law lambda_start lambda_end total_energy resolution slope*: (e.g. power_law 1d0 2d0 6.78d9 10 -1.7)
+    - *linear lambda_start lambda_end total_energy resolution slope*: (e.g. linear 2.d0 3.d0 5.67d8 15 -1)
+    - *line guassian lambda total_energy resolution*: (e.g. line gaussian 3.d0 4.56d7d8 10)
+    - *line voigt lambda total_energy resolution*: (e.g. line voigt 3.d0 4.56d7d8 10)
 
 
 Examples are provided for [1D](parameters_1d.conf.example),

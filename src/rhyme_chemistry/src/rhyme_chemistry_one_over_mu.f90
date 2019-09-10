@@ -8,12 +8,9 @@ contains
     real ( kind=8 ), intent ( in ) :: X, Y, f( NSPE )
     real ( kind=8 ) :: one__mu
 
-#if NSPE == 3
+
     ! TODO: currently it's working only for 3 species, HI, HeI, HeII
     one__mu = X * ( 1.d0 + f(1) ) / chemistry%amu%H + &
       Y * ( 1.d0 + f(2) + 2 * f(3) ) / chemistry%amu%He
-#else
-    one__mu = 1.d0
-#endif
   end function rhyme_chemistry_one_over_mu
 end submodule one_over_mu_smod
