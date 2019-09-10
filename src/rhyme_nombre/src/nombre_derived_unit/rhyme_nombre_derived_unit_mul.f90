@@ -1,6 +1,6 @@
 submodule ( rhyme_nombre_derived_unit ) mul_smod
 contains
-  module function rhyme_nombre_derived_unit_mul_ic ( i, dunit ) result ( chain )
+  module function rhyme_nombre_derived_unit_mul_idu ( i, dunit ) result ( chain )
     implicit none
 
     integer, intent ( in ) :: i
@@ -9,9 +9,9 @@ contains
 
     chain => rhyme_nombre_derived_unit_clone( dunit )
     chain%conv = chain%conv * i
-  end function rhyme_nombre_derived_unit_mul_ic
+  end function rhyme_nombre_derived_unit_mul_idu
 
-  module function rhyme_nombre_derived_unit_mul_rc ( r, dunit ) result ( chain )
+  module function rhyme_nombre_derived_unit_mul_rdu ( r, dunit ) result ( chain )
     implicit none
 
     real ( kind=4 ), intent ( in ) :: r
@@ -20,9 +20,9 @@ contains
 
     chain => rhyme_nombre_derived_unit_clone( dunit )
     chain%conv = chain%conv * real( r, kind=8 )
-  end function rhyme_nombre_derived_unit_mul_rc
+  end function rhyme_nombre_derived_unit_mul_rdu
 
-  module function rhyme_nombre_derived_unit_mul_r8c ( r8, dunit ) result ( chain )
+  module function rhyme_nombre_derived_unit_mul_r8du ( r8, dunit ) result ( chain )
     implicit none
 
     real ( kind=8 ), intent ( in ) :: r8
@@ -31,9 +31,9 @@ contains
 
     chain => rhyme_nombre_derived_unit_clone( dunit )
     chain%conv = chain%conv * r8
-  end function rhyme_nombre_derived_unit_mul_r8c
+  end function rhyme_nombre_derived_unit_mul_r8du
 
-  module function rhyme_nombre_derived_unit_mul_pc ( p, dunit ) result ( chain )
+  module function rhyme_nombre_derived_unit_mul_pdu ( p, dunit ) result ( chain )
     implicit none
 
     type ( nombre_prefix_t ), intent ( in ) :: p
@@ -42,7 +42,7 @@ contains
 
     chain => rhyme_nombre_derived_unit_clone( dunit )
     chain%prefix = p
-  end function rhyme_nombre_derived_unit_mul_pc
+  end function rhyme_nombre_derived_unit_mul_pdu
 
   module function rhyme_nombre_derived_unit_mul_iu ( i, u ) result ( chain )
     implicit none

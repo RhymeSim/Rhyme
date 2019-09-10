@@ -9,22 +9,21 @@ logical function rhyme_nombre_derived_unit_chain_head_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_head"
 
-  chain => nom_duc_factory%generate_chain()
+  call rhyme_nombre_derived_unit_chain_init
+
+  chain => nom_duc_factory%generate_chain( [ pascal, hertz, radian, newton ] )
 
   head => rhyme_nombre_derived_unit_chain_head( chain )
-  call tester%expect( head == nom_duc_factory%chain_members(1)%ptr .toBe. .true. )
+  call tester%expect( head == pascal .toBe. .true. )
 
   head => rhyme_nombre_derived_unit_chain_head( chain%next )
-  call tester%expect( head == nom_duc_factory%chain_members(1)%ptr .toBe. .true. )
+  call tester%expect( head == pascal .toBe. .true. )
 
   head => rhyme_nombre_derived_unit_chain_head( chain%next%next )
-  call tester%expect( head == nom_duc_factory%chain_members(1)%ptr .toBe. .true. )
+  call tester%expect( head == pascal .toBe. .true. )
 
   head => rhyme_nombre_derived_unit_chain_head( chain%next%next%next )
-  call tester%expect( head == nom_duc_factory%chain_members(1)%ptr .toBe. .true. )
-
-  head => rhyme_nombre_derived_unit_chain_head( chain%next%next%next%next )
-  call tester%expect( head == nom_duc_factory%chain_members(1)%ptr .toBe. .true. )
+  call tester%expect( head == pascal .toBe. .true. )
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_chain_head_test

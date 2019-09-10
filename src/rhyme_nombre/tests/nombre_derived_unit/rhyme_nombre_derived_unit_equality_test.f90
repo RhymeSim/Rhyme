@@ -1,44 +1,45 @@
 logical function rhyme_nombre_derived_unit_equality_test () result ( failed )
-  use rhyme_nombre_derived_unit
+  use rhyme_nombre_derived_unit_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: j, j_cloned, j_modified, rad
+  type ( nombre_derived_unit_t ), pointer :: joule, joule_cloned, joule_modified, newton
 
   tester = .describe. "nombre_derived_unit_equality"
 
-  j => kilogram * meter**2 / second**2 .as. 'J'
-  rad => meter / meter .as. 'rad'
-  call tester%expect( j == j .toBe. .true. .hint. 'j == j' )
-  call tester%expect( rad == rad .toBe. .true. .hint. 'rad == rad' )
-  call tester%expect( j == rad .toBe. .false. .hint. 'j == rad' )
-  call tester%expect( rad == j .toBe. .false. .hint. 'rad == j' )
+  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  newton => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], 'N')
 
-  j_cloned => rhyme_nombre_derived_unit_clone( j )
-  call tester%expect( j == j_cloned .toBe. .true. .hint. 'j == j_cloned' )
+  call tester%expect( joule == joule .toBe. .true. .hint. 'j == j' )
+  call tester%expect( newton == newton .toBe. .true. .hint. 'newton == newton' )
+  call tester%expect( joule == newton .toBe. .false. .hint. 'j == newton' )
+  call tester%expect( newton == joule .toBe. .false. .hint. 'newton == j' )
 
-  j_modified => rhyme_nombre_derived_unit_clone( j )
-  j_modified%prefix = kilo
-  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified prefix' )
+  joule_cloned => rhyme_nombre_derived_unit_clone( joule )
+  call tester%expect( joule == joule_cloned .toBe. .true. .hint. 'j == j_cloned' )
 
-  j_modified => rhyme_nombre_derived_unit_clone( j )
-  j_modified%symb = 'modified'
-  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified symb' )
+  joule_modified => rhyme_nombre_derived_unit_clone( joule )
+  joule_modified%prefix = kilo
+  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified prefix' )
 
-  j_modified => rhyme_nombre_derived_unit_clone( j )
-  j_modified%conv = 12.3d0
-  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified conv' )
+  joule_modified => rhyme_nombre_derived_unit_clone( joule )
+  joule_modified%symb = 'modified'
+  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified symb' )
 
-  j_modified => rhyme_nombre_derived_unit_clone( j )
-  j_modified%dim = dimid%null
-  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified dim' )
+  joule_modified => rhyme_nombre_derived_unit_clone( joule )
+  joule_modified%conv = 12.3d0
+  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified conv' )
 
-  j_modified => rhyme_nombre_derived_unit_clone( j )
-  j_modified%pow = 23.4d0
-  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified pow' )
+  joule_modified => rhyme_nombre_derived_unit_clone( joule )
+  joule_modified%dim = dimid%null
+  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified dim' )
+
+  joule_modified => rhyme_nombre_derived_unit_clone( joule )
+  joule_modified%pow = 23.4d0
+  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified pow' )
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_equality_test

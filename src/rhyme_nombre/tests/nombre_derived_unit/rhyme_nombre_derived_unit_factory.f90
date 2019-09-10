@@ -8,10 +8,7 @@ module rhyme_nombre_derived_unit_factory
   contains
     procedure :: init => rhyme_nombre_derived_unit_factory_init
     procedure :: generate => rhyme_nombre_derived_unit_factory_generate
-    procedure :: generate_chain_2 => rhyme_nombre_derived_unit_factory_generate_chain_2
-    procedure :: generate_chain_3 => rhyme_nombre_derived_unit_factory_generate_chain_3
-    procedure :: generate_chain_4 => rhyme_nombre_derived_unit_factory_generate_chain_4
-    generic :: generate_chain => generate_chain_2, generate_chain_3, generate_chain_4
+    procedure :: generate_chain => rhyme_nombre_derived_unit_factory_generate_chain
   end type rhyme_nombre_derived_unit_factory_t
 
   type ( rhyme_nombre_derived_unit_factory_t ) :: nom_du_factory = rhyme_nombre_derived_unit_factory_t()
@@ -23,69 +20,54 @@ contains
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
 
+    type ( nombre_base_unit_t ), pointer :: base_unit
+
     this%initialized = .true.
   end subroutine rhyme_nombre_derived_unit_factory_init
 
 
-  function rhyme_nombre_derived_unit_factory_generate ( this ) result ( dunit)
+  function rhyme_nombre_derived_unit_factory_generate ( this, bases, symb ) result ( dunit )
     implicit none
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
+    type ( nombre_base_unit_t ), intent ( in ) :: bases(:)
+    character ( len=* ), intent ( in ), optional :: symb
     type ( nombre_derived_unit_t ), pointer :: dunit
 
     if ( .not. this%initialized ) call this%init
 
+    dunit => rhyme_nombre_derived_unit_new()
+    dunit%head => this%generate_chain( bases )
+    dunit%dim = rhyme_nombre_derived_unit_get_dim( dunit )
+
+    if ( present( symb ) ) then
+      dunit%symb = symb
+    end if
 
   end function rhyme_nombre_derived_unit_factory_generate
 
 
-  function rhyme_nombre_derived_unit_factory_generate_chain_2 ( this, u1, u2 ) result ( unit )
+  function rhyme_nombre_derived_unit_factory_generate_chain ( this, units ) result ( unit_chain )
     implicit none
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
-    type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2
-    type ( nombre_base_unit_t ), pointer :: unit
+    type ( nombre_base_unit_t ), target, intent ( in ) :: units(:)
+    type ( nombre_base_unit_t ), pointer :: unit_chain
+
+    integer :: i
 
     if ( .not. this%initialized ) call this%init
 
-    unit => rhyme_nombre_base_unit_clone( u1 )
-    unit%prev => null()
-    unit%next => rhyme_nombre_base_unit_clone( u2 )
-    unit%next%prev => unit
-    unit%next%next => null()
-  end function rhyme_nombre_derived_unit_factory_generate_chain_2
+    if ( size( units ) > 0 ) then
+      unit_chain => rhyme_nombre_base_unit_clone( units(1) )
 
+      do i = 2, size( units )
+        unit_chain%next => rhyme_nombre_base_unit_clone( units(i) )
+        unit_chain%next%prev => unit_chain
+        unit_chain => unit_chain%next
+      end do
+    end if
 
-  function rhyme_nombre_derived_unit_factory_generate_chain_3 ( this, u1, u2, u3 ) result ( unit )
-    implicit none
-
-    class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
-    type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2, u3
-    type ( nombre_base_unit_t ), pointer :: unit
-
-    if ( .not. this%initialized ) call this%init
-
-    unit => rhyme_nombre_derived_unit_factory_generate_chain_2( this, u1, u2 )
-    unit%next%next => rhyme_nombre_base_unit_clone( u3 )
-    unit%next%next%prev => unit%next
-    unit%next%next%next => null()
-  end function rhyme_nombre_derived_unit_factory_generate_chain_3
-
-
-  function rhyme_nombre_derived_unit_factory_generate_chain_4 ( this, u1, u2, u3, u4 ) result ( unit )
-    implicit none
-
-    class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
-    type ( nombre_base_unit_t ), target, intent ( in ) :: u1, u2, u3, u4
-    type ( nombre_base_unit_t ), pointer :: unit
-
-    if ( .not. this%initialized ) call this%init
-
-    unit => rhyme_nombre_derived_unit_factory_generate_chain_3( this, u1, u2, u3 )
-    unit%next%next%next => rhyme_nombre_base_unit_clone( u4 )
-    unit%next%next%next%prev => unit%next%next
-    unit%next%next%next%next => null()
-
-    unit => rhyme_nombre_base_unit_head( unit )
-  end function rhyme_nombre_derived_unit_factory_generate_chain_4
+    unit_chain => rhyme_nombre_base_unit_head( unit_chain )
+  end function rhyme_nombre_derived_unit_factory_generate_chain
 end module rhyme_nombre_derived_unit_factory

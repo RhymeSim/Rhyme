@@ -6,25 +6,21 @@ logical function rhyme_nombre_derived_unit_print_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: du
+  type ( nombre_derived_unit_t ), pointer :: du, kdu2, ndu5
 
   tester = .describe. "nombre_derived_unit_print"
 
-  call rhyme_nombre_derived_unit_init
+  du => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  call tester%expect( .print. du .toBe. 'J' )
 
-  call tester%expect( .print. solar_mass .toBe. 'Msun' )
+  kdu2 => kilo * du**2
+  call tester%expect( .print. kdu2 .toBe. 'kJ^2' )
 
-  call tester%expect( .print. hydrogen_mass .toBe. 'm_H' )
+  ndu5 => nano * du**5d-1
+  call tester%expect( .print. ndu5 .toBe. 'nJ^.50' )
 
-  du => kilo * solar_mass**2
-  call tester%expect( .print. du .toBe. 'kMsun^2' )
-
-  du => nano * solar_mass**5d-1
-  call tester%expect( .print. du .toBe. 'nMsun^.50' )
-
-  du%head => nom_du_factory%generate_chain( second**(-1), kilogram, (kilo * meter)**(-2.5) )
   du%symb = ''
-  call tester%expect( .print. du .toBe. 's^-1 kg km^-2.50' )
+  call tester%expect( .print. du .toBe. 'kg m^2 s^-2' )
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_print_test

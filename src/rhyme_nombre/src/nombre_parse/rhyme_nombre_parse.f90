@@ -1,5 +1,5 @@
 module rhyme_nombre_parse
-  use rhyme_nombre_derived_unit
+  use rhyme_nombre_derived_unit_chain
 
   implicit none
 

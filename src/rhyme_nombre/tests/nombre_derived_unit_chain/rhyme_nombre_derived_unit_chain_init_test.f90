@@ -1,14 +1,14 @@
-logical function rhyme_nombre_derived_unit_init_test () result ( failed )
-  use rhyme_nombre_derived_unit
+logical function rhyme_nombre_derived_unit_chain_init_test () result ( failed )
+  use rhyme_nombre_derived_unit_chain
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  tester = .describe. "nombre_derived_unit_init"
+  tester = .describe. "nombre_derived_unit_chain_init"
 
-  call rhyme_nombre_derived_unit_init
+  call rhyme_nombre_derived_unit_chain_init
 
   call tester%expect( solar_mass%conv .toBe. 1.9885d30 .hint. 'Msun conv' )
   call tester%expect( solar_mass%symb .toBe. 'Msun' .hint. 'Msun symb' )
@@ -98,4 +98,4 @@ logical function rhyme_nombre_derived_unit_init_test () result ( failed )
   call tester%expect( associated( newton%head%next%next%next ) .toBe. .false. .hint. 'N head%...%next' )
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_init_test
+end function rhyme_nombre_derived_unit_chain_init_test

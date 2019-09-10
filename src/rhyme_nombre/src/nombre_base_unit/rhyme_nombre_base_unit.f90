@@ -5,9 +5,9 @@ module rhyme_nombre_base_unit
   implicit none
 
   type nombre_base_unit_t
-    type ( nombre_prefix_t ) :: prefix
-    character ( len=8 ) :: symb
-    type ( nombre_dimension_t ) :: dim
+    type ( nombre_prefix_t ) :: prefix = null_prefix
+    character ( len=8 ) :: symb = ''
+    type ( nombre_dimension_t ) :: dim = dimid%null
     real ( kind=8 ) :: pow = 1.d0
     type ( nombre_base_unit_t ), pointer :: next => null(), prev => null()
   end type nombre_base_unit_t

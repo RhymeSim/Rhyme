@@ -9,22 +9,18 @@ logical function rhyme_nombre_derived_unit_chain_tail_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_tail"
 
-  chain => nom_duc_factory%generate_chain()
+  call rhyme_nombre_derived_unit_chain_init
+
+  chain => nom_duc_factory%generate_chain( [ hydrogen_mass, light_year, electron_volt ] )
 
   tail => rhyme_nombre_derived_unit_chain_tail( chain )
-  call tester%expect( tail == nom_duc_factory%chain_members(5)%ptr .toBe. .true. )
+  call tester%expect( tail == electron_volt .toBe. .true. )
 
   tail => rhyme_nombre_derived_unit_chain_tail( chain%next )
-  call tester%expect( tail == nom_duc_factory%chain_members(5)%ptr .toBe. .true. )
+  call tester%expect( tail == electron_volt .toBe. .true. )
 
   tail => rhyme_nombre_derived_unit_chain_tail( chain%next%next )
-  call tester%expect( tail == nom_duc_factory%chain_members(5)%ptr .toBe. .true. )
-
-  tail => rhyme_nombre_derived_unit_chain_tail( chain%next%next%next )
-  call tester%expect( tail == nom_duc_factory%chain_members(5)%ptr .toBe. .true. )
-
-  tail => rhyme_nombre_derived_unit_chain_tail( chain%next%next%next%next )
-  call tester%expect( tail == nom_duc_factory%chain_members(5)%ptr .toBe. .true. )
+  call tester%expect( tail == electron_volt .toBe. .true. )
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_chain_tail_test
