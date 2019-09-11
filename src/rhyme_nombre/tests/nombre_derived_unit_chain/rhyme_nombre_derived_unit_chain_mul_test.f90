@@ -84,5 +84,13 @@ logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
   call tester%expect( ducduc%next%next%next%next == parsec .toBe. .true. )
   call tester%expect( associated( ducduc%next%next%next%next%next ) .toBe. .false. )
 
+  duc => nom_du_factory%generate( [ kilogram, meter ], symb='', pow=1.23d0 )
+  duc2 => nom_du_factory%generate( [ second**(-2) ], symb='', pow=2.34d0 )
+  ducduc => duc * duc2
+  call tester%expect( ducduc%head == kilogram .toBe. .true. .hint. 'ducduc w/o symb' )
+  call tester%expect( ducduc%head%next == meter .toBe. .true. )
+  call tester%expect( ducduc%head%next%next == second**(-2 * 2.34d0 / 1.23d0) .toBe. .true. )
+  call tester%expect( associated( ducduc%head%next%next%next ) .toBe. .false. )
+
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_chain_mul_test

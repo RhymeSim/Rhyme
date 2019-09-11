@@ -24,5 +24,16 @@ module rhyme_nombre_parse
       character ( len=* ), intent ( in ) :: str
       type ( nombre_derived_unit_t ), pointer :: dunit
     end function rhyme_nombre_parse_find_derived_unit
+
+    module function rhyme_nombre_parse_single ( str ) result ( du )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_derived_unit_t ), pointer :: du
+    end function rhyme_nombre_parse_single
+
+    recursive module function rhyme_nombre_parse_term ( str_arr, i ) result ( du )
+      character ( len=8 ), intent ( in ) :: str_arr(:)
+      integer, value :: i
+      type ( nombre_derived_unit_t ), pointer :: du
+    end function rhyme_nombre_parse_term
   end interface
 end module rhyme_nombre_parse

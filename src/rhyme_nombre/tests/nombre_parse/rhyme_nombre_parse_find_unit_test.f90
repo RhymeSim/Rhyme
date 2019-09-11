@@ -55,6 +55,5 @@ logical function rhyme_nombre_parse_find_unit_test () result ( failed )
     end do
   end do
 
-
   failed = tester%failed()
 end function rhyme_nombre_parse_find_unit_test

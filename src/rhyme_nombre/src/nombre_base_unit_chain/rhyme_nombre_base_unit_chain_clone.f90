@@ -9,6 +9,7 @@ contains
     type ( nombre_base_unit_t ), pointer :: ptr
 
     ptr => .head. u
+    clone => null()
 
     if ( associated( ptr ) ) then
       clone => rhyme_nombre_base_unit_clone( ptr )

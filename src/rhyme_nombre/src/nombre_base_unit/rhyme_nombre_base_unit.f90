@@ -69,7 +69,7 @@ module rhyme_nombre_base_unit
       type ( nombre_base_unit_t ), pointer :: new_u
     end function rhyme_nombre_base_unit_update_symbol
 
-    module function rhyme_nombre_base_unit_print ( u ) result ( str )
+    pure module function rhyme_nombre_base_unit_print ( u ) result ( str )
       class ( nombre_base_unit_t ), target, intent ( in ) :: u
       character ( len=64 ) :: str
     end function rhyme_nombre_base_unit_print

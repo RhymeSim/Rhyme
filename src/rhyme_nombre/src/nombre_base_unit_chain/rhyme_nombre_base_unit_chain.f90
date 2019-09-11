@@ -9,6 +9,11 @@ module rhyme_nombre_base_unit_chain
       type ( nombre_base_unit_t ), pointer :: clone
     end function rhyme_nombre_base_unit_chain_clone
 
+    module function rhyme_nombre_base_unit_chain_print ( u ) result ( str )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+      character ( len=64 ) :: str
+    end function rhyme_nombre_base_unit_chain_print
+
     module function rhyme_nombre_base_unit_chain_head ( u ) result ( head )
       type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_base_unit_t ), pointer :: head
@@ -23,6 +28,10 @@ module rhyme_nombre_base_unit_chain
   interface operator ( .clonechain. )
     module procedure rhyme_nombre_base_unit_chain_clone
   end interface operator ( .clonechain. )
+
+  interface operator ( .printchain. )
+    module procedure rhyme_nombre_base_unit_chain_print
+  end interface operator ( .printchain. )
 
   interface operator ( .head. )
     module procedure rhyme_nombre_base_unit_chain_head

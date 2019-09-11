@@ -146,11 +146,11 @@ module rhyme_nombre_derived_unit
     module procedure rhyme_nombre_derived_unit_update_symbol
   end interface operator ( .as. )
 
-  interface operator ( .print. )
-    module procedure rhyme_nombre_derived_unit_print
-  end interface operator ( .print. )
-
   interface operator ( .clone. )
     module procedure rhyme_nombre_derived_unit_clone
   end interface operator ( .clone. )
+
+  interface operator ( .print. )
+    module procedure rhyme_nombre_derived_unit_print
+  end interface operator ( .print. )
 end module rhyme_nombre_derived_unit

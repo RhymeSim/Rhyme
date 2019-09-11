@@ -21,7 +21,7 @@ logical function rhyme_nombre_derived_unit_print_test () result ( failed )
   ndu5%pow = 5d-1
   call tester%expect( .print. ndu5 .toBe. 'nJ^.50' )
 
-  du%symb = ''
+  du => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], '' )
   call tester%expect( .print. du .toBe. 'kg m^2 s^-2' )
 
   failed = tester%failed()

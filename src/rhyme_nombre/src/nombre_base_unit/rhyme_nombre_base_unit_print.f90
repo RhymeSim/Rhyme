@@ -1,6 +1,6 @@
 submodule ( rhyme_nombre_base_unit ) print_smod
 contains
-  module function rhyme_nombre_base_unit_print ( u ) result ( str )
+  pure module function rhyme_nombre_base_unit_print ( u ) result ( str )
     implicit none
 
     class ( nombre_base_unit_t ), target, intent ( in ) :: u
@@ -15,5 +15,7 @@ contains
     else
       write ( str, '(A,A,F0.2)' ) trim( str ), '^', u%pow
     end if
+
+    str = adjustl( str )
   end function rhyme_nombre_base_unit_print
 end submodule print_smod

@@ -6,15 +6,29 @@ contains
     type ( nombre_derived_unit_t ), target, intent ( in ) :: duc1, duc2
     type ( nombre_derived_unit_t ), pointer :: chain
 
-    type ( nombre_derived_unit_t ), pointer :: c1clone_tail, c2clone_head
+    type ( nombre_derived_unit_t ), pointer :: duc1clone, duc2clone
+    type ( nombre_base_unit_t ), pointer :: u_ptr
 
-    c1clone_tail => .tail. ( .clonechain. duc1 )
-    c2clone_head => .head. ( .clonechain. duc2 )
+    duc1clone => .tail. ( .clonechain. duc1 )
+    duc2clone => .head. ( .clonechain. duc2 )
 
-    c1clone_tail%next => c2clone_head
-    c2clone_head%prev => c1clone_tail
+    if ( len_trim( duc1clone%symb ) .eq. 0 .and. len_trim( duc2clone%symb ) .eq. 0 ) then
+      u_ptr => .tail. duc1clone%head
 
-    chain => .head. c2clone_head
+      u_ptr%next => (.clonechain. duc2clone%head )**(duc2clone%pow / duc1clone%pow)
+      u_ptr%next%prev => u_ptr
+
+      duc2clone => duc2clone%next
+    end if
+
+    duc1clone%next => duc2clone
+
+    if ( associated( duc2clone ) ) then
+      duc1clone%next%prev => duc1clone
+    end if
+
+    duc1clone%dim = rhyme_nombre_derived_unit_get_dim( duc1clone )
+    chain => .head. duc1clone
   end function rhyme_nombre_derived_unit_chain_mul_ducduc
 
 

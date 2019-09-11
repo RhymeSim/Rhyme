@@ -7,14 +7,28 @@ contains
     type ( nombre_derived_unit_t ), pointer :: ducduc
 
     type ( nombre_derived_unit_t ), pointer :: duc1clone, duc2clone
+    type ( nombre_base_unit_t ), pointer :: u_ptr
 
     duc1clone => .tail. ( duc1**1 )
     duc2clone => .head. ( duc2**(-1) )
 
-    duc1clone%next => duc2clone
-    duc1clone%next%prev => duc1clone
+    if ( len_trim( duc1clone%symb ) .eq. 0 .and. len_trim( duc2clone%symb ) .eq. 0 ) then
+      u_ptr => .tail. duc1clone%head
 
-    ducduc => .head. duc2clone
+      u_ptr%next => (.clonechain. duc2clone%head)**(duc2clone%pow / duc1clone%pow)
+      u_ptr%next%prev => u_ptr
+
+      duc2clone => duc2clone%next
+    end if
+
+    duc1clone%next => duc2clone
+
+    if ( associated( duc2clone ) ) then
+      duc1clone%next%prev => duc1clone
+    end if
+
+    duc1clone%dim = rhyme_nombre_derived_unit_get_dim( duc1clone )
+    ducduc => .head. duc1clone
   end function rhyme_nombre_derived_unit_chain_div_ducduc
 
   module function rhyme_nombre_derived_unit_chain_div_ducu ( duc, u ) result ( duc_new )
