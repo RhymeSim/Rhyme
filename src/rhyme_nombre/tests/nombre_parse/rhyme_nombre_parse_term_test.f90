@@ -18,7 +18,7 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
   call rhyme_nombre_derived_unit_chain_init
 
 
-  do i = 1, 1
+  do i = 1, 10
     call random_number( u_rnd )
     call random_number( du_rnd )
 

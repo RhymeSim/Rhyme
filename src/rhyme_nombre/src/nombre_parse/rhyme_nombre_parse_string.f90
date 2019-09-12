@@ -1,16 +1,31 @@
-submodule ( rhyme_nombre_parse ) term_smod
+submodule ( rhyme_nombre_parse ) string_smod
 contains
-  recursive module function rhyme_nombre_parse_term ( str_arr, i ) result ( du )
+  module function rhyme_nombre_parse_string ( str ) result ( du )
+    implicit none
+
+    character ( len=* ), intent ( in ) :: str
+    type ( nombre_derived_unit_t ), pointer :: du
+
+    character ( len=8 ), dimension ( 64 ) :: str_arr
+
+    str_arr = rhyme_nombre_parse_tokenize( str )
+    du => parse_term( str_arr, 1 )
+
+    if ( associated( du ) ) du => .head. du
+  end function rhyme_nombre_parse_string
+
+  recursive function parse_term ( str_arr, idx ) result ( du )
     implicit none
 
     character ( len=8 ), intent ( in ) :: str_arr(:)
-    integer, value :: i
+    integer, intent ( in ) :: idx
     type ( nombre_derived_unit_t ), pointer :: du
 
     type ( nombre_derived_unit_t ), pointer :: du_tmp
-
     real ( kind=8 ) :: exponent
+    integer :: i
 
+    i = idx
     du => null()
 
     do while ( i <= size( str_arr ) .and. .not. str_arr(i) == char(0) )
@@ -23,7 +38,7 @@ contains
         return
 
       case ( '(' )
-        du => rhyme_nombre_parse_term( str_arr, i+1 )
+        du => parse_term( str_arr, i+1 )
         i = rhyme_nombre_parse_close_par_loc( str_arr, i ) + 1
         if ( str_arr( i ) .eq. '^' ) i = i + 2
 
@@ -34,7 +49,7 @@ contains
 
       case ( '*' )
         if ( str_arr( i+1 ) .eq. '(' ) then
-          du => du * rhyme_nombre_parse_term( str_arr, i+2 )
+          du => du * parse_term( str_arr, i+2 )
           i = rhyme_nombre_parse_close_par_loc( str_arr, i+1 ) + 1
           if ( str_arr(i) .eq. '^' ) i = i + 2
         else if ( str_arr( i+2 ) .eq. '^' ) then
@@ -49,7 +64,7 @@ contains
 
       case ( '/' )
         if ( str_arr( i+1 ) .eq. '(' ) then
-          du => du / rhyme_nombre_parse_term( str_arr, i+2 )
+          du => du / parse_term( str_arr, i+2 )
           i = rhyme_nombre_parse_close_par_loc( str_arr, i+1 ) + 1
           if ( str_arr(i) .eq. '^' ) i = i + 2
 
@@ -74,6 +89,5 @@ contains
 
       end select
     end do
-
-  end function rhyme_nombre_parse_term
-end submodule term_smod
+  end function parse_term
+end submodule string_smod

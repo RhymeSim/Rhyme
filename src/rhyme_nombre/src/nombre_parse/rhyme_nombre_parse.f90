@@ -35,5 +35,11 @@ module rhyme_nombre_parse
       integer, value :: i
       type ( nombre_derived_unit_t ), pointer :: du
     end function rhyme_nombre_parse_term
+
+    module function rhyme_nombre_parse_string ( str ) result ( du )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_derived_unit_t ), pointer :: du
+    end function rhyme_nombre_parse_string
   end interface
+
 end module rhyme_nombre_parse

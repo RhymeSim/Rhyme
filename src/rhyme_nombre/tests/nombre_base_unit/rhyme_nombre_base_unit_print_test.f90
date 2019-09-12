@@ -1,5 +1,5 @@
 logical function rhyme_nombre_base_unit_print_test () result ( failed )
-  use rhyme_nombre_base_unit
+  use rhyme_nombre_base_unit_factory
   use rhyme_assertion
 
   implicit none
@@ -35,17 +35,13 @@ logical function rhyme_nombre_base_unit_print_test () result ( failed )
   str = .print. candela
   call tester%expect( str .toBe. 'cd' )
 
-  u => kilogram**2
-  str = .print. u
-  call tester%expect( str .toBe. 'kg^2' )
-
   u => giga * second
   str = .print. u
   call tester%expect( str .toBe. 'Gs' )
-
-  u => nano * kelvin**(-4)
+  
+  u => nano * kelvin
   str = .print. u
-  call tester%expect( str .toBe. 'nK^-4' )
+  call tester%expect( str .toBe. 'nK' )
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_print_test

@@ -3,7 +3,7 @@ contains
   module function rhyme_nombre_derived_unit_chain_pow_duci ( duc, i ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: duc
+    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
     integer, intent ( in ) :: i
     type ( nombre_derived_unit_t ), pointer :: new_duc
 
@@ -25,7 +25,7 @@ contains
   module function rhyme_nombre_derived_unit_chain_pow_ducr ( duc, r ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: duc
+    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
     real ( kind=4 ), intent ( in ) :: r
     type ( nombre_derived_unit_t ), pointer :: new_duc
 
@@ -47,7 +47,7 @@ contains
   module function rhyme_nombre_derived_unit_chain_pow_ducr8 ( duc, r8 ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: duc
+    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
     real ( kind=8 ), intent ( in ) :: r8
     type ( nombre_derived_unit_t ), pointer :: new_duc
 

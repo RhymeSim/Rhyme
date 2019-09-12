@@ -17,20 +17,6 @@ contains
     new%conv = dunit%conv
     new%dim = dunit%dim
     new%pow = dunit%pow
-
-    if ( associated( dunit%head ) ) then
-      new%head => .clone. dunit%head
-
-      dunit_u_ptr => dunit%head
-      new_u_ptr => new%head
-
-      do while ( associated( dunit_u_ptr%next ) )
-        new_u_ptr%next => .clone. dunit_u_ptr%next
-        new_u_ptr%next%prev => new_u_ptr
-
-        dunit_u_ptr => dunit_u_ptr%next
-        new_u_ptr => new_u_ptr%next
-      end do
-    end if
+    new%head => .clonechain. dunit%head
   end function rhyme_nombre_derived_unit_clone
 end submodule clone_smod

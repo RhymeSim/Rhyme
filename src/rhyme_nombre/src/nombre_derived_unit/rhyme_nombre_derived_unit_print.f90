@@ -10,11 +10,11 @@ contains
 
     str = ''
 
-    if ( trim( dunit%symb ) .eq. '' ) then
+    if ( len_trim( dunit%symb ) .eq. 0 ) then
       ptr => dunit%head
 
       do while ( associated( ptr ) )
-        updated_u => dunit%prefix * ptr 
+        updated_u => dunit%prefix * ptr
         write( str, '(A,A,A)' ) trim(str), ' ', trim( .print. updated_u )
 
         ptr => ptr%next

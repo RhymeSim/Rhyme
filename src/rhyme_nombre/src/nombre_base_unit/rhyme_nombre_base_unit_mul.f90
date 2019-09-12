@@ -1,13 +1,13 @@
 submodule ( rhyme_nombre_base_unit ) mul_smod
 contains
-  module function rhyme_nombre_base_unit_mul_pu ( p, u ) result ( new )
+  module function rhyme_nombre_base_unit_mul_pu ( p, bu ) result ( new_bu )
     implicit none
 
     type ( nombre_prefix_t ), intent ( in ) :: p
-    type ( nombre_base_unit_t ), intent ( in ) :: u
-    type ( nombre_base_unit_t ), pointer :: new
+    type ( nombre_base_unit_t ), target, intent ( in ) :: bu
+    type ( nombre_base_unit_t ), pointer :: new_bu
 
-    new => rhyme_nombre_base_unit_clone( u )
-    new%prefix = p * new%prefix
+    new_bu => .clone. bu
+    new_bu%prefix = p * new_bu%prefix
   end function rhyme_nombre_base_unit_mul_pu
 end submodule mul_smod

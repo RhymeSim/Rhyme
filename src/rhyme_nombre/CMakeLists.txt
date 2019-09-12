@@ -26,13 +26,13 @@ set( srcs
 
   src/nombre_base_unit/rhyme_nombre_base_unit_print.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_update_symbol.f90
-  src/nombre_base_unit/rhyme_nombre_base_unit_pow.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_mul.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_equality.f90
   src/nombre_base_unit/rhyme_nombre_base_unit_clone.f90
   src/nombre_base_unit/rhyme_nombre_base_unit.f90
 
 
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_pow.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_print.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_clone.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_tail.f90
@@ -61,6 +61,7 @@ set( srcs
   src/nombre_derived_unit_chain/rhyme_nombre_derived_unit_chain.f90
 
 
+  src/nombre_parse/rhyme_nombre_parse_string.f90
   src/nombre_parse/rhyme_nombre_parse_term.f90
   src/nombre_parse/rhyme_nombre_parse_single.f90
   src/nombre_parse/rhyme_nombre_parse_find_derived_unit.f90

@@ -30,50 +30,30 @@ module rhyme_nombre_base_unit
 
 
   interface
-    module function rhyme_nombre_base_unit_clone ( u ) result ( clone )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+    module function rhyme_nombre_base_unit_clone ( bu ) result ( clone )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: bu
       type ( nombre_base_unit_t ), pointer :: clone
     end function rhyme_nombre_base_unit_clone
 
-    pure module function rhyme_nombre_base_unit_equality ( u1, u2 ) result ( eq )
-      type ( nombre_base_unit_t ), intent ( in ) :: u1, u2
+    pure module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: bu1, bu2
       logical :: eq
     end function rhyme_nombre_base_unit_equality
 
-    module function rhyme_nombre_base_unit_mul_pu ( p, u ) result ( new )
+    module function rhyme_nombre_base_unit_mul_pu ( p, bu ) result ( new_bu )
       type ( nombre_prefix_t ), intent ( in ) :: p
-      type ( nombre_base_unit_t ), intent ( in ) :: u
-      type ( nombre_base_unit_t ), pointer :: new
+      type ( nombre_base_unit_t ), target, intent ( in ) :: bu
+      type ( nombre_base_unit_t ), pointer :: new_bu
     end function rhyme_nombre_base_unit_mul_pu
 
-    module function rhyme_nombre_base_unit_pow_ui ( u, i ) result ( new )
-      implicit none
-
-      type ( nombre_base_unit_t ), intent ( in ) :: u
-      integer, intent ( in ) :: i
-      type ( nombre_base_unit_t ), pointer :: new
-    end function rhyme_nombre_base_unit_pow_ui
-
-    module function rhyme_nombre_base_unit_pow_ur ( u, r ) result ( new )
-      type ( nombre_base_unit_t ), intent ( in ) :: u
-      real ( kind=4 ), intent ( in ) :: r
-      type ( nombre_base_unit_t ), pointer :: new
-    end function rhyme_nombre_base_unit_pow_ur
-
-    module function rhyme_nombre_base_unit_pow_ur8 ( u, r8 ) result ( new )
-      type ( nombre_base_unit_t ), intent ( in ) :: u
-      real ( kind=8 ), intent ( in ) :: r8
-      type ( nombre_base_unit_t ), pointer :: new
-    end function rhyme_nombre_base_unit_pow_ur8
-
-    module function rhyme_nombre_base_unit_update_symbol ( u, symb ) result ( new_u )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
+    module function rhyme_nombre_base_unit_update_symbol ( bu, symb ) result ( new_bu )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: bu
       character ( len=* ), intent ( in ) :: symb
-      type ( nombre_base_unit_t ), pointer :: new_u
+      type ( nombre_base_unit_t ), pointer :: new_bu
     end function rhyme_nombre_base_unit_update_symbol
 
-    pure module function rhyme_nombre_base_unit_print ( u ) result ( str )
-      class ( nombre_base_unit_t ), target, intent ( in ) :: u
+    pure module function rhyme_nombre_base_unit_print ( bu ) result ( str )
+      class ( nombre_base_unit_t ), target, intent ( in ) :: bu
       character ( len=64 ) :: str
     end function rhyme_nombre_base_unit_print
   end interface
@@ -82,12 +62,6 @@ module rhyme_nombre_base_unit
   interface operator ( * )
     module procedure rhyme_nombre_base_unit_mul_pu
   end interface operator ( * )
-
-  interface operator ( ** )
-    module procedure rhyme_nombre_base_unit_pow_ui
-    module procedure rhyme_nombre_base_unit_pow_ur
-    module procedure rhyme_nombre_base_unit_pow_ur8
-  end interface operator ( ** )
 
   interface operator ( == )
     module procedure rhyme_nombre_base_unit_equality
@@ -117,7 +91,7 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,A,A,A,A,A,I2,A,A,ES10.3,A,L,A,L,A)', &
+    write( unit, fmt='(A,A,A,A,A,A,A,I3,A,A,ES10.3,A,L,A,L,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_base_unit_t', &
       ' symb="', trim(this%symb), '"', &

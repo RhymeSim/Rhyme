@@ -1,17 +1,17 @@
 submodule ( rhyme_nombre_base_unit ) clone_smod
 contains
-  module function rhyme_nombre_base_unit_clone ( u ) result ( clone )
+  module function rhyme_nombre_base_unit_clone ( bu ) result ( clone )
     implicit none
 
-    type ( nombre_base_unit_t ), target, intent ( in ) :: u
+    type ( nombre_base_unit_t ), target, intent ( in ) :: bu
     type ( nombre_base_unit_t ), pointer :: clone
 
     allocate( clone )
 
-    clone%prefix = u%prefix
-    clone%symb = u%symb
-    clone%dim = u%dim
-    clone%pow = u%pow
+    clone%prefix = bu%prefix
+    clone%symb = bu%symb
+    clone%dim = bu%dim
+    clone%pow = bu%pow
 
     clone%next => null()
     clone%prev => null()

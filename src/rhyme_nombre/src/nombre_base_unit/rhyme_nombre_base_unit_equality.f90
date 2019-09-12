@@ -1,18 +1,15 @@
 submodule ( rhyme_nombre_base_unit ) equality_smod
 contains
-  pure module function rhyme_nombre_base_unit_equality ( u1, u2 ) result ( eq )
+  pure module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
     implicit none
 
-    type ( nombre_base_unit_t ), intent ( in ) :: u1, u2
+    type ( nombre_base_unit_t ), target, intent ( in ) :: bu1, bu2
     logical :: eq
 
     eq = .false.
 
-    if ( &
-    u1%prefix == u2%prefix &
-    .and. u1%symb == u2%symb &
-    .and. u1%dim == u2%dim &
-    .and. abs( u1%pow - u2%pow ) < tiny( 0d0 ) &
+    if ( bu1%prefix == bu2%prefix .and. bu1%symb == bu2%symb &
+      .and. bu1%dim == bu2%dim .and. abs( bu1%pow - bu2%pow ) < tiny( 0d0 ) &
     ) eq = .true.
   end function rhyme_nombre_base_unit_equality
 end submodule equality_smod

@@ -169,11 +169,11 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,A,A,A,A,A,I2,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A)', &
+    write( unit, fmt='(A,A,A8,A,A,A8,A,I3,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_derived_unit_t', &
-      ' symb="', trim(this%symb), '"', &
-      ' prefix=("', trim(this%prefix%symb), '", ', this%prefix%base_10, ')', &
+      ' symb="', adjustl(this%symb), '"', &
+      ' prefix=("', adjustl(this%prefix%symb), '", ', this%prefix%base_10, ')', &
       ' conv=', this%conv, &
       ' pow=', this%pow, &
       ' next=', associated(this%next), &

@@ -4,9 +4,9 @@ module rhyme_nombre_base_unit_chain
   implicit none
 
   interface
-    module function rhyme_nombre_base_unit_chain_clone ( u ) result ( clone )
-      type ( nombre_base_unit_t ), target, intent ( in ) :: u
-      type ( nombre_base_unit_t ), pointer :: clone
+    module function rhyme_nombre_base_unit_chain_clone ( buc ) result ( buc_new )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
+      type ( nombre_base_unit_t ), pointer :: buc_new
     end function rhyme_nombre_base_unit_chain_clone
 
     module function rhyme_nombre_base_unit_chain_print ( u ) result ( str )
@@ -23,7 +23,33 @@ module rhyme_nombre_base_unit_chain
       type ( nombre_base_unit_t ), target, intent ( in ) :: u
       type ( nombre_base_unit_t ), pointer :: tail
     end function rhyme_nombre_base_unit_chain_tail
+
+
+
+    module function rhyme_nombre_base_unit_chain_pow_ui ( u, i ) result ( new )
+      type ( nombre_base_unit_t ), intent ( in ) :: u
+      integer, intent ( in ) :: i
+      type ( nombre_base_unit_t ), pointer :: new
+    end function rhyme_nombre_base_unit_chain_pow_ui
+
+    module function rhyme_nombre_base_unit_chain_pow_ur ( u, r ) result ( new )
+      type ( nombre_base_unit_t ), intent ( in ) :: u
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_base_unit_t ), pointer :: new
+    end function rhyme_nombre_base_unit_chain_pow_ur
+
+    module function rhyme_nombre_base_unit_chain_pow_ur8 ( u, r8 ) result ( new )
+      type ( nombre_base_unit_t ), intent ( in ) :: u
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_base_unit_t ), pointer :: new
+    end function rhyme_nombre_base_unit_chain_pow_ur8
   end interface
+
+  interface operator ( ** )
+    module procedure rhyme_nombre_base_unit_chain_pow_ui
+    module procedure rhyme_nombre_base_unit_chain_pow_ur
+    module procedure rhyme_nombre_base_unit_chain_pow_ur8
+  end interface operator ( ** )
 
   interface operator ( .clonechain. )
     module procedure rhyme_nombre_base_unit_chain_clone

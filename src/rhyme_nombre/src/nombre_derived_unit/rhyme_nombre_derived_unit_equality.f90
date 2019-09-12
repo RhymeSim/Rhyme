@@ -24,6 +24,9 @@ contains
       u1_ptr => dunit1%head
       u2_ptr => dunit2%head
 
+      unit_eq = .true.
+      unit_assoc_eq = .true.
+
       do while ( associated(u1_ptr) )
 
         unit_assoc_eq = associated(u1_ptr) .eqv. associated(u2_ptr)

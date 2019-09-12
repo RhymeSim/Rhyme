@@ -1,5 +1,5 @@
 logical function rhyme_nombre_base_unit_chain_tail_test () result ( failed )
-  use rhyme_nombre_base_unit_chain
+  use rhyme_nombre_base_unit_chain_factory
   use rhyme_assertion
 
   implicit none
@@ -10,11 +10,7 @@ logical function rhyme_nombre_base_unit_chain_tail_test () result ( failed )
 
   tester = .describe. "nombre_base_unit_tail"
 
-  units => rhyme_nombre_base_unit_chain_clone( kilogram )
-  units%next => rhyme_nombre_base_unit_chain_clone( meter )
-  units%next%prev => units
-  units%next%next => rhyme_nombre_base_unit_chain_clone( second**(-2) )
-  units%next%next%prev => units%next
+  units => nom_buc_factory%generate( [ kilogram, meter, second**(-2) ] )
 
   tail => rhyme_nombre_base_unit_chain_tail( units )
   call tester%expect( tail == second**(-2) .toBe. .true. )
