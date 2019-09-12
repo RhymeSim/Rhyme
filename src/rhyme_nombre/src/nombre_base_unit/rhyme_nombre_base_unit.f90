@@ -10,6 +10,9 @@ module rhyme_nombre_base_unit
     type ( nombre_dimension_t ) :: dim = dimid%null
     real ( kind=8 ) :: pow = 1.d0
     type ( nombre_base_unit_t ), pointer :: next => null(), prev => null()
+  contains
+    procedure :: rhyme_nombre_base_unit_write_formatted
+    generic :: write( formatted ) => rhyme_nombre_base_unit_write_formatted
   end type nombre_base_unit_t
 
 
@@ -101,4 +104,27 @@ module rhyme_nombre_base_unit
   interface operator ( .clone. )
     module procedure rhyme_nombre_base_unit_clone
   end interface operator ( .clone. )
+
+contains
+  subroutine rhyme_nombre_base_unit_write_formatted ( &
+    this, unit, iotype, v_list, iostat, iomsg )
+    implicit none
+
+    class ( nombre_base_unit_t ), intent ( in ) :: this
+    integer, intent ( in ) :: unit
+    character ( len=* ), intent ( in ) :: iotype
+    integer, intent ( in ) :: v_list(:)
+    integer, intent ( out ) :: iostat
+    character ( len=* ), intent ( inout ) :: iomsg
+
+    write( unit, fmt='(A,A,A,A,A,A,A,I2,A,A,ES10.3,A,L,A,L,A)', &
+      iostat=iostat, iomsg=iomsg ) &
+      '<nombre_base_unit_t', &
+      ' symb="', trim(this%symb), '"', &
+      ' prefix=("', trim(this%prefix%symb), '", ', this%prefix%base_10, ')', &
+      ' pow=', this%pow, &
+      ' next=', associated(this%next), &
+      ' prev=', associated(this%prev), &
+      ' >'
+  end subroutine rhyme_nombre_base_unit_write_formatted
 end module rhyme_nombre_base_unit

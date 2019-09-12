@@ -11,6 +11,9 @@ module rhyme_nombre_derived_unit
     real ( kind=8 ) :: pow = 1d0
     type ( nombre_derived_unit_t ), pointer :: next => null(), prev => null()
     type ( nombre_base_unit_t ), pointer :: head => null()
+  contains
+    procedure :: rhyme_nombre_derived_unit_write_formatted
+    generic :: write( formatted ) => rhyme_nombre_derived_unit_write_formatted
   end type nombre_derived_unit_t
 
 
@@ -153,4 +156,29 @@ module rhyme_nombre_derived_unit
   interface operator ( .print. )
     module procedure rhyme_nombre_derived_unit_print
   end interface operator ( .print. )
+
+contains
+  subroutine rhyme_nombre_derived_unit_write_formatted ( &
+    this, unit, iotype, v_list, iostat, iomsg )
+    implicit none
+
+    class ( nombre_derived_unit_t ), intent ( in ) :: this
+    integer, intent ( in ) :: unit
+    character ( len=* ), intent ( in ) :: iotype
+    integer, intent ( in ) :: v_list(:)
+    integer, intent ( out ) :: iostat
+    character ( len=* ), intent ( inout ) :: iomsg
+
+    write( unit, fmt='(A,A,A,A,A,A,A,I2,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A)', &
+      iostat=iostat, iomsg=iomsg ) &
+      '<nombre_derived_unit_t', &
+      ' symb="', trim(this%symb), '"', &
+      ' prefix=("', trim(this%prefix%symb), '", ', this%prefix%base_10, ')', &
+      ' conv=', this%conv, &
+      ' pow=', this%pow, &
+      ' next=', associated(this%next), &
+      ' prev=', associated(this%prev), &
+      ' units="', trim( .printchain. this%head ), '"', &
+      ' >'
+  end subroutine rhyme_nombre_derived_unit_write_formatted
 end module rhyme_nombre_derived_unit

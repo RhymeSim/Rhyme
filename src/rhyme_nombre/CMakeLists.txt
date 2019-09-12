@@ -14,6 +14,7 @@ set( deps )
 set( internal_deps )
 
 set( srcs
+  src/nombre_dimension/rhyme_nombre_dimension_pow.f90
   src/nombre_dimension/rhyme_nombre_dimension_equality.f90
   src/nombre_dimension/rhyme_nombre_dimension.f90
 

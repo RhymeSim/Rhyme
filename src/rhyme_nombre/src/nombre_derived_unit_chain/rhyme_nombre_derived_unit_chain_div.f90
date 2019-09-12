@@ -68,17 +68,17 @@ contains
     type ( nombre_derived_unit_t ), pointer :: duc_new
 
     type ( nombre_derived_unit_t ), pointer :: duc_new_head, duc_ptr
-    type ( nombre_base_unit_t ), pointer :: unit_head, unit_ptr
+    type ( nombre_base_unit_t ), pointer :: unit_old_head, unit_ptr
 
 
     duc_new => .clonechain. duc
     duc_new_head => .head. duc_new
 
     if ( len_trim( duc_new_head%symb ) .eq. 0 ) then
-      unit_head => .head. duc_new_head%head
+      unit_old_head => .head. duc_new_head%head
 
       duc_new_head%head => .clone. u**(1 / duc_new_head%pow)
-      duc_new_head%head%next => unit_head
+      duc_new_head%head%next => unit_old_head
       duc_new_head%head%next%prev => duc_new_head%head
 
       unit_ptr => duc_new_head%head%next

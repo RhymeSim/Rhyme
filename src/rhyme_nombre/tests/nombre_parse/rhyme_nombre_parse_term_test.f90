@@ -18,7 +18,7 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
   call rhyme_nombre_derived_unit_chain_init
 
 
-  do i = 1, 10
+  do i = 1, 1
     call random_number( u_rnd )
     call random_number( du_rnd )
 
@@ -101,6 +101,20 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
     call tester%expect( associated( duc%next%next ) .toBe. .false. )
 
 
+    ! derived_unit * base_unit
+    duc2 => ( prfx_si(dupi(1)) * derived_units(dui(1)) ) &
+      * ( prfx_si(upi(2)) * si_base_units(ui(2)) )
+
+    str = add_operator( duc2, [ '*' ] )
+    str_arr = rhyme_nombre_parse_tokenize( str )
+
+    duc => rhyme_nombre_parse_term( str_arr, 1 )
+    call tester%expect( duc == duc2 .toBe. .true. .hint. str )
+    call tester%expect( duc%next == duc2%next .toBe. .true. )
+    call tester%expect( associated( duc%prev ) .toBe. .false. )
+    call tester%expect( associated( duc%next%next ) .toBe. .false. )
+
+
     ! derived_unit / base_unit
     duc2 => ( prfx_si(dupi(3)) * derived_units(dui(3)) ) &
       / ( prfx_si(upi(4)) * si_base_units(ui(4)) )
@@ -114,6 +128,39 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
     call tester%expect( associated( duc%prev ) .toBe. .false. )
     call tester%expect( associated( duc%next%next ) .toBe. .false. )
 
+
+    ! base_unit / derived_unit
+    duc2 => ( prfx_si(upi(3)) * si_base_units(ui(3)) ) &
+      / ( prfx_si(dupi(4)) * derived_units(dui(4)) )
+
+    str = add_operator( duc2, [ '*' ] )
+    str_arr = rhyme_nombre_parse_tokenize( str )
+
+    duc => rhyme_nombre_parse_term( str_arr, 1 )
+    call tester%expect( duc == duc2 .toBe. .true. .hint. str )
+    call tester%expect( duc%next == duc2%next .toBe. .true. )
+    call tester%expect( associated( duc%prev ) .toBe. .false. )
+    call tester%expect( associated( duc%next%next ) .toBe. .false. )
+
+
+    ! base_unit * derived_unit / base_unit / base_unit * derived_unit
+    duc5 => &
+      ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
+      / ( prfx_si(dupi(2)) * derived_units(dui(2)) ) &
+      / ( prfx_si(upi(3)) * si_base_units(ui(3)) ) &
+      / ( prfx_si(upi(4)) * si_base_units(ui(4)) ) &
+      * ( prfx_si(dupi(5)) * derived_units(dui(5)) )
+
+    str = add_operator( duc5, [ '*', '*', '*', '*', '*' ] )
+    str_arr = rhyme_nombre_parse_tokenize( str )
+
+    duc => rhyme_nombre_parse_term( str_arr, 1 )
+    call tester%expect( duc == duc5 .toBe. .true. .hint. str )
+    call tester%expect( duc%next == duc5%next .toBe. .true. )
+    call tester%expect( duc%next%next == duc5%next%next .toBe. .true. )
+    call tester%expect( duc%next%next%next == duc5%next%next%next .toBe. .true. )
+    call tester%expect( associated( duc%prev ) .toBe. .false. )
+    call tester%expect( associated( duc%next%next%next%next ) .toBe. .false. )
   end do
 
   failed = tester%failed()

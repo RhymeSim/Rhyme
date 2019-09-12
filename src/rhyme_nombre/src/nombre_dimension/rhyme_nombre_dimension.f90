@@ -42,9 +42,34 @@ module rhyme_nombre_dimension
       type ( nombre_dimension_t ), intent ( in ) :: d1, d2
       logical :: cmp
     end function rhyme_nombre_dimension_equality
+
+    pure module function rhyme_nombre_dimension_pow_i ( d, i ) result ( new_d )
+      type ( nombre_dimension_t ), intent ( in ) :: d
+      integer, intent ( in ) :: i
+      type ( nombre_dimension_t ) :: new_d
+    end function rhyme_nombre_dimension_pow_i
+
+    pure module function rhyme_nombre_dimension_pow_r ( d, r ) result ( new_d )
+      type ( nombre_dimension_t ), intent ( in ) :: d
+      real ( kind=4 ), intent ( in ) :: r
+      type ( nombre_dimension_t ) :: new_d
+    end function rhyme_nombre_dimension_pow_r
+
+    pure module function rhyme_nombre_dimension_pow_r8 ( d, r8 ) result ( new_d )
+      type ( nombre_dimension_t ), intent ( in ) :: d
+      real ( kind=8 ), intent ( in ) :: r8
+      type ( nombre_dimension_t ) :: new_d
+    end function rhyme_nombre_dimension_pow_r8
   end interface
 
+
+  interface operator ( ** )
+    module procedure rhyme_nombre_dimension_pow_i
+    module procedure rhyme_nombre_dimension_pow_r
+    module procedure rhyme_nombre_dimension_pow_r8
+  end interface operator ( ** )
+
   interface operator ( == )
-    procedure rhyme_nombre_dimension_equality
+    module procedure rhyme_nombre_dimension_equality
   end interface operator ( == )
 end module rhyme_nombre_dimension
