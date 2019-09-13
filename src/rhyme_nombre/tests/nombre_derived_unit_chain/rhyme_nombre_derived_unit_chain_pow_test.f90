@@ -12,7 +12,7 @@ logical function rhyme_nombre_derived_unit_chain_pow_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_pow"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   du => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], symb='N' )
 

@@ -15,7 +15,7 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
   tester = .describe. "nombre_parse_term"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
 
   do i = 1, 10
@@ -34,8 +34,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! base_unit * base_unit
-    duc2 => ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
-      * ( prfx_si(upi(2)) * si_base_units(ui(2)) )
+    duc2 => 1 * ( ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
+      * ( prfx_si(upi(2)) * si_base_units(ui(2)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -47,8 +47,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! base_unit / base_unit
-    duc2 => ( prfx_si(upi(3)) * si_base_units(ui(3)) ) &
-      / ( prfx_si(upi(4)) * si_base_units(ui(4)) )
+    duc2 => 1 * ( ( prfx_si(upi(3)) * si_base_units(ui(3)) ) &
+      / ( prfx_si(upi(4)) * si_base_units(ui(4)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -60,8 +60,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! derived_unit * derived_unit
-    duc2 => ( prfx_si(dupi(1)) * derived_units(dui(1)) ) &
-      * ( prfx_si(dupi(2)) * derived_units(dui(2)) )
+    duc2 => 1 * ( ( prfx_si(dupi(1)) * derived_units(dui(1)) ) &
+      * ( prfx_si(dupi(2)) * derived_units(dui(2)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -74,8 +74,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! derived_unit / derived_unit
-    duc2 => ( prfx_si(dupi(3)) * derived_units(dui(3)) ) &
-      / ( prfx_si(dupi(4)) * derived_units(dui(4)) )
+    duc2 => 1 * ( ( prfx_si(dupi(3)) * derived_units(dui(3)) ) &
+      / ( prfx_si(dupi(4)) * derived_units(dui(4)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -88,8 +88,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! base_unit * derived_unit
-    duc2 => ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
-      * ( prfx_si(dupi(2)) * derived_units(dui(2)) )
+    duc2 => 1 * ( ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
+      * ( prfx_si(dupi(2)) * derived_units(dui(2)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -116,8 +116,8 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! derived_unit / base_unit
-    duc2 => ( prfx_si(dupi(3)) * derived_units(dui(3)) ) &
-      / ( prfx_si(upi(4)) * si_base_units(ui(4)) )
+    duc2 => 1 * ( ( prfx_si(dupi(3)) * derived_units(dui(3)) ) &
+      / ( prfx_si(upi(4)) * si_base_units(ui(4)) ) )
 
     str = add_operator( duc2, [ '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )
@@ -144,12 +144,11 @@ logical function rhyme_nombre_parse_term_test () result ( failed )
 
 
     ! base_unit * derived_unit / base_unit / base_unit * derived_unit
-    duc5 => &
-      ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
+    duc5 => 1 * ( ( prfx_si(upi(1)) * si_base_units(ui(1)) ) &
       / ( prfx_si(dupi(2)) * derived_units(dui(2)) ) &
       / ( prfx_si(upi(3)) * si_base_units(ui(3)) ) &
       / ( prfx_si(upi(4)) * si_base_units(ui(4)) ) &
-      * ( prfx_si(dupi(5)) * derived_units(dui(5)) )
+      * ( prfx_si(dupi(5)) * derived_units(dui(5)) ) )
 
     str = add_operator( duc5, [ '*', '*', '*', '*', '*' ] )
     str_arr = rhyme_nombre_parse_tokenize( str )

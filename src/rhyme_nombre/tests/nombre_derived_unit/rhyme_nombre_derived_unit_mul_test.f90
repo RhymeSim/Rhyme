@@ -6,55 +6,48 @@ logical function rhyme_nombre_derived_unit_mul_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: derived_unit
-  type ( nombre_derived_unit_t ), pointer :: ic, rc, r8c, pc
-  type ( nombre_derived_unit_t ), pointer :: iu, ru, r8u, uu
+  type ( nombre_derived_unit_t ), pointer :: iduc, rduc, r8duc
+  type ( nombre_base_unit_t ), pointer :: buc
+  type ( nombre_base_unit_t ) :: bu(3)
+
+  real ( kind=8 ) :: rnd(3)
+  integer :: idx(3) , i
 
   tester = .describe. "nombre_derived_unit_mul"
 
-  derived_unit => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], 'N')
+  do i = 1, 5
+    call random_number( rnd )
 
-  ic => 123 * derived_unit
-  call tester%expect( ic%prefix == null_prefix .toBe. .true. .hint. 'ic conv' )
-  call tester%expect( ic%conv .toBe. 1.23d2 .hint. 'ic conv' )
-  call tester%expect( ic%head == kilogram .toBe. .true. .hint. 'ic kg' )
-  call tester%expect( ic%head%next == meter .toBe. .true. .hint. 'ic m' )
-  call tester%expect( ic%head%next%next == second**(-2) .toBe. .true. .hint. 'ic s^-2' )
-  call tester%expect( associated( ic%head%next%next%next ) .toBe. .false. .hint. 'ic null' )
+    idx = int( rnd ) * size( si_base_units ) + 1
+    bu = si_base_units( idx )
 
-  rc => 2.34e5 * derived_unit
-  call tester%expect( rc%conv .toBe. 2.34e5 .hint. 'rc conv' )
+    buc => nom_du_factory%generate_chain( [ bu(1) ] )
+    iduc => int( rnd(1) ) * buc
+    call tester%expect( associated( iduc%prev ) .toBe. .false. .hint. 'left end' )
+    call tester%expect( iduc%conv .toBe. int( rnd(1) ) )
+    call tester%expect( iduc%head == buc .toBe. .true. )
+    call tester%expect( associated( iduc%head%next ) .toBe. .false. )
+    call tester%expect( associated( iduc%next%next ) .toBe. .false. .hint. 'right end' )
 
-  r8c => 3.45d2 * derived_unit
-  call tester%expect( r8c%conv .toBe. 3.45d2 .hint. 'r8c conv' )
+    buc => nom_du_factory%generate_chain( bu(1:2) )
+    rduc => real( rnd(2), kind=4 ) * buc
+    call tester%expect( associated( rduc%prev ) .toBe. .false. .hint. 'left end' )
+    call tester%expect( rduc%conv .toBe. real( rnd(2), kind=4 ) )
+    call tester%expect( rduc%head == buc .toBe. .true. )
+    call tester%expect( rduc%head%next == buc%next .toBe. .true. )
+    call tester%expect( associated( rduc%head%next%next ) .toBe. .false. )
+    call tester%expect( associated( rduc%next%next ) .toBe. .false. .hint. 'right end' )
 
-  pc => kilo * derived_unit
-  call tester%expect( pc%prefix == kilo .toBe. .true. .hint. 'pc prefix' )
-  call tester%expect( pc%conv .toBe. 1d0 .hint. 'pc conv' )
-
-  iu => 1000 * kilogram
-  call tester%expect( iu%conv .toBe. 1e3 .hint. 'iu conv' )
-  call tester%expect( iu%head == kilogram .toBe. .true. .hint. 'iu head' )
-  call tester%expect( associated( iu%head%next ) .toBe. .false. .hint. 'iu head%next' )
-
-  ru => 3.154e7 * second
-  call tester%expect( ru%conv .toBe. 3.154e7 .hint. 'ru conv' )
-  call tester%expect( ru%head == second .toBe. .true. .hint. 'ru head' )
-  call tester%expect( associated( ru%head%next ) .toBe. .false. .hint. 'ru head%next' )
-
-  r8u => 3.086d16 * meter
-  call tester%expect( r8u%conv .toBe. 3.086d16 .hint. 'r8u conv' )
-  call tester%expect( r8u%head == meter .toBe. .true. .hint. 'r8u head' )
-  call tester%expect( associated( r8u%head%next ) .toBe. .false. .hint. 'r8u head%next' )
-
-  uu => kilogram * meter
-  call tester%expect( uu%head == kilogram .toBe. .true. .hint. 'uu head to be kg' )
-  call tester%expect( associated( uu%head%prev ) .toBe. .false. .hint. 'uu head%prev to be null' )
-  call tester%expect( uu%head%next == meter .toBe. .true. .hint. 'uu next to be meter' )
-  call tester%expect( uu%head%next%prev == kilogram .toBe. .true. .hint. 'uu next%prev to be kg' )
-  call tester%expect( associated( uu%head%next%next ) .toBe. .false. .hint. 'uu next%next to be null' )
-
-  call tester%expect( uu%dim == rhyme_nombre_derived_unit_get_dim( uu ) .toBe. .true. .hint. 'uu unit' )
+    buc => nom_du_factory%generate_chain( bu(1:3) )
+    r8duc => rnd(3) * buc
+    call tester%expect( associated( r8duc%prev ) .toBe. .false. .hint. 'left end' )
+    call tester%expect( r8duc%conv .toBe. rnd(3) )
+    call tester%expect( r8duc%head == buc .toBe. .true. )
+    call tester%expect( r8duc%head%next == buc%next .toBe. .true. )
+    call tester%expect( r8duc%head%next%next == buc%next%next .toBe. .true. )
+    call tester%expect( associated( r8duc%head%next%next%next ) .toBe. .false. )
+    call tester%expect( associated( r8duc%next%next ) .toBe. .false. .hint. 'right end' )
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_derived_unit_mul_test

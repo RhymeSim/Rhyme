@@ -12,7 +12,7 @@ logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_mul"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   duc => atomic_mass_unit * astronomical_unit * stradian
   call tester%expect( associated( duc%prev ) .toBe. .false. .hint. 'duc' )
@@ -93,7 +93,7 @@ logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
   call tester%expect( associated( ducduc%head%next%next%next ) .toBe. .false. )
 
   duc => 1 * kilogram
-  duc2 => meter / second**2
+  duc2 => 1 * ( meter / second**2 )
   ducduc => duc * duc2
   call tester%expect( ducduc%head == kilogram .toBe. .true. .hint. 'ducduc w/o symb' )
   call tester%expect( ducduc%head%next == meter .toBe. .true. )

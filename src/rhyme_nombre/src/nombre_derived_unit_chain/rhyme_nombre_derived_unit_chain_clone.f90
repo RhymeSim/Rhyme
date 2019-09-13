@@ -1,28 +1,31 @@
 submodule ( rhyme_nombre_derived_unit_chain ) chain_clone_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_clone ( chain ) result ( clone )
+  module function rhyme_nombre_derived_unit_chain_clone ( duc ) result ( duc_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: chain
-    type ( nombre_derived_unit_t ), pointer :: clone
+    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_derived_unit_t ), pointer :: duc_new
 
-    type ( nombre_derived_unit_t ), pointer :: chain_ptr, clone_ptr
+    type ( nombre_derived_unit_t ), pointer :: duc_ptr
 
-    chain_ptr => .head. chain
-    clone_ptr => null()
-
-    if ( associated( chain_ptr ) ) then
-      clone_ptr => .clone. chain_ptr
-
-      do while ( associated( chain_ptr%next ) )
-        clone_ptr%next => .clone. chain_ptr%next
-        clone_ptr%next%prev => clone_ptr
-
-        chain_ptr => chain_ptr%next
-        clone_ptr => clone_ptr%next
-      end do
+    duc_ptr => duc
+    
+    if ( .not. associated( duc_ptr ) ) then
+      duc_new => null()
+      return
     end if
 
-    clone => .head. clone_ptr
+    duc_ptr => .head. duc
+    duc_new => .clone. duc_ptr
+
+    do while ( associated( duc_ptr%next ) )
+      duc_new%next => .clone. duc_ptr%next
+      duc_new%next%prev => duc_new
+
+      duc_ptr => duc_ptr%next
+      duc_new => duc_new%next
+    end do
+
+    duc_new => .head. duc_new
   end function rhyme_nombre_derived_unit_chain_clone
 end submodule chain_clone_smod

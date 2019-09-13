@@ -21,7 +21,7 @@ logical function rhyme_nombre_parse_string_test () result ( failed )
 
   tester = .describe. "nombre_parse"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   do i = 1, 0
     call random_number( rnd )

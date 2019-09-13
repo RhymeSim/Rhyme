@@ -9,7 +9,7 @@ logical function rhyme_nombre_derived_unit_chain_head_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_head"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   chain => nom_duc_factory%generate_chain( [ pascal, hertz, radian, newton ] )
 

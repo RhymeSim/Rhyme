@@ -7,12 +7,13 @@ logical function rhyme_nombre_derived_unit_chain_div_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: du, duu
+  type ( nombre_base_unit_t ), pointer :: buc, buc2
+  type ( nombre_derived_unit_t ), pointer :: du, duu, bucbuc
   type ( nombre_derived_unit_t ), pointer :: duc, ducu, uduc, uuduc, duc2, ducduc
 
   tester = .describe. "nombre_derived_unit_chain_div"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   du => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], symb='N', pow=1.23d0 )
   duu => du / meter**2

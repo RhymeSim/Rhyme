@@ -30,6 +30,10 @@ module rhyme_nombre_base_unit
 
 
   interface
+    module function rhyme_nombre_base_unit_new () result ( bu )
+      type ( nombre_base_unit_t ), pointer :: bu
+    end function rhyme_nombre_base_unit_new
+
     module function rhyme_nombre_base_unit_clone ( bu ) result ( clone )
       type ( nombre_base_unit_t ), target, intent ( in ) :: bu
       type ( nombre_base_unit_t ), pointer :: clone
@@ -39,12 +43,6 @@ module rhyme_nombre_base_unit
       type ( nombre_base_unit_t ), target, intent ( in ) :: bu1, bu2
       logical :: eq
     end function rhyme_nombre_base_unit_equality
-
-    module function rhyme_nombre_base_unit_mul_pu ( p, bu ) result ( new_bu )
-      type ( nombre_prefix_t ), intent ( in ) :: p
-      type ( nombre_base_unit_t ), target, intent ( in ) :: bu
-      type ( nombre_base_unit_t ), pointer :: new_bu
-    end function rhyme_nombre_base_unit_mul_pu
 
     module function rhyme_nombre_base_unit_update_symbol ( bu, symb ) result ( new_bu )
       type ( nombre_base_unit_t ), target, intent ( in ) :: bu
@@ -58,10 +56,6 @@ module rhyme_nombre_base_unit
     end function rhyme_nombre_base_unit_print
   end interface
 
-
-  interface operator ( * )
-    module procedure rhyme_nombre_base_unit_mul_pu
-  end interface operator ( * )
 
   interface operator ( == )
     module procedure rhyme_nombre_base_unit_equality

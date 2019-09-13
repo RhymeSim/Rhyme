@@ -12,7 +12,7 @@ logical function rhyme_nombre_parse_single_test () result ( failed )
 
   tester = .describe. "nombre_parse_single"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   do ui = 1, size( si_base_units )
     str = .print. si_base_units( ui )

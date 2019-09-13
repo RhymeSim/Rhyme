@@ -12,7 +12,7 @@ logical function rhyme_nombre_parse_find_derived_unit_test () result ( failed )
 
   tester = .describe. "nombre_parse_find_derived_unit"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   do u = 1, size( derived_units )
     dunit => rhyme_nombre_parse_find_derived_unit( trim( .print. derived_units(u) ) )

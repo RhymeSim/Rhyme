@@ -6,52 +6,52 @@ logical function rhyme_nombre_derived_unit_equality_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: joule, joule_cloned, joule_modified, newton
+  type ( nombre_derived_unit_t ), pointer :: j, j_cloned, j_modified, n
   type ( nombre_derived_unit_t ), pointer :: du1, du2
   type ( nombre_base_unit_t ), pointer :: old_head
 
   tester = .describe. "nombre_derived_unit_equality"
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  newton => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], 'N')
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  n => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], 'N')
 
-  call tester%expect( joule == joule .toBe. .true. .hint. 'j == j' )
-  call tester%expect( newton == newton .toBe. .true. .hint. 'newton == newton' )
-  call tester%expect( joule == newton .toBe. .false. .hint. 'j == newton' )
-  call tester%expect( newton == joule .toBe. .false. .hint. 'newton == j' )
+  call tester%expect( j == j .toBe. .true. .hint. 'j == j' )
+  call tester%expect( n == n .toBe. .true. .hint. 'n == n' )
+  call tester%expect( j == n .toBe. .false. .hint. 'j == n' )
+  call tester%expect( n == j .toBe. .false. .hint. 'n == j' )
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_cloned => .clone. joule
-  call tester%expect( joule == joule_cloned .toBe. .true. .hint. 'j == j_cloned' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_cloned => .clone. j
+  call tester%expect( j == j_cloned .toBe. .true. .hint. 'j == j_cloned' )
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_modified => .clone. joule
-  joule_modified%prefix = kilo
-  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified prefix' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_modified => .clone. j
+  j_modified%prefix = kilo
+  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified prefix' )
 
   ! NB: Comparison ignores the symbols
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_modified => .clone. joule
-  joule_modified%symb = 'modified'
-  call tester%expect( joule == joule_modified .toBe. .true. .hint. 'j == j_modified symb' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_modified => .clone. j
+  j_modified%symb = 'modified'
+  call tester%expect( j == j_modified .toBe. .true. .hint. 'j == j_modified symb' )
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_modified => .clone. joule
-  joule_modified%conv = 12.3d0
-  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified conv' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_modified => .clone. j
+  j_modified%conv = 12.3d0
+  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified conv' )
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_modified => .clone. joule
-  old_head => joule_modified%head
-  joule_modified%head => .clone. meter
-  joule_modified%head%next => old_head
-  joule_modified%head%next%prev => joule_modified%head
-  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified dim' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_modified => .clone. j
+  old_head => j_modified%head
+  j_modified%head => .clone. meter
+  j_modified%head%next => old_head
+  j_modified%head%next%prev => j_modified%head
+  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified dim' )
 
-  joule => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
-  joule_modified => .clone. joule
-  joule_modified%pow = 23.4d0
-  call tester%expect( joule == joule_modified .toBe. .false. .hint. 'j == j_modified pow' )
+  j => nom_du_factory%generate( [ kilogram, meter**2, second**(-2) ], 'J' )
+  j_modified => .clone. j
+  j_modified%pow = 23.4d0
+  call tester%expect( j == j_modified .toBe. .false. .hint. 'j == j_modified pow' )
 
   du1 => nom_du_factory%generate( [ kilogram, meter, second**(-2) ], symb='', pow=1d0)
   du2 => nom_du_factory%generate( [ kilogram**(-1), meter**(-1), second**2 ], symb='', pow=-1d0)

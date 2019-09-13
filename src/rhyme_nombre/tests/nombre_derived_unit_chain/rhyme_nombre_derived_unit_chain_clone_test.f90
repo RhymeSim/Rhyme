@@ -10,7 +10,7 @@ logical function rhyme_nombre_derived_unit_chain_clone_test () result ( failed )
 
   tester = .describe. "nombre_derived_unit_chain_clone"
 
-  call rhyme_nombre_derived_unit_chain_init
+  call rhyme_nombre_derived_unit_init
 
   chain => nom_duc_factory%generate_chain( [ solar_mass, parsec, year, joule, watt ] )
   clone => .clonechain. chain

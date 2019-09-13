@@ -35,11 +35,13 @@ logical function rhyme_nombre_base_unit_print_test () result ( failed )
   str = .print. candela
   call tester%expect( str .toBe. 'cd' )
 
-  u => giga * second
+  u => .clone. second
+  u%prefix = giga
   str = .print. u
   call tester%expect( str .toBe. 'Gs' )
-  
-  u => nano * kelvin
+
+  u => .clone. kelvin
+  u%prefix = nano
   str = .print. u
   call tester%expect( str .toBe. 'nK' )
 

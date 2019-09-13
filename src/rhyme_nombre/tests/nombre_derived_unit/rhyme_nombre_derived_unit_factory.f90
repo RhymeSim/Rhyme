@@ -24,13 +24,14 @@ contains
   end subroutine rhyme_nombre_derived_unit_factory_init
 
 
-  function rhyme_nombre_derived_unit_factory_generate ( this, bases, symb, pow ) result ( dunit )
+  function rhyme_nombre_derived_unit_factory_generate ( this, bases, symb, pow, conv ) result ( dunit )
     implicit none
 
     class ( rhyme_nombre_derived_unit_factory_t ), intent ( inout ) :: this
     type ( nombre_base_unit_t ), intent ( in ) :: bases(:)
     character ( len=* ), intent ( in ), optional :: symb
     real ( kind=8 ), intent ( in ), optional :: pow
+    real ( kind=8 ), intent ( in ), optional :: conv
     type ( nombre_derived_unit_t ), pointer :: dunit
 
     if ( .not. this%initialized ) call this%init
@@ -45,6 +46,10 @@ contains
 
     if ( present( pow ) ) then
       dunit%pow = pow
+    end if
+
+    if ( present( conv ) ) then
+      dunit%conv = conv
     end if
   end function rhyme_nombre_derived_unit_factory_generate
 

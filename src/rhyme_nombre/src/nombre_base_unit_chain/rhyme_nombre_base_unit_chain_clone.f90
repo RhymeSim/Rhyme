@@ -1,28 +1,31 @@
 submodule ( rhyme_nombre_base_unit_chain ) clone_smod
 contains
-  module function rhyme_nombre_base_unit_chain_clone ( buc ) result ( new_buc )
+  module function rhyme_nombre_base_unit_chain_clone ( buc ) result ( buc_new )
     implicit none
 
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_base_unit_t ), pointer :: new_buc
+    type ( nombre_base_unit_t ), pointer :: buc_new
 
-    type ( nombre_base_unit_t ), pointer :: ptr
+    type ( nombre_base_unit_t ), pointer :: buc_ptr
 
-    ptr => .head. buc
-    new_buc => null()
+    buc_ptr => buc
 
-    if ( associated( ptr ) ) then
-      new_buc => .clone. ptr
-
-      do while ( associated( ptr%next ) )
-        new_buc%next => .clone. ptr%next
-        new_buc%next%prev => new_buc
-
-        new_buc => new_buc%next
-        ptr => ptr%next
-      end do
+    if ( .not. associated( buc_ptr ) ) then
+      buc_new => null()
+      return
     end if
 
-    new_buc => .head. new_buc
+    buc_ptr => .head. buc
+    buc_new => .clone. buc_ptr
+
+    do while ( associated( buc_ptr%next ) )
+      buc_new%next => .clone. buc_ptr%next
+      buc_new%next%prev => buc_new
+
+      buc_new => buc_new%next
+      buc_ptr => buc_ptr%next
+    end do
+
+    buc_new => .head. buc_new
   end function rhyme_nombre_base_unit_chain_clone
 end submodule clone_smod
