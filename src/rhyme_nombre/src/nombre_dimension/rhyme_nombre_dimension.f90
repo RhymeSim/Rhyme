@@ -8,6 +8,9 @@ module rhyme_nombre_dimension
   type nombre_dimension_t
     real ( kind=8 ) :: powers( powers_len )
     character ( len=64 ) :: symb
+  contains
+    procedure :: rhyme_nombre_dimension_write_formatted
+    generic :: write( formatted ) => rhyme_nombre_dimension_write_formatted
   end type nombre_dimension_t
 
 
@@ -72,4 +75,30 @@ module rhyme_nombre_dimension
   interface operator ( == )
     module procedure rhyme_nombre_dimension_equality
   end interface operator ( == )
+
+contains
+  subroutine rhyme_nombre_dimension_write_formatted ( &
+    this, unit, iotype, v_list, iostat, iomsg )
+    implicit none
+
+    class ( nombre_dimension_t ), intent ( in ) :: this
+    integer, intent ( in ) :: unit
+    character ( len=* ), intent ( in ) :: iotype
+    integer, intent ( in ) :: v_list(:)
+    integer, intent ( out ) :: iostat
+    character ( len=* ), intent ( inout ) :: iomsg
+
+    write( unit, fmt='(A,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,A,A,A)', &
+      iostat=iostat, iomsg=iomsg ) &
+      '<nombre_dimension_t', &
+      ' M=', this%powers(1), &
+      ' L=', this%powers(2), &
+      ' T=', this%powers(3), &
+      ' Theta=', this%powers(4), &
+      ' I=', this%powers(5), &
+      ' N=', this%powers(6), &
+      ' J=', this%powers(7), &
+      ' symb="', trim( this%symb ), '"', &
+      ' >'
+  end subroutine rhyme_nombre_dimension_write_formatted
 end module rhyme_nombre_dimension

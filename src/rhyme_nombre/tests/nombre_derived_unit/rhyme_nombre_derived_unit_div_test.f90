@@ -1,4 +1,6 @@
 logical function rhyme_nombre_derived_unit_div_test () result ( failed )
+  use rhyme_nombre_dimension_factory
+  use rhyme_nombre_base_unit_factory
   use rhyme_nombre_derived_unit_factory
   use rhyme_assertion
 
@@ -6,37 +8,47 @@ logical function rhyme_nombre_derived_unit_div_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: iu, ru, r8u
-
-  character ( len=128 ) :: msg
+  type ( nombre_derived_unit_t ), pointer :: du
+  type ( nombre_base_unit_t ), pointer :: buc
+  type ( nombre_base_unit_t ) :: bu(3)
   real ( kind=8 ) :: rnd(3)
   integer :: i
 
+  real ( kind=8 ) :: r8factor
+  real ( kind=4 ) :: rfactor
+  integer :: ifactor
+
   tester = .describe. "nombre_derived_unit_div"
 
-  do i = 1, size( si_base_units )
+  do i = 1, 5
     call random_number( rnd )
 
-    iu => int( rnd(1) * 10 - 5 ) * si_base_units(i)
-    write( msg, * ) 'int: ', ( .print. iu )
-    call tester%expect( iu%conv .toBe. int(rnd(1) * 10 - 5) .hint. trim( msg )//' conv' )
-    call tester%expect( iu%head .toBe. si_base_units(i) .hint. trim( msg )//' head' )
-    call tester%expect( associated( iu%head%next ) .toBe. .false. .hint. trim( msg )//' null' )
-    call tester%expect( iu%dim == rhyme_nombre_derived_unit_get_dim( iu ) .toBe. .true. .hint. trim( msg )//' dim' )
+    bu = si_base_units( ceiling( rnd * size( si_base_units ) ) )
+    buc => nom_du_factory%generate_chain( bu )
 
-    ru => real( rnd(2) * 100 - 50, kind=4 ) * si_base_units(i)
-    write( msg, * ) 'real: ', ( .print. ru )
-    call tester%expect( ru%conv .toBe. real(rnd(2) * 100 - 50 , kind=4) .hint. trim( msg )//' conv' )
-    call tester%expect( ru%head .toBe. si_base_units(i) .hint. trim( msg )//' head' )
-    call tester%expect( associated( ru%head%next ) .toBe. .false. .hint. trim( msg )//' null' )
-    call tester%expect( ru%dim == rhyme_nombre_derived_unit_get_dim( ru ) .toBe. .true. .hint. trim( msg )//' dim' )
+    ifactor = int( rnd(1) * 10 - 5 )
+    du => ifactor / buc
+    call tester%expect( du%conv .toBe. ifactor )
+    call tester%expect( du%head .toBe. bu(1)**(-1) )
+    call tester%expect( du%head%next .toBe. bu(2)**(-1) )
+    call tester%expect( du%head%next%next .toBe. bu(3)**(-1) )
+    call tester%expect( du%dim .toBe. rhyme_nombre_base_unit_chain_get_dim( buc )**(-1) )
 
-    r8u => real( rnd(3) * 1000 - 500, kind=8 ) * si_base_units(i)
-    write( msg, * ) 'real: ', ( .print. r8u )
-    call tester%expect( r8u%conv .toBe. real(rnd(3) * 1000 - 500, kind=8) .hint. trim( msg )//' conv' )
-    call tester%expect( r8u%head .toBe. si_base_units(i) .hint. trim( msg )//' head' )
-    call tester%expect( associated( r8u%head%next ) .toBe. .false. .hint. trim( msg )//' null' )
-    call tester%expect( r8u%dim == rhyme_nombre_derived_unit_get_dim( r8u ) .toBe. .true. .hint. trim( msg )//' dim' )
+    rfactor = real( rnd(2) * 10 - 5 )
+    du => rfactor / buc
+    call tester%expect( du%conv .toBe. rfactor )
+    call tester%expect( du%head .toBe. bu(1)**(-1) )
+    call tester%expect( du%head%next .toBe. bu(2)**(-1) )
+    call tester%expect( du%head%next%next .toBe. bu(3)**(-1) )
+    call tester%expect( du%dim .toBe. rhyme_nombre_base_unit_chain_get_dim( buc )**(-1) )
+
+    r8factor = rnd(2) * 10 - 5
+    du => r8factor / buc
+    call tester%expect( du%conv .toBe. r8factor )
+    call tester%expect( du%head .toBe. bu(1)**(-1) )
+    call tester%expect( du%head%next .toBe. bu(2)**(-1) )
+    call tester%expect( du%head%next%next .toBe. bu(3)**(-1) )
+    call tester%expect( du%dim .toBe. rhyme_nombre_base_unit_chain_get_dim( buc )**(-1) )
   end do
 
   failed = tester%failed()

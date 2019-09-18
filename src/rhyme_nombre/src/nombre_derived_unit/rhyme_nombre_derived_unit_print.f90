@@ -6,19 +6,11 @@ contains
     type ( nombre_derived_unit_t ), intent ( in ) :: du
     character ( len=64 ) :: str
 
-    type ( nombre_base_unit_t ), pointer :: ptr, updated_u
-
-    str = ''
+    type ( nombre_base_unit_t ), pointer :: buc
 
     if ( len_trim( du%symb ) .eq. 0 ) then
-      ptr => du%head
-
-      do while ( associated( ptr ) )
-        updated_u => du%prefix * ptr
-        write( str, '(A,A,A)' ) trim(str), ' ', trim( .print. updated_u )
-
-        ptr => ptr%next
-      end do
+      buc => du%prefix * du%head**du%pow
+      str = .printchain. buc
     else
       str =  trim( du%prefix%symb )//trim( du%symb )
 

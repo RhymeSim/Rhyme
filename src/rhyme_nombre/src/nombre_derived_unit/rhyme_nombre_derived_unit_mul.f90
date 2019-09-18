@@ -11,7 +11,7 @@ contains
     du_new%conv = i
     du_new%head => .clonechain. buc
 
-    du_new%dim = rhyme_nombre_derived_unit_get_dim( du_new )
+    du_new%dim = rhyme_nombre_base_unit_chain_get_dim( du_new%head )
   end function rhyme_nombre_derived_unit_mul_ibuc
 
 
@@ -26,7 +26,7 @@ contains
     du_new%conv = real( r, kind=8 )
     du_new%head => .clonechain. buc
 
-    du_new%dim = rhyme_nombre_derived_unit_get_dim( du_new )
+    du_new%dim = rhyme_nombre_base_unit_chain_get_dim( du_new%head )
   end function rhyme_nombre_derived_unit_mul_rbuc
 
 
@@ -41,6 +41,6 @@ contains
     du_new%conv = r8
     du_new%head => .clonechain. buc
 
-    du_new%dim = rhyme_nombre_derived_unit_get_dim( du_new )
+    du_new%dim = rhyme_nombre_base_unit_chain_get_dim( du_new%head )
   end function rhyme_nombre_derived_unit_mul_r8buc
 end submodule mul_smod

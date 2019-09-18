@@ -14,8 +14,8 @@ contains
 
     eq = .false.
 
-    dim1 = rhyme_nombre_derived_unit_get_dim( du1 )**du1%pow
-    dim2 = rhyme_nombre_derived_unit_get_dim( du2 )**du2%pow
+    dim1 = rhyme_nombre_base_unit_chain_get_dim( du1%head )**du1%pow
+    dim2 = rhyme_nombre_base_unit_chain_get_dim( du2%head )**du2%pow
 
     dim_eq = dim1 == dim2
     conv_eq = abs( du1%conv - du2%conv ) < tiny(0d0)

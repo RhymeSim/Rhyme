@@ -24,6 +24,11 @@ module rhyme_nombre_base_unit_chain
       character ( len=64 ) :: str
     end function rhyme_nombre_base_unit_chain_print
 
+    module function rhyme_nombre_base_unit_chain_get_dim ( buc ) result ( dim )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
+      type ( nombre_dimension_t ) :: dim
+    end function rhyme_nombre_base_unit_chain_get_dim
+
 
 
     module function rhyme_nombre_base_unit_chain_mul_bucbuc ( buc1, buc2 ) result ( buc_new )

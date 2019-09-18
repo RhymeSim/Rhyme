@@ -68,11 +68,6 @@ module rhyme_nombre_derived_unit
 
 
 
-    module function rhyme_nombre_derived_unit_get_dim ( du ) result ( dim )
-      type ( nombre_derived_unit_t ), target, intent ( in ) :: du
-      type ( nombre_dimension_t ) :: dim
-    end function rhyme_nombre_derived_unit_get_dim
-
     module function rhyme_nombre_derived_unit_update_symbol ( du, s ) result ( du_new )
       type ( nombre_derived_unit_t ), intent ( in ) :: du
       character ( len=* ), intent ( in ) :: s

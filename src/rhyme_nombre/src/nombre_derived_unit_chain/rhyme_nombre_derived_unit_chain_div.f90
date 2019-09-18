@@ -26,7 +26,7 @@ contains
       duc1clone%next%prev => duc1clone
     end if
 
-    duc1clone%dim = rhyme_nombre_derived_unit_get_dim( duc1clone )
+    duc1clone%dim = rhyme_nombre_base_unit_chain_get_dim( duc1clone%head )
     duc_new => .head. duc1clone
   end function rhyme_nombre_derived_unit_chain_div_ducduc
 
@@ -55,7 +55,7 @@ contains
       duc_new_tail%head => .clonechain. buc**(-1)
     end if
 
-    duc_new_tail%dim = rhyme_nombre_derived_unit_get_dim( duc_new_tail )
+    duc_new_tail%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_tail%head )
     duc_new => .head. duc_new_tail
   end function rhyme_nombre_derived_unit_chain_div_ducbuc
 
@@ -85,7 +85,7 @@ contains
       duc_new_head => duc_new_head%prev
     end if
 
-    duc_new_head%dim = rhyme_nombre_derived_unit_get_dim( duc_new_head )
+    duc_new_head%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_head%head )
     duc_new => .head. duc_new_head
   end function rhyme_nombre_derived_unit_chain_div_bucduc
 end submodule div_smod
