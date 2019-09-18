@@ -1,95 +1,252 @@
 submodule ( rhyme_assertion ) rhyme_assertion_to_be_array_scalar_submodule
 contains
-  pure module function rhyme_assertion_to_be_array_scalar ( val, expect ) result ( test )
+  pure module function rhyme_assertion_to_be_array_scalar_ii ( arr, scalar ) result ( test )
     implicit none
 
-    class (*), intent ( in ) :: val(:), expect
+    integer, intent ( in ) :: arr(:), scalar
     type ( test_t ) :: test
 
-    logical :: passed
     integer :: idx
 
-    passed = .false.
     test%op = 'to_be'
+    test%type = assertid%int_arr
 
-    test%exp = .toString. expect
-    test%val = .toString. val
+    test%val = .toString. arr
+    test%exp = .toString. scalar
 
-    select type ( v => val )
-    type is ( integer )
-      test%type = assertid%int_arr
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
 
-      select type ( e => expect )
-      type is ( integer )
-        idx = maxloc( abs(v - e), dim=1 )
-        test%real_val = real( v(idx), kind=8 )
-        test%real_exp = real( e, kind=8 )
-        test%real_accuracy = abs( test%real_val - test%real_exp )
-        passed = all( v .eq. e )
-      class default
-        passed = .false.
-      end select
+    test%is_passed = all( arr .eq. scalar )
+  end function rhyme_assertion_to_be_array_scalar_ii
 
-    type is ( real( kind=4 ) )
-      test%type = assertid%real_arr
+  pure module function rhyme_assertion_to_be_array_scalar_ir ( arr, scalar ) result ( test )
+    implicit none
 
-      select type ( e => expect )
-      type is ( real( kind=4 ) )
-        idx = maxloc( abs(v - e), dim=1 )
-        test%real_val = real( v(idx), kind=8 )
-        test%real_exp = real( e, kind=8 )
-        test%real_accuracy = abs( test%real_val - test%real_exp )
-        passed = all( abs( v - e ) < epsilon(0.e0) )
-      class default
-        passed = .false.
-      end select
+    integer, intent ( in ) :: arr(:)
+    real ( kind=4 ), intent ( in ) :: scalar
+    type ( test_t ) :: test
 
-    type is ( real( kind=8 ) )
-      test%type = assertid%double_arr
+    integer :: idx
 
-      select type ( e => expect )
-      type is ( real( kind=8 ) )
-        idx = maxloc( abs(v - e), dim=1 )
-        test%real_val = v(idx)
-        test%real_exp = e
-        test%real_accuracy = abs( test%real_val - test%real_exp )
-        passed = all( abs( v - e ) < epsilon(0.d0) )
-      type is ( real( kind=4 ) )
-        ! TODO: set a warning
-        idx = maxloc( abs(v - e), dim=1 )
-        test%real_val = v(idx)
-        test%real_exp = real( e, kind=8 )
-        test%real_accuracy = abs( test%real_val - test%real_exp )
-        passed = all( abs( real(v, kind=4) - e ) < epsilon(0.e0) )
-      class default
-        passed = .false.
-      end select
+    test%op = 'to_be'
+    test%type = assertid%int_arr
 
-    type is ( character(*) )
-      test%type = assertid%char_arr
+    test%val = .toString. arr
+    test%exp = .toString. scalar
 
-      select type ( e => expect )
-      type is ( character(*) )
-        passed = all( v .eq. e )
-      class default
-        passed = .false.
-      end select
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
 
-    type is ( logical )
-      test%type = assertid%log_arr
+    if ( abs( int(scalar) - scalar ) > epsilon(0e0) ) then
+      test%is_passed = .false.
+    else
+      test%is_passed = all( arr .eq. int(scalar) )
+    end if
+  end function rhyme_assertion_to_be_array_scalar_ir
 
-      select type ( e => expect )
-      type is ( logical )
-        passed = all( v .eqv. e )
-      class default
-        passed = .false.
-      end select
+  pure module function rhyme_assertion_to_be_array_scalar_ir8 ( arr, scalar ) result ( test )
+    implicit none
 
-    class default
-      test%type = assertid%unset
-      passed = .false.
-    end select
+    integer, intent ( in ) :: arr(:)
+    real ( kind=8 ), intent ( in ) :: scalar
+    type ( test_t ) :: test
 
-    test%is_passed = passed
-  end function rhyme_assertion_to_be_array_scalar
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%int_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = scalar
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    if ( abs( int(scalar) - scalar ) > epsilon(0d0) ) then
+      test%is_passed = .false.
+    else
+      test%is_passed = all( arr .eq. int(scalar) )
+    end if
+  end function rhyme_assertion_to_be_array_scalar_ir8
+
+  pure module function rhyme_assertion_to_be_array_scalar_ri ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr(:)
+    integer, intent ( in ) :: scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%real_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    if ( any( abs( int(arr) - arr ) > epsilon(0e0) ) ) then
+      test%is_passed = .false.
+    else
+      test%is_passed = all( int(arr) .eq. scalar )
+    end if
+  end function rhyme_assertion_to_be_array_scalar_ri
+
+  pure module function rhyme_assertion_to_be_array_scalar_rr ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr(:), scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%real_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    test%is_passed = all( abs(arr - scalar) < epsilon(0e0) )
+  end function rhyme_assertion_to_be_array_scalar_rr
+
+  pure module function rhyme_assertion_to_be_array_scalar_rr8 ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr(:)
+    real ( kind=8 ), intent ( in ) :: scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%int_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = real( arr(idx), kind=8 )
+    test%real_exp = scalar
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    test%is_passed = all( abs(arr - scalar) < epsilon(0e0) )
+  end function rhyme_assertion_to_be_array_scalar_rr8
+
+  pure module function rhyme_assertion_to_be_array_scalar_r8i ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr(:)
+    integer, intent ( in ) :: scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = arr(idx)
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    if ( any( abs( int(arr) - arr ) > epsilon(0d0) ) ) then
+      test%is_passed = .false.
+    else
+      test%is_passed = all( int(arr) .eq. scalar )
+    end if
+  end function rhyme_assertion_to_be_array_scalar_r8i
+
+  pure module function rhyme_assertion_to_be_array_scalar_r8r ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr(:)
+    real ( kind=4 ), intent ( in ) :: scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = arr(idx)
+    test%real_exp = real( scalar, kind=8 )
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    test%is_passed = all( abs(arr - scalar) < epsilon(0d0) )
+  end function rhyme_assertion_to_be_array_scalar_r8r
+
+  pure module function rhyme_assertion_to_be_array_scalar_r8r8 ( arr, scalar ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr(:), scalar
+    type ( test_t ) :: test
+
+    integer :: idx
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    idx = maxloc( abs( arr - scalar ), dim=1 )
+    test%real_val = arr(idx)
+    test%real_exp = scalar
+    test%real_accuracy = abs( arr(idx) - scalar )
+
+    test%is_passed = all( abs(arr - scalar) < epsilon(0d0) )
+  end function rhyme_assertion_to_be_array_scalar_r8r8
+
+  pure module function rhyme_assertion_to_be_array_scalar_chch ( arr, scalar ) result ( test )
+    implicit none
+
+    character ( len=* ), intent ( in ) :: arr(:), scalar
+    type ( test_t ) :: test
+
+    test%op = 'to_be'
+    test%type = assertid%char_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    test%is_passed = all( arr .eq. scalar )
+  end function rhyme_assertion_to_be_array_scalar_chch
+
+  pure module function rhyme_assertion_to_be_array_scalar_ll ( arr, scalar ) result ( test )
+    implicit none
+
+    logical, intent ( in ) :: arr(:), scalar
+    type ( test_t ) :: test
+
+    test%op = 'to_be'
+    test%type = assertid%log_arr
+
+    test%val = .toString. arr
+    test%exp = .toString. scalar
+
+    test%is_passed = all( arr .eqv. scalar )
+  end function rhyme_assertion_to_be_array_scalar_ll
 end submodule rhyme_assertion_to_be_array_scalar_submodule
