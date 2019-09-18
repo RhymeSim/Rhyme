@@ -6,18 +6,30 @@ logical function rhyme_nombre_base_unit_chain_print_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  character ( len=64 ) :: str
-  type ( nombre_base_unit_t ), pointer :: u
+  type ( nombre_base_unit_t ) :: bu(5)
+  type ( nombre_base_unit_t ), pointer :: buc
+
+  character ( len=128 ) :: str, str_exp
+  real ( kind=8 ) :: rnd(5)
+  integer :: i, j
 
   tester = .describe. "nombre_base_unit_chain"
 
-  u => nom_buc_factory%generate( [ kilogram, meter, second**(-2) ] )
-  str = .printchain. u
-  call tester%expect( str .toBe. 'kg m s^-2' )
+  do i = 1, 5
+    call random_number( rnd )
 
-  u => nom_buc_factory%generate( [ kelvin, second**(-.5d0) ] )
-  str = .printchain. u
-  call tester%expect( str .toBe. 'K s^-.50' )
+    bu = si_base_units( ceiling( rnd * size( si_base_units ) ) )
+    buc => nom_buc_factory%generate( bu )
+
+    str = .printchain. buc
+
+    str_exp = ''
+    do j = 1, 5
+      str_exp = trim( str_exp ) // ' ' // trim( .print. bu(j) )
+    end do
+
+    call tester%expect( adjustl( str_exp ) .toBe. str )
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_chain_print_test

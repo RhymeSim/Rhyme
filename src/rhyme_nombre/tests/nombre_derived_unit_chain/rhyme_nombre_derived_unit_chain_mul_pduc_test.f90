@@ -17,8 +17,8 @@ logical function rhyme_nombre_derived_unit_chain_mul_pduc_test () result ( faile
   do i = 1, 1
     call random_number( rnd )
 
-    idx = rnd * size( derived_units ) + 1
-    p_idx = rnd * size( prfx_si ) + 1
+    idx = int( rnd * size( derived_units ) + 1 )
+    p_idx = int( rnd * size( prfx_si ) + 1 )
 
     du = derived_units( idx )
     prfx = prfx_si( p_idx )

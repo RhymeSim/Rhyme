@@ -5,41 +5,44 @@ logical function rhyme_nombre_base_unit_chain_pow_test () result ( failed )
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_base_unit_t ), pointer :: u
+
+
+  type ( nombre_base_unit_t ) :: bu(3)
+  type ( nombre_base_unit_t ), pointer :: buc, buc_pow
+
+  real ( kind=8 ) :: rnd(3)
+  integer :: i
+
+  integer :: ipow
+  real ( kind=4 ) :: rpow
+  real ( kind=8 ) :: r8pow
 
   tester = .describe. "nombre_base_unit_chain_pow"
 
-  u => kilogram**2
-  call tester%expect( u%pow .toBe. real( 2, kind=8 ) )
+  do i = 1, 5
+    call random_number( rnd )
 
-  u => meter**1.23e0
-  call tester%expect( u%pow .toBe. 1.23e0 )
+    bu = si_base_units( ceiling( rnd * size( si_base_units ) ) )
+    buc => nom_buc_factory%generate( bu )
 
-  u => kelvin**2.34d0
-  call tester%expect( u%pow .toBe. 2.34d0 )
+    ipow = int( rnd(1) * 100 )
+    buc_pow => buc**ipow
+    call tester%expect( buc_pow%pow .toBe. real( ipow, kind=8 ) )
+    call tester%expect( buc_pow%next%pow .toBe. real( ipow, kind=8 ) )
+    call tester%expect( buc_pow%next%next%pow .toBe. real( ipow, kind=8 ) )
 
-  u => nom_buc_factory%generate( [ kilogram, meter, second**(-2) ] )
-  u => u**(-1)
-  call tester%expect( u == kilogram**(-1) .toBe. .true. )
-  call tester%expect( u%next == meter**(-1) .toBe. .true. )
-  call tester%expect( u%next%next == second**2 .toBe. .true. )
-  call tester%expect( associated( u%prev ) .toBe. .false. )
-  call tester%expect( associated( u%next%next%next ) .toBe. .false. )
+    rpow = real( rnd(2) * 100, kind=4 )
+    buc_pow => buc**rpow
+    call tester%expect( buc_pow%pow .toBe. real( rpow, kind=8 ) )
+    call tester%expect( buc_pow%next%pow .toBe. real( rpow, kind=8 ) )
+    call tester%expect( buc_pow%next%next%pow .toBe. real( rpow, kind=8 ) )
 
-  u => nom_buc_factory%generate( [ meter**2, meter**(-2) ] )
-  u => u**1.23e4
-  call tester%expect( u == meter**(1.23e4 * 2) .toBe. .true. )
-  call tester%expect( u%next == meter**(1.23e4 * (-2)) .toBe. .true. )
-  call tester%expect( associated( u%prev ) .toBe. .false. )
-  call tester%expect( associated( u%next%next ) .toBe. .false. )
-
-  u => nom_buc_factory%generate( [ kilogram, meter, second**(-2) ] )
-  u => u**(-2.34d1)
-  call tester%expect( u == kilogram**(-2.34d1) .toBe. .true. )
-  call tester%expect( u%next == meter**(-2.34d1) .toBe. .true. )
-  call tester%expect( u%next%next == second**(-2.34d1 * (-2)) .toBe. .true. )
-  call tester%expect( associated( u%prev ) .toBe. .false. )
-  call tester%expect( associated( u%next%next%next ) .toBe. .false. )
+    r8pow = rnd(3) * 100
+    buc_pow => buc**r8pow
+    call tester%expect( buc_pow%pow .toBe. r8pow )
+    call tester%expect( buc_pow%next%pow .toBe. r8pow )
+    call tester%expect( buc_pow%next%next%pow .toBe. r8pow )
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_chain_pow_test

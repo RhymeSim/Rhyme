@@ -6,20 +6,30 @@ logical function rhyme_nombre_base_unit_chain_tail_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_base_unit_t ), pointer :: units, tail
+  type ( nombre_base_unit_t ) :: bu(3)
+  type ( nombre_base_unit_t ), pointer :: buc, tail
+
+  real ( kind=8 ) :: rnd(3)
+  integer :: i
 
   tester = .describe. "nombre_base_unit_tail"
 
-  units => nom_buc_factory%generate( [ kilogram, meter, second**(-2) ] )
+  do i = 1, 5
+    call random_number( rnd )
 
-  tail => rhyme_nombre_base_unit_chain_tail( units )
-  call tester%expect( tail == second**(-2) .toBe. .true. )
+    bu = si_base_units( ceiling( rnd * size( si_base_units ) ) )
 
-  tail => rhyme_nombre_base_unit_chain_tail( units%next )
-  call tester%expect( tail == second**(-2) .toBe. .true. )
+    buc => nom_buc_factory%generate( bu )
 
-  tail => rhyme_nombre_base_unit_chain_tail( units%next%next )
-  call tester%expect( tail == second**(-2) .toBe. .true. )
+    tail => .tail. buc
+    call tester%expect( tail == bu(3) .toBe. .true. )
+
+    tail => .tail. buc%next
+    call tester%expect( tail == bu(3) .toBe. .true. )
+
+    tail => .tail. buc%next%next
+    call tester%expect( tail == bu(3) .toBe. .true. )
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_chain_tail_test

@@ -3,14 +3,14 @@ contains
   module function rhyme_nombre_base_unit_chain_pow_ui ( buc, i ) result ( new_buc )
     implicit none
 
-    type ( nombre_base_unit_t ), intent ( in ) :: buc
+    type ( nombre_base_unit_t ), target, intent ( in ) :: buc
     integer, intent ( in ) :: i
     type ( nombre_base_unit_t ), pointer :: new_buc
 
     new_buc => .head. ( .clonechain. buc )
 
     do while ( associated( new_buc ) )
-      new_buc%pow = new_buc%pow * i
+      new_buc%pow = i * new_buc%pow
 
       if ( associated( new_buc%next ) ) then
         new_buc => new_buc%next
@@ -25,14 +25,14 @@ contains
   module function rhyme_nombre_base_unit_chain_pow_ur ( buc, r ) result ( new_buc )
     implicit none
 
-    type ( nombre_base_unit_t ), intent ( in ) :: buc
+    type ( nombre_base_unit_t ), target, intent ( in ) :: buc
     real ( kind=4 ), intent ( in ) :: r
     type ( nombre_base_unit_t ), pointer :: new_buc
 
     new_buc => .head. ( .clonechain. buc )
 
     do while ( associated( new_buc ) )
-      new_buc%pow = new_buc%pow * real( r, kind=8 )
+      new_buc%pow = real( r, kind=8 ) * new_buc%pow
 
       if ( associated( new_buc%next ) ) then
         new_buc => new_buc%next
@@ -47,14 +47,14 @@ contains
   module function rhyme_nombre_base_unit_chain_pow_ur8 ( buc, r8 ) result ( new_buc )
     implicit none
 
-    type ( nombre_base_unit_t ), intent ( in ) :: buc
+    type ( nombre_base_unit_t ), target, intent ( in ) :: buc
     real ( kind=8 ), intent ( in ) :: r8
     type ( nombre_base_unit_t ), pointer :: new_buc
 
     new_buc => .head. ( .clonechain. buc )
 
     do while ( associated( new_buc ) )
-      new_buc%pow = new_buc%pow * r8
+      new_buc%pow = r8 * new_buc%pow
 
       if ( associated( new_buc%next ) ) then
         new_buc => new_buc%next

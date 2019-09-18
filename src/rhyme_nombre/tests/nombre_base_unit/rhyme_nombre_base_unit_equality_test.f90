@@ -6,20 +6,27 @@ logical function rhyme_nombre_base_unit_equality_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
+  type ( nombre_base_unit_t ) :: bu(2)
+  real ( kind=8 ) :: rnd(2)
+  integer :: i, bu_i(2)
+
   tester = .describe. "nombre_base_unit_equality"
 
-  call tester%expect( kilogram == meter .toBe. .false. .hint. 'kg == meter' )
-  call tester%expect( kelvin == ampere .toBe. .false. .hint. 'kel == ampere' )
-  call tester%expect( second == mole .toBe. .false. .hint. 'sec == mol' )
-  call tester%expect( gram == kilogram .toBe. .false. .hint. 'gram == kg' )
+  do i = 1, 5
+    bu_i = 0
 
-  call tester%expect( gram == gram .toBe. .true. .hint. 'gram == gram' )
-  call tester%expect( kilogram == kilogram .toBe. .true. .hint. 'kg == kg' )
-  call tester%expect( meter == meter .toBe. .true. .hint. 'meter == meter' )
-  call tester%expect( second == second .toBe. .true. .hint. 'sec == sec' )
-  call tester%expect( kelvin == kelvin .toBe. .true. .hint. 'kel == kel' )
-  call tester%expect( ampere == ampere .toBe. .true. .hint. 'ampere == ampere' )
-  call tester%expect( mole == mole .toBe. .true. .hint. 'mol == mol' )
+    do while ( bu_i(1) .eq. bu_i(2) )
+      call random_number( rnd )
+      bu_i = int( rnd * size( si_base_units ) )
+    end do
+
+    bu = si_base_units( bu_i )
+
+    call tester%expect( bu(1) == bu(2) .toBe. .false. )
+    call tester%expect( bu(1) == bu(1) .toBe. .true. )
+    call tester%expect( bu(2) == bu(1) .toBe. .false. )
+    call tester%expect( bu(2) == bu(2) .toBe. .true. )
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_equality_test

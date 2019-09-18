@@ -9,41 +9,27 @@ logical function rhyme_nombre_base_unit_print_test () result ( failed )
   type ( nombre_base_unit_t ), pointer :: u
   character ( len=64 ) :: str
 
+  type ( nombre_prefix_t ) :: prfx
+  type ( nombre_base_unit_t ) :: bu
+  real ( kind=8 ) :: rnd(2)
+  integer :: i
+
   tester = .describe. "nombre_base_unit_print"
 
-  str = .print. gram
-  call tester%expect( str .toBe. 'g' )
+  do i = 1, 10
+    call random_number( rnd )
 
-  str = .print. kilogram
-  call tester%expect( str .toBe. 'kg' )
+    prfx = prfx_si( ceiling( rnd(1) * size( prfx_si) ) )
+    bu = si_base_units( ceiling( rnd(2) * size( si_base_units ) ) )
 
-  str = .print. meter
-  call tester%expect( str .toBe. 'm' )
+    u => .clone. bu
+    u%prefix = prfx
+    str = .print. u
 
-  str = .print. second
-  call tester%expect( str .toBe. 's' )
+    call tester%expect( str .toBe. trim( prfx%symb )//trim( bu%symb ) )
 
-  str = .print. kelvin
-  call tester%expect( str .toBe. 'K' )
-
-  str = .print. ampere
-  call tester%expect( str .toBe. 'A' )
-
-  str = .print. mole
-  call tester%expect( str .toBe. 'mol' )
-
-  str = .print. candela
-  call tester%expect( str .toBe. 'cd' )
-
-  u => .clone. second
-  u%prefix = giga
-  str = .print. u
-  call tester%expect( str .toBe. 'Gs' )
-
-  u => .clone. kelvin
-  u%prefix = nano
-  str = .print. u
-  call tester%expect( str .toBe. 'nK' )
+    ! TODO: if prfx doesn't have symbol, it must print the base_10 exponent
+  end do
 
   failed = tester%failed()
 end function rhyme_nombre_base_unit_print_test

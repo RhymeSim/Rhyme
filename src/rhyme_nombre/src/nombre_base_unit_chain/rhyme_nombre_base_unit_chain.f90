@@ -48,19 +48,19 @@ module rhyme_nombre_base_unit_chain
 
 
     module function rhyme_nombre_base_unit_chain_pow_ui ( buc, i ) result ( new_buc )
-      type ( nombre_base_unit_t ), intent ( in ) :: buc
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
       integer, intent ( in ) :: i
       type ( nombre_base_unit_t ), pointer :: new_buc
     end function rhyme_nombre_base_unit_chain_pow_ui
 
     module function rhyme_nombre_base_unit_chain_pow_ur ( buc, r ) result ( new_buc )
-      type ( nombre_base_unit_t ), intent ( in ) :: buc
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
       real ( kind=4 ), intent ( in ) :: r
       type ( nombre_base_unit_t ), pointer :: new_buc
     end function rhyme_nombre_base_unit_chain_pow_ur
 
     module function rhyme_nombre_base_unit_chain_pow_ur8 ( buc, r8 ) result ( new_buc )
-      type ( nombre_base_unit_t ), intent ( in ) :: buc
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
       real ( kind=8 ), intent ( in ) :: r8
       type ( nombre_base_unit_t ), pointer :: new_buc
     end function rhyme_nombre_base_unit_chain_pow_ur8

@@ -8,14 +8,13 @@ contains
 
     type ( nombre_base_unit_t ), pointer :: buc_ptr
 
-    buc_ptr => buc
+    buc_ptr => .head. buc
 
     if ( .not. associated( buc_ptr ) ) then
       buc_new => null()
       return
     end if
 
-    buc_ptr => .head. buc
     buc_new => .clone. buc_ptr
 
     do while ( associated( buc_ptr%next ) )

@@ -1,6 +1,7 @@
 submodule ( rhyme_nombre_base_unit ) print_smod
 contains
   pure module function rhyme_nombre_base_unit_print ( bu ) result ( str )
+    ! TODO: if prfx doesn't have symbol, it must print the base_10 exponent
     implicit none
 
     class ( nombre_base_unit_t ), target, intent ( in ) :: bu

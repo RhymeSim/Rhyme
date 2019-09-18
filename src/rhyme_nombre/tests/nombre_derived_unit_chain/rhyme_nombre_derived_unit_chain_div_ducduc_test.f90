@@ -54,7 +54,7 @@ logical function rhyme_nombre_derived_unit_chain_div_ducduc_test () result ( fai
     call tester%expect( ducduc%next%head%next%next == bu4**(-3.45d0/2.34d0) .toBe. .true. )
     call tester%expect( ducduc%next%head%next%next%next == bu5**(-3.45d0/2.34d0) .toBe. .true. )
     call tester%expect( associated( ducduc%next%head%next%next%next%next ) .toBe. .false. )
-    call tester%expect( ducduc%next%next%pow == (-4.56d0) .toBe. .true. )
+    call tester%expect( ducduc%next%next%pow .toBe. (-4.56d0) )
     call tester%expect( associated( ducduc%next%next%next ) .toBe. .false. )
   end do
 
