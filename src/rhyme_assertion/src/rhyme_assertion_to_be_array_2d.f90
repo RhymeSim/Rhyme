@@ -1,81 +1,217 @@
 submodule ( rhyme_assertion ) rhyme_assertion_to_be_array_2d_submodule
 contains
-  pure module function rhyme_assertion_to_be_array_2d ( val, expect ) result ( test )
+  pure module function rhyme_assertion_to_be_array_2d_ii ( arr1, arr2 ) result ( test )
     implicit none
 
-    class (*), intent ( in ) :: val(:,:), expect(:,:)
+    integer, intent ( in ) :: arr1(:,:), arr2(:,:)
     type ( test_t ) :: test
 
     type ( test_t ) :: temp
-    integer :: lv, le
+    integer :: l1, l2
 
-    lv = product( shape( val ) )
-    le = product( shape( expect ) )
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
 
-    temp%type = assertid%unset
-    temp%op = 'to_be'
-
-    select type ( v => val )
-    type is ( integer )
-      select type ( e => expect )
-      type is ( integer )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), reshape(e, [le]))
-      class default
-        temp%is_passed = .false.
-        temp%val = 'Integer 2D array'
-        temp%exp = 'Unmatched 2D array'
-      end select
-
-    type is ( real( kind=4 ) )
-      select type ( e => expect )
-      type is ( real( kind=4 ) )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), reshape(e, [le]) )
-      class default
-        temp%is_passed = .false.
-        temp%val = 'Real 2D array'
-        temp%exp = 'Unmatched 2D array'
-      end select
-
-    type is ( real( kind=8 ) )
-      select type ( e => expect )
-      type is ( real( kind=8 ) )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), reshape(e, [le]) )
-      type is ( real( kind=4 ) )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), real(reshape(e, [le]), kind=4) )
-      class default
-        temp%is_passed = .false.
-        temp%val = 'Double 2D array'
-        temp%exp = 'Unmatched 2D array'
-      end select
-
-    type is ( character(*) )
-      select type ( e => expect )
-      type is ( character(*) )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), reshape(e, [le]) )
-      class default
-        temp%is_passed = .false.
-        temp%val = 'Character 2D array'
-        temp%exp = 'Unmatched 2D array'
-      end select
-
-    type is ( logical )
-      select type ( e => expect )
-      type is ( logical )
-        temp = rhyme_assertion_to_be_array( reshape(v, [lv]), reshape(e, [le]) )
-      class default
-        temp%is_passed = .false.
-        temp%val = 'Logical 2D array'
-        temp%exp = 'Unmatched 2D array'
-      end select
-
-    class default
-      temp%type = assertid%unset
-      temp%is_passed = .false.
-      temp%val = 'Unknown 2D array type'
-      temp%op = 'to_be'
-      temp%val = 'Unknown array'
-    end select
-
+    temp = rhyme_assertion_to_be_array_ii( reshape(arr1, [l1]), reshape(arr2, [l2]))
     call temp%copy_to( test )
-  end function rhyme_assertion_to_be_array_2d
+
+    test%op = 'to_be'
+    test%type = assertid%int_arr2d
+  end function rhyme_assertion_to_be_array_2d_ii
+
+  pure module function rhyme_assertion_to_be_array_2d_ir ( arr1, arr2 ) result ( test )
+    implicit none
+
+    integer, intent ( in ) :: arr1(:,:)
+    real ( kind=4 ), intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_ir( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%int_arr2d
+  end function rhyme_assertion_to_be_array_2d_ir
+
+  pure module function rhyme_assertion_to_be_array_2d_ir8 ( arr1, arr2 ) result ( test )
+    implicit none
+
+    integer, intent ( in ) :: arr1(:,:)
+    real ( kind=8 ), intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_ir8( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%int_arr2d
+  end function rhyme_assertion_to_be_array_2d_ir8
+
+  pure module function rhyme_assertion_to_be_array_2d_ri ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr1(:,:)
+    integer, intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_ri( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%real_arr2d
+  end function rhyme_assertion_to_be_array_2d_ri
+
+  pure module function rhyme_assertion_to_be_array_2d_rr ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr1(:,:), arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_rr( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%real_arr2d
+  end function rhyme_assertion_to_be_array_2d_rr
+
+  pure module function rhyme_assertion_to_be_array_2d_rr8 ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=4 ), intent ( in ) :: arr1(:,:)
+    real ( kind=8 ), intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_rr8( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%real_arr2d
+  end function rhyme_assertion_to_be_array_2d_rr8
+
+  pure module function rhyme_assertion_to_be_array_2d_r8i ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr1(:,:)
+    integer, intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_r8i( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr2d
+  end function rhyme_assertion_to_be_array_2d_r8i
+
+  pure module function rhyme_assertion_to_be_array_2d_r8r ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr1(:,:)
+    real ( kind=4 ), intent ( in ) :: arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_r8r( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr2d
+  end function rhyme_assertion_to_be_array_2d_r8r
+
+  pure module function rhyme_assertion_to_be_array_2d_r8r8 ( arr1, arr2 ) result ( test )
+    implicit none
+
+    real ( kind=8 ), intent ( in ) :: arr1(:,:), arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_r8r8( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%double_arr2d
+  end function rhyme_assertion_to_be_array_2d_r8r8
+
+  pure module function rhyme_assertion_to_be_array_2d_chch ( arr1, arr2 ) result ( test )
+    implicit none
+
+    character ( len=* ), intent ( in ) :: arr1(:,:), arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_chch( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%char_arr2d
+  end function rhyme_assertion_to_be_array_2d_chch
+
+  pure module function rhyme_assertion_to_be_array_2d_ll ( arr1, arr2 ) result ( test )
+    implicit none
+
+    logical, intent ( in ) :: arr1(:,:), arr2(:,:)
+    type ( test_t ) :: test
+
+    type ( test_t ) :: temp
+    integer :: l1, l2
+
+    l1 = product( shape( arr1 ) )
+    l2 = product( shape( arr2 ) )
+
+    temp = rhyme_assertion_to_be_array_ll( reshape(arr1, [l1]), reshape(arr2, [l2]))
+    call temp%copy_to( test )
+
+    test%op = 'to_be'
+    test%type = assertid%log_arr2d
+  end function rhyme_assertion_to_be_array_2d_ll
 end submodule rhyme_assertion_to_be_array_2d_submodule

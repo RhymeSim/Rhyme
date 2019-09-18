@@ -31,7 +31,8 @@ logical function rhyme_assertion_to_be_array_3d_test () result ( failed )
 
   failed = &
   .not. test_i%is_passed &
-  .or. test_i%type .ne. assertid%int_arr
+  .or. test_i%type .ne. assertid%int_arr3d
+  print *, test_i%is_passed, test_i%type, assertid%int_arr3d
   if ( failed ) return
 
   real_arr = real_arr_value
@@ -39,7 +40,7 @@ logical function rhyme_assertion_to_be_array_3d_test () result ( failed )
 
   failed = &
   .not. test_r%is_passed &
-  .or. test_r%type .ne. assertid%real_arr
+  .or. test_r%type .ne. assertid%real_arr3d
   if ( failed ) return
 
   double_arr = double_arr_value
@@ -47,7 +48,7 @@ logical function rhyme_assertion_to_be_array_3d_test () result ( failed )
 
   failed = &
   .not. test_d%is_passed &
-  .or. test_d%type .ne. assertid%double_arr
+  .or. test_d%type .ne. assertid%double_arr3d
   if ( failed ) return
 
   char_arr = char_arr_value
@@ -55,7 +56,7 @@ logical function rhyme_assertion_to_be_array_3d_test () result ( failed )
 
   failed = &
   .not. test_c%is_passed &
-  .or. test_c%type .ne. assertid%char_arr
+  .or. test_c%type .ne. assertid%char_arr3d
   if ( failed ) return
 
   log_arr = log_arr_value
@@ -63,6 +64,6 @@ logical function rhyme_assertion_to_be_array_3d_test () result ( failed )
 
   failed = &
   .not. test_l%is_passed &
-  .or. test_l%type .ne. assertid%log_arr
+  .or. test_l%type .ne. assertid%log_arr3d
   if ( failed ) return
 end function rhyme_assertion_to_be_array_3d_test
