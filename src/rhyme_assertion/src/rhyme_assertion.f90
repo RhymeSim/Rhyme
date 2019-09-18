@@ -72,10 +72,127 @@ module rhyme_assertion
       type ( test_t ) :: test
     end function rhyme_assertion_add_test_message
 
-    pure module function rhyme_assertion_to_be ( val, exp ) result ( test )
-      class (*), intent ( in ) :: val, exp
+    pure module function rhyme_assertion_to_be_ii ( val, exp ) result ( test )
+      integer, intent ( in ) :: val, exp
       type ( test_t ) :: test
-    end function rhyme_assertion_to_be
+    end function rhyme_assertion_to_be_ii
+
+    pure module function rhyme_assertion_to_be_ir ( val, exp ) result ( test )
+      integer, intent ( in ) :: val
+      real ( kind=4 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_ir
+
+    pure module function rhyme_assertion_to_be_ir8 ( val, exp ) result ( test )
+      integer, intent ( in ) :: val
+      real ( kind=8 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_ir8
+
+    pure module function rhyme_assertion_to_be_ri ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val
+      integer, intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_ri
+
+    pure module function rhyme_assertion_to_be_rr ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_rr
+
+    pure module function rhyme_assertion_to_be_rr8 ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val
+      real ( kind=8 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_rr8
+
+    pure module function rhyme_assertion_to_be_r8i ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val
+      integer, intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_r8i
+
+    pure module function rhyme_assertion_to_be_r8r ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val
+      real ( kind=4 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_r8r
+
+    pure module function rhyme_assertion_to_be_r8r8 ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_r8r8
+
+    pure module function rhyme_assertion_to_be_chch ( val, exp ) result ( test )
+      character ( len=* ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_chch
+
+    pure module function rhyme_assertion_to_be_ll ( val, exp ) result ( test )
+      logical, intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_to_be_ll
+
+    pure module function rhyme_assertion_not_to_be_ii ( val, exp ) result ( test )
+      integer, intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_ii
+
+    pure module function rhyme_assertion_not_to_be_ir ( val, exp ) result ( test )
+      integer, intent ( in ) :: val
+      real ( kind=4 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_ir
+
+    pure module function rhyme_assertion_not_to_be_ir8 ( val, exp ) result ( test )
+      integer, intent ( in ) :: val
+      real ( kind=8 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_ir8
+
+    pure module function rhyme_assertion_not_to_be_ri ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val
+      integer, intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_ri
+
+    pure module function rhyme_assertion_not_to_be_rr ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_rr
+
+    pure module function rhyme_assertion_not_to_be_rr8 ( val, exp ) result ( test )
+      real ( kind=4 ), intent ( in ) :: val
+      real ( kind=8 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_rr8
+
+    pure module function rhyme_assertion_not_to_be_r8i ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val
+      integer, intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_r8i
+
+    pure module function rhyme_assertion_not_to_be_r8r ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val
+      real ( kind=4 ), intent ( in ) :: exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_r8r
+
+    pure module function rhyme_assertion_not_to_be_r8r8 ( val, exp ) result ( test )
+      real ( kind=8 ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_r8r8
+
+    pure module function rhyme_assertion_not_to_be_chch ( val, exp ) result ( test )
+      character ( len=* ), intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_chch
+
+    pure module function rhyme_assertion_not_to_be_ll ( val, exp ) result ( test )
+      logical, intent ( in ) :: val, exp
+      type ( test_t ) :: test
+    end function rhyme_assertion_not_to_be_ll
 
     pure module function rhyme_assertion_to_be_nan_array ( input ) result ( test )
       class (*), intent ( in ) :: input(:)
@@ -158,7 +275,17 @@ module rhyme_assertion
   end interface operator ( .describe. )
 
   interface operator ( .toBe. )
-    procedure rhyme_assertion_to_be
+    procedure rhyme_assertion_to_be_ii
+    procedure rhyme_assertion_to_be_ir
+    procedure rhyme_assertion_to_be_ir8
+    procedure rhyme_assertion_to_be_ri
+    procedure rhyme_assertion_to_be_rr
+    procedure rhyme_assertion_to_be_rr8
+    procedure rhyme_assertion_to_be_r8i
+    procedure rhyme_assertion_to_be_r8r
+    procedure rhyme_assertion_to_be_r8r8
+    procedure rhyme_assertion_to_be_chch
+    procedure rhyme_assertion_to_be_ll
     procedure rhyme_assertion_to_be_array
     procedure rhyme_assertion_to_be_array_scalar
     procedure rhyme_assertion_to_be_array_2d
@@ -172,7 +299,17 @@ module rhyme_assertion
   end interface operator ( .toBeNaN. )
 
   interface operator ( .notToBe. )
-    procedure rhyme_assertion_not_to_be
+    procedure rhyme_assertion_not_to_be_ii
+    procedure rhyme_assertion_not_to_be_ir
+    procedure rhyme_assertion_not_to_be_ir8
+    procedure rhyme_assertion_not_to_be_ri
+    procedure rhyme_assertion_not_to_be_rr
+    procedure rhyme_assertion_not_to_be_rr8
+    procedure rhyme_assertion_not_to_be_r8i
+    procedure rhyme_assertion_not_to_be_r8r
+    procedure rhyme_assertion_not_to_be_r8r8
+    procedure rhyme_assertion_not_to_be_chch
+    procedure rhyme_assertion_not_to_be_ll
     procedure rhyme_assertion_not_to_be_array
     procedure rhyme_assertion_not_to_be_array_scalar
   end interface operator ( .notToBe. )
