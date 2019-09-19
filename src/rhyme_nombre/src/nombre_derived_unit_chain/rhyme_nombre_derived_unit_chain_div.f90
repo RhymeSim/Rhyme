@@ -70,19 +70,19 @@ contains
     type ( nombre_derived_unit_t ), pointer :: duc_new_head
     type ( nombre_base_unit_t ), pointer :: unit_head, unit_tail
 
+    duc_new_head => .head. ( duc**(-1) )
 
     if ( len_trim( duc_new_head%symb ) .eq. 0 ) then
-      duc_new_head => .head. ( .clonechain. duc )
       unit_head => .head. ( .clonechain. duc_new_head%head )
-      duc_new_head%head => .clonechain. ( buc**(1d0 / duc_new_head%pow) )
+      duc_new_head%head => .clonechain. ( buc**(-1d0 / duc_new_head%pow) )
       unit_tail => .tail. duc_new_head%head
       unit_tail%next => .clonechain. ( unit_head**(-1) )
       unit_tail%next%prev => unit_tail
     else
-      duc_new_head => .head. ( .clonechain. ( duc**(-1) ) )
       duc_new_head%prev => rhyme_nombre_derived_unit_new()
       duc_new_head%prev%next => duc_new_head
       duc_new_head => duc_new_head%prev
+      duc_new_head%head => .clonechain. ( buc**(1d0 / duc_new_head%pow) )
     end if
 
     duc_new_head%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_head%head )

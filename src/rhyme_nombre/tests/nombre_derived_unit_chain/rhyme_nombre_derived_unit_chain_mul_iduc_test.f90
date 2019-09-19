@@ -13,6 +13,8 @@ logical function rhyme_nombre_derived_unit_chain_mul_iduc_test () result ( faile
 
   tester = .describe. "nombre_derived_unit_chain_mul_iduc"
 
+  call rhyme_nombre_derived_unit_init
+
   do i = 1, 1
     call random_number( rnd )
     idx = int( rnd * size( derived_units ) + 1 )
