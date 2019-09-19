@@ -170,7 +170,7 @@ contains
     test%real_val = val
     test%real_exp = real( exp, kind=8 )
 
-    test%is_passed = abs( val - exp ) < epsilon(0d0)
+    test%is_passed = abs( val - exp ) < epsilon(0e0)
   end function rhyme_assertion_to_be_r8r
 
   pure function rhyme_assertion_to_be_r8r8 ( val, exp ) result ( test )

@@ -14,6 +14,8 @@ logical function rhyme_nombre_derived_unit_chain_div_ducduc_test () result ( fai
 
   tester = .describe. "nombre_derived_unit_chain_div_ducduc"
 
+  call rhyme_nombre_derived_unit_init
+
   do i = 1, 5
     call random_number( rnd )
 

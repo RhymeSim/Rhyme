@@ -195,7 +195,7 @@ contains
     test%real_exp = real( arr2(idx), kind=8 )
     test%real_accuracy = abs( arr1(idx) - arr2(idx) )
 
-    test%is_passed = all( abs(arr1 - arr2) < epsilon(0d0) )
+    test%is_passed = all( abs(arr1 - arr2) < epsilon(0e0) )
   end function rhyme_assertion_to_be_array_r8r
 
   pure module function rhyme_assertion_to_be_array_r8r8 ( arr1, arr2 ) result ( test )

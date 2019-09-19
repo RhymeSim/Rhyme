@@ -195,7 +195,7 @@ contains
     test%real_exp = real( scalar, kind=8 )
     test%real_accuracy = abs( arr(idx) - scalar )
 
-    test%is_passed = all( abs(arr - scalar) < epsilon(0d0) )
+    test%is_passed = all( abs(arr - scalar) < epsilon(0e0) )
   end function rhyme_assertion_to_be_array_scalar_r8r
 
   pure module function rhyme_assertion_to_be_array_scalar_r8r8 ( arr, scalar ) result ( test )
