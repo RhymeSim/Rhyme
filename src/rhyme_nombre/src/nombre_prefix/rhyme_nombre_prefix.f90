@@ -4,6 +4,9 @@ module rhyme_nombre_prefix
   type nombre_prefix_t
     character(len=8) :: symb
     integer :: base_10
+  contains
+    procedure :: rhyme_nombre_prefix_write_formatted
+    generic :: write( formatted ) => rhyme_nombre_prefix_write_formatted
   end type nombre_prefix_t
 
 
@@ -71,4 +74,26 @@ module rhyme_nombre_prefix
   interface operator ( == )
     procedure rhyme_nombre_prefix_equality
   end interface operator ( == )
+
+contains
+  subroutine rhyme_nombre_prefix_write_formatted ( &
+    this, unit, iotype, v_list, iostat, iomsg )
+    implicit none
+
+    class ( nombre_prefix_t ), intent ( in ) :: this
+    integer, intent ( in ) :: unit
+    character ( len=* ), intent ( in ) :: iotype
+    integer, intent ( in ) :: v_list(:)
+    integer, intent ( out ) :: iostat
+    character ( len=* ), intent ( inout ) :: iomsg
+
+    write( unit, fmt='(A,A,A,A,A,I0,A,A,A,A,I0,A)', &
+      iostat=iostat, iomsg=iomsg ) &
+      '<nombre_prefix_t', &
+      ' symb="', trim( this%symb ), '"', &
+      ' base_10=', this%base_10, &
+      ' iotype="', trim( iotype ), '"', &
+      ' v_list=', size( v_list ), &
+      ' >'
+  end subroutine rhyme_nombre_prefix_write_formatted
 end module rhyme_nombre_prefix

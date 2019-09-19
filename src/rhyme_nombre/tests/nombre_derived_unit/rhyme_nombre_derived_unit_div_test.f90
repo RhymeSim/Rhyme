@@ -1,7 +1,7 @@
 logical function rhyme_nombre_derived_unit_div_test () result ( failed )
-  use rhyme_nombre_dimension_factory
-  use rhyme_nombre_base_unit_factory
   use rhyme_nombre_derived_unit_factory
+  use rhyme_nombre_base_unit_assertion
+  use rhyme_nombre_dimension_assertion
   use rhyme_assertion
 
   implicit none

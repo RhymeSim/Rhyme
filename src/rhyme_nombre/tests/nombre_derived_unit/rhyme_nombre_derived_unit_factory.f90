@@ -14,10 +14,6 @@ module rhyme_nombre_derived_unit_factory
 
   type ( rhyme_nombre_derived_unit_factory_t ) :: nom_du_factory = rhyme_nombre_derived_unit_factory_t()
 
-  interface operator ( .toBe. )
-    module procedure rhyme_nombre_derived_unit_factory_tobe
-  end interface operator ( .toBe. )
-
 contains
 
   subroutine rhyme_nombre_derived_unit_factory_init ( this )
@@ -84,20 +80,4 @@ contains
 
     unit_chain => .head. unit_chain
   end function rhyme_nombre_derived_unit_factory_generate_chain
-
-
-  module function rhyme_nombre_derived_unit_factory_tobe ( du1, du2 ) result ( test )
-    implicit none
-
-    type ( nombre_derived_unit_t ), intent ( in ) :: du1, du2
-    type ( test_t ) :: test
-
-    test%op = 'to_be'
-
-    write( test%val, * ) du1
-    write( test%exp, * ) du2
-
-    test%is_passed = du1 == du2
-  end function rhyme_nombre_derived_unit_factory_tobe
-
 end module rhyme_nombre_derived_unit_factory

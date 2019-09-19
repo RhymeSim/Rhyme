@@ -161,7 +161,7 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,A8,A,A,A8,A,I3,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A)', &
+    write( unit, fmt='(A,A,A8,A,A,A8,A,I3,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A,A,A,A,I0,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_derived_unit_t', &
       ' symb="', adjustl(this%symb), '"', &
@@ -171,6 +171,8 @@ contains
       ' next=', associated(this%next), &
       ' prev=', associated(this%prev), &
       ' units="', trim( .printchain. this%head ), '"', &
+      ' iotype="', trim( iotype ), '"', &
+      ' v_list=', size( v_list ), &
       ' >'
   end subroutine rhyme_nombre_derived_unit_write_formatted
 end module rhyme_nombre_derived_unit

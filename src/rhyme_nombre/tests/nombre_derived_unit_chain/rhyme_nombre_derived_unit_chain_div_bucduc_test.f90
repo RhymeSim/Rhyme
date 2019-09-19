@@ -1,8 +1,8 @@
 logical function rhyme_nombre_derived_unit_chain_div_bucduc_test () result ( failed )
   use rhyme_nombre_derived_unit_chain_factory
   use rhyme_nombre_base_unit_chain_factory
-  use rhyme_nombre_derived_unit_factory
-  use rhyme_nombre_base_unit_factory
+  use rhyme_nombre_derived_unit_assertion
+  use rhyme_nombre_base_unit_assertion
   use rhyme_assertion
 
   implicit none

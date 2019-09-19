@@ -88,7 +88,7 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,A,A,A)', &
+    write( unit, fmt='(A,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,F0.2,A,A,A,A,A,A,A,I0,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_dimension_t', &
       ' M=', this%powers(1), &
@@ -99,6 +99,8 @@ contains
       ' N=', this%powers(6), &
       ' J=', this%powers(7), &
       ' symb="', trim( this%symb ), '"', &
+      ' iotype="', trim( iotype ), '"', &
+      ' v_list=', size( v_list ), &
       ' >'
   end subroutine rhyme_nombre_dimension_write_formatted
 end module rhyme_nombre_dimension

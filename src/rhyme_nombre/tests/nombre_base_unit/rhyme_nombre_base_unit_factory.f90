@@ -13,10 +13,6 @@ module rhyme_nombre_base_unit_factory
 
   type ( rhyme_nombre_base_unit_factory_t ) :: nom_bu_factory = rhyme_nombre_base_unit_factory_t()
 
-  interface operator ( .toBe. )
-    module procedure rhyme_nombre_base_unit_factory_tobe
-  end interface operator ( .toBe. )
-
 contains
 
   subroutine rhyme_nombre_base_unit_factory_init ( this )
@@ -36,19 +32,4 @@ contains
 
     if ( .not. this%initialized ) call this%init
   end function rhyme_nombre_base_unit_factory_generate
-
-
-  pure module function rhyme_nombre_base_unit_factory_tobe ( bu1, bu2 ) result ( test )
-    implicit none
-
-    type ( nombre_base_unit_t ), intent ( in ) :: bu1, bu2
-    type ( test_t ) :: test
-
-    test%op = 'to_be'
-
-    write( test%val, * ) bu1
-    write( test%exp, * ) bu2
-
-    test%is_passed = ( bu1 == bu2 )
-  end function rhyme_nombre_base_unit_factory_tobe
 end module rhyme_nombre_base_unit_factory

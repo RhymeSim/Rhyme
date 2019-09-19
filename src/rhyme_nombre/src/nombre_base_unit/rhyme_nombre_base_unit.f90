@@ -85,7 +85,7 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,A,A,A,A,A,I3,A,A,ES10.3,A,L,A,L,A)', &
+    write( unit, fmt='(A,A,A,A,A,A,A,I3,A,A,ES10.3,A,L,A,L,A,A,A,A,I0,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_base_unit_t', &
       ' symb="', trim(this%symb), '"', &
@@ -93,6 +93,8 @@ contains
       ' pow=', this%pow, &
       ' next=', associated(this%next), &
       ' prev=', associated(this%prev), &
+      ' iotype="', trim( iotype ), '"', &
+      ' v_list=', size( v_list ), &
       ' >'
   end subroutine rhyme_nombre_base_unit_write_formatted
 end module rhyme_nombre_base_unit

@@ -30,8 +30,10 @@ set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 # Listing test and factory files
 set( test_files )
 set( factory_files )
+set( assertion_files )
 file( GLOB_RECURSE test_files RELATIVE ${PROJECT_SOURCE_DIR} *_test.f90 )
 file( GLOB_RECURSE factory_files RELATIVE ${PROJECT_SOURCE_DIR} *_factory.f90 )
+file( GLOB_RECURSE assertion_files RELATIVE ${PROJECT_SOURCE_DIR} *_assertion.f90 )
 
 # Extracting test filenames
 set( test_filenames )
@@ -76,7 +78,7 @@ endforeach( dep )
 
 
 # Create a library of test and factory files
-add_library( ${PROJECT_NAME}_lib STATIC ${test_files} ${factory_files} )
+add_library( ${PROJECT_NAME}_lib STATIC ${test_files} ${factory_files} ${assertion_files} )
 add_dependencies( ${PROJECT_NAME}_lib ${test_subject} ${test_deps} ${factories} )
 
 # Create the test runner
