@@ -1,6 +1,6 @@
-submodule ( rhyme_nombre_parse ) find_derived_unit_smod
+submodule ( rhyme_nombre_derived_unit ) parse_smod
 contains
-  module function rhyme_nombre_parse_find_derived_unit ( str ) result ( dunit )
+  module function rhyme_nombre_derived_unit_parse ( str ) result ( dunit )
     implicit none
 
     character ( len=* ), intent ( in ) :: str
@@ -23,14 +23,17 @@ contains
 
       if ( prfx_si(p)%symb(1:1) .eq. str(1:1) ) then
         do u = 1, size( derived_units )
-          new_dunit => prfx_si(p) * derived_units(u)
+          new_dunit => .clone. derived_units(u)
+          new_dunit%prefix = prfx_si(p)
 
           if ( str .eq. .print. new_dunit ) then
-            dunit => new_dunit
+            dunit => .clone. new_dunit
             exit prefix_loop
           end if
+
+          deallocate( new_dunit )
         end do
       end if
     end do prefix_loop
-  end function rhyme_nombre_parse_find_derived_unit
-end submodule find_derived_unit_smod
+  end function rhyme_nombre_derived_unit_parse
+end submodule parse_smod

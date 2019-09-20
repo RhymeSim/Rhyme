@@ -12,7 +12,7 @@ contains
 
     tail => .tail. new_buc
 
-    tail%next => .clonechain. ( buc2**(-1) )
+    tail%next => buc2**(-1)
     tail%next%prev => tail
 
     new_buc => .head. new_buc

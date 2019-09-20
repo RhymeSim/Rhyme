@@ -115,6 +115,13 @@ module rhyme_nombre_derived_unit_chain
       real ( kind=8 ), intent ( in ) :: r8
       type ( nombre_derived_unit_t ), pointer :: new_duc
     end function rhyme_nombre_derived_unit_chain_pow_ducr8
+
+
+
+    module function rhyme_nombre_derived_unit_chain_parse ( str ) result ( duc )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_derived_unit_t ), pointer :: duc
+    end function rhyme_nombre_derived_unit_chain_parse
   end interface
 
 

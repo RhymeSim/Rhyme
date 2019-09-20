@@ -15,7 +15,7 @@ contains
     if ( len_trim( duc1clone%symb ) .eq. 0 .and. len_trim( duc2clone%symb ) .eq. 0 ) then
       u_ptr => .tail. duc1clone%head
 
-      u_ptr%next => .clonechain. ( duc2clone%head**(duc2clone%pow / duc1clone%pow) )
+      u_ptr%next => duc2clone%head**(duc2clone%pow / duc1clone%pow)
       u_ptr%next%prev => u_ptr
 
       duc2clone => duc2clone%next
@@ -45,7 +45,7 @@ contains
 
     if ( len_trim( new_duc_tail%symb ) .eq. 0 ) then
       unit_tail => .tail. new_duc_tail%head
-      unit_tail%next => .clonechain. ( buc**(1d0 / new_duc_tail%pow) )
+      unit_tail%next => buc**(1d0 / new_duc_tail%pow)
       unit_tail%next%prev => unit_tail
     else
       new_duc_tail%next => rhyme_nombre_derived_unit_new()
@@ -75,7 +75,7 @@ contains
     if ( len_trim( new_duc_head%symb ) .eq. 0 ) then
       unit_head => .head. ( .clonechain. new_duc_head%head )
 
-      new_duc_head%head => .clonechain. ( buc**(1d0 / new_duc_head%pow) )
+      new_duc_head%head => buc**(1d0 / new_duc_head%pow)
       unit_tail => .tail. new_duc_head%head
       unit_tail%next => unit_head
       unit_tail%next%prev => unit_tail

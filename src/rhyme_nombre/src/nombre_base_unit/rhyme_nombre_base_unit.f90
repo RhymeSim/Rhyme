@@ -54,6 +54,11 @@ module rhyme_nombre_base_unit
       class ( nombre_base_unit_t ), target, intent ( in ) :: bu
       character ( len=64 ) :: str
     end function rhyme_nombre_base_unit_print
+
+    module function rhyme_nombre_base_unit_parse ( str ) result ( unit )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_base_unit_t ), pointer :: unit
+    end function rhyme_nombre_base_unit_parse
   end interface
 
 

@@ -79,6 +79,11 @@ module rhyme_nombre_derived_unit
       character ( len=64 ) :: str
     end function rhyme_nombre_derived_unit_print
 
+    module function rhyme_nombre_derived_unit_parse ( str ) result ( dunit )
+      character ( len=* ), intent ( in ) :: str
+      type ( nombre_derived_unit_t ), pointer :: dunit
+    end function rhyme_nombre_derived_unit_parse
+
 
 
     module function rhyme_nombre_derived_unit_mul_ibuc ( i, buc ) result ( du_new )
@@ -161,11 +166,11 @@ contains
     integer, intent ( out ) :: iostat
     character ( len=* ), intent ( inout ) :: iomsg
 
-    write( unit, fmt='(A,A,A8,A,A,A8,A,I3,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A,A,A,A,I0,A)', &
+    write( unit, fmt='(A,A,A,A,A,A,A,I0,A,A,ES10.3,A,ES10.3,A,L,A,L,A,A,A,A,A,A,A,I0,A)', &
       iostat=iostat, iomsg=iomsg ) &
       '<nombre_derived_unit_t', &
-      ' symb="', adjustl(this%symb), '"', &
-      ' prefix=("', adjustl(this%prefix%symb), '", ', this%prefix%base_10, ')', &
+      ' symb="', adjustl( trim( this%symb ) ), '"', &
+      ' prefix=("', adjustl( trim( this%prefix%symb ) ), '", ', this%prefix%base_10, ')', &
       ' conv=', this%conv, &
       ' pow=', this%pow, &
       ' next=', associated(this%next), &

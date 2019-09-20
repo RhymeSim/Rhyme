@@ -10,12 +10,12 @@ contains
     type ( nombre_base_unit_t ), pointer :: u_ptr
 
     duc1clone => .tail. ( .clonechain. duc1 )
-    duc2clone => .head. ( .clonechain. (duc2**(-1)) )
+    duc2clone => .head. duc2**(-1)
 
     if ( len_trim( duc1clone%symb ) .eq. 0 .and. len_trim( duc2clone%symb ) .eq. 0 ) then
       u_ptr => .tail. duc1clone%head
 
-      u_ptr%next => .clonechain. ( duc2clone%head**(duc2clone%pow / duc1clone%pow) )
+      u_ptr%next => duc2clone%head**(duc2clone%pow / duc1clone%pow)
       u_ptr%next%prev => u_ptr
 
       duc2clone => duc2clone%next
@@ -45,14 +45,14 @@ contains
 
     if ( len_trim( duc_new_tail%symb ) .eq. 0 ) then
       unit_tail => .tail. duc_new_tail%head
-      unit_tail%next => .clonechain. ( buc**( -duc_new_tail%pow ) )
+      unit_tail%next => buc**( -duc_new_tail%pow )
       unit_tail%next%prev => unit_tail
     else
       duc_new_tail%next => rhyme_nombre_derived_unit_new()
       duc_new_tail%next%prev => duc_new_tail
       duc_new_tail => duc_new_tail%next
 
-      duc_new_tail%head => .clonechain. buc**(-1)
+      duc_new_tail%head => buc**(-1)
     end if
 
     duc_new_tail%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_tail%head )
@@ -74,15 +74,15 @@ contains
 
     if ( len_trim( duc_new_head%symb ) .eq. 0 ) then
       unit_head => .head. ( .clonechain. duc_new_head%head )
-      duc_new_head%head => .clonechain. ( buc**(-1d0 / duc_new_head%pow) )
+      duc_new_head%head => buc**(-1d0 / duc_new_head%pow)
       unit_tail => .tail. duc_new_head%head
-      unit_tail%next => .clonechain. ( unit_head**(-1) )
+      unit_tail%next => unit_head**(-1)
       unit_tail%next%prev => unit_tail
     else
       duc_new_head%prev => rhyme_nombre_derived_unit_new()
       duc_new_head%prev%next => duc_new_head
       duc_new_head => duc_new_head%prev
-      duc_new_head%head => .clonechain. ( buc**(1d0 / duc_new_head%pow) )
+      duc_new_head%head => buc**(1d0 / duc_new_head%pow)
     end if
 
     duc_new_head%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_head%head )
