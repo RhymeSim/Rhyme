@@ -26,19 +26,16 @@ contains
 
     real ( kind=8 ) :: ex
 
-    if ( associated( duc )) print *, 'assoc:', duc, .printchain. duc
-    duc => null()
-
     do while ( i <= size( str_arr ) .and. .not. str_arr(i) == char(0) )
       select case ( str_arr( i ) )
-      case ( ')' )
+      case ( ')' ) ! Only for the ) at the end of the string
         if ( str_arr( i+1 ) .eq. '^' ) then
           read( str_arr( i+2 ), * ) ex
           duc => duc**ex
         end if
         return
 
-      case ( '(' )
+      case ( '(' ) ! Only for the ( at the beginning of the string
         duc => rhyme_nombre_derived_unit_chain_parse_term( str_arr, i+1 )
         i = rhyme_nombre_derived_unit_chain_close_par_pos( str_arr, i ) + 1
         if ( str_arr( i ) .eq. '^' ) i = i + 2
@@ -49,35 +46,27 @@ contains
         i = i + 2
 
       case ( '*' )
-        if ( str_arr( i+1 ) .eq. '(' ) then
-          duc => duc * rhyme_nombre_derived_unit_chain_parse_term( str_arr, i+2 )
-          i = rhyme_nombre_derived_unit_chain_close_par_pos( str_arr, i+1 ) + 1
-          if ( str_arr(i) .eq. '^' ) i = i + 2
-        else if ( str_arr( i+2 ) .eq. '^' ) then
+        if ( str_arr( i+2 ) .eq. '^' ) then
           read( str_arr( i+3 ), * ) ex
-          duc => duc * rhyme_nombre_derived_unit_chain_single( str_arr( i+1 ) )**ex
+          duc => duc * rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )**ex
           i = i + 4
         else
-          duc => duc * rhyme_nombre_derived_unit_chain_single( str_arr( i+1 ) )
+          duc => duc * rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )
           i = i + 2
         end if
 
       case ( '/' )
-        if ( str_arr( i+1 ) .eq. '(' ) then
-          duc => duc / rhyme_nombre_derived_unit_chain_parse_term( str_arr, i+2 )
-          i = rhyme_nombre_derived_unit_chain_close_par_pos( str_arr, i+1 ) + 1
-          if ( str_arr(i) .eq. '^' ) i = i + 2
-        else if ( str_arr( i+2 ) .eq. '^' )then
+        if ( str_arr( i+2 ) .eq. '^' ) then
           read( str_arr( i+3 ), * ) ex
-          duc => duc / rhyme_nombre_derived_unit_chain_single( str_arr( i+1 ) )**ex
+          duc => duc / rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )**ex
           i = i + 4
         else
-          duc => duc / rhyme_nombre_derived_unit_chain_single( str_arr( i+1 ) )
+          duc => duc / rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )
           i = i + 2
         end if
 
-      case default
-        duc => rhyme_nombre_derived_unit_chain_single( str_arr( i ) )
+      case default ! For the first unit
+        duc => rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i ) )
         i = i + 1
 
       end select
@@ -150,7 +139,7 @@ contains
   end function rhyme_nombre_derived_unit_chain_close_par_pos
 
 
-  function rhyme_nombre_derived_unit_chain_single ( str ) result ( du )
+  function rhyme_nombre_derived_unit_chain_parse_unit ( str ) result ( du )
     implicit none
 
     character ( len=* ), intent ( in ) :: str
@@ -172,5 +161,5 @@ contains
       du => .clone. du_tmp
       return
     end if
-  end function rhyme_nombre_derived_unit_chain_single
+  end function rhyme_nombre_derived_unit_chain_parse_unit
 end submodule parse_smod
