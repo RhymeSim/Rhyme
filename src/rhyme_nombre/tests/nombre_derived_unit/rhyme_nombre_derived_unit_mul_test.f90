@@ -7,7 +7,7 @@ logical function rhyme_nombre_derived_unit_mul_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: iduc, rduc, r8duc
+  type ( nombre_unit_t ), pointer :: iduc, rduc, r8duc
   type ( nombre_base_unit_t ), pointer :: buc
   type ( nombre_base_unit_t ) :: bu(3)
 

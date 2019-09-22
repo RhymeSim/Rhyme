@@ -3,7 +3,7 @@ contains
   module function rhyme_nombre_derived_unit_new () result ( du )
     implicit none
 
-    type ( nombre_derived_unit_t ), pointer :: du
+    type ( nombre_unit_t ), pointer :: du
 
     allocate( du )
 

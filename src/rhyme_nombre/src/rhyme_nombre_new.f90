@@ -13,11 +13,11 @@ contains
 
     select type ( v => val )
     type is ( integer )
-      n = nombre_t( real( v, kind=8 ), rhyme_nombre_units_head( u_ptr ) )
+      n = nombre_t( real( v, kind=8 ), .head. u_ptr )
     type is ( real( kind=4 ) )
-      n = nombre_t( real( v, kind=8 ), rhyme_nombre_units_head( u_ptr ) )
+      n = nombre_t( real( v, kind=8 ), .head. u_ptr )
     type is ( real( kind=8 ) )
-      n = nombre_t( v, rhyme_nombre_units_head( u_ptr ) )
+      n = nombre_t( v, .head. u_ptr )
     end select
   end function rhyme_nombre_new
 end submodule new_smod

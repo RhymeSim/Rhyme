@@ -5,7 +5,7 @@ contains
 
     integer, intent ( in ) :: i
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_derived_unit_t ), pointer :: du_new
+    type ( nombre_unit_t ), pointer :: du_new
 
     du_new => rhyme_nombre_derived_unit_new()
     du_new%conv = i
@@ -20,7 +20,7 @@ contains
 
     real ( kind=4 ), intent ( in ) :: r
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_derived_unit_t ), pointer :: du_new
+    type ( nombre_unit_t ), pointer :: du_new
 
     du_new => rhyme_nombre_derived_unit_new()
     du_new%conv = real( r, kind=8 )
@@ -35,7 +35,7 @@ contains
 
     real ( kind=8 ), intent ( in ) :: r8
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_derived_unit_t ), pointer :: du_new
+    type ( nombre_unit_t ), pointer :: du_new
 
     du_new => rhyme_nombre_derived_unit_new()
     du_new%conv = r8

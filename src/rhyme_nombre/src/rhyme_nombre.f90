@@ -1,5 +1,5 @@
 module rhyme_nombre
-  use rhyme_nombre_units
+  use rhyme_nombre_unit
 
   implicit none
 

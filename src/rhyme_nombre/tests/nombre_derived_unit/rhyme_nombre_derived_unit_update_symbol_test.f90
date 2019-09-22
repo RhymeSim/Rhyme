@@ -6,7 +6,7 @@ logical function rhyme_nombre_derived_unit_update_symbol_test () result ( failed
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: dunit
+  type ( nombre_unit_t ), pointer :: dunit
 
   tester = .describe. "nombre_derived_unit_update_symbol"
 

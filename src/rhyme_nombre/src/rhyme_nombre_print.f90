@@ -6,6 +6,6 @@ contains
     class ( nombre_t ), intent ( in ) :: n
     character ( len=128 ) :: str
 
-    write (str, fmt="(E9.3,A,A,A)") n%v, " [ ", trim( rhyme_nombre_units_print( n%u ) ), " ]"
+    write (str, fmt="(ES10.3,A,A,A)") n%v, " [ ", trim( .printchain. n%u ), " ]"
   end function rhyme_nombre_print
 end submodule print_smod

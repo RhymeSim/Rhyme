@@ -7,7 +7,7 @@ logical function rhyme_nombre_derived_unit_equality_test () result ( failed )
   type ( assertion_t ) :: tester
 
   type ( nombre_base_unit_t ) :: bu(5)
-  type ( nombre_derived_unit_t ), pointer :: du1, du2, kdu1
+  type ( nombre_unit_t ), pointer :: du1, du2, kdu1
 
   real ( kind=8 ) :: rnd(5)
   integer :: i

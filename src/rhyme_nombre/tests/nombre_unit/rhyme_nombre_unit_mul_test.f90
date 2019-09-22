@@ -1,5 +1,5 @@
-logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_mul_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_nombre_derived_unit_factory
   use rhyme_assertion
 
@@ -7,10 +7,10 @@ logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: duc, duc2, ducduc
-  type ( nombre_derived_unit_t ), pointer :: ducu, ducuu, uduc, uuduc
+  type ( nombre_unit_t ), pointer :: duc, duc2, ducduc
+  type ( nombre_unit_t ), pointer :: ducu, ducuu, uduc, uuduc
 
-  tester = .describe. "nombre_derived_unit_chain_mul"
+  tester = .describe. "nombre_unit_mul"
 
   call rhyme_nombre_derived_unit_init
 
@@ -102,4 +102,4 @@ logical function rhyme_nombre_derived_unit_chain_mul_test () result ( failed )
 
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_mul_test
+end function rhyme_nombre_unit_mul_test

@@ -3,7 +3,7 @@ contains
   module function rhyme_nombre_derived_unit_print ( du ) result ( str )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: du
+    type ( nombre_unit_t ), intent ( in ) :: du
     character ( len=64 ) :: str
 
     type ( nombre_base_unit_t ), pointer :: buc

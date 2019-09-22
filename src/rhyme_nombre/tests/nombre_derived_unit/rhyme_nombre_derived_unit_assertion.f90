@@ -13,7 +13,7 @@ contains
   module function rhyme_nombre_derived_unit_assertion_tobe ( du_1, du_2 ) result ( test )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: du_1, du_2
+    type ( nombre_unit_t ), intent ( in ) :: du_1, du_2
     type ( test_t ) :: test
 
     test%op = 'to_be'

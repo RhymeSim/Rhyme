@@ -3,9 +3,9 @@ contains
   module function rhyme_nombre_derived_unit_update_symbol ( du, s ) result ( du_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: du
+    type ( nombre_unit_t ), intent ( in ) :: du
     character ( len=* ), intent ( in ) :: s
-    type ( nombre_derived_unit_t ), pointer :: du_new
+    type ( nombre_unit_t ), pointer :: du_new
 
     du_new => .clone. du
     du_new%symb = s

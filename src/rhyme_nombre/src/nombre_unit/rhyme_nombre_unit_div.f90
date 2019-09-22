@@ -1,12 +1,12 @@
-submodule ( rhyme_nombre_derived_unit_chain ) div_smod
+submodule ( rhyme_nombre_unit ) div_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_div_ducduc ( duc1, duc2 ) result ( duc_new )
+  module function rhyme_nombre_unit_div_ducduc ( duc1, duc2 ) result ( duc_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc1, duc2
-    type ( nombre_derived_unit_t ), pointer :: duc_new
+    type ( nombre_unit_t ), target, intent ( in ) :: duc1, duc2
+    type ( nombre_unit_t ), pointer :: duc_new
 
-    type ( nombre_derived_unit_t ), pointer :: duc1clone, duc2clone
+    type ( nombre_unit_t ), pointer :: duc1clone, duc2clone
     type ( nombre_base_unit_t ), pointer :: u_ptr
 
     duc1clone => .tail. ( .clonechain. duc1 )
@@ -28,17 +28,17 @@ contains
 
     duc1clone%dim = rhyme_nombre_base_unit_chain_get_dim( duc1clone%head )
     duc_new => .head. duc1clone
-  end function rhyme_nombre_derived_unit_chain_div_ducduc
+  end function rhyme_nombre_unit_div_ducduc
 
 
-  module function rhyme_nombre_derived_unit_chain_div_ducbuc ( duc, buc ) result ( duc_new )
+  module function rhyme_nombre_unit_div_ducbuc ( duc, buc ) result ( duc_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_derived_unit_t ), pointer :: duc_new
+    type ( nombre_unit_t ), pointer :: duc_new
 
-    type ( nombre_derived_unit_t ), pointer :: duc_new_tail
+    type ( nombre_unit_t ), pointer :: duc_new_tail
     type ( nombre_base_unit_t ), pointer :: unit_tail
 
     duc_new_tail => .tail. ( .clonechain. duc )
@@ -57,17 +57,17 @@ contains
 
     duc_new_tail%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_tail%head )
     duc_new => .head. duc_new_tail
-  end function rhyme_nombre_derived_unit_chain_div_ducbuc
+  end function rhyme_nombre_unit_div_ducbuc
 
 
-  module function rhyme_nombre_derived_unit_chain_div_bucduc ( buc, duc ) result ( duc_new )
+  module function rhyme_nombre_unit_div_bucduc ( buc, duc ) result ( duc_new )
     implicit none
 
     type ( nombre_base_unit_t ), target, intent ( in ) :: buc
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
-    type ( nombre_derived_unit_t ), pointer :: duc_new
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), pointer :: duc_new
 
-    type ( nombre_derived_unit_t ), pointer :: duc_new_head
+    type ( nombre_unit_t ), pointer :: duc_new_head
     type ( nombre_base_unit_t ), pointer :: unit_head, unit_tail
 
     duc_new_head => .head. ( duc**(-1) )
@@ -87,5 +87,5 @@ contains
 
     duc_new_head%dim = rhyme_nombre_base_unit_chain_get_dim( duc_new_head%head )
     duc_new => .head. duc_new_head
-  end function rhyme_nombre_derived_unit_chain_div_bucduc
+  end function rhyme_nombre_unit_div_bucduc
 end submodule div_smod

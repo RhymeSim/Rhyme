@@ -4,7 +4,7 @@ contains
     ! NB: We are not checking symbols
     implicit none
 
-    type ( nombre_derived_unit_t ), intent ( in ) :: du1, du2
+    type ( nombre_unit_t ), intent ( in ) :: du1, du2
     logical :: eq
 
     type ( nombre_base_unit_t ), pointer :: u1_ptr, u2_ptr

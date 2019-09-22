@@ -1,11 +1,11 @@
-submodule ( rhyme_nombre_derived_unit_chain ) pow_smod
+submodule ( rhyme_nombre_unit ) pow_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_pow_duci ( duc, i ) result ( new_duc )
+  module function rhyme_nombre_unit_pow_duci ( duc, i ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
     integer, intent ( in ) :: i
-    type ( nombre_derived_unit_t ), pointer :: new_duc
+    type ( nombre_unit_t ), pointer :: new_duc
 
     new_duc => .head. ( .clonechain. duc )
 
@@ -20,14 +20,14 @@ contains
     end do
 
     new_duc => .head. new_duc
-  end function rhyme_nombre_derived_unit_chain_pow_duci
+  end function rhyme_nombre_unit_pow_duci
 
-  module function rhyme_nombre_derived_unit_chain_pow_ducr ( duc, r ) result ( new_duc )
+  module function rhyme_nombre_unit_pow_ducr ( duc, r ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
     real ( kind=4 ), intent ( in ) :: r
-    type ( nombre_derived_unit_t ), pointer :: new_duc
+    type ( nombre_unit_t ), pointer :: new_duc
 
     new_duc => .head. ( .clonechain. duc )
 
@@ -42,14 +42,14 @@ contains
     end do
 
     new_duc => .head. new_duc
-  end function rhyme_nombre_derived_unit_chain_pow_ducr
+  end function rhyme_nombre_unit_pow_ducr
 
-  module function rhyme_nombre_derived_unit_chain_pow_ducr8 ( duc, r8 ) result ( new_duc )
+  module function rhyme_nombre_unit_pow_ducr8 ( duc, r8 ) result ( new_duc )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
     real ( kind=8 ), intent ( in ) :: r8
-    type ( nombre_derived_unit_t ), pointer :: new_duc
+    type ( nombre_unit_t ), pointer :: new_duc
 
     new_duc => .head. ( .clonechain. duc )
 
@@ -64,5 +64,5 @@ contains
     end do
 
     new_duc => .head. new_duc
-  end function rhyme_nombre_derived_unit_chain_pow_ducr8
+  end function rhyme_nombre_unit_pow_ducr8
 end submodule pow_smod

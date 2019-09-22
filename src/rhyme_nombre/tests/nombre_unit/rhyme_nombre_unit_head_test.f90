@@ -1,13 +1,13 @@
-logical function rhyme_nombre_derived_unit_chain_head_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_head_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_derived_unit_t ), pointer :: chain, head
+  type ( nombre_unit_t ), pointer :: chain, head
 
-  tester = .describe. "nombre_derived_unit_chain_head"
+  tester = .describe. "nombre_unit_head"
 
   call rhyme_nombre_derived_unit_init
 
@@ -26,4 +26,4 @@ logical function rhyme_nombre_derived_unit_chain_head_test () result ( failed )
   call tester%expect( head == pascal .toBe. .true. )
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_head_test
+end function rhyme_nombre_unit_head_test

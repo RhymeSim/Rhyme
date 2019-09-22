@@ -4,10 +4,10 @@ contains
     implicit none
 
     character ( len=* ), intent ( in ) :: str
-    type ( nombre_derived_unit_t ), pointer :: dunit
+    type ( nombre_unit_t ), pointer :: dunit
 
     integer :: u, p
-    type ( nombre_derived_unit_t ), pointer :: new_dunit
+    type ( nombre_unit_t ), pointer :: new_dunit
 
     dunit => null()
 

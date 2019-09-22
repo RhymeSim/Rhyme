@@ -6,7 +6,7 @@ logical function rhyme_nombre_derived_unit_parse_test () result ( failed )
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: dunit, new_dunit
+  type ( nombre_unit_t ), pointer :: dunit, new_dunit
   character ( len=128 ) :: msg
   integer :: u, p
 

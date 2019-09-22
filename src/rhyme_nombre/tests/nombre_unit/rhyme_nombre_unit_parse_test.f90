@@ -1,5 +1,5 @@
-logical function rhyme_nombre_derived_unit_chain_parse_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_parse_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_nombre_derived_unit_assertion
   use rhyme_nombre_base_unit_assertion
   use rhyme_assertion
@@ -17,11 +17,11 @@ logical function rhyme_nombre_derived_unit_chain_parse_test () result ( failed )
   real ( kind=8 ) :: pow(5)
   type ( nombre_prefix_t ) :: prfx(5)
   type ( nombre_base_unit_t ) :: bu(5)
-  type ( nombre_derived_unit_t ) :: du(5)
+  type ( nombre_unit_t ) :: du(5)
 
-  type ( nombre_derived_unit_t ), pointer :: duc, duc_exp
+  type ( nombre_unit_t ), pointer :: duc, duc_exp
 
-  tester = .describe. "nombre_derived_unit_chain_parse"
+  tester = .describe. "nombre_unit_parse"
 
   call rhyme_nombre_derived_unit_init
 
@@ -42,19 +42,19 @@ logical function rhyme_nombre_derived_unit_chain_parse_test () result ( failed )
 
     str = replace_substring( .printchain. duc_exp, ' ', ' * ' )
 
-    duc => rhyme_nombre_derived_unit_chain_parse( str )
+    duc => rhyme_nombre_unit_parse( str )
 
-    call tester%expect( duc%pow .toBe. pow(1) .within. 2 )
+    call tester%expect( duc%pow .toBe. pow(1) .within. 2 .hint. '1' )
     call tester%expect( duc%head .toBe. prfx(1) * bu(1) )
 
-    call tester%expect( duc%next .toBe. (prfx(2) * du(2))**(-int( pow(2) )) )
+    call tester%expect( duc%next .toBe. (prfx(2) * du(2))**(-int( pow(2) )) .hint. '2' )
 
-    call tester%expect( duc%next%next%pow .toBe. pow(3) .within. 2 )
+    call tester%expect( duc%next%next%pow .toBe. pow(3) .within. 2 .hint. '3' )
     call tester%expect( duc%next%next%head .toBe. prfx(3) * bu(3) )
 
-    call tester%expect( duc%next%next%next .toBe. (prfx(4) * du(4))**(-int( pow(4) )) )
+    call tester%expect( duc%next%next%next .toBe. (prfx(4) * du(4))**(-int( pow(4) )) .hint. '4' )
 
-    call tester%expect( duc%next%next%next%next%pow .toBe. pow(5) .within. 2 )
+    call tester%expect( duc%next%next%next%next%pow .toBe. pow(5) .within. 2 .hint. '5' )
     call tester%expect( duc%next%next%next%next%head .toBe. prfx(5) * bu(5) )
   end do
 
@@ -87,4 +87,4 @@ contains
     end do
 
   end function replace_substring
-end function rhyme_nombre_derived_unit_chain_parse_test
+end function rhyme_nombre_unit_parse_test

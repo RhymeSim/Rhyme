@@ -7,7 +7,7 @@ logical function rhyme_nombre_derived_unit_clone_test () result ( failed )
   type ( assertion_t ) :: tester
 
   type ( nombre_base_unit_t ) :: bu(3)
-  type ( nombre_derived_unit_t ), pointer :: du, du_clone
+  type ( nombre_unit_t ), pointer :: du, du_clone
 
   real ( kind=8 ) :: rnd(3)
   integer :: i

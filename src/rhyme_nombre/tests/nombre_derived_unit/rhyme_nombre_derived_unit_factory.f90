@@ -33,7 +33,7 @@ contains
     character ( len=* ), intent ( in ), optional :: symb
     real ( kind=8 ), intent ( in ), optional :: pow
     real ( kind=8 ), intent ( in ), optional :: conv
-    type ( nombre_derived_unit_t ), pointer :: dunit
+    type ( nombre_unit_t ), pointer :: dunit
 
     if ( .not. this%initialized ) call this%init
 

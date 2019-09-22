@@ -1,28 +1,28 @@
-submodule ( rhyme_nombre_derived_unit_chain ) parse_smod
+submodule ( rhyme_nombre_unit ) parse_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_parse ( str ) result ( duc )
+  module function rhyme_nombre_unit_parse ( str ) result ( duc )
     implicit none
 
     character ( len=* ), intent ( in ) :: str
-    type ( nombre_derived_unit_t ), pointer :: duc
+    type ( nombre_unit_t ), pointer :: duc
 
     character ( len=8 ), dimension ( 64 ) :: str_arr
 
     duc => null()
 
-    str_arr = rhyme_nombre_derived_unit_chain_tokenize( str )
-    duc => rhyme_nombre_derived_unit_chain_parse_term( str_arr, 1 )
+    str_arr = rhyme_nombre_unit_tokenize( str )
+    duc => rhyme_nombre_unit_parse_term( str_arr, 1 )
 
     if ( associated( duc ) ) duc => .head. duc
-  end function rhyme_nombre_derived_unit_chain_parse
+  end function rhyme_nombre_unit_parse
 
 
-  recursive function rhyme_nombre_derived_unit_chain_parse_term ( str_arr, i ) result ( duc )
+  recursive function rhyme_nombre_unit_parse_term ( str_arr, i ) result ( duc )
     implicit none
 
     character ( len=8 ), intent ( in ) :: str_arr(:)
     integer, value :: i
-    type ( nombre_derived_unit_t ), pointer :: duc
+    type ( nombre_unit_t ), pointer :: duc
 
     real ( kind=8 ) :: ex
 
@@ -36,8 +36,8 @@ contains
         return
 
       case ( '(' ) ! Only for the ( at the beginning of the string
-        duc => rhyme_nombre_derived_unit_chain_parse_term( str_arr, i+1 )
-        i = rhyme_nombre_derived_unit_chain_close_par_pos( str_arr, i ) + 1
+        duc => rhyme_nombre_unit_parse_term( str_arr, i+1 )
+        i = rhyme_nombre_unit_close_par_pos( str_arr, i ) + 1
         if ( str_arr( i ) .eq. '^' ) i = i + 2
 
       case ( '^' )
@@ -48,33 +48,33 @@ contains
       case ( '*' )
         if ( str_arr( i+2 ) .eq. '^' ) then
           read( str_arr( i+3 ), * ) ex
-          duc => duc * rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )**ex
+          duc => duc * rhyme_nombre_unit_parse_unit( str_arr( i+1 ) )**ex
           i = i + 4
         else
-          duc => duc * rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )
+          duc => duc * rhyme_nombre_unit_parse_unit( str_arr( i+1 ) )
           i = i + 2
         end if
 
       case ( '/' )
         if ( str_arr( i+2 ) .eq. '^' ) then
           read( str_arr( i+3 ), * ) ex
-          duc => duc / rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )**ex
+          duc => duc / rhyme_nombre_unit_parse_unit( str_arr( i+1 ) )**ex
           i = i + 4
         else
-          duc => duc / rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i+1 ) )
+          duc => duc / rhyme_nombre_unit_parse_unit( str_arr( i+1 ) )
           i = i + 2
         end if
 
       case default ! For the first unit
-        duc => rhyme_nombre_derived_unit_chain_parse_unit( str_arr( i ) )
+        duc => rhyme_nombre_unit_parse_unit( str_arr( i ) )
         i = i + 1
 
       end select
     end do
-  end function rhyme_nombre_derived_unit_chain_parse_term
+  end function rhyme_nombre_unit_parse_term
 
 
-  function rhyme_nombre_derived_unit_chain_tokenize ( str ) result ( arr )
+  function rhyme_nombre_unit_tokenize ( str ) result ( arr )
     implicit none
 
     character ( len=* ), intent ( in ) :: str
@@ -102,10 +102,10 @@ contains
         chr_i = chr_i + 1
       end if
     end do
-  end function rhyme_nombre_derived_unit_chain_tokenize
+  end function rhyme_nombre_unit_tokenize
 
 
-  function rhyme_nombre_derived_unit_chain_close_par_pos ( arr, open_par_pos ) result ( loc )
+  function rhyme_nombre_unit_close_par_pos ( arr, open_par_pos ) result ( loc )
     implicit none
 
     character ( len=8 ), dimension ( 64 ), intent ( in ) :: arr
@@ -136,17 +136,17 @@ contains
 
       i = i + 1
     end do
-  end function rhyme_nombre_derived_unit_chain_close_par_pos
+  end function rhyme_nombre_unit_close_par_pos
 
 
-  function rhyme_nombre_derived_unit_chain_parse_unit ( str ) result ( du )
+  function rhyme_nombre_unit_parse_unit ( str ) result ( du )
     implicit none
 
     character ( len=* ), intent ( in ) :: str
-    type ( nombre_derived_unit_t ), pointer :: du
+    type ( nombre_unit_t ), pointer :: du
 
     type ( nombre_base_unit_t ), pointer :: u_tmp => null()
-    type ( nombre_derived_unit_t ), pointer :: du_tmp => null()
+    type ( nombre_unit_t ), pointer :: du_tmp => null()
 
     du => null()
 
@@ -161,5 +161,5 @@ contains
       du => .clone. du_tmp
       return
     end if
-  end function rhyme_nombre_derived_unit_chain_parse_unit
+  end function rhyme_nombre_unit_parse_unit
 end submodule parse_smod

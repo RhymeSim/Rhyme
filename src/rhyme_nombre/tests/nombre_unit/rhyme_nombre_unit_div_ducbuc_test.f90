@@ -1,5 +1,5 @@
-logical function rhyme_nombre_derived_unit_chain_div_ducbuc_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_div_ducbuc_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_nombre_base_unit_chain_factory
   use rhyme_nombre_derived_unit_assertion
   use rhyme_nombre_base_unit_assertion
@@ -9,16 +9,16 @@ logical function rhyme_nombre_derived_unit_chain_div_ducbuc_test () result ( fai
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: duc, ducbuc
+  type ( nombre_unit_t ), pointer :: duc, ducbuc
   type ( nombre_base_unit_t ), pointer :: buc, tail
 
-  type ( nombre_derived_unit_t ) :: du(3)
+  type ( nombre_unit_t ) :: du(3)
   type ( nombre_base_unit_t ) :: bu(3)
 
   real ( kind=8 ) :: rnd(6)
   integer :: i
 
-  tester = .describe. "nombre_derived_unit_chain_div"
+  tester = .describe. "nombre_unit_div"
 
   call rhyme_nombre_derived_unit_init
 
@@ -57,4 +57,4 @@ logical function rhyme_nombre_derived_unit_chain_div_ducbuc_test () result ( fai
   end do
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_div_ducbuc_test
+end function rhyme_nombre_unit_div_ducbuc_test

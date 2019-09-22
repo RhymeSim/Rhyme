@@ -5,7 +5,7 @@ logical function rhyme_nombre_derived_unit_new_test () result ( failed )
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_derived_unit_t ), pointer :: new
+  type ( nombre_unit_t ), pointer :: new
 
   tester = .describe. "nombre_derived_unit_new"
 

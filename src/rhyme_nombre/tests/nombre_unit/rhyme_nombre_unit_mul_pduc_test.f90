@@ -1,5 +1,5 @@
-logical function rhyme_nombre_derived_unit_chain_mul_pduc_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_mul_pduc_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_nombre_prefix_assertion
   use rhyme_assertion
 
@@ -7,13 +7,13 @@ logical function rhyme_nombre_derived_unit_chain_mul_pduc_test () result ( faile
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: duc
-  type ( nombre_derived_unit_t ) :: du(3)
+  type ( nombre_unit_t ), pointer :: duc
+  type ( nombre_unit_t ) :: du(3)
   type ( nombre_prefix_t ) :: prfx(3)
   real ( kind=8 ) :: rnd(3)
   integer :: i
 
-  tester = .describe. "nombre_derived_unit_chain_mul_pduc"
+  tester = .describe. "nombre_unit_mul_pduc"
 
   call rhyme_nombre_derived_unit_init
 
@@ -56,4 +56,4 @@ logical function rhyme_nombre_derived_unit_chain_mul_pduc_test () result ( faile
   end do
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_mul_pduc_test
+end function rhyme_nombre_unit_mul_pduc_test

@@ -1,13 +1,13 @@
-logical function rhyme_nombre_derived_unit_chain_tail_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_tail_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
-  type ( nombre_derived_unit_t ), pointer :: chain, tail
+  type ( nombre_unit_t ), pointer :: chain, tail
 
-  tester = .describe. "nombre_derived_unit_chain_tail"
+  tester = .describe. "nombre_unit_tail"
 
   call rhyme_nombre_derived_unit_init
 
@@ -23,4 +23,4 @@ logical function rhyme_nombre_derived_unit_chain_tail_test () result ( failed )
   call tester%expect( tail == electron_volt .toBe. .true. )
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_tail_test
+end function rhyme_nombre_unit_tail_test

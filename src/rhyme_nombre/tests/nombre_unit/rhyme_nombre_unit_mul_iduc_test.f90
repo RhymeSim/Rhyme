@@ -1,17 +1,17 @@
-logical function rhyme_nombre_derived_unit_chain_mul_iduc_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_mul_iduc_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: duc
-  type ( nombre_derived_unit_t ) :: du(3)
+  type ( nombre_unit_t ), pointer :: duc
+  type ( nombre_unit_t ) :: du(3)
   real ( kind=8 ) :: rnd(3)
   integer ::  i, ifactor(3)
 
-  tester = .describe. "nombre_derived_unit_chain_mul_iduc"
+  tester = .describe. "nombre_unit_mul_iduc"
 
   call rhyme_nombre_derived_unit_init
 
@@ -55,4 +55,4 @@ logical function rhyme_nombre_derived_unit_chain_mul_iduc_test () result ( faile
   end do
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_mul_iduc_test
+end function rhyme_nombre_unit_mul_iduc_test

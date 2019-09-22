@@ -1,12 +1,12 @@
-submodule ( rhyme_nombre_derived_unit_chain ) chain_clone_smod
+submodule ( rhyme_nombre_unit ) chain_clone_smod
 contains
-  module function rhyme_nombre_derived_unit_chain_clone ( duc ) result ( duc_new )
+  module function rhyme_nombre_unit_clone ( duc ) result ( duc_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: duc
-    type ( nombre_derived_unit_t ), pointer :: duc_new
+    type ( nombre_unit_t ), target, intent ( in ) :: duc
+    type ( nombre_unit_t ), pointer :: duc_new
 
-    type ( nombre_derived_unit_t ), pointer :: duc_ptr
+    type ( nombre_unit_t ), pointer :: duc_ptr
 
     duc_ptr => duc
     
@@ -27,5 +27,5 @@ contains
     end do
 
     duc_new => .head. duc_new
-  end function rhyme_nombre_derived_unit_chain_clone
+  end function rhyme_nombre_unit_clone
 end submodule chain_clone_smod

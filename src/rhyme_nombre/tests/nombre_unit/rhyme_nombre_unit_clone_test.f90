@@ -1,14 +1,14 @@
-logical function rhyme_nombre_derived_unit_chain_clone_test () result ( failed )
-  use rhyme_nombre_derived_unit_chain_factory
+logical function rhyme_nombre_unit_clone_test () result ( failed )
+  use rhyme_nombre_unit_factory
   use rhyme_assertion
 
   implicit none
 
   type ( assertion_t ) :: tester
 
-  type ( nombre_derived_unit_t ), pointer :: chain, clone
+  type ( nombre_unit_t ), pointer :: chain, clone
 
-  tester = .describe. "nombre_derived_unit_chain_clone"
+  tester = .describe. "nombre_unit_clone"
 
   call rhyme_nombre_derived_unit_init
 
@@ -28,4 +28,4 @@ logical function rhyme_nombre_derived_unit_chain_clone_test () result ( failed )
   call tester%expect( associated( clone%next%next%next%next%next ) .toBe. .false. )
 
   failed = tester%failed()
-end function rhyme_nombre_derived_unit_chain_clone_test
+end function rhyme_nombre_unit_clone_test

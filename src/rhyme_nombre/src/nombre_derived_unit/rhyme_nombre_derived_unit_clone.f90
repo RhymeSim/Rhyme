@@ -3,10 +3,10 @@ contains
   module function rhyme_nombre_derived_unit_clone ( du ) result ( du_new )
     implicit none
 
-    type ( nombre_derived_unit_t ), target, intent ( in ) :: du
-    type ( nombre_derived_unit_t ), pointer :: du_new
+    type ( nombre_unit_t ), target, intent ( in ) :: du
+    type ( nombre_unit_t ), pointer :: du_new
 
-    type ( nombre_derived_unit_t ), pointer :: du_ptr
+    type ( nombre_unit_t ), pointer :: du_ptr
 
     du_ptr => du
 
