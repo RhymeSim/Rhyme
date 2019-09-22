@@ -12,9 +12,9 @@ logical function rhyme_nombre_print_test () result (failed)
 
   call rhyme_nombre_init
 
-  H = 66.7d0 .u. kilo * meter / sec / (mega * pc)
+  H = 66.7d0 .u. kilo * meter / second / (mega * parsec)
 
-  call n_tester%expect( trim(H%p()) .toBe. "0.667E+02 [ " // trim( rhyme_nombre_units_print(H%u) ) // " ]" )
+  call n_tester%expect( trim(H%p()) .toBe. "6.670E+01 [ " // trim( .printchain. H%u ) // " ]" )
 
   failed = n_tester%failed()
 end function rhyme_nombre_print_test

@@ -12,17 +12,29 @@ module rhyme_nombre
 
 
   interface
-    module function rhyme_nombre_new ( val, u ) result ( n )
+    module function rhyme_nombre_new_vdu ( val, u ) result ( n )
       class (*), intent ( in ) :: val
       type ( nombre_unit_t ), intent ( in ), target :: u
       type ( nombre_t ) :: n
-    end function rhyme_nombre_new
+    end function rhyme_nombre_new_vdu
 
-    module function rhyme_nombre_to ( n, u_new ) result ( n_new )
+    module function rhyme_nombre_new_vbu ( val, u ) result ( n )
+      class (*), intent ( in ) :: val
+      type ( nombre_base_unit_t ), intent ( in ), target :: u
+      type ( nombre_t ) :: n
+    end function rhyme_nombre_new_vbu
+
+    module function rhyme_nombre_to_u ( n, u_new ) result ( n_new )
       type ( nombre_t ), intent ( in ) :: n
       type ( nombre_unit_t ), pointer, intent ( in ) :: u_new
       type ( nombre_t ) :: n_new
-    end function rhyme_nombre_to
+    end function rhyme_nombre_to_u
+
+    module function rhyme_nombre_to_bu ( n, u_new ) result ( n_new )
+      type ( nombre_t ), intent ( in ) :: n
+      type ( nombre_base_unit_t ), pointer, intent ( in ) :: u_new
+      type ( nombre_t ) :: n_new
+    end function rhyme_nombre_to_bu
 
     module function rhyme_nombre_mul ( mul, n ) result ( n_new )
       class (*), intent ( in ) :: mul
@@ -61,17 +73,20 @@ module rhyme_nombre
 
 
   interface operator ( .u. )
-    procedure rhyme_nombre_new
+    procedure rhyme_nombre_new_vdu
+    procedure rhyme_nombre_new_vbu
   end interface operator ( .u. )
 
 
   interface operator ( .unit. )
-    procedure rhyme_nombre_new
+    procedure rhyme_nombre_new_vdu
+    procedure rhyme_nombre_new_vbu
   end interface operator ( .unit. )
 
 
   interface operator ( .to. )
-    procedure rhyme_nombre_to
+    procedure rhyme_nombre_to_u
+    procedure rhyme_nombre_to_bu
   end interface operator ( .to. )
 
   interface operator ( * )
@@ -90,6 +105,6 @@ contains
   module subroutine rhyme_nombre_init ()
     implicit none
 
-    call rhyme_nombre_units_init
+    call rhyme_nombre_derived_unit_init
   end subroutine rhyme_nombre_init
 end module rhyme_nombre

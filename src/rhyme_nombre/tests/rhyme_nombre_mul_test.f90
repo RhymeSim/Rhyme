@@ -1,5 +1,6 @@
 logical function rhyme_nombre_mul_test () result (failed)
   use rhyme_nombre
+  use rhyme_nombre_unit_assertion
   use rhyme_assertion
 
   implicit none
@@ -13,7 +14,7 @@ logical function rhyme_nombre_mul_test () result (failed)
 
   call rhyme_nombre_init
 
-  u_H => kilo * meter / sec / (Mega * pc)
+  u_H => kilo * meter / second / (Mega * parsec)
 
   H = 66.7d0 .u. u_H
 
@@ -33,9 +34,9 @@ logical function rhyme_nombre_mul_test () result (failed)
 
   ! TODO: test multiplying two nombre objects
 
-  H = H .to. sec**(-1.d0)
+  H = H .to. second**(-1.d0)
 
-  call n_tester%expect( H2int%u .unitEqualsTo. u_H .toBe. .true. )
+  call n_tester%expect( H2int%u .toBe. kilo * meter / second / (Mega * parsec) )
 
   failed = n_tester%failed()
 end function rhyme_nombre_mul_test

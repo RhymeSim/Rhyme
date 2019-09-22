@@ -1,4 +1,8 @@
 module rhyme_nombre_unit
+  ! TODO: Rewrite unit modules base on a new nested unit type:
+  !       type ( u ) members: prfx, symb, cf, head, next, prev
+  !       The head pointer can point to either unitary unit or a chain of
+  !       primary units.
   use rhyme_nombre_derived_unit
 
   implicit none

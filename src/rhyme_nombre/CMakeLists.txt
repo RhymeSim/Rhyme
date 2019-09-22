@@ -72,7 +72,7 @@ set( srcs
   src/rhyme_nombre_print.f90
   src/rhyme_nombre_div.f90
   src/rhyme_nombre_mul.f90
-#   src/rhyme_nombre_to.f90
+  src/rhyme_nombre_to.f90
   src/rhyme_nombre_new.f90
   src/rhyme_nombre.f90
 )
