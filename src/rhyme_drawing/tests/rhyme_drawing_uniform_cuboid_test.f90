@@ -49,7 +49,7 @@ logical function rhyme_drawing_uniform_cuboid_test () result ( failed )
 
   dr_tester = .describe. "drawing uniform_canvas"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   samr = samr_factory%generate()

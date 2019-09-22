@@ -14,7 +14,7 @@ logical function rhyme_thermo_base_get_gamma_test () result ( failed )
 
   th_tester = .describe. "get_gamma"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   logger = log_factory%generate()

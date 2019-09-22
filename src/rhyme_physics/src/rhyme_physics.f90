@@ -30,7 +30,7 @@ module rhyme_physics
   real ( kind=8 ), parameter, private :: kb_value = 1.38064852e-23
   character ( len=32 ), parameter, private :: kb_unit_str = 'm^2 * kg * s^-2 * K^-1'
   real ( kind=8 ), parameter, private :: r_value = 8.314462618
-  character ( len=32 ), parameter, private :: r_unit_str = 'kg * ( m / s )^2 / ( mol * K )'
+  character ( len=32 ), parameter, private :: r_unit_str = 'kg * m^2 / s^2 / mol / K'
   real ( kind=8 ), parameter, private :: amu_value = 1.6605e-27
   character ( len=32 ), parameter, private :: amu_unit_str = 'kg'
 

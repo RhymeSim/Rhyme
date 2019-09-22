@@ -16,7 +16,7 @@ logical function rhyme_initial_condition_init_simple_test () result ( failed )
 
   ic_tester = .describe. "initial_condition_init_simple"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   simple = ic_factory%generate( 4 )
   physics = ph_factory%generate()

@@ -20,7 +20,7 @@ contains
     end if
 
     do d = 1, NDIM
-      ic%box_lengths(d)%u => rhyme_nombre_units_parse( ic%box_length_unit )
+      ic%box_lengths(d)%u => .parse. ic%box_length_unit
     end do
 
     if ( ic%type .eq. icid%simple ) then

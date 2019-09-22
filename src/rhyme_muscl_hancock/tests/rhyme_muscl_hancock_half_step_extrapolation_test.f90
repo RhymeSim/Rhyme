@@ -17,7 +17,7 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test () result ( fa
 
   mh_tester = .describe. "half_step_extrapolation"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   logger = log_factory%generate()

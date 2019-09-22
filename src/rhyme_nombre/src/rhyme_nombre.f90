@@ -8,6 +8,8 @@ module rhyme_nombre
     type ( nombre_unit_t ), pointer :: u => null()
     contains
      procedure :: p => rhyme_nombre_print
+     procedure :: rhyme_nombre_write_formatted
+     generic :: write( formatted ) => rhyme_nombre_write_formatted
   end type nombre_t
 
 
@@ -69,24 +71,27 @@ module rhyme_nombre
       type ( nombre_t ), intent ( in ) :: n
       real ( kind=8 ) :: v
     end function rhyme_nombre_get_value
+
+    module function rhyme_nombre_equality ( n1, n2 ) result ( eq )
+      type ( nombre_t ), intent ( in ) :: n1, n2
+      logical :: eq
+    end function rhyme_nombre_equality
   end interface
 
 
   interface operator ( .u. )
-    procedure rhyme_nombre_new_vdu
-    procedure rhyme_nombre_new_vbu
+    module procedure rhyme_nombre_new_vdu
+    module procedure rhyme_nombre_new_vbu
   end interface operator ( .u. )
 
-
   interface operator ( .unit. )
-    procedure rhyme_nombre_new_vdu
-    procedure rhyme_nombre_new_vbu
+    module procedure rhyme_nombre_new_vdu
+    module procedure rhyme_nombre_new_vbu
   end interface operator ( .unit. )
 
-
   interface operator ( .to. )
-    procedure rhyme_nombre_to_u
-    procedure rhyme_nombre_to_bu
+    module procedure rhyme_nombre_to_u
+    module procedure rhyme_nombre_to_bu
   end interface operator ( .to. )
 
   interface operator ( * )
@@ -94,11 +99,14 @@ module rhyme_nombre
     module procedure :: rhyme_nombre_mul_rev
   end interface operator ( * )
 
-
   interface operator ( / )
-    procedure rhyme_nombre_div
-    procedure rhyme_nombre_div_rev
+    module procedure rhyme_nombre_div
+    module procedure rhyme_nombre_div_rev
   end interface operator ( / )
+
+  interface operator ( == )
+    module procedure rhyme_nombre_equality
+  end interface operator ( == )
 
 contains
 
@@ -107,4 +115,25 @@ contains
 
     call rhyme_nombre_derived_unit_init
   end subroutine rhyme_nombre_init
+
+  subroutine rhyme_nombre_write_formatted ( &
+    this, unit, iotype, v_list, iostat, iomsg )
+    implicit none
+
+    class ( nombre_t ), intent ( in ) :: this
+    integer, intent ( in ) :: unit
+    character ( len=* ), intent ( in ) :: iotype
+    integer, intent ( in ) :: v_list(:)
+    integer, intent ( out ) :: iostat
+    character ( len=* ), intent ( inout ) :: iomsg
+
+    write( unit, fmt='(A,A,ES10.3,A,A,A,A,A,A,A,I0,A)', &
+      iostat=iostat, iomsg=iomsg ) &
+      '<nombre_t', &
+      ' value=', this%v, &
+      ' unit="', trim( .printchain. this%u ), '"', &
+      ' iotype="', trim( iotype ), '"', &
+      ' v_list=', size( v_list ), &
+      ' >'
+  end subroutine rhyme_nombre_write_formatted
 end module rhyme_nombre

@@ -18,7 +18,7 @@ logical function rhyme_thermo_base_temperature_per_mu_test () result ( failed )
 
   th_tester = .describe. "temperature_per_mu"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   logger = log_factory%generate()

@@ -13,7 +13,7 @@ logical function rhyme_ideal_gas_temperature_per_mu_test () result ( failed )
 
   ig_tester = .describe. "temperature_per_mu"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   u = hy_factory%generate_conserved()
   physics = ph_factory%generate()

@@ -57,6 +57,21 @@ foreach( factory ${factories} )
 endforeach( factory )
 
 
+# Adding assertion files
+set( tmp )
+if ( DEFINED assertions )
+  foreach( assertion ${assertions} )
+    file( GLOB_RECURSE tmp ${rhyme_src_dir}/${assertion}/tests/*_assertion.f90 )
+    list( APPEND assertion_files ${tmp} )
+
+    if( NOT TARGET ${assertion} )
+      add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/src/${assertion}
+      ${CMAKE_BINARY_DIR}/${assertion} )
+    endif()
+  endforeach()
+endif()
+
+
 # Adding internal factory directories
 foreach( factory ${internal_factories} )
   list( APPEND factory_files
@@ -79,7 +94,7 @@ endforeach( dep )
 
 # Create a library of test and factory files
 add_library( ${PROJECT_NAME}_lib STATIC ${test_files} ${factory_files} ${assertion_files} )
-add_dependencies( ${PROJECT_NAME}_lib ${test_subject} ${test_deps} ${factories} )
+add_dependencies( ${PROJECT_NAME}_lib ${test_subject} ${test_deps} ${factories} ${assertions} )
 
 # Create the test runner
 add_executable( ${PROJECT_NAME} test_runner.c )

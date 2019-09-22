@@ -165,4 +165,8 @@ module rhyme_nombre_unit
   interface operator ( .cf. )
     module procedure rhyme_nombre_unit_conversion_factor
   end interface operator ( .cf. )
+
+  interface operator ( .parse. )
+    module procedure rhyme_nombre_unit_parse
+  end interface operator ( .parse. )
 end module rhyme_nombre_unit

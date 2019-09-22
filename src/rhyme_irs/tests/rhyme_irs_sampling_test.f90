@@ -22,7 +22,7 @@ logical function rhyme_irs_sampling_test () result ( failed )
 
   irs_tester = .describe. "irs_sampling"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   irs = irs_factory%generate()
   physics = ph_factory%generate()

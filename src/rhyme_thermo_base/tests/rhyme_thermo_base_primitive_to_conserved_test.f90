@@ -17,7 +17,7 @@ logical function rhyme_thermo_base_primitive_to_conserved_test () result ( faile
 
   th_tester = .describe. "primitive_to_conserved"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   logger = log_factory%generate()

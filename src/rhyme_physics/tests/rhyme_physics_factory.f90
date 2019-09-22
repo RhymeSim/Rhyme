@@ -36,15 +36,15 @@ contains
 
     class ( rhyme_physics_factory_t ), intent ( inout ) :: this
 
-    this%rho => rhyme_nombre_units_parse( this%rho_str )
-    this%length => rhyme_nombre_units_parse( this%length_str )
-    this%time => rhyme_nombre_units_parse( this%time_str )
+    this%rho => .parse. this%rho_str
+    this%length => .parse. this%length_str
+    this%time => .parse. this%time_str
     this%velocity => this%length / this%time
     this%pressure => this%rho * this%length**2 / this%time**2
-    this%temperature => rhyme_nombre_unit_clone( kel )
+    this%temperature => 1 * kelvin
 
-    this%kb_unit => this%rho * this%length**5 / ( this%time**2 * kel )
-    this%r_unit => this%rho * this%length**5 / ( this%time**2 * mol * this%temperature )
+    this%kb_unit => this%rho * this%length**5 / ( this%time**2 * kelvin )
+    this%r_unit => this%rho * this%length**5 / ( this%time**2 * mole * this%temperature )
     this%amu_unit => this%rho * this%length**3
 
     this%initialized = .true.
@@ -70,10 +70,10 @@ contains
     physics%pressure => this%pressure
     physics%temperature => this%temperature
 
-    physics%kb = 1.38064852e-23 .unit. meter**2 * kg / ( sec**2 * kel ) &
+    physics%kb = 1.38064852e-23 .unit. meter**2 * kilogram / ( second**2 * kelvin ) &
      .to. this%kb_unit
-    physics%r = 8.314462618 .unit. kg * ( meter / sec )**2 / ( mol * kel ) &
+    physics%r = 8.314462618 .unit. kilogram * ( meter / second )**2 / ( mole * kelvin ) &
       .to. this%r_unit
-    physics%amu = 1.6605e-27 .u. kg .to. this%amu_unit
+    physics%amu = 1.6605e-27 .u. kilogram .to. this%amu_unit
   end function rhyme_physics_factory_generate
 end module rhyme_physics_factory

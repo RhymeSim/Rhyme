@@ -68,6 +68,7 @@ set( srcs
   src/nombre_unit/rhyme_nombre_unit.f90
 
 
+  src/rhyme_nombre_equality.f90
   src/rhyme_nombre_get_value.f90
   src/rhyme_nombre_print.f90
   src/rhyme_nombre_div.f90

@@ -61,7 +61,7 @@ program rhyme
   call logger%begin_section( 'init' )
 
   ! Initializing nombre module
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   ! TODO: move mh_workspace into muscl_hancock module
   mhws%type = mh%solver_type

@@ -18,7 +18,7 @@ logical function rhyme_thermo_base_speed_of_sound_test () result ( failed )
 
   th_tester = .describe. "speed_of_sound"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   physics = ph_factory%generate()
   logger = log_factory%generate()

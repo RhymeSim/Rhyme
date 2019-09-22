@@ -18,7 +18,7 @@ logical function rhyme_thermo_base_flux_test () result ( failed )
 
   th_tester = .describe. "flux"
 
-  call rhyme_nombre_units_init
+  call rhyme_nombre_init
 
   u = hy_factory%generate_conserved()
 
