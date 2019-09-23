@@ -52,8 +52,8 @@ canvas = uniform .125d0 0.d0 0.d0 .1d0
 shape = cuboid 1 1 56 128
 shape_filling = uniform 1.d0 0.d0 0.d0 1.d0
 
-shape = sphere 3.d0 4.d0 2.34d0
-shape_filling = uniform 1.d0 0.d0 0.d0 1.d0
+shape = sphere 3.d0 4.d0 2.34d0 2.34d-1 'unit'
+shape_filling = uniform absolute 1.d0 0.d0 0.d0 1.d0
 
 shape = prism 56 1 56 128 72 1
 shape_filling = uniform 1.d0 0.d0 0.d0 1.d0

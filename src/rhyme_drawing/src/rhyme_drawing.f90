@@ -12,6 +12,7 @@ module rhyme_drawing
     integer :: unset = -1, none = -2
     integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
     integer :: uniform = 10 ! Filling type
+    integer :: add = 30, absolute = 31 ! Modes
     integer :: cuboid = 20, sphere = 21
 #if NDIM > 1
     integer :: prism = 22
@@ -38,6 +39,7 @@ module rhyme_drawing
   type shape_filling_t
     integer :: type = drid%uniform
     real ( kind=8 ) :: colors( cid%rho:cid%p, 2 )
+    integer :: modes(2)
   end type shape_filling_t
 
 
@@ -75,8 +77,11 @@ module rhyme_drawing
 
 
   type shape_sphere_t
-    real ( kind=8 ) :: origin( NDIM ) = 0.d0 ! in unif of pixels
-    real ( kind=8 ) :: r = 0.d0 ! in unif of pixels
+    real ( kind=8 ) :: origin( NDIM ) = 0d0
+    real ( kind=8 ) :: r = 0d0
+    real ( kind=8 ) :: sigma = 0d0
+    character ( len=128 ) :: unit_str = ''
+    type ( nombre_unit_t ), pointer :: unit => null()
   end type shape_sphere_t
 
 
@@ -127,6 +132,12 @@ module rhyme_drawing
   end type drawing_t
 
   interface
+    module subroutine rhyme_drawing_init ( draw, samr, logger )
+      type ( drawing_t ), intent ( inout ) :: draw
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( logger_t ), intent ( inout ) :: logger
+    end subroutine rhyme_drawing_init
+
     module subroutine rhyme_drawing_uniform_canvas ( samr, bg_prim )
       type ( samr_t ), intent ( inout ) :: samr
       real ( kind=8 ), intent ( in ) :: bg_prim( cid%rho:cid%p )
@@ -160,12 +171,6 @@ module rhyme_drawing
       type ( perturbation_t ), intent ( in ), pointer :: perturbs
       type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_apply_perturbations
-
-    module subroutine rhyme_drawing_apply ( draw, samr, logger )
-      type ( drawing_t ), intent ( inout ) :: draw
-      type ( samr_t ), intent ( inout ) :: samr
-      type ( logger_t ), intent ( inout ) :: logger
-    end subroutine rhyme_drawing_apply
   end interface
 
 contains

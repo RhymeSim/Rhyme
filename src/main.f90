@@ -71,15 +71,14 @@ program rhyme
   call rhyme_thermo_base_init( thermo, physics, logger )
   call rhyme_initial_condition_init( ic, samr, physics, logger )
   call rhyme_samr_bc_init( bc, samr, logger )
+  call rhyme_drawing_init( draw, samr, logger )
   call rhyme_irs_init( irs, logger )
   call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
   call rhyme_chombo_init( chombo, samr, logger )
 
   call logger%end_section
 
-  ! Drawing the initial condition (if necessary)
-  call rhyme_drawing_apply( draw, samr, logger )
-
+  
   ! Main loop
   do while ( .true. )
     call logger%begin_section( samr%levels(0)%iteration )

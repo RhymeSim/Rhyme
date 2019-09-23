@@ -21,7 +21,7 @@ contains
     type ( config_switch_t ) :: ic_types, ic_snapshot_types
     type ( config_switch_t ) :: bc_types
     type ( config_switch_t ) :: gas_types
-    type ( config_switch_t ) :: canvas_types, shape_types, filling_types
+    type ( config_switch_t ) :: canvas_types, shape_types, filling_types, filling_modes
     type ( config_switch_t ) :: perturb_types, coord_types, perturb_domain_types
     type ( config_switch_t ) :: limiter_types
     type ( config_switch_t ) :: solver_types
@@ -119,6 +119,9 @@ contains
 
     call filling_types%add( 'uniform', drid%uniform )
 
+    call filling_modes%add( 'add', drid%add )
+    call filling_modes%add( 'absolute', drid%absolute )
+
     do i = 1, n_occur
       call config%read( 'shape' .at. 1 .occur. i, shape_type, logger, shape_types )
       shape => draw%new_shape( shape_type )
@@ -149,10 +152,13 @@ contains
       case ( drid%sphere )
         call config%read( 'shape' .at. 2 .occur. i .hint. 'origin', shape%sphere%origin(1:NDIM), logger )
         call config%read( 'shape' .at. 2+NDIM .occur. i .hint. 'radius', shape%sphere%r, logger )
+        call config%read( 'shape' .at. 2+NDIM+1 .occur. i .hint. 'sigma', shape%sphere%sigma, logger )
+        call config%read( 'shape' .at. 2+NDIM+2 .occur. i .hint. 'unit_str', shape%sphere%unit_str, logger )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, logger, filling_types )
         ! currently only uniform filling is supported
-        call config%read( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
+        call config%read( 'shape_filling' .at. 2 .occur. i, shape%fill%modes(1), logger, filling_modes )
+        call config%read( 'shape_filling' .at. 3 .occur. i .hint. 'color', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
 
 #if NDIM > 1
       case ( drid%smoothed_slab_2d )
