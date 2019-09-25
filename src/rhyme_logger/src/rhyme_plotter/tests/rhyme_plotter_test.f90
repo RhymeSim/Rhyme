@@ -126,7 +126,7 @@ logical function rhyme_plotter_test () result ( failed )
   close(1234)
 
   call canvas%clear
-
+  
 
   ! To see the output set failed to .true.
   failed = .false.

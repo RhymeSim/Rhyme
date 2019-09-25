@@ -18,8 +18,15 @@ contains
       out = output_unit
     end if
 
-    canvas_type = plid%clr
-    if ( present( colored ) .and. .not. colored ) canvas_type = plid%bw
+    if ( present( colored ) ) then
+      if ( colored ) then
+        canvas_type = plid%clr
+      else
+        canvas_type = plid%bw
+      end if
+    else
+      canvas_type = plid%clr
+    end if
 
     open( out, encoding='UTF-8' )
 
