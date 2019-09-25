@@ -10,7 +10,7 @@ module rhyme_nombre_unit_factory
     procedure :: generate_chain => rhyme_nombre_unit_factory_generate_chain
   end type rhyme_nombre_unit_factory_t
 
-  type ( rhyme_nombre_unit_factory_t ) :: nom_duc_factory = rhyme_nombre_unit_factory_t()
+  type ( rhyme_nombre_unit_factory_t ) :: nom_u_factory = rhyme_nombre_unit_factory_t()
 
 contains
 

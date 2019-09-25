@@ -11,7 +11,7 @@ logical function rhyme_nombre_unit_tail_test () result ( failed )
 
   call rhyme_nombre_derived_unit_init
 
-  chain => nom_duc_factory%generate_chain( [ hydrogen_mass, light_year, electron_volt ] )
+  chain => nom_u_factory%generate_chain( [ hydrogen_mass, light_year, electron_volt ] )
 
   tail => .tail. chain
   call tester%expect( tail == electron_volt .toBe. .true. )

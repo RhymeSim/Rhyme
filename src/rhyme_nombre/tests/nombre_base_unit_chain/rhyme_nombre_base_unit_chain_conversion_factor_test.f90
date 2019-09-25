@@ -26,7 +26,7 @@ logical function rhyme_nombre_base_unit_chain_conversion_factor_test () result (
 
     cf = rhyme_nombre_base_unit_chain_conversion_factor( buc )
 
-    call tester%expect( cf .toBe. 1d1**(sum(prfx%base_10)) )
+    call tester%expect( cf .toBe. 1d1**(sum(prfx%base_10)) .within. 7 )
   end do
 
   failed = tester%failed()

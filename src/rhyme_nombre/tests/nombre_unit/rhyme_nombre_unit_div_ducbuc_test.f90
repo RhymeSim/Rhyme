@@ -29,7 +29,7 @@ logical function rhyme_nombre_unit_div_ducbuc_test () result ( failed )
     bu = si_base_units( ceiling( rnd(4:6) * size( si_base_units ) ) )
 
     buc => nom_buc_factory%generate( bu )
-    duc => nom_duc_factory%generate_chain( du )
+    duc => nom_u_factory%generate_chain( du )
 
     ducbuc => duc / buc
     call tester%expect( ducbuc .toBe. du(1) )

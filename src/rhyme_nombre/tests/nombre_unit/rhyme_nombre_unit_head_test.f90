@@ -11,7 +11,7 @@ logical function rhyme_nombre_unit_head_test () result ( failed )
 
   call rhyme_nombre_derived_unit_init
 
-  chain => nom_duc_factory%generate_chain( [ pascal, hertz, radian, newton ] )
+  chain => nom_u_factory%generate_chain( [ pascal, hertz, radian, newton ] )
 
   head => .head. chain
   call tester%expect( head == pascal .toBe. .true. )

@@ -37,7 +37,7 @@ logical function rhyme_nombre_unit_pow_test () result ( failed )
   call tester%expect( dur8%pow .toBe. 5.67d2 .hint. 'dur8 pow' )
   call tester%expect( dur8%dim == du%dim .toBe. .true. .hint. 'dur8 dim' )
 
-  duc => nom_duc_factory%generate_chain( [ joule, hertz, radian ] )
+  duc => nom_u_factory%generate_chain( [ joule, hertz, radian ] )
 
   duci => duc**4
   call tester%expect( duci%prefix == joule%prefix .toBe. .true. .hint. 'duci joule prefix' )

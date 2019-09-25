@@ -7,7 +7,7 @@ contains
     real ( kind=8 ) :: cf
 
     type ( nombre_base_unit_t ), pointer :: ptr
-    integer :: base_10
+    real ( kind=8 ) :: base_10
 
     ptr => .head. buc
 
@@ -19,7 +19,7 @@ contains
     base_10 = 0
 
     do while ( associated( ptr ) )
-      base_10 = base_10 + ptr%prefix%base_10
+      base_10 = base_10 + ptr%prefix%base_10 * ptr%pow
       ptr => ptr%next
     end do
 

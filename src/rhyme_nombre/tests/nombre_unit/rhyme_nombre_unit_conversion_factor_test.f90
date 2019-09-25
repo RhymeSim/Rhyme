@@ -22,15 +22,15 @@ logical function rhyme_nombre_unit_conversion_factor_test () result ( failed )
     call random_number( rnd )
 
     du = derived_units( ceiling( rnd * size( derived_units ) ) )
-    duc => nom_duc_factory%generate_chain( du )
+    duc => nom_u_factory%generate_chain( du )
 
     cf = .cf. duc
 
     cf_exp = 1d1**du(1)%prefix%base_10 * du(1)%conv * (.cf. du(1)%head)
     cf_exp = cf_exp * 1d1**du(2)%prefix%base_10 * du(2)%conv * (.cf. du(2)%head)
     cf_exp = cf_exp * 1d1**du(3)%prefix%base_10 * du(3)%conv * (.cf. du(3)%head)
-    
-    call tester%expect( cf .toBe. cf_exp )
+
+    call tester%expect( cf .toBe. cf_exp .within. 7 )
   end do
 
   failed = tester%failed()

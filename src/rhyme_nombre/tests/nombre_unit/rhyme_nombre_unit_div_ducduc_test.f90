@@ -22,8 +22,8 @@ logical function rhyme_nombre_unit_div_ducduc_test () result ( failed )
     idx = ceiling( rnd(1:4) * size( derived_units ) )
     bu_idx = ceiling( rnd(5:10) * size( si_base_units ) )
 
-    duc1 => nom_duc_factory%generate_chain( derived_units( idx(1:2) ) )
-    duc2 => nom_duc_factory%generate_chain( derived_units( idx(3:3) ) )
+    duc1 => nom_u_factory%generate_chain( derived_units( idx(1:2) ) )
+    duc2 => nom_u_factory%generate_chain( derived_units( idx(3:3) ) )
 
     ducduc => duc1 / duc2
     call tester%expect( associated( ducduc%prev ) .toBe. .false. )
@@ -39,12 +39,12 @@ logical function rhyme_nombre_unit_div_ducduc_test () result ( failed )
     bu5 => si_base_units(bu_idx(5))**(-2)
     bu6 => si_base_units(bu_idx(6))**1
 
-    duc1 => nom_duc_factory%generate_chain( [ &
+    duc1 => nom_u_factory%generate_chain( [ &
       nom_du_factory%generate( [ bu1 ], symb='Hz', pow=1.23d0 ), &
       nom_du_factory%generate( [ bu2, bu3 ], symb='', pow=2.34d0 ) &
     ] )
 
-    duc2 => nom_duc_factory%generate_chain( [ &
+    duc2 => nom_u_factory%generate_chain( [ &
       nom_du_factory%generate( [ bu4, bu5 ], symb='', pow=3.45d0 ), &
       nom_du_factory%generate( [ bu6 ], symb='ABC', pow=4.56d0 ) &
     ] )
