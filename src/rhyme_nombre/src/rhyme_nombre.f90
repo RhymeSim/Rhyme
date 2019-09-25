@@ -28,13 +28,13 @@ module rhyme_nombre
 
     module function rhyme_nombre_to_u ( n, u_new ) result ( n_new )
       type ( nombre_t ), intent ( in ) :: n
-      type ( nombre_unit_t ), pointer, intent ( in ) :: u_new
+      type ( nombre_unit_t ), target, intent ( in ) :: u_new
       type ( nombre_t ) :: n_new
     end function rhyme_nombre_to_u
 
     module function rhyme_nombre_to_bu ( n, u_new ) result ( n_new )
       type ( nombre_t ), intent ( in ) :: n
-      type ( nombre_base_unit_t ), pointer, intent ( in ) :: u_new
+      type ( nombre_base_unit_t ), target, intent ( in ) :: u_new
       type ( nombre_t ) :: n_new
     end function rhyme_nombre_to_bu
 

@@ -3,6 +3,7 @@ module rhyme_drawing
   use rhyme_physics
   use rhyme_thermo_base
   use rhyme_hydro_base
+  use rhyme_initial_condition
   use rhyme_samr
   use rhyme_logger
 
@@ -38,8 +39,8 @@ module rhyme_drawing
 
   type shape_filling_t
     integer :: type = drid%uniform
-    real ( kind=8 ) :: colors( cid%rho:cid%p, 2 )
-    integer :: modes(2)
+    real ( kind=8 ) :: colors( cid%rho:cid%p, 2 ) = 0d0
+    integer :: modes(2) = drid%unset
   end type shape_filling_t
 
 
@@ -77,7 +78,7 @@ module rhyme_drawing
 
 
   type shape_sphere_t
-    real ( kind=8 ) :: origin( NDIM ) = 0d0
+    real ( kind=8 ), dimension ( NDIM ) :: origin = 0d0
     real ( kind=8 ) :: r = 0d0
     real ( kind=8 ) :: sigma = 0d0
     character ( len=128 ) :: unit_str = ''
@@ -132,9 +133,10 @@ module rhyme_drawing
   end type drawing_t
 
   interface
-    module subroutine rhyme_drawing_init ( draw, samr, logger )
+    module subroutine rhyme_drawing_init ( draw, samr, ic, logger )
       type ( drawing_t ), intent ( inout ) :: draw
       type ( samr_t ), intent ( inout ) :: samr
+      type ( initial_condition_t ), intent ( in ) :: ic
       type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_init
 
@@ -148,10 +150,12 @@ module rhyme_drawing
       type ( shape_t ), intent ( in ) :: shape
     end subroutine rhyme_drawing_uniform_cuboid
 
-    module subroutine rhyme_drawing_uniform_sphere ( samr, shape )
+    module subroutine rhyme_drawing_sphere ( samr, ic, shape, logger )
       type ( samr_t ), intent ( inout ) :: samr
+      type ( initial_condition_t ), intent ( in ) :: ic
       type ( shape_t ), intent ( in ) :: shape
-    end subroutine rhyme_drawing_uniform_sphere
+      type ( logger_t ), intent ( inout ) :: logger
+    end subroutine rhyme_drawing_sphere
 
 #if NDIM > 1
     module subroutine rhyme_drawing_uniform_prism ( samr, shape )
@@ -171,91 +175,18 @@ module rhyme_drawing
       type ( perturbation_t ), intent ( in ), pointer :: perturbs
       type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_drawing_apply_perturbations
+
+    module function rhyme_drawing_new_shape ( this, shape_type ) result ( shape )
+      class ( drawing_t ), intent(inout) :: this
+      integer, intent(in) :: shape_type
+      type ( shape_t ), pointer :: shape
+    end function rhyme_drawing_new_shape
+
+    module function rhyme_drawing_new_perturb ( this, perturb_type ) result ( perturb )
+      class ( drawing_t ), intent ( inout ) :: this
+      integer, intent ( in ) :: perturb_type
+      type ( perturbation_t ), pointer :: perturb
+    end function rhyme_drawing_new_perturb
   end interface
 
-contains
-
-  function rhyme_drawing_new_shape ( this, shape_type ) result ( shape )
-    implicit none
-
-    class ( drawing_t ), intent(inout) :: this
-    integer, intent(in) :: shape_type
-
-    type ( shape_t ), pointer :: shape
-
-    shape => this%shapes
-
-    if ( associated ( shape ) ) then
-      do while ( associated ( shape%next ) )
-        shape => shape%next
-      end do
-
-      allocate( shape%next )
-      shape => shape%next
-    else
-      allocate( this%shapes )
-      shape => this%shapes
-    end if
-
-    shape%type = shape_type
-
-    shape%cuboid%left_corner = 0
-    shape%cuboid%lengths = 0
-
-    shape%sphere%origin = 0.d0
-    shape%sphere%r = 0.d0
-
-#if NDIM > 1
-    shape%prism%vertices = 0.d0
-
-    shape%slab_2d%pos = 0.d0
-    shape%slab_2d%sigma = 0.d0
-
-#if NDIM > 2
-    shape%prism%thickness = 0.d0
-#endif
-#endif
-
-    shape%fill%type = drid%unset
-    shape%fill%colors( :, 1 ) = 0.d0
-    shape%fill%colors( :, 2 ) = 0.d0
-  end function rhyme_drawing_new_shape
-
-
-  function rhyme_drawing_new_perturb ( this, perturb_type ) result ( perturb )
-    implicit none
-
-    class ( drawing_t ), intent ( inout ) :: this
-    integer, intent ( in ) :: perturb_type
-
-    type ( perturbation_t ), pointer :: perturb
-
-    perturb => this%perturbs
-
-    if ( associated ( perturb ) ) then
-      do while ( associated ( perturb%next ) )
-        perturb => perturb%next
-      end do
-
-      allocate( perturb%next )
-      perturb => perturb%next
-    else
-      allocate( this%perturbs )
-      perturb => this%perturbs
-    end if
-
-    perturb%type = perturb_type
-    perturb%coor_type = drid%unset
-    perturb%axis = drid%unset
-
-    perturb%harmonic%A = 1.d0
-    perturb%harmonic%lambda = 0.d0
-    perturb%harmonic%base = 0.d0
-
-#if NDIM > 1
-    perturb%sym_decaying%A = 1.d0
-    perturb%sym_decaying%pos = 0.d0
-    perturb%sym_decaying%sigma = 1.d0
-#endif
-  end function rhyme_drawing_new_perturb
 end module rhyme_drawing

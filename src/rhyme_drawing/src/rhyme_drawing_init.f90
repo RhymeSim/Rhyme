@@ -1,10 +1,11 @@
 submodule ( rhyme_drawing ) init_smod
 contains
-  module subroutine rhyme_drawing_init ( draw, samr, logger )
+  module subroutine rhyme_drawing_init ( draw, samr, ic, logger )
     implicit none
 
     type ( drawing_t ), intent ( inout ) :: draw
     type ( samr_t ), intent ( inout ) :: samr
+    type ( initial_condition_t ), intent ( in ) :: ic
     type ( logger_t ), intent ( inout ) :: logger
 
     type ( shape_t ), pointer :: shape
@@ -32,21 +33,17 @@ contains
     do while ( associated( shape ) )
       select case ( shape%type )
       case ( drid%cuboid )
-        call logger%log( 'cuboid' )
         call rhyme_drawing_uniform_cuboid( samr, shape )
 
       case ( drid%sphere )
-        call logger%log( 'sphere' )
         shape%sphere%unit => .parse. shape%sphere%unit_str
-        call rhyme_drawing_uniform_sphere( samr, shape )
+        call rhyme_drawing_sphere( samr, ic, shape, logger )
 
 #if NDIM > 1
       case ( drid%prism )
-        call logger%log( 'prism...' )
         call rhyme_drawing_uniform_prism( samr, shape )
 
       case ( drid%smoothed_slab_2d )
-        call logger%log( 'slab')
         call rhyme_drawing_smoothed_slab_2d( samr, shape, logger )
 #endif
 
@@ -56,7 +53,6 @@ contains
     end do
 
 
-    call logger%log( 'perturbations' )
     call rhyme_drawing_apply_perturbations( samr, draw%perturbs, logger )
 
     call logger%end_section

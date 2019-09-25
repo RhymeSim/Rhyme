@@ -9,7 +9,7 @@ if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
   add_compile_options( -warn all -fpp -O3 )
   set( CMAKE_Fortran_FLAGS "-stand f08" )
 elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  add_compile_options( -Wall -Wextra -cpp -O3 ) # -fopt-info )
+  add_compile_options( -Wall -Wextra -cpp ) # -O3 ) # -fopt-info )
   set( CMAKE_Fortran_FLAGS "-std=f2008" )
 endif()
 
@@ -25,7 +25,7 @@ set( INCLUDE_DIR ${CMAKE_BINARY_DIR}/include CACHE PATH "Include directory" )
 set( CMAKE_Fortran_MODULE_DIRECTORY ${INCLUDE_DIR} )
 
 
-find_package( OpenMP )
+# find_package( OpenMP )
 
 if( OPENMP_FOUND )
   set( CMAKE_Fortran_FLAGS

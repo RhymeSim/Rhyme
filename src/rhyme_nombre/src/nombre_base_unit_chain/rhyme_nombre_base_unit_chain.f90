@@ -29,6 +29,11 @@ module rhyme_nombre_base_unit_chain
       type ( nombre_dimension_t ) :: dim
     end function rhyme_nombre_base_unit_chain_get_dim
 
+    module function rhyme_nombre_base_unit_chain_conversion_factor ( buc ) result ( cf )
+      type ( nombre_base_unit_t ), target, intent ( in ) :: buc
+      real ( kind=8 ) :: cf
+    end function rhyme_nombre_base_unit_chain_conversion_factor
+
 
 
     module function rhyme_nombre_base_unit_chain_mul_bucbuc ( buc1, buc2 ) result ( buc_new )
@@ -102,4 +107,8 @@ module rhyme_nombre_base_unit_chain
   interface operator ( .tail. )
     module procedure rhyme_nombre_base_unit_chain_tail
   end interface operator ( .tail. )
+
+  interface operator ( .cf. )
+    module procedure rhyme_nombre_base_unit_chain_conversion_factor
+  end interface operator ( .cf. )
 end module rhyme_nombre_base_unit_chain

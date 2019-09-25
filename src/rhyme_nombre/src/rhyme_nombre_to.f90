@@ -4,7 +4,7 @@ contains
     implicit none
 
     type ( nombre_t ), intent ( in ) :: n
-    type ( nombre_unit_t ), pointer, intent ( in ) :: u_new
+    type ( nombre_unit_t ), target, intent ( in ) :: u_new
     type ( nombre_t ) :: n_new
 
     real ( kind=8 ) :: co, cn
@@ -12,7 +12,7 @@ contains
     co = .cf. n%u
     cn = .cf. u_new
 
-    n_new%v = n%v * cn / co
+    n_new%v = n%v * co / cn
 
     n_new%u => u_new
   end function rhyme_nombre_to_u
@@ -21,15 +21,15 @@ contains
     implicit none
 
     type ( nombre_t ), intent ( in ) :: n
-    type ( nombre_base_unit_t ), pointer, intent ( in ) :: u_new
+    type ( nombre_base_unit_t ), target, intent ( in ) :: u_new
     type ( nombre_t ) :: n_new
 
     real ( kind=8 ) :: co, cn
 
     co = .cf. n%u
-    cn = 1d0
+    cn = .cf. u_new
 
-    n_new%v = n%v * cn / co
+    n_new%v = n%v * co / cn
 
     n_new%u => 1 * u_new
   end function rhyme_nombre_to_bu

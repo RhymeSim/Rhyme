@@ -132,7 +132,6 @@ contains
         call config%read( 'shape' .at. 2+NDIM .occur. i .hint. 'lengths', shape%cuboid%lengths(1:NDIM), logger )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, logger, filling_types )
-        ! currently only uniform filling is supported
         call config%read( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
 
 #if NDIM > 1
@@ -146,7 +145,6 @@ contains
 #endif
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, logger, filling_types )
-        ! currently only uniform filling is supported
         call config%read( 'shape_filling' .at. 2 .occur. i .hint. 'color', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
 
       case ( drid%sphere )
@@ -156,9 +154,9 @@ contains
         call config%read( 'shape' .at. 2+NDIM+2 .occur. i .hint. 'unit_str', shape%sphere%unit_str, logger )
 
         call config%read( 'shape_filling' .at. 1 .occur. i, shape%fill%type, logger, filling_types )
-        ! currently only uniform filling is supported
         call config%read( 'shape_filling' .at. 2 .occur. i, shape%fill%modes(1), logger, filling_modes )
-        call config%read( 'shape_filling' .at. 3 .occur. i .hint. 'color', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
+        call config%read( 'shape_filling' .at. 3 .occur. i .hint. 'color_1', shape%fill%colors( cid%rho:cid%p, 1 ), logger )
+        call config%read( 'shape_filling' .at. 3+NDIM+1+1 .occur. i .hint. 'color_2', shape%fill%colors( cid%rho:cid%p, 2 ), logger )
 
 #if NDIM > 1
       case ( drid%smoothed_slab_2d )

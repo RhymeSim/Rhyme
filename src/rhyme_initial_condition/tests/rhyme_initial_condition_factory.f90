@@ -53,12 +53,18 @@ contains
 #if NDIM == 1
     ic_fac%base_grid = [ 16 ]
     ic_fac%box_lengths%v = [ 1.d0 ]
+    ic_fac%box_lengths(1)%u => 1 * meter
 #elif NDIM == 2
     ic_fac%base_grid = [ 16, 8 ]
     ic_fac%box_lengths%v = [ 1.d0, .5d0 ]
+    ic_fac%box_lengths(1)%u => 1 * meter
+    ic_fac%box_lengths(2)%u => 1 * meter
 #elif NDIM == 3
     ic_fac%base_grid = [ 16, 8, 4 ]
     ic_fac%box_lengths%v = [ 1.d0, .5d0, .25d0 ]
+    ic_fac%box_lengths(1)%u => 1 * meter
+    ic_fac%box_lengths(2)%u => 1 * meter
+    ic_fac%box_lengths(3)%u => 1 * meter
 #endif
 
   end function rhyme_initial_condition_factory_generate

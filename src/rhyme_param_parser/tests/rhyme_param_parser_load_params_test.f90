@@ -104,6 +104,9 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
   call tester%expect( draw%shapes%next%fill%colors( cid%rho, 1 ) .toBe. 1.d0 )
   call tester%expect( draw%shapes%next%fill%colors( cid%u:cid%u+NDIM-1, 1 ) .toBe. 0.d0 )
   call tester%expect( draw%shapes%next%fill%colors( cid%p, 1 ) .toBe. 1.d0 )
+  call tester%expect( draw%shapes%next%fill%colors( cid%rho, 2 ) .toBe. 2.d0 )
+  call tester%expect( draw%shapes%next%fill%colors( cid%u:cid%u+NDIM-1, 2 ) .toBe. 3.d0 )
+  call tester%expect( draw%shapes%next%fill%colors( cid%p, 2 ) .toBe. 4.d0 )
 
 #if NDIM > 1
   call tester%expect( draw%shapes%next%next%type .toBe. drid%prism )

@@ -39,7 +39,7 @@ module rhyme_nombre_base_unit
       type ( nombre_base_unit_t ), pointer :: clone
     end function rhyme_nombre_base_unit_clone
 
-    pure module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
+    elemental module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
       type ( nombre_base_unit_t ), target, intent ( in ) :: bu1, bu2
       logical :: eq
     end function rhyme_nombre_base_unit_equality

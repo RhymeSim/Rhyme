@@ -4,9 +4,9 @@ enable_language( Fortran )
 project( rhyme_nombre )
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  set( CMAKE_Fortran_FLAGS "-stand f08" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08" )
 elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  set( CMAKE_Fortran_FLAGS "-std=f2008" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 endif()
 
 set( deps )
@@ -33,6 +33,7 @@ set( srcs
   src/nombre_base_unit/rhyme_nombre_base_unit.f90
 
 
+  src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_conversion_factor.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_div.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_mul.f90
   src/nombre_base_unit_chain/rhyme_nombre_base_unit_chain_pow.f90

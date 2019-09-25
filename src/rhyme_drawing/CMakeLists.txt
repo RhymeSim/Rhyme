@@ -4,15 +4,16 @@ enable_language( Fortran )
 project( rhyme_drawing )
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  set( CMAKE_Fortran_FLAGS "-stand f08" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08" )
 elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  set( CMAKE_Fortran_FLAGS "-std=f2008" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008" )
 endif()
 
 set( deps
   rhyme_physics
   rhyme_thermo_base
   rhyme_hydro_base
+  rhyme_initial_condition
   rhyme_samr
   rhyme_logger
 )
@@ -20,10 +21,12 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_drawing_new_perturb.f90
+  src/rhyme_drawing_new_shape.f90
   src/rhyme_drawing_apply_perturbations.f90
   src/rhyme_drawing_smoothed_slab_2d.f90
   src/rhyme_drawing_uniform_prism.f90
-  src/rhyme_drawing_uniform_sphere.f90
+  src/rhyme_drawing_sphere.f90
   src/rhyme_drawing_uniform_cuboid.f90
   src/rhyme_drawing_uniform_canvas.f90
   src/rhyme_drawing_init.f90

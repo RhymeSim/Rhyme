@@ -34,14 +34,14 @@ courant_number = 2d-1
 
 
 # **Exact Riemann Solver**
-pressure_floor = 1.d-10
-tolerance = 1.d-6
+pressure_floor = 1d-10
+tolerance = 1d-6
 n_iteration = 100
 
 
 # **Slope Limiter**
 slope_limiter = van_leer
-slope_limiter_omega = 0.d0
+slope_limiter_omega = 0d0
 
 
 # **MUSCL-Hancock solver**
@@ -49,23 +49,23 @@ solver_type = cpu_intensive
 
 
 # **Drawing**
-canvas = uniform .125d0 0.d0 0.d0 0.d0 .1d0
+canvas = uniform .125d0 0d0 0d0 0d0 .1d0
 
 shape = cuboid 1 1 1 56 128 1
-shape_filling = uniform 1.d0 0.d0 0.d0 0.d0 1.d0
+shape_filling = uniform 1d0 0d0 0d0 0d0 1d0
 
-shape = sphere 3.d0 4.d0 5.d0 2.34d0 2.34d-1 'unit'
-shape_filling = uniform absolute 1.d0 0.d0 0.d0 0.d0 1.d0
+shape = sphere 3d0 4d0 5d0 2.34d0 2.34d-1 'unit'
+shape_filling = uniform absolute 1d0 0d0 0d0 0d0 1d0 2d0 3d0 3d0 3d0 4d0
 
 shape = prism 56 1 1 56 128 1 72 1 1 1
-shape_filling = uniform 1.d0 0.d0 0.d0 0.d0 1.d0
+shape_filling = uniform 1d0 0d0 0d0 0d0 1d0
 
 shape = smoothed_slab_2d x 56 72 .2 .4
-shape_filling = .125d0 0.d0 0.d0 0.d0 .1d0 1.d0 0.d0 0.d0 0.d0 1.d0
+shape_filling = .125d0 0d0 0d0 0d0 .1d0 1d0 0d0 0d0 0d0 1d0
 
-perturb = harmonic cartesian x 0.05 32 0.d0 0.d0 0.d0 0.d0 1.d0
-perturb = symmetric_decaying cartesian y 1.d0 56 2 0.d0 0.d0 0.d0 0.d0 1.d0
-perturb = symmetric_decaying cartesian y 1.d0 72 8 0.d0 0.d0 0.d0 0.d0 1.d0
+perturb = harmonic cartesian x 0.05 32 0d0 0d0 0d0 0d0 1d0
+perturb = symmetric_decaying cartesian y 1d0 56 2 0d0 0d0 0d0 0d0 1d0
+perturb = symmetric_decaying cartesian y 1d0 72 8 0d0 0d0 0d0 0d0 1d0
 
 
 # **Chombo Output**

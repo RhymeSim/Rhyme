@@ -1,6 +1,6 @@
 submodule ( rhyme_nombre_base_unit ) equality_smod
 contains
-  pure module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
+  elemental module function rhyme_nombre_base_unit_equality ( bu1, bu2 ) result ( eq )
     implicit none
 
     type ( nombre_base_unit_t ), target, intent ( in ) :: bu1, bu2

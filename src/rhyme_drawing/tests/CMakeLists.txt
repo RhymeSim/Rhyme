@@ -6,6 +6,7 @@ set( factories
   rhyme_samr
   rhyme_ideal_gas
   rhyme_hydro_base
+  rhyme_initial_condition
   rhyme_thermo_base
   rhyme_logger
 )

@@ -4,9 +4,9 @@ enable_language( Fortran )
 project( rhyme_logger )
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  set( CMAKE_Fortran_FLAGS "-stand f08 -extend-source 512" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08 -extend-source 512" )
 elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  set( CMAKE_Fortran_FLAGS "-std=f2008 -ffree-line-length-512" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008 -ffree-line-length-512" )
 endif()
 
 set( deps
