@@ -33,6 +33,7 @@ logical function rhyme_nombre_unit_parse_test () result ( failed )
     du = derived_units( ceiling( rnd(:, 3) * size( derived_units ) ) )
 
     pow = rnd(:, 4) * 6 - 3
+    where ( abs( pow ) < .1d0 ) pow = 1d0
 
     duc_exp => ( 1 * ( prfx(1) * bu(1) ) )**pow(1) &
       / ( prfx(2) * du(2) )**int( pow(2) ) &

@@ -38,6 +38,7 @@ logical function rhyme_nombre_to_test () result (failed)
 
     pow(1:3) = rnd(:,5) * 10 - 5
     pow(4:6) = rnd(:,6) * 10 - 5
+    where ( abs(pow) < .1d0 ) pow = 1d0
 
     u1 => nom_u_factory%generate_chain( [ &
       1 * (prfx(1) * bu(1))**pow(1), (prfx(2) * du(1))**pow(2), 1 * (prfx(3) * bu(2))**pow(3) &
