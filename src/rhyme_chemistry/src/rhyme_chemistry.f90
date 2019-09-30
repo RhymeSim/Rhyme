@@ -27,13 +27,13 @@ module rhyme_chemistry
   interface
     pure module function rhyme_chemistry_one_over_mu ( chemistry, X, Y, f ) result ( one__mu )
       type ( chemistry_t ), intent ( in ) :: chemistry
-      real ( kind=8 ), intent ( in ) :: X, Y, f( NSPE )
+      real ( kind=8 ), intent ( in ) :: X, Y, f(3)
       real ( kind=8 ) :: one__mu
     end function rhyme_chemistry_one_over_mu
 
     pure module function rhyme_chemistry_mu (chemistry, X, Y, f) result ( mu )
       type ( chemistry_t ), intent ( in ) :: chemistry
-      real ( kind=8 ), intent ( in ) :: X, Y, f( NSPE )
+      real ( kind=8 ), intent ( in ) :: X, Y, f(3)
       real ( kind=8 ) :: mu
     end function rhyme_chemistry_mu
 
