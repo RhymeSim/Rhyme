@@ -42,7 +42,6 @@ set( deps
   rhyme_physics
   rhyme_hydro_base
   rhyme_thermo_base
-  rhyme_chemistry
   rhyme_samr
   rhyme_samr_bc
   rhyme_cfl

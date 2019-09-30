@@ -4,7 +4,6 @@ set( test_subject rhyme_ideal_gas )
 set( factories
   rhyme_physics
   rhyme_hydro_base
-  rhyme_chemistry
 )
 
 set( test_deps

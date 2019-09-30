@@ -6,7 +6,6 @@ program rhyme
   use rhyme_samr_bc
   use rhyme_cfl
   use rhyme_ideal_gas
-  use rhyme_chemistry
   use rhyme_thermo_base
   use rhyme_drawing
   use rhyme_slope_limiter
@@ -23,7 +22,6 @@ program rhyme
   type ( samr_t ) :: samr
   type ( samr_bc_t ) :: bc
   type ( cfl_t ) :: cfl
-  type ( chemistry_t ) :: chemistry
   type ( thermo_base_t ) :: thermo
   type ( drawing_t ) :: draw
   type ( irs_t ) :: irs
@@ -67,7 +65,6 @@ program rhyme
   mhws%type = mh%solver_type
 
   call rhyme_physics_init( physics, logger )
-  call rhyme_chemistry_init( chemistry, physics, logger )
   call rhyme_thermo_base_init( thermo, physics, logger )
   call rhyme_initial_condition_init( ic, samr, physics, logger )
   call rhyme_samr_bc_init( bc, samr, logger )
