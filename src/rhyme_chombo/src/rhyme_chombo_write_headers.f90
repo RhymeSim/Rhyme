@@ -6,23 +6,6 @@ contains
     type ( chombo_t ), intent ( inout ) :: chombo
     type ( samr_t ), intent ( in ) :: samr
 
-#if NDIM == 1
-#define PROB_J_LOW
-#define PROB_K_LOW
-#define PROB_J_HIGH
-#define PROB_K_HIGH
-#elif NDIM == 2
-#define PROB_J_LOW , 0
-#define PROB_K_LOW
-#define PROB_J_HIGH , samr%base_grid(2)-1
-#define PROB_K_HIGH
-#elif NDIM == 3
-#define PROB_J_LOW , 0
-#define PROB_K_LOW , 0
-#define PROB_J_HIGH , samr%base_grid(2)-1
-#define PROB_K_HIGH , samr%base_grid(3)-1
-#endif
-
     integer :: l, i, boxes_shape(6)
     character ( len=16 ) :: level_name
 
@@ -33,7 +16,8 @@ contains
       call rhyme_hdf5_util_create_group( chombo%file, level_name, chombo%level_ids(l) )
       call rhyme_hdf5_util_write_group_1d_array_attr( chombo%file, level_name, "dx", &
         reshape( samr%levels(l)%dx, shape=[3], pad=[0.d0] ))
-      call rhyme_hdf5_util_write_group_attr( chombo%file, level_name, "ref_ratio", samr%levels(l)%refine_factor )
+      call rhyme_hdf5_util_write_group_attr( chombo%file, level_name, &
+        "ref_ratio", samr%levels(l)%refine_factor )
     end do
 
     boxes_shape = 0

@@ -38,7 +38,7 @@ contains
       integer ( hid_t ) :: attr_id, space_id, dtype
 
 
-      call h5screate_simple_f( 1, dims, space_id, hdferr )
+      call h5screate_f( H5S_SCALAR_F, space_id, hdferr )
 
       call h5tcopy_f( type_id, dtype, hdferr )
       if ( len .ne. 1 ) call h5tset_size_f( dtype, int(len, kind=size_t), hdferr )
