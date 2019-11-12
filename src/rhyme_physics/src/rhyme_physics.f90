@@ -5,27 +5,22 @@ module rhyme_physics
   implicit none
 
 #if NDIM == 1
-#define LABEL_V_J
-#define LABEL_V_K
-#define CMP_J
-#define CMP_K
+#define RHOV_LABEL
+#define RHOW_LABEL
+#define RHOV_DEFINITION
+#define RHOW_DEFINITION
 #elif NDIM == 2
-#define LABEL_V_J , 'rho_v'
-#define LABEL_V_K
-#define CMP_J , rho_v = 3, v = 3
-#define CMP_K
+#define RHOV_LABEL , 'rho_v     '
+#define RHOW_LABEL
+#define RHOV_DEFINITION , rho_v = 3, v = 3
+#define RHOW_DEFINITION
 #elif NDIM == 3
-#define LABEL_V_J , 'rho_v'
-#define LABEL_V_K , 'rho_w'
-#define CMP_J , rho_v = 3, v = 3
-#define CMP_K , rho_w = 4, w = 4
+#define RHOV_LABEL , 'rho_v     '
+#define RHOW_LABEL , 'rho_w     '
+#define RHOV_DEFINITION , rho_v = 3, v = 3
+#define RHOW_DEFINITION , rho_w = 4, w = 4
 #endif
 
-#ifdef RT_SOLVER
-#define LABEL_T , 'temp '
-#else
-#define LABEL_T
-#endif
 
   real ( kind=8 ), parameter, private :: kb_value = 1.38064852e-23
   character ( len=32 ), parameter, private :: kb_unit_str = 'm^2 * kg * s^-2 * K^-1'
@@ -34,46 +29,48 @@ module rhyme_physics
   real ( kind=8 ), parameter, private :: amu_value = 1.6605e-27
   character ( len=32 ), parameter, private :: amu_unit_str = 'kg'
 
-  type, private :: components_indices_t
-    character ( len=16 ) :: labels( NCMP - NSPE ) = [ &
-#ifdef HYDRO_SOLVER
-      'rho  ', 'rho_u' LABEL_V_J LABEL_V_K, 'e_tot' LABEL_T ]
-#elif defined( RT_SOLVER )
-      'rho  ' LABEL_T ]
-#endif
-
-#ifdef HYDRO_SOLVER
+  type, private :: component_indices_t
     integer :: rho = 1
-    integer :: rho_u = 2, u = 2 CMP_J CMP_K
+    integer :: rho_u = 2, u = 2 RHOV_DEFINITION RHOW_DEFINITION
     integer :: e_tot = 1 + NDIM + 1, p = 1 + NDIM + 1
 #ifdef RT_SOLVER
     integer :: temp = 1 + NDIM + 1 + 1
+    integer :: ntr_frac_0 = 1 + NDIM + 1 + 1 + 1
+#if NSPE > 1
+    integer :: ntr_frac_1 = 1 + NDIM + 1 + 1 + 2
 #endif
-#elif defined( RT_SOLVER )
-    integer :: temp = 1
+#if NSPE > 2
+    integer :: ntr_frac_2 = 1 + NDIM + 1 + 1 + 3
 #endif
-  end type components_indices_t
-
-  type ( components_indices_t ), parameter :: cid = components_indices_t()
-
-
-  type physics_indices_t
-    integer :: none = 0
-#ifdef HYDRO_SOLVER
-    integer :: mh = 1, muscl_hancock = 1
 #endif
+
+    character ( len=16 ) :: labels( NCMP ) = [ &
+      'rho       ', 'rho_u     ' RHOV_LABEL RHOW_LABEL, 'e_tot     ' &
 #ifdef RT_SOLVER
-    integer :: mcrt = 10, monte_carlo_ray_tracing = 10
+      , 'temp      ', 'ntr_frac_0' &
+#if NSPE > 1
+      , 'ntr_frac_1' &
 #endif
+#if NSPE > 2
+      , 'ntr_frac_2' &
+#endif
+#endif
+    ]
+  end type component_indices_t
+
+  type ( component_indices_t ), parameter :: cid = component_indices_t()
+
+
+  type, private :: physics_indices_t
+    integer :: none = 0
+    integer :: mh = 1, muscl_hancock = 1
   end type physics_indices_t
 
   type ( physics_indices_t ), parameter :: phid = physics_indices_t()
 
 
   type physics_t
-#ifdef HYDRO_SOLVER
     integer :: hydro = phid%none
-#endif
 #ifdef RT_SOLVER
     integer :: rt = phid%none
 #endif

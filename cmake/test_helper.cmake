@@ -116,5 +116,3 @@ while( ${len} GREATER ${idx} )
 endwhile()
 
 enable_testing()
-
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/include_from_cmake_global/CMakeLists.txt )

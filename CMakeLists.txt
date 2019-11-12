@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.12 )
 project( Rhyme )
 enable_language( Fortran )
 
-# Check config file (CMakeGlobal/config/CMakeLists.txt) before compiling
+# Check config file (config.cmake) before compiling
 
 if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
   add_compile_options( -warn all -fpp -O3 )
@@ -15,7 +15,7 @@ endif()
 
 
 set( rhyme_src_dir src )
-include( ${CMAKE_CURRENT_SOURCE_DIR}/CMakeGlobal/configs/CMakeLists.txt )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/config.cmake )
 
 
 set( LIB_DIR ${CMAKE_BINARY_DIR}/lib CACHE PATH "Lib directory" )

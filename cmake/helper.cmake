@@ -51,5 +51,3 @@ add_custom_target( ${PROJECT_NAME}_watch
   done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/include_from_cmake_global/CMakeLists.txt )

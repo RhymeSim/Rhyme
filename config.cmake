@@ -1,8 +1,8 @@
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/if_not_defined_define/CMakeLists.txt )
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../CMakeGlobal/calc_number_of_components/CMakeLists.txt )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/IfNotDefinedDefine.cmake )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/CalcNumberOfComponents.cmake )
 
 set( HYDRO_SOLVER ON )
-set( RT_SOLVER OFF )
+set( RT_SOLVER ON )
 
 set( NUMBER_OF_DIM 3 )
 set( NUMBER_OF_SPECIES 3 )

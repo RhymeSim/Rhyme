@@ -34,7 +34,7 @@ set( srcs
 )
 
 set( rhyme_src_dir ../../.. )
-include( ${CMAKE_CURRENT_SOURCE_DIR}/../../../../CMakeGlobal/CMakeLists.txt )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake )
 
 find_package( HDF5 REQUIRED COMPONENTS Fortran )
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${HDF5_Fortran_LIBRARIES} )
