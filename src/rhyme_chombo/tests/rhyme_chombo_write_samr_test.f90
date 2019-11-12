@@ -1,6 +1,7 @@
 logical function rhyme_chombo_write_samr_test () result ( failed )
   use rhyme_chombo_factory
   use rhyme_samr_factory
+  use rhyme_physics_factory
   use rhyme_logger_factory
   use rhyme_assertion
 
@@ -10,6 +11,7 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
 
   type ( chombo_t ) :: ch
   type ( samr_t ) :: samr
+  type ( physics_t ) :: physics
   type ( logger_t ) :: logger
 
   ! Chombo filename
@@ -24,6 +26,7 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
 
   ch = ch_factory%generate()
   samr = samr_factory%generate()
+  physics = ph_factory%generate()
   logger = log_factory%generate()
 
   call rhyme_chombo_init( ch, samr, logger )
@@ -32,7 +35,7 @@ logical function rhyme_chombo_write_samr_test () result ( failed )
   ch%iteration = samr%levels(0)%iteration
   call rhyme_chombo_filename_generator( ch, filename )
 
-  call rhyme_chombo_write_samr( ch, samr )
+  call rhyme_chombo_write_samr( ch, physics, samr )
 
   call h5open_f( hdferr )
   call h5fopen_f( filename, H5F_ACC_RDONLY_F, file_id, hdferr )

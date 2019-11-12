@@ -47,8 +47,9 @@ module rhyme_chombo
       type ( chombo_t ), intent ( inout ) :: chombo
     end subroutine rhyme_chombo_create_chombo
 
-    module subroutine rhyme_chombo_write_headers ( chombo, samr )
+    module subroutine rhyme_chombo_write_headers ( chombo, physics, samr )
       type ( chombo_t ), intent ( inout ) :: chombo
+      type ( physics_t ), intent ( in ) :: physics
       type ( samr_t ), intent ( in ) :: samr
     end subroutine rhyme_chombo_write_headers
 
@@ -57,8 +58,9 @@ module rhyme_chombo
       type ( samr_level_t ), intent ( in ) :: level
     end subroutine rhyme_chombo_write_level_data
 
-    module subroutine rhyme_chombo_write_samr ( chombo, samr )
+    module subroutine rhyme_chombo_write_samr ( chombo, physics, samr )
       type ( chombo_t ), intent ( inout ) :: chombo
+      type ( physics_t ), intent ( in ) :: physics
       type ( samr_t ), intent ( in ) :: samr
     end subroutine rhyme_chombo_write_samr
   end interface
