@@ -58,7 +58,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test () result ( fai
       mh_adv_test%samr(d)%levels(0)%dt = mh_adv_test%dt(d)
       call rhyme_samr_bc_set_boundaries( mh_adv_test%bc(d), mh_adv_test%samr(d) )
 
-      call rhyme_chombo_write_samr( ch(d), mh_adv_test%samr(d) )
+      call rhyme_chombo_write_samr( ch(d), physics, mh_adv_test%samr(d) )
 
       call rhyme_muscl_hancock_solve_memory_intensive( &
         mh_adv_test%samr(d)%levels(0)%boxes(1), &

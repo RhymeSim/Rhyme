@@ -19,6 +19,7 @@ set( deps
 set( internal_deps )
 
 set( srcs
+  src/rhyme_initial_condition_load_radamesh.f90
   src/rhyme_initial_condition_load_rhyme.f90
   src/rhyme_initial_condition_load_headers.f90
   src/rhyme_initial_condition_load_snapshot.f90

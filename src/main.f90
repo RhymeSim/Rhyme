@@ -95,7 +95,7 @@ program rhyme
     ! Store a snapshot if necessary
     if ( modulo(samr%levels(0)%iteration, 1) .eq. 0 ) then
       call logger%begin_section( 'save-chombo' )
-      call rhyme_chombo_write_samr( chombo, samr )
+      call rhyme_chombo_write_samr( chombo, physics, samr )
       call logger%end_section( print_duration=.true. )
     end if
 

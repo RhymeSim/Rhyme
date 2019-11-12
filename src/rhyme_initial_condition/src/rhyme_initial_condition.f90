@@ -58,5 +58,11 @@ module rhyme_initial_condition
       type ( samr_t ), intent ( inout ) :: samr
       type ( logger_t ), intent ( inout ) :: logger
     end subroutine rhyme_initial_condition_load_rhyme
+
+    module subroutine rhyme_initial_condition_load_radamesh(ic, samr, logger)
+      type ( initial_condition_t ), intent ( in ) :: ic
+      type ( samr_t ), intent ( inout ) :: samr
+      type ( logger_t ), intent ( inout ) :: logger
+    end subroutine rhyme_initial_condition_load_radamesh
   end interface
 end module rhyme_initial_condition
