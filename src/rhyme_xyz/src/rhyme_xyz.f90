@@ -7,7 +7,7 @@ module rhyme_xyz
     integer :: idx = 1
   end type indices_t
 
-  type ( indices_t ), parameter :: xxxid = indices_t ()
+  type(indices_t), parameter :: xxxid = indices_t()
 
 
   type xyz_t
