@@ -77,3 +77,8 @@ code development and should be kept updated at all time.
   Expected implementation date
   [Reference]
 -->
+
+# Contributing
+Please read [CONTRIBUTING.md](./../../CONTRIBUTING.md) for details of
+our code of conduct and the process for reporting bugs, suggeting
+enhancements and submitting pull requests.
