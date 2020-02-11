@@ -76,7 +76,7 @@ The complete list of parameters (`keywords` and *values*).
 - **CFL**
   - `courant_number`: (e.g. 8d-1)
 - **Exact Riemann Solver**
-  - `pressure_floor`: (e.g. 1d-10)
+  - `pressure_floor`: (e.g. 2.2250738585072014E-308) [internal unit]
   - `tolerance`: (e.g. 1d-6)
   - `n_iteration`: (e.g. 100)
 - **Slope Limiter**

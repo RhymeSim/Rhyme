@@ -69,11 +69,11 @@ contains
     else                                                                ! Non-vacuum cases
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%p = calc_p(l)
-      sol%left%cs = calc_cs(l)
+      sol%left%p = max(calc_p(l), e)
+      sol%left%cs = max(calc_cs(l), e)
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
-      sol%right%p = calc_p(r)
-      sol%right%cs = calc_cs(r)
+      sol%right%p = max(calc_p(r), e)
+      sol%right%cs = max(calc_cs(r), e)
 
       s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1

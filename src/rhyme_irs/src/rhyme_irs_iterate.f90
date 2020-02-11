@@ -41,7 +41,7 @@ contains
       if ( solution%star%p > 0.d0 ) exit
     end do
 
-    if ( solution%star%p < 0.d0 ) solution%star%p = irs%tolerance
+    if ( solution%star%p < 0.d0 ) solution%star%p = irs%pressure_floor
 
     solution%star%u = 0.5d0 * ( &
       ( solution%right%v(axis) + solution%left%v(axis) ) &

@@ -32,7 +32,7 @@ courant_number = .2d0
 
 
 # **Exact Riemann Solver**
-pressure_floor = 1d-10
+pressure_floor = 2.2250738585072014E-308
 tolerance = 1d-6
 n_iteration = 100
 
