@@ -8,6 +8,8 @@ contains
 
     type ( chombo_t ) :: ch
     integer :: l, prob_domain(3)
+    real ( kind=8 ) :: dx(3)
+    character ( len=16 ) :: level_name
 
     call rhyme_hdf5_util_open( ch%file, ic%snapshot_path )
 
@@ -26,7 +28,10 @@ contains
     samr%levels%level = [ (l, l=0, samrid%max_nlevels) ]
 
     do l = 0, samr%nlevels - 1
-      samr%levels(l)%dx = 1.d0 / ( samr%base_grid * 2.d0**l )
+      write( level_name, '(A7,I1)' ) '/level_', l
+      call rhyme_hdf5_util_read_group_1d_array_attr( ch%file, trim(level_name), 'dx', dx )
+
+      samr%levels(l)%dx = dx(1:NDIM)
     end do
 
     call rhyme_hdf5_util_close( ch%file )
