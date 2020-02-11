@@ -30,8 +30,9 @@ contains
     do l = 0, samr%nlevels - 1
       write( level_name, '(A7,I1)' ) '/level_', l
       call rhyme_hdf5_util_read_group_1d_array_attr( ch%file, trim(level_name), 'dx', dx )
-
       samr%levels(l)%dx = dx(1:NDIM)
+
+      call rhyme_hdf5_util_read_group_attr( ch%file, trim(level_name), 'ref_ratio', samr%levels(l)%refine_factor )
     end do
 
     call rhyme_hdf5_util_close( ch%file )
