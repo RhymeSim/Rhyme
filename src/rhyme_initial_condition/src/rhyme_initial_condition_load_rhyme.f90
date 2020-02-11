@@ -8,7 +8,7 @@ contains
     type ( logger_t ), intent ( inout ) :: logger
 
     type ( chombo_t ) :: ch
-    integer :: l, b, ofs
+    integer :: l, b, v, ofs
     integer :: nboxes, lboxes
     integer :: bdims( NDIM ), ub( NDIM ), blen
     character ( len=16 ) :: level_name
@@ -61,24 +61,10 @@ contains
 #define RANGE_K ,1:ub(3)
 #endif
 
-        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho ) = &
-        reshape( data( ofs+0*blen+1:ofs+1*blen ), bdims )
-
-        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_u ) = &
-        reshape( data( ofs+1*blen+1:ofs+2*blen ), bdims )
-
-#if NDIM > 1
-        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_v ) = &
-        reshape( data( ofs+2*blen+1:ofs+3*blen ), bdims )
-#endif
-
-#if NDIM > 2
-        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%rho_w ) = &
-        reshape( data( ofs+3*blen+1:ofs+4*blen ), bdims )
-#endif
-
-        samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, cid%e_tot ) = &
-        reshape( data( ofs+(NDIM+1)*blen+1:ofs+(NDIM+2)*blen ), bdims )
+        do v = 1, NCMP
+          samr%levels(l)%boxes(b)%cells( 1:ub(1) RANGE_J RANGE_K, v ) = &
+            reshape( data( ofs+(v-1)*blen+1:ofs+v*blen ), bdims)
+        end do
 
         ofs = ofs + NCMP * blen
       end do
