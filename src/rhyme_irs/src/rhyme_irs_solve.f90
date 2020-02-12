@@ -17,10 +17,10 @@ contains
     dxdt = dx / dt
 
     ! Filling left and right densities
-    sol%left%rho = l(cid%rho)
-    sol%right%rho = r(cid%rho)
+    sol%left%rho = max(l(cid%rho), irs%density_floor)
+    sol%right%rho = max(r(cid%rho), irs%density_floor)
 
-    e = tiny( 0.d0 )
+    e = irs%density_floor + tiny( 0.d0 )
     vacuum_right = sol%right%rho < e .and. sol%left%rho > e
     vacuum_left = sol%left%rho < e .and. sol%right%rho > e
     vacuum_both_sides = sol%left%rho < e .and. sol%right%rho < e
@@ -28,9 +28,8 @@ contains
     if ( vacuum_right ) then
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%v = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%p = calc_p(l)
-      sol%left%cs = calc_cs(l)
+      sol%left%p = max(calc_p(l), irs%pressure_floor)
+      sol%left%cs = max(calc_cs(l), irs%cs_floor)
       sol%right%v = 0.d0
       sol%right%p = 0.d0
       sol%right%cs = 0.d0
@@ -51,8 +50,8 @@ contains
       sol%left%p = 0.d0
       sol%left%cs = 0.d0
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
-      sol%right%p = calc_p(r)
-      sol%right%cs = calc_cs(r)
+      sol%right%p = max(calc_p(r), irs%pressure_floor)
+      sol%right%cs = max(calc_cs(r), irs%cs_floor)
 
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1
 
@@ -69,11 +68,11 @@ contains
     else                                                                ! Non-vacuum cases
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%p = max(calc_p(l), e)
-      sol%left%cs = max(calc_cs(l), e)
+      sol%left%p = max(calc_p(l), irs%pressure_floor)
+      sol%left%cs = max(calc_cs(l), irs%cs_floor)
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
-      sol%right%p = max(calc_p(r), e)
-      sol%right%cs = max(calc_cs(r), e)
+      sol%right%p = max(calc_p(r), irs%pressure_floor)
+      sol%right%cs = max(calc_cs(r), irs%cs_floor)
 
       s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1

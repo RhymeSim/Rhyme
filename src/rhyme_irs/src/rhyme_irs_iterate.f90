@@ -13,7 +13,7 @@ contains
     integer :: i, guess_id
 
     guessed_p = rhyme_irs_guess_p_star( solution%left, solution%right, &
-      axis, irs%tolerance )
+      axis, irs%pressure_floor )
 
     do guess_id = 1, size( guessed_p )
       solution%star%p = guessed_p( guess_id )

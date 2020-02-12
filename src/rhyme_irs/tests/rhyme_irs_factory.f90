@@ -7,7 +7,8 @@ module rhyme_irs_factory
     ! Default variables
     integer :: n_iteration = 100
     real ( kind=8 ) :: tolerance = 1.d-6
-    real ( kind=8 ) :: pressure_floor = 1.d-10
+    real ( kind=8 ) :: pressure_floor = 1.d-20
+    real ( kind=8 ) :: density_floor = 1.d-7
     logical :: initialized = .false.
   contains
     procedure :: init => rhyme_irs_factory_init
@@ -25,7 +26,8 @@ contains
 
     this%n_iteration = 100
     this%tolerance = 1.d-6
-    this%pressure_floor = 1.d-10
+    this%pressure_floor = 1.d-20
+    this%density_floor = 1.d-7
 
     this%initialized = .true.
   end subroutine rhyme_irs_factory_init
@@ -42,5 +44,6 @@ contains
     irs%n_iteration = this%n_iteration
     irs%tolerance = this%tolerance
     irs%pressure_floor = this%pressure_floor
+    irs%density_floor = this%density_floor
   end function rhyme_irs_factory_generate
 end module rhyme_irs_factory

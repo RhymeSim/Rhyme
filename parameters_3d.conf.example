@@ -35,6 +35,7 @@ courant_number = 2d-1
 
 # **Exact Riemann Solver**
 pressure_floor = 2.2250738585072014E-308
+density_floor = 2.2250738585072014E-308
 tolerance = 1d-6
 n_iteration = 100
 

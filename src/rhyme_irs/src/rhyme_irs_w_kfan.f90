@@ -12,7 +12,7 @@ contains
     real ( kind=8 ) :: rho, v( NDIM ), p, cs
 
     if ( is_right ) then
-      cs = - s%cs
+      cs = -s%cs
     else
       cs = s%cs
     end if

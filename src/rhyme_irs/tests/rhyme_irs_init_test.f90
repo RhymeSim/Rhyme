@@ -1,21 +1,31 @@
 logical function rhyme_irs_init_test () result ( failed )
   use rhyme_irs_factory
+  use rhyme_physics_factory
+  use rhyme_thermo_base_factory
   use rhyme_logger_factory
   use rhyme_assertion
 
   implicit none
 
-  type ( assertion_t ) :: irs_tester
+  type ( assertion_t ) :: tester
 
   type ( irs_t ) :: irs
+  type ( physics_t ) :: physics
+  type ( thermo_base_t ) :: thermo
   type ( logger_t ) :: logger
 
-  irs_tester = .describe. "irs_init"
+  tester = .describe. "irs_init"
 
   irs = irs_factory%generate()
+  physics = ph_factory%generate()
   logger = log_factory%generate()
+
+  thermo = th_factory%generate( physics, thid%monatomic )
+  call rhyme_thermo_base_init( thermo, physics, logger )
 
   call rhyme_irs_init( irs, logger )
 
-  failed = irs_tester%failed()
+  call tester%expect( irs%cs_floor .toBe. sqrt( 5.0 / 3.0 * irs%pressure_floor / irs%density_floor) .within. 7)
+
+  failed = tester%failed()
 end function rhyme_irs_init_test
