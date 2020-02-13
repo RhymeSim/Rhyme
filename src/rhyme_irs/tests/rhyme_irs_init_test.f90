@@ -25,7 +25,5 @@ logical function rhyme_irs_init_test () result ( failed )
 
   call rhyme_irs_init( irs, logger )
 
-  call tester%expect( irs%cs_floor .toBe. sqrt( 5.0 / 3.0 * irs%pressure_floor / irs%density_floor) .within. 7)
-
   failed = tester%failed()
 end function rhyme_irs_init_test

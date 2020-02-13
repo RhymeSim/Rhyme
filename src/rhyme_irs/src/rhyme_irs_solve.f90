@@ -29,7 +29,7 @@ contains
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
       sol%left%p = max(calc_p(l), irs%pressure_floor)
-      sol%left%cs = max(calc_cs(l), irs%cs_floor)
+      sol%left%cs = max(calc_cs(l), tiny( 0d0 ))
       sol%right%v = 0.d0
       sol%right%p = 0.d0
       sol%right%cs = 0.d0
@@ -51,7 +51,7 @@ contains
       sol%left%cs = 0.d0
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
       sol%right%p = max(calc_p(r), irs%pressure_floor)
-      sol%right%cs = max(calc_cs(r), irs%cs_floor)
+      sol%right%cs = max(calc_cs(r), tiny( 0d0 ))
 
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1
 
@@ -69,10 +69,10 @@ contains
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
       sol%left%p = max(calc_p(l), irs%pressure_floor)
-      sol%left%cs = max(calc_cs(l), irs%cs_floor)
+      sol%left%cs = max(calc_cs(l), tiny( 0d0 ))
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
       sol%right%p = max(calc_p(r), irs%pressure_floor)
-      sol%right%cs = max(calc_cs(r), irs%cs_floor)
+      sol%right%cs = max(calc_cs(r), tiny( 0d0 ))
 
       s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1

@@ -18,7 +18,6 @@ module rhyme_irs
     integer :: n_iteration = 100
     real ( kind=8 ) :: pressure_floor = tiny(0d0)
     real ( kind=8 ) :: density_floor = tiny(0d0)
-    real ( kind=8 ) :: cs_floor = tiny(0d0)
     real ( kind=8 ) :: tolerance = 1.d-6
   end type irs_t
 
@@ -114,12 +113,10 @@ contains
 
     g = get_gamma()
 
-    irs%cs_floor = sqrt( g * irs%pressure_floor / irs%density_floor )
 
     call logger%log( '', 'n_iteration', '=', [ irs%n_iteration ] )
     call logger%log( '', 'pressure_floor', '=', [ irs%pressure_floor ] )
     call logger%log( '', 'density_floor', '=', [ irs%density_floor ] )
-    call logger%log( '', 'cs_floor', '=', [ irs%cs_floor ] )
     call logger%log( '', 'tolerance', '=', [ irs%tolerance ] )
 
     call logger%log( 'Setting up ideal gas coefficients...' )
