@@ -44,10 +44,10 @@ enable_testing()
 # Watch target (Make sure inotify-tools is installed)
 add_custom_target( ${PROJECT_NAME}_watch
   VERBATIM COMMAND /bin/sh -c " \
-  inotifywait --excludei /*build*/ -m -r -e close_write -e create -e delete -e move ${CMAKE_CURRENT_SOURCE_DIR} \
+  inotifywait --excludei /*build*/ -m -r -e modify ${CMAKE_CURRENT_SOURCE_DIR} \
   | while read -r path action file; do \
     echo \"$path $action $file\"; \
-    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 3; \
+    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 10; \
   done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
