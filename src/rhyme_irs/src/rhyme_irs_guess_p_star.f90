@@ -38,6 +38,8 @@ contains
     ! Arithmetic mean
     p_star(5) = .5d0 * ( l%p + r%p )
 
+    ! NB: Here we are enforcing a pressure floor for the guessed p_stars
+    ! where( p_star < 0d0 ) p_star = p_vacuum might be a better and more conservative approach
     p_star = max( p_star, p_vacuum )
   end function rhyme_irs_guess_p_star
 

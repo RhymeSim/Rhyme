@@ -13,7 +13,7 @@ contains
     integer :: i, guess_id
 
     guessed_p = rhyme_irs_guess_p_star( solution%left, solution%right, &
-      axis, irs%pressure_floor )
+      axis, irs%w_vacuum( cid%p ) )
 
     do guess_id = 1, size( guessed_p )
       solution%star%p = guessed_p( guess_id )
@@ -41,7 +41,7 @@ contains
       if ( solution%star%p > 0.d0 ) exit
     end do
 
-    if ( solution%star%p < 0.d0 ) solution%star%p = irs%pressure_floor
+    if ( solution%star%p < 0.d0 ) solution%star%p = irs%w_vacuum( cid%p )
 
     solution%star%u = 0.5d0 * ( &
       ( solution%right%v(axis) + solution%left%v(axis) ) &

@@ -37,8 +37,8 @@ logical function rhyme_irs_guess_p_star_test () result ( failed )
     r%cs = rnd2(2+NDIM+1)
 
     do axis = 1, NDIM
-      p_star = rhyme_irs_guess_p_star(l, r, axis, irs%pressure_floor)
-      call tester%expect( all(( p_star - irs%pressure_floor + nearest(0d0, 1d0) ) > 0d0) .toBe. .true.)
+      p_star = rhyme_irs_guess_p_star(l, r, axis, irs%w_vacuum( cid%p ))
+      call tester%expect( all(( p_star - irs%w_vacuum( cid%p ) + nearest(0d0, 1d0) ) > 0d0) .toBe. .true.)
     end do
   end do
 

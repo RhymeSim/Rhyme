@@ -30,8 +30,8 @@ courant_number = .2d0
 
 
 # **Exact Riemann Solver**
-pressure_floor = 2.2250738585072014E-308
-density_floor = 2.2250738585072014E-308
+vacuum_pressure = 2.2250738585072014E-308
+vacuum_density = 2.2250738585072014E-308
 tolerance = 1d-6
 n_iteration = 100
 

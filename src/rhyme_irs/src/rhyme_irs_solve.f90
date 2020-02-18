@@ -17,10 +17,10 @@ contains
     dxdt = dx / dt
 
     ! Filling left and right densities
-    sol%left%rho = max(l(cid%rho), irs%density_floor)
-    sol%right%rho = max(r(cid%rho), irs%density_floor)
+    sol%left%rho = max(l(cid%rho), irs%w_vacuum( cid%rho ))
+    sol%right%rho = max(r(cid%rho), irs%w_vacuum( cid%rho ))
 
-    e_rho = nearest(irs%density_floor, 1d0)
+    e_rho = nearest(irs%w_vacuum( cid%rho ) , 1d0)
     vacuum_right = sol%right%rho < e_rho .and. sol%left%rho > e_rho
     vacuum_left = sol%left%rho < e_rho .and. sol%right%rho > e_rho
     vacuum_both_sides = sol%left%rho < e_rho .and. sol%right%rho < e_rho
@@ -28,10 +28,10 @@ contains
     if ( vacuum_right ) then
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%p = max(calc_p(l), irs%pressure_floor)
+      sol%left%p = max(calc_p(l), irs%w_vacuum( cid%p ))
       sol%left%cs = max(calc_cs(l), tiny( 0d0 ))
       sol%right%v = 0d0
-      sol%right%p = irs%pressure_floor
+      sol%right%p = irs%w_vacuum( cid%p )
       sol%right%cs = 0d0
 
       s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
@@ -47,10 +47,10 @@ contains
     else if ( vacuum_left ) then
 
       sol%left%v = 0d0
-      sol%left%p = irs%pressure_floor
+      sol%left%p = irs%w_vacuum( cid%p )
       sol%left%cs = 0d0
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
-      sol%right%p = max(calc_p(r), irs%pressure_floor)
+      sol%right%p = max(calc_p(r), irs%w_vacuum( cid%p ))
       sol%right%cs = max(calc_cs(r), tiny( 0d0 ))
 
       s_starr = sol%right%v(axis) + 2 * sol%right%cs / gm1
@@ -68,10 +68,10 @@ contains
     else                                                                ! Non-vacuum cases
 
       sol%left%v( 1:NDIM ) = l( cid%rho_u:cid%rho_u+NDIM-1 ) / l( cid%rho )
-      sol%left%p = max(calc_p(l), irs%pressure_floor)
+      sol%left%p = max(calc_p(l), irs%w_vacuum( cid%p ))
       sol%left%cs = max(calc_cs(l), tiny( 0d0 ))
       sol%right%v( 1:NDIM ) = r( cid%rho_u:cid%rho_u+NDIM-1 ) / r( cid%rho )
-      sol%right%p = max(calc_p(r), irs%pressure_floor)
+      sol%right%p = max(calc_p(r), irs%w_vacuum( cid%p ))
       sol%right%cs = max(calc_cs(r), tiny( 0d0 ))
 
       s_starl = sol%left%v(axis) - 2 * sol%left%cs / gm1
