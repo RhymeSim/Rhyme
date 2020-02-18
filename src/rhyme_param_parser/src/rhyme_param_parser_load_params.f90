@@ -213,8 +213,8 @@ contains
     end do
 
     ! Iterative Riemann Solver
-    call config%read( 'pressure_floor' .at. 1, irs%pressure_floor, logger )
-    call config%read( 'density_floor' .at. 1, irs%density_floor, logger )
+    call config%read( 'vacuum_density' .at. 1, irs%w_vacuum( cid%rho ), logger )
+    call config%read( 'vacuum_pressure' .at. 1, irs%w_vacuum( cid%p ), logger )
     call config%read( 'tolerance' .at. 1, irs%tolerance, logger )
     call config%read( 'n_iteration' .at. 1, irs%n_iteration, logger )
 

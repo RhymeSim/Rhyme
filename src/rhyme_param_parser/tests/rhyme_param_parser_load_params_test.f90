@@ -164,8 +164,8 @@ logical function rhyme_param_parser_load_params_test () result ( failed )
 #endif
 
   ! Iterative Riemann Solver
-  call tester%expect( irs%pressure_floor .toBe. 2.2250738585072014E-308 )
-  call tester%expect( irs%density_floor .toBe. 2.2250738585072014E-308 )
+  call tester%expect( irs%w_vacuum( cid%p ) .toBe. 2.2250738585072014E-308 )
+  call tester%expect( irs%w_vacuum( cid%rho ) .toBe. 2.2250738585072014E-308 )
   call tester%expect( irs%tolerance .toBe. 1.d-6 )
   call tester%expect( irs%n_iteration .toBe. 100 )
 

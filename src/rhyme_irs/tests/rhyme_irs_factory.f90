@@ -7,6 +7,7 @@ module rhyme_irs_factory
     ! Default variables
     integer :: n_iteration = 100
     real ( kind=8 ) :: tolerance = 1.d-6
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: w_vacuum = tiny( 0d0 )
     real ( kind=8 ) :: pressure_floor = 1.d-20
     real ( kind=8 ) :: density_floor = 1.d-7
     logical :: initialized = .false.
@@ -25,9 +26,15 @@ contains
     class ( rhyme_irs_factory_t ), intent ( inout ) :: this
 
     this%n_iteration = 100
-    this%tolerance = 1.d-6
+
+    this%w_vacuum = 0d0
+    this%w_vacuum( cid%rho ) = 1d-7
+    this%w_vacuum( cid%p ) = 1d-20
+
     this%pressure_floor = 1.d-20
     this%density_floor = 1.d-7
+
+    this%tolerance = 1.d-6
 
     this%initialized = .true.
   end subroutine rhyme_irs_factory_init
@@ -41,6 +48,7 @@ contains
 
     if ( .not. this%initialized ) call this%init
 
+    irs%w_vacuum = this%w_vacuum
     irs%n_iteration = this%n_iteration
     irs%tolerance = this%tolerance
     irs%pressure_floor = this%pressure_floor

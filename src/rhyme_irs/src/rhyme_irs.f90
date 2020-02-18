@@ -16,6 +16,7 @@ module rhyme_irs
 
   type irs_t
     integer :: n_iteration = 100
+    real ( kind=8 ), dimension ( cid%rho:cid%p ) :: w_vacuum = tiny(0d0)
     real ( kind=8 ) :: pressure_floor = tiny(0d0)
     real ( kind=8 ) :: density_floor = tiny(0d0)
     real ( kind=8 ) :: tolerance = 1.d-6
@@ -49,10 +50,10 @@ module rhyme_irs
       type ( rp_star_side_t ), intent ( inout ) :: star
     end subroutine rhyme_irs_nonlinear_wave_function
 
-    pure module function rhyme_irs_guess_p_star ( l, r, axis, p_floor ) result ( p_star )
+    pure module function rhyme_irs_guess_p_star ( l, r, axis, p_vacuum ) result ( p_star )
       type ( rp_side_t ), intent ( in ) :: l, r
       integer, intent ( in ) :: axis
-      real ( kind=8 ), intent ( in ) :: p_floor
+      real ( kind=8 ), intent ( in ) :: p_vacuum
       real ( kind=8 ) :: p_star(5)
     end function rhyme_irs_guess_p_star
 
@@ -100,7 +101,6 @@ module rhyme_irs
   end interface
 
 contains
-
   module subroutine rhyme_irs_init ( irs, logger )
     implicit none
 
@@ -114,9 +114,9 @@ contains
     g = get_gamma()
 
 
+    call logger%log( '', 'vacuum_density', '=', [ irs%w_vacuum( cid%rho ) ] )
+    call logger%log( '', 'vacuum_pressure', '=', [ irs%w_vacuum( cid%p ) ] )
     call logger%log( '', 'n_iteration', '=', [ irs%n_iteration ] )
-    call logger%log( '', 'pressure_floor', '=', [ irs%pressure_floor ] )
-    call logger%log( '', 'density_floor', '=', [ irs%density_floor ] )
     call logger%log( '', 'tolerance', '=', [ irs%tolerance ] )
 
     call logger%log( 'Setting up ideal gas coefficients...' )

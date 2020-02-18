@@ -127,7 +127,7 @@ contains
 
             ws%levels(l)%boxes(b)%u( i JDX KDX, cid%rho:cid%e_tot ) = &
               ws%levels(l)%boxes(b)%u( i JDX KDX, cid%rho:cid%e_tot ) &
-              + dt / dx( samrid%x ) * df( cid%rho:cid%e_tot, axis )
+              + dt / dx( axis ) * df( cid%rho:cid%e_tot, axis )
           end do
 
         end do
