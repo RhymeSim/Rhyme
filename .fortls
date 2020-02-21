@@ -1,0 +1,5 @@
+{
+  "excl_suffixes": ["build"],
+  "include_dirs": ["build/include"],
+  "lowercase_intrinsics": true,
+} 
