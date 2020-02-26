@@ -49,6 +49,7 @@ contains
     lb = 0
     ub = box%dims + 1
 
+    !$OMP PARALLEL SECTIONS
     !$OMP PARALLEL DO &
     !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub) &
     !$OMP& PRIVATE(delta)
@@ -169,5 +170,6 @@ contains
       LOOP_J_END
     LOOP_K_END
     !$OMP END PARALLEL DO
+    !$OMP END PARALLEL SECTIONS
   end subroutine rhyme_muscl_hancock_solve_memory_intensive
 end submodule rhyme_mh_solve_memory_intensive_submodule

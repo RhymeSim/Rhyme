@@ -102,6 +102,7 @@ logical function rhyme_plotter_test () result ( failed )
   dr3 = d3 * r3
 
   hist3_dr = rhyme_plotter_histogram( dr3, 256, plid%log, normalized=.false. )
+  hist3_d = rhyme_plotter_histogram( d3, 256, plid%log, normalized=.false. )
 
   call canvas%add_axis( plid%right, 7, &
     [ minval(hist3_d%counts), maxval(hist3_d%counts) ], &
