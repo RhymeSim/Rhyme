@@ -7,6 +7,7 @@ module subroutine rhyme_color_init()
 
    character(len=16), parameter :: str_fmt = '(A2,A5,I0.3,A1)'
 
+   ! Colors
    do n = 0, 15
       colors(n)%n = n
       colors(n)%r = -1
@@ -42,5 +43,16 @@ module subroutine rhyme_color_init()
       write (colors(n)%fg, str_fmt) clrid%start, '38;5;', n, 'm'
       write (colors(n)%bg, str_fmt) clrid%start, '48;5;', n, 'm'
    end do
+
+   ! Color Schemes
+   colorschemes(csid%magma_grey)%n = 24
+   colorschemes(csid%magma_grey)%pallet = &
+      [colors(255), colors(253), colors(251), colors(249), colors(247), colors(245), &
+       colors(243), colors(241), colors(239), colors(237), colors(235), colors(233), &
+       colors(230), colors(229), colors(222), colors(216), colors(210), colors(204), &
+       colors(168), colors(127), colors(91), colors(54), colors(17), colors(16), &
+       colors(16), colors(16), colors(16), colors(16), colors(16), colors(16), &
+       colors(16), colors(16)]
+
 end subroutine rhyme_color_init
 end submodule rhyme_mh_init_smod
