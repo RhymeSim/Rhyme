@@ -1,22 +1,22 @@
-logical function rhyme_ideal_gas_pressure_test () result ( failed )
-  use rhyme_ideal_gas_factory
-  use rhyme_hydro_base_factory
-  use rhyme_assertion
+logical function rhyme_ideal_gas_pressure_test() result(failed)
+   use rhyme_ideal_gas_factory
+   use rhyme_hydro_base_factory
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: ig_tester
+   type(assertion_t) :: ig_tester
 
-  real ( kind=8 ) :: p, u( cid%rho:cid%e_tot )
+   real(kind=8) :: p, u(cid%rho:cid%e_tot)
 
-  ig_tester = .describe. "pressure"
+   ig_tester = .describe."pressure"
 
-  u = hy_factory%generate_conserved()
+   u = hy_factory%generate_conserved()
 
-  p = rhyme_ideal_gas_pressure( hy_factory%g, hy_factory%kb_amu, u )
+   p = rhyme_ideal_gas_pressure(hy_factory%g, hy_factory%kb_amu, u)
 
-  call ig_tester%expect( .notToBeNaN. p )
-  call ig_tester%expect( p .toBe. hy_factory%p .within. 15 )
+   call ig_tester%expect(.notToBeNaN.p)
+   call ig_tester%expect(p.toBe.hy_factory%p.within.15)
 
-  failed = ig_tester%failed()
+   failed = ig_tester%failed()
 end function rhyme_ideal_gas_pressure_test

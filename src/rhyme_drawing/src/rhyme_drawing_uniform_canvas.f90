@@ -1,10 +1,10 @@
-submodule ( rhyme_drawing ) rhyme_drawing_uniform_canvas_submodule
+submodule(rhyme_drawing) rhyme_drawing_uniform_canvas_submodule
 contains
-  module subroutine rhyme_drawing_uniform_canvas ( samr, bg_prim )
-    implicit none
+module subroutine rhyme_drawing_uniform_canvas(samr, bg_prim)
+   implicit none
 
-    type ( samr_t ), intent ( inout ) :: samr
-    real ( kind=8 ), intent ( in ) :: bg_prim( cid%rho:cid%p )
+   type(samr_t), intent(inout) :: samr
+   real(kind=8), intent(in) :: bg_prim(cid%rho:cid%p)
 
 #if NDIM == 1
 #define JDX
@@ -29,24 +29,24 @@ contains
 #define LOOP_K_END end do
 #endif
 
-    integer :: l, b, i JDX KDX
-    real ( kind=8 ) :: bg( cid%rho:cid%e_tot )
+   integer :: l, b, i JDX KDX
+   real(kind=8) :: bg(cid%rho:cid%e_tot)
 
-    call conv_prim_to_cons( bg_prim, bg )
+   call conv_prim_to_cons(bg_prim, bg)
 
-    do l = 0, samr%nlevels - 1
+   do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
 
-        LOOP_K
-          LOOP_J
-            do i = 1, samr%levels(l)%boxes(b)%dims(1)
-              samr%levels(l)%boxes(b)%cells( i JDX KDX, cid%rho:cid%e_tot ) = bg
-            end do
-          LOOP_J_END
-        LOOP_K_END
+         LOOP_K
+         LOOP_J
+         do i = 1, samr%levels(l)%boxes(b)%dims(1)
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = bg
+         end do
+         LOOP_J_END
+         LOOP_K_END
 
       end do
-    end do
+   end do
 
-  end subroutine rhyme_drawing_uniform_canvas
+end subroutine rhyme_drawing_uniform_canvas
 end submodule rhyme_drawing_uniform_canvas_submodule

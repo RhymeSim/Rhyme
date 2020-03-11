@@ -6,7 +6,6 @@ The following is a set of guidelines (not rules) for contributing to Rhyme.
 Use your best judgment and feel free to propose changes to this document in a
 pull request.
 
-
 ## How can I contribute?
 
 ### Reporting bugs
@@ -30,9 +29,10 @@ wish to make with the maintainers of this repository via Gitlab issues
 (`Enhancement` template), email, or any other preferred methods.
 
 If you wish to add a new module, duplicate the module boilerplate
-[here](src/rhyme_xyz), rename it and start working on your new module. 
+[here](src/rhyme_xyz), rename it and start working on your new module.
 
 All pull requests must be tested against different MACRO values:
+
 - 1, 2 and 3D runs (`NDIM` macro can be override [here](./config.cmake)
 - 1, 2 and 3 species (`NSPE` macro can be override [here](./config.cmake)
 - different combinations of `HYDRO_SOLVER`/`RT_SOLVER` (relevant

@@ -1,31 +1,31 @@
-submodule ( rhyme_mh_workspace ) rhyme_mhws_init_smod
+submodule(rhyme_mh_workspace) rhyme_mhws_init_smod
 contains
-  module subroutine rhyme_mh_workspace_init ( mhws, samr, logger )
-    implicit none
+module subroutine rhyme_mh_workspace_init(mhws, samr, logger)
+   implicit none
 
-    class ( mh_workspace_t ), intent ( inout ) :: mhws
-    type ( samr_t ), intent ( in ) :: samr
-    type ( logger_t ), intent ( inout ) :: logger
+   class(mh_workspace_t), intent(inout) :: mhws
+   type(samr_t), intent(in) :: samr
+   type(logger_t), intent(inout) :: logger
 
-    integer :: l
+   integer :: l
 
-    call logger%begin_section( 'workspace' )
+   call logger%begin_section('workspace')
 
-    if ( mhws%initialized ) call logger%warn( &
-      'Trying to re-initialize mh_workspace object' )
+   if (mhws%initialized) call logger%warn( &
+      'Trying to re-initialize mh_workspace object')
 
-    mhws%nlevels = samr%nlevels
+   mhws%nlevels = samr%nlevels
 
-    do l = 0, samr%nlevels - 1
-      allocate( mhws%levels(l)%boxes( samr%levels(l)%max_nboxes ) )
+   do l = 0, samr%nlevels - 1
+      allocate (mhws%levels(l)%boxes(samr%levels(l)%max_nboxes))
       mhws%levels(l)%max_nboxes = samr%levels(l)%max_nboxes
-    end do
+   end do
 
-    call logger%log( 'mh_workspace object has been initialized', &
-      'type', '=', [ mhws%type ] )
+   call logger%log('mh_workspace object has been initialized', &
+                   'type', '=', [mhws%type])
 
-    mhws%initialized = .true.
+   mhws%initialized = .true.
 
-    call logger%end_section
-  end subroutine rhyme_mh_workspace_init
+   call logger%end_section
+end subroutine rhyme_mh_workspace_init
 end submodule rhyme_mhws_init_smod

@@ -1,50 +1,50 @@
-submodule ( rhyme_plotter ) canvas_plot_smod
+submodule(rhyme_plotter) canvas_plot_smod
 contains
-  module subroutine rhyme_plotter_canvas_plot ( canvas, output, colored )
-    use iso_fortran_env
+module subroutine rhyme_plotter_canvas_plot(canvas, output, colored)
+   use iso_fortran_env
 
-    implicit none
+   implicit none
 
-    class ( plotter_canvas_t ), intent ( inout ) :: canvas
-    integer, intent ( in ), optional :: output
-    logical, intent ( in ), optional :: colored
+   class(plotter_canvas_t), intent(inout) :: canvas
+   integer, intent(in), optional :: output
+   logical, intent(in), optional :: colored
 
-    integer :: i, j, row_len, out, canvas_type
-    character ( len=2048, kind=ucs4 ) :: row
+   integer :: i, j, row_len, out, canvas_type
+   character(len=2048, kind=ucs4) :: row
 
-    if ( present( output ) ) then
+   if (present(output)) then
       out = output
-    else
+   else
       out = output_unit
-    end if
+   end if
 
-    if ( present( colored ) ) then
-      if ( colored ) then
-        canvas_type = plid%clr
+   if (present(colored)) then
+      if (colored) then
+         canvas_type = plid%clr
       else
-        canvas_type = plid%bw
+         canvas_type = plid%bw
       end if
-    else
+   else
       canvas_type = plid%clr
-    end if
+   end if
 
-    open( out, encoding='UTF-8' )
+   open (out, encoding='UTF-8')
 
-    do j = canvas%lbound_y, canvas%ubound_y
+   do j = canvas%lbound_y, canvas%ubound_y
       row = ''
       row_len = 1
 
       do i = canvas%lbound_x, canvas%ubound_x
-        if ( len_trim( canvas%grid( i, j, canvas_type ) ) .eq. 0 ) then
-          row = row(1:row_len)//char( int( z'0020' ), ucs4 )
-          row_len = row_len + 1
-        else
-          row = row(1:row_len)//trim( canvas%grid( i, j, canvas_type ) )
-          row_len = row_len + len_trim( canvas%grid( i, j, canvas_type ) )
-        end if
+         if (len_trim(canvas%grid(i, j, canvas_type)) .eq. 0) then
+            row = row(1:row_len)//char(int(z'0020'), ucs4)
+            row_len = row_len + 1
+         else
+            row = row(1:row_len)//trim(canvas%grid(i, j, canvas_type))
+            row_len = row_len + len_trim(canvas%grid(i, j, canvas_type))
+         end if
       end do
 
-      write( out, * ) trim( row )
-    end do
-  end subroutine rhyme_plotter_canvas_plot
+      write (out, *) trim(row)
+   end do
+end subroutine rhyme_plotter_canvas_plot
 end submodule canvas_plot_smod

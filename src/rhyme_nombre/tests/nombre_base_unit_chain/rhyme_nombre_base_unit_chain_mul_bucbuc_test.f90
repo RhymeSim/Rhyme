@@ -1,38 +1,38 @@
-logical function rhyme_nombre_base_unit_chain_mul_bucbuc_test () result ( failed )
-  use rhyme_nombre_base_unit_chain_factory
-  use rhyme_assertion
+logical function rhyme_nombre_base_unit_chain_mul_bucbuc_test() result(failed)
+   use rhyme_nombre_base_unit_chain_factory
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: tester
+   type(assertion_t) :: tester
 
-  type ( nombre_base_unit_t ) :: bu(5)
-  type ( nombre_base_unit_t ), pointer :: buc1, buc2, bucbuc
+   type(nombre_base_unit_t) :: bu(5)
+   type(nombre_base_unit_t), pointer :: buc1, buc2, bucbuc
 
-  real ( kind=8 ) :: rnd(5)
-  integer :: i
+   real(kind=8) :: rnd(5)
+   integer :: i
 
-  tester = .describe. "nombre_base_unit_chain_mul_bucbuc"
+   tester = .describe."nombre_base_unit_chain_mul_bucbuc"
 
-  do i = 1, 5
-    call random_number( rnd )
+   do i = 1, 5
+      call random_number(rnd)
 
-    bu = si_base_units( ceiling( rnd * size( si_base_units ) ) )
+      bu = si_base_units(ceiling(rnd*size(si_base_units)))
 
-    buc1 => nom_buc_factory%generate( bu(1:3) )
-    buc2 => nom_buc_factory%generate( bu(4:5) )
+      buc1 => nom_buc_factory%generate(bu(1:3))
+      buc2 => nom_buc_factory%generate(bu(4:5))
 
-    bucbuc => buc1 * buc2
+      bucbuc => buc1*buc2
 
-    call tester%expect( bucbuc == bu(1) .toBe. .true. )
-    call tester%expect( bucbuc%next == bu(2) .toBe. .true. )
-    call tester%expect( bucbuc%next%next == bu(3) .toBe. .true. )
-    call tester%expect( bucbuc%next%next%next == bu(4) .toBe. .true. )
-    call tester%expect( bucbuc%next%next%next%next == bu(5) .toBe. .true. )
+      call tester%expect(bucbuc == bu(1) .toBe..true.)
+      call tester%expect(bucbuc%next == bu(2) .toBe..true.)
+      call tester%expect(bucbuc%next%next == bu(3) .toBe..true.)
+      call tester%expect(bucbuc%next%next%next == bu(4) .toBe..true.)
+      call tester%expect(bucbuc%next%next%next%next == bu(5) .toBe..true.)
 
-    call tester%expect( associated( bucbuc%next%next%next%next%next ) .toBe. .false. )
-    call tester%expect( associated( bucbuc%prev ) .toBe. .false. )
-  end do
+      call tester%expect(associated(bucbuc%next%next%next%next%next) .toBe..false.)
+      call tester%expect(associated(bucbuc%prev) .toBe..false.)
+   end do
 
-  failed = tester%failed()
+   failed = tester%failed()
 end function rhyme_nombre_base_unit_chain_mul_bucbuc_test

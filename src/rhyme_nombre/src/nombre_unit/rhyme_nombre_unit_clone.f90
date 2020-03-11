@@ -1,31 +1,31 @@
-submodule ( rhyme_nombre_unit ) chain_clone_smod
+submodule(rhyme_nombre_unit) chain_clone_smod
 contains
-  module function rhyme_nombre_unit_clone ( duc ) result ( duc_new )
-    implicit none
+module function rhyme_nombre_unit_clone(duc) result(duc_new)
+   implicit none
 
-    type ( nombre_unit_t ), target, intent ( in ) :: duc
-    type ( nombre_unit_t ), pointer :: duc_new
+   type(nombre_unit_t), target, intent(in) :: duc
+   type(nombre_unit_t), pointer :: duc_new
 
-    type ( nombre_unit_t ), pointer :: duc_ptr
+   type(nombre_unit_t), pointer :: duc_ptr
 
-    duc_ptr => duc
-    
-    if ( .not. associated( duc_ptr ) ) then
+   duc_ptr => duc
+
+   if (.not. associated(duc_ptr)) then
       duc_new => null()
       return
-    end if
+   end if
 
-    duc_ptr => .head. duc
-    duc_new => .clone. duc_ptr
+   duc_ptr => .head.duc
+   duc_new => .clone.duc_ptr
 
-    do while ( associated( duc_ptr%next ) )
-      duc_new%next => .clone. duc_ptr%next
+   do while (associated(duc_ptr%next))
+      duc_new%next => .clone.duc_ptr%next
       duc_new%next%prev => duc_new
 
       duc_ptr => duc_ptr%next
       duc_new => duc_new%next
-    end do
+   end do
 
-    duc_new => .head. duc_new
-  end function rhyme_nombre_unit_clone
+   duc_new => .head.duc_new
+end function rhyme_nombre_unit_clone
 end submodule chain_clone_smod

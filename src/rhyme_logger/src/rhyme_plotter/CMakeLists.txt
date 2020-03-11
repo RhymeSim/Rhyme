@@ -1,27 +1,26 @@
-cmake_minimum_required( VERSION 3.12 )
-enable_language( Fortran )
+cmake_minimum_required(VERSION 3.12)
+enable_language(Fortran)
 
-project( rhyme_plotter )
+project(rhyme_plotter)
 
-if ( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08 -extend-source 512" )
-elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008 -ffree-line-length-512" )
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008")
 endif()
 
-set( deps )
+set(deps)
 
-set( internal_deps )
+set(internal_deps rhyme_colors)
 
-set( srcs
-  src/rhyme_plotter_histogram_draw_on.f90
-  src/rhyme_plotter_histogram.f90
-  src/rhyme_plotter_canvas_clear.f90
-  src/rhyme_plotter_canvas_plot.f90
-  src/rhyme_plotter_canvas_add_axis.f90
-  src/rhyme_plotter_canvas_init.f90
-  src/rhyme_plotter.f90
-)
+set(srcs
+    src/rhyme_plotter_histogram_draw_on.f90
+    src/rhyme_plotter_histogram.f90
+    src/rhyme_plotter_canvas_clear.f90
+    src/rhyme_plotter_canvas_plot.f90
+    src/rhyme_plotter_canvas_add_axis.f90
+    src/rhyme_plotter_canvas_init.f90
+    src/rhyme_plotter.f90)
 
-set( rhyme_src_dir ../../.. )
-include( ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake )
+set(rhyme_src_dir ../../..)
+include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

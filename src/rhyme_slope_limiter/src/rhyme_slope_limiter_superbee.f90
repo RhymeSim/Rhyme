@@ -1,34 +1,34 @@
-submodule ( rhyme_slope_limiter ) rhyme_sl_superbee_smod
+submodule(rhyme_slope_limiter) rhyme_sl_superbee_smod
 contains
-  pure module subroutine rhyme_slope_limiter_superbee ( sl, ul, u, ur, delta )
-    implicit none
+pure module subroutine rhyme_slope_limiter_superbee(sl, ul, u, ur, delta)
+   implicit none
 
-    class ( slope_limiter_t ), intent ( in ) :: sl
-    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( in ) :: ul, u, ur
-    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ), intent ( out ) :: delta
+   class(slope_limiter_t), intent(in) :: sl
+   real(kind=8), dimension(cid%rho:cid%e_tot), intent(in) :: ul, u, ur
+   real(kind=8), dimension(cid%rho:cid%e_tot), intent(out) :: delta
 
-    real ( kind=8 ), dimension ( cid%rho:cid%e_tot ) :: d_L, d_R, d, r
-    integer :: i
+   real(kind=8), dimension(cid%rho:cid%e_tot) :: d_L, d_R, d, r
+   integer :: i
 
-    d_L = u - ul
-    d_R = ur - u
+   d_L = u - ul
+   d_R = ur - u
 
-    d = .5d0 * ( 1.d0 + sl%w ) * d_L + .5d0 * ( 1.d0 + sl%w ) * d_R
+   d = .5d0*(1.d0 + sl%w)*d_L + .5d0*(1.d0 + sl%w)*d_R
 
-    call rhyme_slope_limiter_r( ul, u, ur, r )
+   call rhyme_slope_limiter_r(ul, u, ur, r)
 
-    do i = cid%rho, cid%e_tot
-      if ( r(i) > 1.d0 ) then
-        delta(i) = min( &
-          r(i), rhyme_slope_limiter_xi_R( sl, r(i) ), 2.d0 &
-        ) * d(i)
-      else if ( r(i) > .5d0 ) then
-        delta(i) = d(i)
-      else if ( r(i) > 0.d0 ) then
-        delta(i) = 2.d0 * r(i) * d(i)
+   do i = cid%rho, cid%e_tot
+      if (r(i) > 1.d0) then
+         delta(i) = min( &
+                    r(i), rhyme_slope_limiter_xi_R(sl, r(i)), 2.d0 &
+                    )*d(i)
+      else if (r(i) > .5d0) then
+         delta(i) = d(i)
+      else if (r(i) > 0.d0) then
+         delta(i) = 2.d0*r(i)*d(i)
       else
-        delta(i) = 0.d0
+         delta(i) = 0.d0
       end if
-    end do
-  end subroutine rhyme_slope_limiter_superbee
+   end do
+end subroutine rhyme_slope_limiter_superbee
 end submodule rhyme_sl_superbee_smod

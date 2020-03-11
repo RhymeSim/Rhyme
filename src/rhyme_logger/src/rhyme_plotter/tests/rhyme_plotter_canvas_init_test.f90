@@ -1,11 +1,11 @@
-logical function rhyme_plotter_canvas_init_test () result ( failed )
-  use rhyme_plotter
+logical function rhyme_plotter_canvas_init_test() result(failed)
+   use rhyme_plotter
 
-  implicit none
+   implicit none
 
-  type ( plotter_canvas_t ) :: canvas
+   type(plotter_canvas_t) :: canvas
 
-  call canvas%init( 32, 16 )
+   call canvas%init(32, 16)
 
-  failed = .false.
+   failed = .false.
 end function rhyme_plotter_canvas_init_test

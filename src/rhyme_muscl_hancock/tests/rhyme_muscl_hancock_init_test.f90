@@ -1,26 +1,26 @@
-logical function rhyme_muscl_hancock_init_test () result ( failed )
-  use rhyme_muscl_hancock_factory
-  use rhyme_samr_factory
-  use rhyme_logger_factory
-  use rhyme_assertion
+logical function rhyme_muscl_hancock_init_test() result(failed)
+   use rhyme_muscl_hancock_factory
+   use rhyme_samr_factory
+   use rhyme_logger_factory
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: mh_tester
+   type(assertion_t) :: mh_tester
 
-  type ( muscl_hancock_t ) :: mh
-  type ( mh_workspace_t ) :: mhws
-  type ( samr_t ) :: samr
-  type ( logger_t ) :: logger
+   type(muscl_hancock_t) :: mh
+   type(mh_workspace_t) :: mhws
+   type(samr_t) :: samr
+   type(logger_t) :: logger
 
-  mh_tester = .describe. "mh_init"
+   mh_tester = .describe."mh_init"
 
-  samr = samr_factory%generate()
-  logger = log_factory%generate()
+   samr = samr_factory%generate()
+   logger = log_factory%generate()
 
-  call mh_tester%expect( mh%solver_type .toBe. mhid%memory_intensive )
+   call mh_tester%expect(mh%solver_type.toBe.mhid%memory_intensive)
 
-  call rhyme_muscl_hancock_init( mh, samr, mhws, logger )
+   call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
 
-  failed = mh_tester%failed()
+   failed = mh_tester%failed()
 end function rhyme_muscl_hancock_init_test

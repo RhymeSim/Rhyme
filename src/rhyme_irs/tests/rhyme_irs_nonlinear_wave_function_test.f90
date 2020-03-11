@@ -1,56 +1,55 @@
-logical function rhyme_irs_nonlinear_wave_function_test () result (failed)
-  use rhyme_irs_factory
-  use rhyme_physics_factory
-  use rhyme_thermo_base_factory
-  use rhyme_logger_factory
-  use rhyme_assertion
+logical function rhyme_irs_nonlinear_wave_function_test() result(failed)
+   use rhyme_irs_factory
+   use rhyme_physics_factory
+   use rhyme_thermo_base_factory
+   use rhyme_logger_factory
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: irs_tester
+   type(assertion_t) :: irs_tester
 
-  type ( irs_t ) :: irs
-  type ( physics_t ) :: physics
-  type ( thermo_base_t ) :: thermo
-  type ( logger_t ) :: logger
+   type(irs_t) :: irs
+   type(physics_t) :: physics
+   type(thermo_base_t) :: thermo
+   type(logger_t) :: logger
 
-  type ( rp_side_t ) :: state
-  type ( rp_star_side_t ) :: star, prev_star
-  real ( kind=8 ) :: p, p_star = 3.45d2
-  integer :: i
+   type(rp_side_t) :: state
+   type(rp_star_side_t) :: star, prev_star
+   real(kind=8) :: p, p_star = 3.45d2
+   integer :: i
 
-  irs_tester = .describe. "irs_nonlinear_wave_function"
+   irs_tester = .describe."irs_nonlinear_wave_function"
 
-  call rhyme_nombre_init
+   call rhyme_nombre_init
 
-  irs = irs_factory%generate()
-  physics = ph_factory%generate()
-  logger = log_factory%generate()
+   irs = irs_factory%generate()
+   physics = ph_factory%generate()
+   logger = log_factory%generate()
 
-  thermo = th_factory%generate( physics, thid%diatomic )
-  call rhyme_thermo_base_init( thermo, physics, logger )
+   thermo = th_factory%generate(physics, thid%diatomic)
+   call rhyme_thermo_base_init(thermo, physics, logger)
 
-  call rhyme_irs_init( irs, logger )
+   call rhyme_irs_init(irs, logger)
 
-  state%rho = 1.23d3
+   state%rho = 1.23d3
 
-  call rhyme_irs_nonlinear_wave_function( state, p_star, prev_star )
+   call rhyme_irs_nonlinear_wave_function(state, p_star, prev_star)
 
-  do i = 1, 800
-    p = 2.34d0 * p
-    call irs_tester%reset
+   do i = 1, 800
+      p = 2.34d0*p
+      call irs_tester%reset
 
-    call rhyme_irs_nonlinear_wave_function( state, p_star, star )
+      call rhyme_irs_nonlinear_wave_function(state, p_star, star)
 
+      call irs_tester%expect((star%fprime < 0.0) .toBe..false.)
+      call irs_tester%expect(prev_star%fprime.toBe.star%fprime)
+      call irs_tester%expect(star%f.toBe.prev_star%f)
 
-    call irs_tester%expect( (star%fprime < 0.0) .toBe. .false. )
-    call irs_tester%expect( prev_star%fprime .toBe. star%fprime )
-    call irs_tester%expect( star%f .toBe. prev_star%f )
+      failed = irs_tester%failed()
+      if (failed) return
 
-    failed = irs_tester%failed()
-    if ( failed ) return
-
-    prev_star%f = star%f
-    prev_star%fprime = star%fprime
-  end do
+      prev_star%f = star%f
+      prev_star%fprime = star%fprime
+   end do
 end function rhyme_irs_nonlinear_wave_function_test

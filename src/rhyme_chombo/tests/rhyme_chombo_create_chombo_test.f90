@@ -1,20 +1,20 @@
-logical function rhyme_chombo_create_chombo_test () result ( failed )
-  use rhyme_chombo
-  use rhyme_assertion
+logical function rhyme_chombo_create_chombo_test() result(failed)
+   use rhyme_chombo
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: ch_tester
+   type(assertion_t) :: ch_tester
 
-  character ( len=1024 ), parameter :: nickname = "rhyme_chombo_create_chombo"
-  type ( chombo_t ) :: ch
+   character(len=1024), parameter :: nickname = "rhyme_chombo_create_chombo"
+   type(chombo_t) :: ch
 
-  ch_tester = .describe. "chombo create"
+   ch_tester = .describe."chombo create"
 
-  ch%nickname = nickname
-  call rhyme_chombo_create_chombo( ch )
+   ch%nickname = nickname
+   call rhyme_chombo_create_chombo(ch)
 
-  call ch_tester%expect( ch%is_opened .toBe. .true. )
+   call ch_tester%expect(ch%is_opened.toBe..true.)
 
-  failed = ch_tester%failed()
+   failed = ch_tester%failed()
 end function rhyme_chombo_create_chombo_test

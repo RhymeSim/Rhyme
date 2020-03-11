@@ -1,61 +1,61 @@
-logical function rhyme_chombo_write_samr_test () result ( failed )
-  use rhyme_chombo_factory
-  use rhyme_samr_factory
-  use rhyme_physics_factory
-  use rhyme_logger_factory
-  use rhyme_assertion
+logical function rhyme_chombo_write_samr_test() result(failed)
+   use rhyme_chombo_factory
+   use rhyme_samr_factory
+   use rhyme_physics_factory
+   use rhyme_logger_factory
+   use rhyme_assertion
 
-  implicit none
+   implicit none
 
-  type ( assertion_t ) :: ch_tester
+   type(assertion_t) :: ch_tester
 
-  type ( chombo_t ) :: ch
-  type ( samr_t ) :: samr
-  type ( physics_t ) :: physics
-  type ( logger_t ) :: logger
+   type(chombo_t) :: ch
+   type(samr_t) :: samr
+   type(physics_t) :: physics
+   type(logger_t) :: logger
 
-  ! Chombo filename
-  character ( len=1024 ), parameter :: nickname = "rhyme_chombo_write_samr"
-  character ( len=1024 ) :: filename, level_name
+   ! Chombo filename
+   character(len=1024), parameter :: nickname = "rhyme_chombo_write_samr"
+   character(len=1024) :: filename, level_name
 
-  logical :: exists
-  integer :: l, hdferr
-  integer ( kind=hid_t ) :: file_id
+   logical :: exists
+   integer :: l, hdferr
+   integer(kind=hid_t) :: file_id
 
-  ch_tester = .describe. "chombo write_samr"
+   ch_tester = .describe."chombo write_samr"
 
-  ch = ch_factory%generate()
-  samr = samr_factory%generate()
-  physics = ph_factory%generate()
-  logger = log_factory%generate()
+   ch = ch_factory%generate()
+   samr = samr_factory%generate()
+   physics = ph_factory%generate()
+   logger = log_factory%generate()
 
-  call rhyme_chombo_init( ch, samr, logger )
+   call rhyme_chombo_init(ch, samr, logger)
 
-  ch%nickname = nickname
-  ch%iteration = samr%levels(0)%iteration
-  call rhyme_chombo_filename_generator( ch, filename )
+   ch%nickname = nickname
+   ch%iteration = samr%levels(0)%iteration
+   call rhyme_chombo_filename_generator(ch, filename)
 
-  call rhyme_chombo_write_samr( ch, physics, samr )
+   call rhyme_chombo_write_samr(ch, physics, samr)
 
-  call h5open_f( hdferr )
-  call h5fopen_f( filename, H5F_ACC_RDONLY_F, file_id, hdferr )
+   call h5open_f(hdferr)
+   call h5fopen_f(filename, H5F_ACC_RDONLY_F, file_id, hdferr)
 
-  do l = 0, samr%nlevels - 1
-    write( level_name, '(A7,I1)') "/level_", l
+   do l = 0, samr%nlevels - 1
+      write (level_name, '(A7,I1)') "/level_", l
 
-    call h5lexists_f( file_id, trim(level_name)//"/boxes", exists, hdferr )
-    call ch_tester%expect( exists .toBe. .true. .hint. trim(level_name)//"/boxes" )
+      call h5lexists_f(file_id, trim(level_name)//"/boxes", exists, hdferr)
+      call ch_tester%expect(exists.toBe..true..hint.trim(level_name)//"/boxes")
 
-    call h5lexists_f( file_id, trim(level_name)//"/data:datatype=0", exists, hdferr )
-    call ch_tester%expect( exists .toBe. .true. .hint. trim(level_name)//"/data:datatype=0" )
-  end do
+      call h5lexists_f(file_id, trim(level_name)//"/data:datatype=0", exists, hdferr)
+      call ch_tester%expect(exists.toBe..true..hint.trim(level_name)//"/data:datatype=0")
+   end do
 
-  call h5fclose_f( file_id, hdferr )
-  call h5close_f( hdferr )
+   call h5fclose_f(file_id, hdferr)
+   call h5close_f(hdferr)
 
-  call ch_tester%expect( int( ch%level_ids ) .toBe. chid%unset )
-  call ch_tester%expect( int( ch%chombo_global_id ) .toBe. chid%unset )
-  call ch_tester%expect( ch%is_opened .toBe. .false. )
+   call ch_tester%expect(int(ch%level_ids) .toBe.chid%unset)
+   call ch_tester%expect(int(ch%chombo_global_id) .toBe.chid%unset)
+   call ch_tester%expect(ch%is_opened.toBe..false.)
 
-  failed = ch_tester%failed()
+   failed = ch_tester%failed()
 end function rhyme_chombo_write_samr_test
