@@ -14,16 +14,16 @@ module subroutine rhyme_logger_set_colored_logo(this)
                           //tc%mg//"█"//tc%rd//"  █"//tc%yl//"█"//tc%nc
 
    this%colored_logo(4) = tc%gn//"█"//tc%cy//"█"//tc%mg//"    █"//tc%rd//"█" &
-                          //tc%yl//" █"//tc%gn//"█▄"//tc%cy//"██"//tc%bl &
+                          //tc%yl//"  █"//tc%gn//"█▄"//tc%cy//"██"//tc%bl &
                           //"██"//tc%mg//"▄"//tc%rd//"  ▀"//tc%yl//"██" &
-                          //tc%cy//"  ██"//tc%bl//"█"//tc%mg//"█"//tc%rd &
+                          //tc%cy//"  ██"//tc%bl//"█"//tc%mg//"  █"//tc%rd &
                           //"██"//tc%yl//"█▄"//tc%gn//"██"//tc%cy//"▄" &
                           //tc%mg//"   ▄█"//tc%rd//"██"//tc%yl//"█▄"//tc%nc
 
    this%colored_logo(5) = tc%cy//"█"//tc%bl//"██"//tc%mg//"██"//tc%rd//"██" &
                           //tc%gn//"   █"//tc%cy//"█▀"//tc%mg//"   █"//tc%rd &
                           //"█"//tc%gn//"   ██"//tc%cy//"▄"//tc%bl//" ██" &
-                          //tc%rd//"   █"//tc%yl//"█"//tc%gn//"██"//tc%cy &
+                          //tc%rd//"   █"//tc%yl//"█"//tc%gn//" ██"//tc%cy &
                           //" █"//tc%bl//"█"//tc%mg//"  █"//tc%rd//"█▄" &
                           //tc%yl//"▄▄"//tc%gn//"▄█"//tc%cy//"█"//tc%nc
 
@@ -31,22 +31,23 @@ module subroutine rhyme_logger_set_colored_logo(this)
                           //tc%gn//"▄"//tc%cy//"  █"//tc%bl//"█"//tc%rd &
                           //"    █"//tc%yl//"█"//tc%cy//"    █"//tc%bl//"██" &
                           //tc%mg//"█▀"//tc%yl//"   █"//tc%gn//"█"//tc%cy &
-                          //"██"//tc%bl//" █"//tc%mg//"█"//tc%rd//"  █" &
+                          //" ██"//tc%bl//" █"//tc%mg//"█"//tc%rd//"  █" &
                           //tc%yl//"█▀"//tc%gn//"▀▀"//tc%cy//"▀▀"//tc%bl &
                           //"▀"//tc%nc
 
    this%colored_logo(7) = tc%mg//"█"//tc%rd//"█"//tc%gn//"    █"//tc%cy &
                           //"█"//tc%bl//"  █"//tc%mg//"█"//tc%yl//"    █" &
                           //tc%gn//"█"//tc%mg//"     ██"//tc%rd//"█"//tc%gn &
-                          //"    █"//tc%cy//"█"//tc%bl//"██"//tc%mg//" █" &
+                          //"    █"//tc%cy//"█"//tc%bl//" ██"//tc%mg//" █" &
                           //tc%rd//"█"//tc%yl//"  ▀"//tc%gn//"██"//tc%cy &
                           //"▄▄"//tc%bl//"▄▄"//tc%mg//"█"//tc%nc
 
    this%colored_logo(8) = tc%rd//"▀"//tc%yl//"▀"//tc%cy//"    ▀"//tc%bl &
                           //"▀▀"//tc%mg//" ▀"//tc%rd//"▀"//tc%gn//"    ▀" &
                           //tc%cy//"▀"//tc%rd//"     ██"//tc%cy//"     ▀" &
-                          //tc%bl//"▀"//tc%mg//"▀▀"//tc%rd//"▀"//tc%yl//"▀" &
-                          //tc%cy//"▀"//tc%bl//"▀▀"//tc%mg//"▀▀"//tc%nc
+                          //tc%bl//"▀"//tc%mg//" ▀▀"//tc%rd//" ▀"//tc%yl &
+                          //"▀"//tc%cy//"    ▀"//tc%bl//"▀▀"//tc%mg//"▀▀" &
+                          //tc%nc
 
    this%colored_logo(9) = tc%rd//"                      ██"//tc%yl//"█" &
                           //tc%nc//"  © Saeed Sarpas, 2019"//tc%nc

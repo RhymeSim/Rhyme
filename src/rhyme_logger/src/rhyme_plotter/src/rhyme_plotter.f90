@@ -1,5 +1,5 @@
 module rhyme_plotter
-   use rhyme_colors
+   use rhyme_color
 
    implicit none
 

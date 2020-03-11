@@ -60,7 +60,7 @@ module subroutine rhyme_plotter_histogram_draw_on(hist, canvas, &
 
          do y = canvas%y, bar_tip + 1, -1
             if (present(color)) then
-               write (canvas%grid(x, y, plid%clr), '(A12,A1,A4)') color, char(int(z'2588'), ucs4), colors%nc
+               write (canvas%grid(x, y, plid%clr), '(A12,A1,A4)') color, char(int(z'2588'), ucs4), tc%nc
             else
                canvas%grid(x, y, plid%clr) = char(int(z'2588'), ucs4)
             end if
@@ -86,7 +86,7 @@ module subroutine rhyme_plotter_histogram_draw_on(hist, canvas, &
          end if
 
          if (present(color)) then
-            write (block_elem_clr, '(A12,A1,A4)') color, block_elem, colors%nc
+            write (block_elem_clr, '(A12,A1,A4)') color, block_elem, tc%nc
          else
             block_elem_clr = block_elem
          end if
@@ -99,7 +99,7 @@ module subroutine rhyme_plotter_histogram_draw_on(hist, canvas, &
 
    if (len_trim(canvas%axes(xa)%color) > 0) then
       clr = canvas%axes(xa)%color
-      nc = colors%nc
+      nc = tc%nc
    else
       clr = ''
       nc = ''

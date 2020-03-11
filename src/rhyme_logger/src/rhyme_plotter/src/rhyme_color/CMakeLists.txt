@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 enable_language(Fortran)
 
-project(rhyme_plotter)
+project(rhyme_color)
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -stand f08")
@@ -11,16 +11,10 @@ endif()
 
 set(deps)
 
-set(internal_deps rhyme_color)
+set(internal_deps)
 
-set(srcs
-    src/rhyme_plotter_histogram_draw_on.f90
-    src/rhyme_plotter_histogram.f90
-    src/rhyme_plotter_canvas_clear.f90
-    src/rhyme_plotter_canvas_plot.f90
-    src/rhyme_plotter_canvas_add_axis.f90
-    src/rhyme_plotter_canvas_init.f90
-    src/rhyme_plotter.f90)
+set(srcs src/rhyme_color_equality.f90 src/rhyme_color_init.f90
+         src/rhyme_color.f90)
 
-set(rhyme_src_dir ../../..)
+set(rhyme_src_dir ../../../../..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
