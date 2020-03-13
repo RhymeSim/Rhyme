@@ -40,8 +40,10 @@ module rhyme_plotter
    contains
       procedure :: init => rhyme_plotter_canvas_init
       procedure :: add_axis => rhyme_plotter_canvas_add_axis
+      procedure :: draw_histogram => rhyme_plotter_canvas_draw_histogram
       procedure :: plot => rhyme_plotter_canvas_plot
       procedure :: clear => rhyme_plotter_canvas_clear
+      generic :: draw => draw_histogram
    end type plotter_canvas_t
 
    type plotter_histogram_t
@@ -66,6 +68,17 @@ module rhyme_plotter
          integer, intent(in), optional :: scale
          character(len=*), intent(in), optional :: label, color
       end subroutine rhyme_plotter_canvas_add_axis
+
+      module subroutine rhyme_plotter_canvas_draw_histogram( &
+         canvas, nbins, centers, heights, xaxis, yaxis, color)
+         implicit none
+
+         class(plotter_canvas_t), intent(inout) :: canvas
+         integer, intent(in) :: nbins
+         real(kind=8), dimension(:), intent(in) :: centers, heights
+         integer, intent(in), optional :: xaxis, yaxis
+         character(len=*), intent(in), optional :: color
+      end subroutine rhyme_plotter_canvas_draw_histogram
 
       module subroutine rhyme_plotter_canvas_plot(canvas, output, colored)
          class(plotter_canvas_t), intent(inout) :: canvas

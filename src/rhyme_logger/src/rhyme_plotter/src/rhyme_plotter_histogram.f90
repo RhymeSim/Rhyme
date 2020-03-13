@@ -4,8 +4,8 @@ use iso_fortran_env
 implicit none
 
 contains
-pure module function rhyme_plotter_histogram_1d(d, nbins, &
-                                                scale, minmax, base, normalized) result(hist)
+pure module function rhyme_plotter_histogram_1d( &
+   d, nbins, scale, minmax, base, normalized) result(hist)
    implicit none
 
    real(kind=8), intent(in) :: d(:)
