@@ -48,10 +48,11 @@ module subroutine rhyme_plotter_canvas_add_axis(canvas, axis, n_ticks, &
       end do
 
    case (plid%log)
-      canvas%axes(axis)%dx = 1d1**( &
-                             log10(canvas%axes(axis)%max/canvas%axes(axis)%min) &
-                             /(canvas%axes(axis)%n_ticks - 1) &
-                             )
+      canvas%axes(axis)%dx = &
+         1d1**( &
+         log10(canvas%axes(axis)%max/canvas%axes(axis)%min) &
+         /(canvas%axes(axis)%n_ticks - 1) &
+         )
 
       do ntick = 1, canvas%axes(axis)%n_ticks
          canvas%axes(axis)%ticks(ntick) = canvas%axes(axis)%min*canvas%axes(axis)%dx**(ntick - 1)
@@ -92,7 +93,7 @@ contains
          ls = -12
          le = -3
          if (present(color)) then
-            write (tick_char_clr, '(A12,A1,A4)') color, char(int(z'2524'), ucs4), tc%nc
+            write (tick_char_clr, csid%char_color_fmt) color, char(int(z'2524'), ucs4), tc%nc
          else
             tick_char_clr = char(int(z'2524'), ucs4)
          end if
@@ -103,7 +104,7 @@ contains
          ls = canvas%x + 2
          le = canvas%x + 11
          if (present(color)) then
-            write (tick_char_clr, '(A12,A1,A4)') color, char(int(z'251C'), ucs4), tc%nc
+            write (tick_char_clr, csid%char_color_fmt) color, char(int(z'251C'), ucs4), tc%nc
          else
             tick_char_clr = char(int(z'251C'), ucs4)
          end if
@@ -113,7 +114,7 @@ contains
       end if
 
       if (present(color)) then
-         write (axis_char_clr, '(A12,A1,A4)') color, char(int(z'2502'), ucs4), tc%nc
+         write (axis_char_clr, csid%char_color_fmt) color, char(int(z'2502'), ucs4), tc%nc
       else
          axis_char_clr = char(int(z'2502'), ucs4)
       end if
@@ -163,7 +164,7 @@ contains
          labels_row = canvas%y + 2
          label_row = canvas%y + 4
          if (present(color)) then
-            write (tick_char_clr, '(A12,A1,A4)') color, char(int(z'252C'), ucs4), tc%nc
+            write (tick_char_clr, csid%char_color_fmt) color, char(int(z'252C'), ucs4), tc%nc
          else
             tick_char_clr = char(int(z'252C'), ucs4)
          end if
@@ -173,7 +174,7 @@ contains
          labels_row = -1
          label_row = -3
          if (present(color)) then
-            write (tick_char_clr, '(A12,A1,A4)') color, char(int(z'2534'), ucs4), tc%nc
+            write (tick_char_clr, csid%char_color_fmt) color, char(int(z'2534'), ucs4), tc%nc
          else
             tick_char_clr = char(int(z'2534'), ucs4)
          end if
@@ -183,7 +184,7 @@ contains
       end if
 
       if (present(color)) then
-         write (axis_char_clr, '(A12,A1,A4)') color, char(int(z'2500'), ucs4), tc%nc
+         write (axis_char_clr, csid%char_color_fmt) color, char(int(z'2500'), ucs4), tc%nc
       else
          axis_char_clr = char(int(z'2500'), ucs4)
       end if

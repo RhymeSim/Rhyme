@@ -70,12 +70,11 @@ module rhyme_plotter
       end subroutine rhyme_plotter_canvas_add_axis
 
       module subroutine rhyme_plotter_canvas_draw_histogram( &
-         canvas, nbins, centers, heights, xaxis, yaxis, color)
+         canvas, hist, xaxis, yaxis, color)
          implicit none
 
          class(plotter_canvas_t), intent(inout) :: canvas
-         integer, intent(in) :: nbins
-         real(kind=8), dimension(:), intent(in) :: centers, heights
+         type(plotter_histogram_t), intent(in) :: hist
          integer, intent(in), optional :: xaxis, yaxis
          character(len=*), intent(in), optional :: color
       end subroutine rhyme_plotter_canvas_draw_histogram

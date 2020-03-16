@@ -12,6 +12,7 @@ module rhyme_color
    type, private :: rhyme_color_scheme_indices_t
       integer :: magma_grey = 1
       integer :: len = 1
+      character(len=17) :: char_color_fmt = '(A9,A1,A4)'
    end type rhyme_color_scheme_indices_t
 
    type(rhyme_color_scheme_indices_t), parameter :: csid = rhyme_color_scheme_indices_t()
