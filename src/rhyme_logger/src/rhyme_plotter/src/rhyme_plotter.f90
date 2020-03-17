@@ -50,8 +50,6 @@ module rhyme_plotter
       integer :: nbins, scale
       real(kind=8) :: min, max, dx, base
       real(kind=8), dimension(max_nbins) :: counts, bin_centers
-   contains
-      procedure :: draw_on => rhyme_plotter_histogram_draw_on
    end type plotter_histogram_t
 
    interface
@@ -121,14 +119,6 @@ module rhyme_plotter
          logical, intent(in), optional :: normalized
          type(plotter_histogram_t) :: hist
       end function rhyme_plotter_histogram_3d
-
-      module subroutine rhyme_plotter_histogram_draw_on(hist, canvas, &
-                                                        xaxis, yaxis, color)
-         class(plotter_histogram_t), intent(in) :: hist
-         type(plotter_canvas_t), intent(inout) :: canvas
-         integer, intent(in), optional :: xaxis, yaxis
-         character(len=*), intent(in), optional :: color
-      end subroutine rhyme_plotter_histogram_draw_on
    end interface
 
    interface rhyme_plotter_histogram
