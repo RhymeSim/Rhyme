@@ -52,6 +52,16 @@ module rhyme_plotter
       real(kind=8), dimension(max_nbins) :: counts, bin_centers
    end type plotter_histogram_t
 
+   type plotter_histogram_axis_t
+      integer :: nbins = 0, scale = plid%linear
+      real(kind=8) :: min = 0, max = 0
+   end type plotter_histogram_axis_t
+
+   type plotter_2d_histogram_t
+      type(plotter_histogram_axis_t) :: x, y
+      real(kind=8), dimension(max_nbins, max_nbins) :: counts = 0
+   end type plotter_2d_histogram_t
+
    interface
       pure module subroutine rhyme_plotter_canvas_init(canvas, x, y)
          class(plotter_canvas_t), intent(inout) :: canvas
@@ -119,6 +129,15 @@ module rhyme_plotter
          logical, intent(in), optional :: normalized
          type(plotter_histogram_t) :: hist
       end function rhyme_plotter_histogram_3d
+
+      pure module function rhyme_plotter_two_d_histogram( &
+         x, y, xbins, ybins, xscale, yscale, xminmax, yminmax, normalized) result(hist2d)
+         real(kind=8), intent(in) :: x(:), y(:)
+         integer, intent(in) :: xbins, ybins, xscale, yscale
+         real(kind=8), intent(in), optional :: xminmax(2), yminmax(2)
+         logical, intent(in), optional :: normalized
+         type(plotter_2d_histogram_t) :: hist2d
+      end function rhyme_plotter_two_d_histogram
    end interface
 
    interface rhyme_plotter_histogram

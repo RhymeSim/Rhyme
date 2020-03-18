@@ -129,9 +129,9 @@ logical function rhyme_plotter_test() result(failed)
       scale=plid%linear, label='rho (kg / m^3)', &
       color=tc%cyan)
 
-   call canvas%add_axis(p &
-                        lid%top, 4, [minval(d), maxval(d)], &
-                        scale=plid%log, label='T (K)', color=tc%cyan)
+   call canvas%add_axis( &
+      plid%top, 4, [minval(d), maxval(d)], &
+      scale=plid%log, label='T (K)', color=tc%cyan)
 
    call canvas%add_axis( &
       plid%left, 7, &

@@ -57,8 +57,8 @@ pure module function rhyme_plotter_histogram_1d( &
    end if
 end function rhyme_plotter_histogram_1d
 
-pure module function rhyme_plotter_histogram_2d(d, nbins, &
-                                                scale, minmax, base, normalized) result(hist)
+pure module function rhyme_plotter_histogram_2d( &
+   d, nbins, scale, minmax, base, normalized) result(hist)
    implicit none
 
    real(kind=8), intent(in) :: d(:, :)
@@ -114,8 +114,8 @@ pure module function rhyme_plotter_histogram_2d(d, nbins, &
    end if
 end function rhyme_plotter_histogram_2d
 
-pure module function rhyme_plotter_histogram_3d(d, nbins, &
-                                                scale, minmax, base, normalized) result(hist)
+pure module function rhyme_plotter_histogram_3d( &
+   d, nbins, scale, minmax, base, normalized) result(hist)
    implicit none
 
    real(kind=8), intent(in) :: d(:, :, :)
