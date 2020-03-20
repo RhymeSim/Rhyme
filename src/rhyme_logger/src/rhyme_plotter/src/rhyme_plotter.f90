@@ -36,14 +36,15 @@ module rhyme_plotter
       integer :: lbound_x = plid%unset, ubound_x = plid%unset
       integer :: lbound_y = plid%unset, ubound_y = plid%unset
       type(plotter_canvas_axis_t) :: axes(4)
-      character(len=32, kind=ucs4), allocatable :: grid(:, :, :)
+      character(len=64, kind=ucs4), allocatable :: grid(:, :, :)
    contains
       procedure :: init => rhyme_plotter_canvas_init
       procedure :: add_axis => rhyme_plotter_canvas_add_axis
       procedure :: draw_histogram => rhyme_plotter_canvas_draw_histogram
+      procedure :: draw_2d_histogram => rhyme_plotter_canvs_draw_2d_histogram
       procedure :: plot => rhyme_plotter_canvas_plot
       procedure :: clear => rhyme_plotter_canvas_clear
-      generic :: draw => draw_histogram
+      generic :: draw => draw_histogram, draw_2d_histogram
    end type plotter_canvas_t
 
    type plotter_histogram_t
@@ -63,13 +64,13 @@ module rhyme_plotter
    end type plotter_2d_histogram_t
 
    interface
-      pure module subroutine rhyme_plotter_canvas_init(canvas, x, y)
+      module subroutine rhyme_plotter_canvas_init(canvas, x, y)
          class(plotter_canvas_t), intent(inout) :: canvas
          integer, intent(in) :: x, y
       end subroutine rhyme_plotter_canvas_init
 
-      module subroutine rhyme_plotter_canvas_add_axis(canvas, axis, n_ticks, &
-                                                      minmax, scale, label, color)
+      module subroutine rhyme_plotter_canvas_add_axis( &
+         canvas, axis, n_ticks, minmax, scale, label, color)
          class(plotter_canvas_t), intent(inout) :: canvas
          integer, intent(in) :: axis, n_ticks
          real(kind=8), intent(in) :: minmax(2)
@@ -86,6 +87,17 @@ module rhyme_plotter
          integer, intent(in), optional :: xaxis, yaxis
          character(len=*), intent(in), optional :: color
       end subroutine rhyme_plotter_canvas_draw_histogram
+
+      module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
+         canvas, hist, xaxis, yaxis, colorscheme_op, &
+         cs_min_op, cs_max_op, cs_scale_op)
+         class(plotter_canvas_t), intent(inout) :: canvas
+         type(plotter_2d_histogram_t), intent(in) :: hist
+         integer, intent(in), optional :: xaxis, yaxis
+         type(colorscheme_t), intent(in), optional :: colorscheme_op
+         real(kind=8), intent(in), optional :: cs_min_op, cs_max_op
+         integer, intent(in), optional :: cs_scale_op
+      end subroutine rhyme_plotter_canvs_draw_2d_histogram
 
       module subroutine rhyme_plotter_canvas_plot(canvas, output, colored)
          class(plotter_canvas_t), intent(inout) :: canvas

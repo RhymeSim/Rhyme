@@ -46,13 +46,13 @@ module subroutine rhyme_color_init()
 
    ! Color Schemes
    colorschemes(csid%magma_grey)%n = 24
-   colorschemes(csid%magma_grey)%pallet = &
+   colorschemes(csid%magma_grey)%pallet(csid%low_end) = colors(226)
+   colorschemes(csid%magma_grey)%pallet(csid%high_end) = colors(118)
+   colorschemes(csid%magma_grey)%pallet(1:24) = &
       [colors(255), colors(253), colors(251), colors(249), colors(247), colors(245), &
        colors(243), colors(241), colors(239), colors(237), colors(235), colors(233), &
        colors(230), colors(229), colors(222), colors(216), colors(210), colors(204), &
-       colors(168), colors(127), colors(91), colors(54), colors(17), colors(16), &
-       colors(16), colors(16), colors(16), colors(16), colors(16), colors(16), &
-       colors(16), colors(16)]
+       colors(168), colors(127), colors(91), colors(54), colors(17), colors(16)]
 
 end subroutine rhyme_color_init
 end submodule rhyme_mh_init_smod

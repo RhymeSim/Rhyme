@@ -19,14 +19,14 @@ logical function rhyme_plotter_canvas_draw_histogram_test() result(failed)
 
    hist1_d = rhyme_plotter_histogram(d, 40, plid%linear, normalized=.false.)
 
-   call canvas%add_axis(plid%right, 6, &
-                        [minval(hist1_d%counts, hist1_d%counts > 0), maxval(hist1_d%counts)], &
-                        scale=plid%log, label='rho (kg / m^3)', &
-                        color=tc%blue)
+   call canvas%add_axis( &
+      plid%right, 6, &
+      [minval(hist1_d%counts, hist1_d%counts > 0), maxval(hist1_d%counts)], &
+      scale=plid%log, label='rho (kg / m^3)', color=tc%blue)
 
-   call canvas%add_axis(plid%top, 8, [minval(d), maxval(d)], &
-                        scale=plid%linear, label='T (K)', &
-                        color=tc%blue)
+   call canvas%add_axis( &
+      plid%top, 8, [minval(d), maxval(d)], &
+      scale=plid%linear, label='T (K)', color=tc%blue)
 
    call canvas%draw(hist1_d, xaxis=plid%top, yaxis=plid%right, color=tc%blue)
 

@@ -1,6 +1,6 @@
 submodule(rhyme_plotter) canvas_init_smod
 contains
-pure module subroutine rhyme_plotter_canvas_init(canvas, x, y)
+module subroutine rhyme_plotter_canvas_init(canvas, x, y)
    implicit none
 
    class(plotter_canvas_t), intent(inout) :: canvas
@@ -27,5 +27,7 @@ pure module subroutine rhyme_plotter_canvas_init(canvas, x, y)
              ))
 
    call canvas%clear
+
+   call rhyme_color_init()
 end subroutine rhyme_plotter_canvas_init
 end submodule canvas_init_smod

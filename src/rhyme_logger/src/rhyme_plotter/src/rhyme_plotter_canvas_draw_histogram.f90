@@ -38,8 +38,8 @@ module subroutine rhyme_plotter_canvas_draw_histogram( &
       if (counts(i) < canvas%axes(ya)%min) cycle
       if (centers(i) < canvas%axes(xa)%min .or. centers(i) > canvas%axes(xa)%max) cycle
 
-      xpx = floor(pixel_position(centers(i), canvas, xa, canvas%x)) + 1
-      ypx = min(pixel_position(counts(i), canvas, ya, canvas%y), real(canvas%y, kind=8))
+      xpx = floor(get_pixel(centers(i), canvas, xa, canvas%x)) + 1
+      ypx = min(get_pixel(counts(i), canvas, ya, canvas%y), real(canvas%y, kind=8))
 
       if (ypx > 0) then
          tip_px = canvas%y - floor(ypx)
@@ -95,7 +95,7 @@ module subroutine rhyme_plotter_canvas_draw_histogram( &
    end if
 
 contains
-   real(kind=8) pure function pixel_position(pos, cnvs, axis, length) result(px)
+   real(kind=8) pure function get_pixel(pos, cnvs, axis, length) result(px)
       implicit none
 
       real(kind=8), intent(in) :: pos
@@ -118,7 +118,7 @@ contains
       case default
          px = 0
       end select
-   end function pixel_position
+   end function get_pixel
 
    character(len=1, kind=ucs4) pure function get_tip_char(h) result(tip_char)
       implicit none

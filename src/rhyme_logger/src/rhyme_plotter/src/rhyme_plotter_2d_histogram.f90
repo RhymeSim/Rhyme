@@ -14,7 +14,9 @@ pure module function rhyme_plotter_two_d_histogram( &
 
    type(plotter_2d_histogram_t) :: hist2d
 
-   integer :: i, xpx, ypx
+   integer :: i, xpx, ypx, total_number
+
+   total_number = 0
 
    if (size(x) /= size(y)) then
       hist2d%counts = 0d0
@@ -49,6 +51,8 @@ pure module function rhyme_plotter_two_d_histogram( &
       if (x(i) < hist2d%x%min .and. x(i) > hist2d%x%max) cycle
       if (y(i) < hist2d%y%min .and. y(i) > hist2d%y%max) cycle
 
+      total_number = total_number + 1
+
       xpx = get_pixel(x(i), hist2d%x, xbins)
       ypx = get_pixel(y(i), hist2d%y, ybins)
 
@@ -56,7 +60,7 @@ pure module function rhyme_plotter_two_d_histogram( &
    end do
 
    if (.not. present(normalized) .or. (present(normalized) .and. normalized .eqv. .true.)) then
-      hist2d%counts = hist2d%counts/real(size(x))
+      hist2d%counts = hist2d%counts/real(total_number)
    end if
 contains
    pure integer function get_pixel(point, axis, nbins) result(px)

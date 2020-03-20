@@ -9,13 +9,15 @@ module rhyme_color
 
    type(rhyme_color_indices_t), parameter :: clrid = rhyme_color_indices_t()
 
-   type, private :: rhyme_color_scheme_indices_t
-      integer :: magma_grey = 1
+   type, private :: rhyme_colorscheme_indices_t
       integer :: len = 1
+      integer :: magma_grey = 1
+      integer :: low_end = -1 ! color for values below the range of the cs
+      integer :: high_end = 0 ! color for values above the range of the cs
       character(len=17) :: char_color_fmt = '(A9,A1,A4)'
-   end type rhyme_color_scheme_indices_t
+   end type rhyme_colorscheme_indices_t
 
-   type(rhyme_color_scheme_indices_t), parameter :: csid = rhyme_color_scheme_indices_t()
+   type(rhyme_colorscheme_indices_t), parameter :: csid = rhyme_colorscheme_indices_t()
 
    type, private :: terminal_color_t
       character(len=9) :: black = clrid%start//"38;5;0m"
@@ -50,13 +52,13 @@ module rhyme_color
 
    type(color_t), dimension(0:255) :: colors
 
-   type color_scheme_t
+   type colorscheme_t
       integer :: n = 0
-      type(color_t), dimension(32) :: pallet
-      character(len=1), dimension(32) :: chars = '0'
-   end type color_scheme_t
+      type(color_t), dimension(-1:32) :: pallet
+      character(len=1), dimension(0:32) :: chars = '0'
+   end type colorscheme_t
 
-   type(color_scheme_t), dimension(csid%len) :: colorschemes
+   type(colorscheme_t), dimension(csid%len) :: colorschemes
 
    interface
       module subroutine rhyme_color_init()
