@@ -15,7 +15,7 @@ module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
    integer :: i, j, k
    integer :: hist_x, hist_y
    type(color_t) :: char_colors(-1:0) ! We separate a character into bottom and top
-   type(plotter_canvas_axis_t) :: xax, yax
+   integer :: xa, ya
    real(kind=8), dimension(max_nbins, max_nbins) :: counts
    real(kind=8) :: point_x, point_y
    type(colorscheme_t) :: colorscheme
@@ -25,15 +25,15 @@ module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
    counts = hist%counts
 
    if (present(xaxis)) then
-      xax = canvas%axes(xaxis)
+      xa = xaxis
    else
-      xax = canvas%axes(plid%bottom)
+      xa = plid%bottom
    end if
 
    if (present(yaxis)) then
-      yax = canvas%axes(yaxis)
+      ya = yaxis
    else
-      yax = canvas%axes(plid%left)
+      ya = plid%left
    end if
 
    if (present(colorscheme_op)) then
@@ -60,14 +60,13 @@ module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
       cs_scale = plid%linear
    end if
 
-   do i = 1, canvas%x
+   do i = 1, min(canvas%x, 74)
    do j = 1, canvas%y
       do k = -1, 0 ! We divide each character into two regions (top and bottom)
-         ! TODO: add csid%unknown color
-         char_colors(k) = colorscheme%pallet(csid%low_end)
+         char_colors(k) = colorscheme%pallet(csid%unknown)
 
-         point_x = pixel_to_point(i, xax%min, xax%max, xax%scale, canvas%x)
-         point_y = pixel_to_point(2*j + k, yax%min, yax%max, yax%scale, 2*canvas%y)
+         point_x = pixel_to_point(i, canvas%axes(xa), canvas%x)
+         point_y = pixel_to_point(2*j + k, canvas%axes(ya), 2*canvas%y)
 
          if (point_x < hist%x%min .or. point_x > hist%x%max) cycle
          if (point_y < hist%y%min .or. point_y > hist%y%max) cycle
@@ -85,6 +84,8 @@ module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
          char_colors(-1)%bg, char_colors(0)%fg, char(int(z'2584'), ucs4), tc%nc
    end do
    end do
+
+   call canvas%add_corner(xa, ya)
 
 contains
    type(color_t) function pick_color(val) result(color)
@@ -110,21 +111,21 @@ contains
    end function pick_color
 
    real(kind=8) function pixel_to_point( &
-      pixel, range_min, range_max, range_scale, npixels) result(point)
+      pixel, axis, npixels) result(point)
       implicit none
 
       integer, intent(in) :: pixel
-      real(kind=8), intent(in) :: range_min, range_max
-      integer, intent(in) :: npixels, range_scale
+      type(plotter_canvas_axis_t), intent(in) :: axis
+      integer, intent(in) :: npixels
 
-      select case (range_scale)
+      select case (axis%scale)
       case (plid%linear)
-         point = (real(pixel, kind=8) - .5)/npixels*(range_max - range_min) + range_min
+         point = (real(pixel, kind=8) - .5)/npixels*(axis%max - axis%min) + axis%min
       case (plid%log)
          point = log10(real(pixel, kind=8) - .5)/log10(real(npixels, kind=8)) &
-                 *(range_max - range_min) + range_min
+                 *(axis%max - axis%min) + axis%min
       case default
-         point = (real(pixel, kind=8) - .5)/npixels*(range_max - range_min) + range_min
+         point = (real(pixel, kind=8) - .5)/npixels*(axis%max - axis%min) + axis%min
       end select
    end function pixel_to_point
 

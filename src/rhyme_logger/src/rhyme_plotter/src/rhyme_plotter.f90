@@ -40,6 +40,7 @@ module rhyme_plotter
    contains
       procedure :: init => rhyme_plotter_canvas_init
       procedure :: add_axis => rhyme_plotter_canvas_add_axis
+      procedure :: add_corner => rhyme_plotter_canvas_add_corner
       procedure :: draw_histogram => rhyme_plotter_canvas_draw_histogram
       procedure :: draw_2d_histogram => rhyme_plotter_canvs_draw_2d_histogram
       procedure :: plot => rhyme_plotter_canvas_plot
@@ -77,6 +78,12 @@ module rhyme_plotter
          integer, intent(in), optional :: scale
          character(len=*), intent(in), optional :: label, color
       end subroutine rhyme_plotter_canvas_add_axis
+
+      module subroutine rhyme_plotter_canvas_add_corner( &
+         canvas, xaxis, yaxis)
+         integer, intent(in) :: xaxis, yaxis
+         class(plotter_canvas_t), intent(inout) :: canvas
+      end subroutine rhyme_plotter_canvas_add_corner
 
       module subroutine rhyme_plotter_canvas_draw_histogram( &
          canvas, hist, xaxis, yaxis, color)

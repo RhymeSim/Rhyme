@@ -3,7 +3,7 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
 
    implicit none
 
-   integer, parameter :: res = 74
+   integer, parameter :: res = 80
    integer, parameter :: d1len = 1e6
    integer :: dl = d1len
 
@@ -28,11 +28,11 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
 
    call canvas%add_axis( &
       plid%bottom, 7, [epsilon(0d0), 3d0], &
-      scale=plid%log, label='X', color=tc%red)
+      scale=plid%log, label='X', color=tc%blue)
 
    call canvas%add_axis( &
       plid%left, 7, [epsilon(0d0), 3d0], &
-      scale=plid%log, label='Y', color=tc%red)
+      scale=plid%log, label='Y', color=tc%blue)
 
    call canvas%draw( &
       hist2d, xaxis=plid%bottom, yaxis=plid%left, &
@@ -52,11 +52,11 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
 
    call canvas%add_axis( &
       plid%bottom, 7, [-3d0, 3d0], &
-      scale=plid%linear, label='X', color=tc%red)
+      scale=plid%linear, label='X', color=tc%blue)
 
    call canvas%add_axis( &
       plid%left, 7, [-3d0, 3d0], &
-      scale=plid%linear, label='Y', color=tc%red)
+      scale=plid%linear, label='Y', color=tc%blue)
 
    call canvas%draw( &
       hist2d, xaxis=plid%bottom, yaxis=plid%left, &
@@ -66,6 +66,8 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
 
    call canvas%plot
    call canvas%clear
+
+   j
 
    failed = .true.
 end function rhyme_plotter_canvas_draw_2d_histogram_test

@@ -12,6 +12,7 @@ module rhyme_color
    type, private :: rhyme_colorscheme_indices_t
       integer :: len = 1
       integer :: magma_grey = 1
+      integer :: unknown = -2 ! color for values below the range of the cs
       integer :: low_end = -1 ! color for values below the range of the cs
       integer :: high_end = 0 ! color for values above the range of the cs
       character(len=17) :: char_color_fmt = '(A9,A1,A4)'
@@ -54,8 +55,8 @@ module rhyme_color
 
    type colorscheme_t
       integer :: n = 0
-      type(color_t), dimension(-1:32) :: pallet
-      character(len=1), dimension(0:32) :: chars = '0'
+      type(color_t), dimension(-2:32) :: pallet
+      character(len=1), dimension(-2:32) :: chars = '0'
    end type colorscheme_t
 
    type(colorscheme_t), dimension(csid%len) :: colorschemes
