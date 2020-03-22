@@ -20,11 +20,12 @@ module subroutine rhyme_plotter_canvas_init(canvas, x, y)
 
    if (allocated(canvas%grid)) deallocate (canvas%grid)
 
-   allocate (canvas%grid( &
-             canvas%lbound_x:canvas%ubound_x, &
-             canvas%lbound_y:canvas%ubound_y, &
-             2 &
-             ))
+   allocate ( &
+      canvas%grid( &
+      canvas%lbound_x:canvas%ubound_x, &
+      canvas%lbound_y:canvas%ubound_y, &
+      2 &
+      ))
 
    call canvas%clear
 

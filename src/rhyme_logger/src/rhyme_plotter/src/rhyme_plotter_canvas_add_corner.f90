@@ -5,8 +5,8 @@ module subroutine rhyme_plotter_canvas_add_corner( &
 
    implicit none
 
-   integer, intent(in) :: xaxis, yaxis
    class(plotter_canvas_t), intent(inout) :: canvas
+   integer, intent(in) :: xaxis, yaxis
 
    character(len=12, kind=ucs4) :: clr
    character(len=4, kind=ucs4) :: nc

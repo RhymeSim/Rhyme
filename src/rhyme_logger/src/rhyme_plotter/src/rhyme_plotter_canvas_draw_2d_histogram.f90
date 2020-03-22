@@ -60,7 +60,7 @@ module subroutine rhyme_plotter_canvs_draw_2d_histogram( &
       cs_scale = plid%linear
    end if
 
-   do i = 1, min(canvas%x, 74)
+   do i = 1, min(canvas%x, 72)
    do j = 1, canvas%y
       do k = -1, 0 ! We divide each character into two regions (top and bottom)
          char_colors(k) = colorscheme%pallet(csid%unknown)

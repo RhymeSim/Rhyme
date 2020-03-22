@@ -41,6 +41,7 @@ module rhyme_plotter
       procedure :: init => rhyme_plotter_canvas_init
       procedure :: add_axis => rhyme_plotter_canvas_add_axis
       procedure :: add_corner => rhyme_plotter_canvas_add_corner
+      procedure :: add_colorbar => rhyme_plotter_canvas_add_colorbar
       procedure :: draw_histogram => rhyme_plotter_canvas_draw_histogram
       procedure :: draw_2d_histogram => rhyme_plotter_canvs_draw_2d_histogram
       procedure :: plot => rhyme_plotter_canvas_plot
@@ -84,6 +85,15 @@ module rhyme_plotter
          integer, intent(in) :: xaxis, yaxis
          class(plotter_canvas_t), intent(inout) :: canvas
       end subroutine rhyme_plotter_canvas_add_corner
+
+      module subroutine rhyme_plotter_canvas_add_colorbar( &
+         canvas, colorscheme, cs_min, cs_max, cs_scale, location_op, nticks_op)
+         class(plotter_canvas_t), intent(inout) :: canvas
+         type(colorscheme_t), intent(in) :: colorscheme
+         real(kind=8), intent(in) :: cs_min, cs_max
+         integer, intent(in) :: cs_scale
+         integer, intent(in), optional :: location_op, nticks_op
+      end subroutine rhyme_plotter_canvas_add_colorbar
 
       module subroutine rhyme_plotter_canvas_draw_histogram( &
          canvas, hist, xaxis, yaxis, color)
