@@ -10,8 +10,30 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    call logger%begin_section('periodic_table')
 
-   write (pt_str, *) pt
-   call logger%log('', 'periodic_table', '=', [pt_str])
+   call logger%log('Filling elements!')
+
+   ! Hydrogen
+
+   periodic_table%elements(ptid%H)%symb = 'H'
+   periodic_table%elements(ptid%H)%atomic_number = 1
+   periodic_table%elements(ptid%H)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+
+   allocate (periodic_table%elements(ptid%H)%species)
+   periodic_table%elements(ptid%H)%species%symb = 'HII'
+   periodic_table%elements(ptid%H)%species%ionized = 1
+
+   periodic_table%elements(ptid%He)%symb = 'He'
+   periodic_table%elements(ptid%He)%atomic_number = 2
+   periodic_table%elements(ptid%He)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+
+   allocate (periodic_table%elements(ptid%He)%species)
+   periodic_table%elements(ptid%He)%species%symb = 'HeII'
+   periodic_table%elements(ptid%He)%species%ionized = 1
+
+   allocate (periodic_table%elements(ptid%He)%species%next)
+   periodic_table%elements(ptid%He)%species%next%prev => periodic_table%elements(ptid%He)%species
+   periodic_table%elements(ptid%He)%species%next%symb = 'HeIII'
+   periodic_table%elements(ptid%He)%species%next%ionized = 2
 
    call logger%end_section
 end subroutine rhyme_periodic_table_init
