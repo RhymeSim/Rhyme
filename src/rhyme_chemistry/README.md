@@ -1,4 +1,4 @@
-# XYZ
+# Chemistry
 
 <!--
   Module description

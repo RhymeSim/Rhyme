@@ -1,4 +1,4 @@
-# XYZ
+# Periodic table
 
 <!--
   Module description
