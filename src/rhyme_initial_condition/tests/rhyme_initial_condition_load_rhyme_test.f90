@@ -63,16 +63,16 @@ logical function rhyme_initial_condition_load_rhyme_test() result(failed)
          do uid = cid%rho, cid%e_tot
 #if NDIM == 1
             call ic_tester%expect( &
-               (samr_read%levels(l)%boxes(b)%cells(1:ub(1), uid)) &
-               .toBe. (samr%levels(l)%boxes(b)%cells(1:ub(1), uid)))
+               real((samr_read%levels(l)%boxes(b)%cells(1:ub(1), uid))) &
+               .toBe.real((samr%levels(l)%boxes(b)%cells(1:ub(1), uid))))
 #elif NDIM == 2
             call ic_tester%expect( &
-               (samr_read%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), uid)) &
-               .toBe. (samr%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), uid)))
+               real((samr_read%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), uid))) &
+               .toBe.real((samr%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), uid))))
 #elif NDIM == 3
             call ic_tester%expect( &
-               (samr_read%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), 1:ub(3), uid)) &
-               .toBe. (samr%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), 1:ub(3), uid)))
+               real((samr_read%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), 1:ub(3), uid))) &
+               .toBe.real((samr%levels(l)%boxes(b)%cells(1:ub(1), 1:ub(2), 1:ub(3), uid))))
 #endif
          end do
 

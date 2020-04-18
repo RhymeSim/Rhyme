@@ -54,8 +54,12 @@ module subroutine rhyme_chombo_write_level_data(chombo, level)
          ! real, allocatable, target :: rank1_array(:)
          ! real, pointer :: rank3_array(:,:,:)
          ! call C_F_POINTER (C_LOC(rank1_array), rank3_array, [100,100,1000])
-         chws%data(lb:ub) = reshape( &
-                            level%boxes(b)%cells(1:dims(1) RANGE_J RANGE_K, var), [porduct_dims])
+         chws%data(lb:ub) = &
+            real( &
+            reshape( &
+            level%boxes(b)%cells(1:dims(1) RANGE_J RANGE_K, var), [porduct_dims] &
+            ) &
+            )
       end do
 
       offset = offset + NCMP*porduct_dims

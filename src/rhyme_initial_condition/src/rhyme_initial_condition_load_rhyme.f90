@@ -63,7 +63,9 @@ module subroutine rhyme_initial_condition_load_rhyme(ic, samr, logger)
 
          do v = 1, NCMP
             samr%levels(l)%boxes(b)%cells(1:ub(1) RANGE_J RANGE_K, v) = &
-               reshape(data(ofs + (v - 1)*blen + 1:ofs + v*blen), bdims)
+               real( &
+               reshape(data(ofs + (v - 1)*blen + 1:ofs + v*blen), bdims), &
+               kind=8)
          end do
 
          ofs = ofs + NCMP*blen

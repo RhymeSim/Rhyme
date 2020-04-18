@@ -19,7 +19,7 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
    character(len=1024) :: filename = ''
    integer :: l, b, length, bdims(NDIM), offset, lb, ub
    character(len=32) :: level_data_name
-   real(kind=8), allocatable :: data(:), expected_data(:)
+   real(kind=4), allocatable :: data(:), expected_data(:)
    type(samr_box_t) :: box
 
    ch_tester = .describe."chombo write_level_data"
@@ -81,10 +81,13 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
 #define RANGE_K , 1:bdims(3)
 #endif
 
-         expected_data(lb:ub) = reshape( &
-                                box%cells(1:bdims(1) RANGE_J RANGE_K, cid%rho), &
-                                [product(bdims)] &
-                                )
+         expected_data(lb:ub) = &
+            real( &
+            reshape( &
+            box%cells(1:bdims(1) RANGE_J RANGE_K, cid%rho), &
+            [product(bdims)] &
+            ) &
+            )
 
          call ch_tester%expect(data(lb:ub) .toBe.expected_data(lb:ub) .hint.level_data_name)
 
@@ -92,10 +95,13 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
          lb = lb + (cid%e_tot - 1)*product(bdims)
          ub = lb + product(bdims) - 1
 
-         expected_data(lb:ub) = reshape( &
-                                box%cells(1:bdims(1) RANGE_J RANGE_K, cid%e_tot), &
-                                [product(bdims)] &
-                                )
+         expected_data(lb:ub) = &
+            real( &
+            reshape( &
+            box%cells(1:bdims(1) RANGE_J RANGE_K, cid%e_tot), &
+            [product(bdims)] &
+            ) &
+            )
 
          call ch_tester%expect(data(lb:ub) .toBe.expected_data(lb:ub) .hint.level_data_name)
 
