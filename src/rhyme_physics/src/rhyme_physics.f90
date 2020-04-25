@@ -32,7 +32,6 @@ module rhyme_physics
       integer :: rho = 1
       integer :: rho_u = 2, u = 2 RHOV_DEFINITION RHOW_DEFINITION
       integer :: e_tot = 1 + NDIM + 1, p = 1 + NDIM + 1
-#ifdef RT_SOLVER
       integer :: temp = 1 + NDIM + 1 + 1
       integer :: ntr_frac_0 = 1 + NDIM + 1 + 1 + 1
 #if NSPE > 1
@@ -41,18 +40,15 @@ module rhyme_physics
 #if NSPE > 2
       integer :: ntr_frac_2 = 1 + NDIM + 1 + 1 + 3
 #endif
-#endif
 
       character(len=16) :: labels(NCMP) = [ &
                            'rho       ', 'rho_u     'RHOV_LABEL RHOW_LABEL, 'e_tot     ' &
-#ifdef RT_SOLVER
                            , 'temp      ', 'ntr_frac_0' &
 #if NSPE > 1
                            , 'ntr_frac_1' &
 #endif
 #if NSPE > 2
                            , 'ntr_frac_2' &
-#endif
 #endif
                            ]
    end type component_indices_t
@@ -68,9 +64,7 @@ module rhyme_physics
 
    type physics_t
       integer :: hydro = phid%none
-#ifdef RT_SOLVER
       integer :: rt = phid%none
-#endif
       character(len=1024) :: rho_str, length_str, time_str
       type(nombre_unit_t), pointer :: rho => null()
       type(nombre_unit_t), pointer :: length => null()

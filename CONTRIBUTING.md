@@ -35,7 +35,5 @@ All pull requests must be tested against different MACRO values:
 
 - 1, 2 and 3D runs (`NDIM` macro can be override [here](./config.cmake)
 - 1, 2 and 3 species (`NSPE` macro can be override [here](./config.cmake)
-- different combinations of `HYDRO_SOLVER`/`RT_SOLVER` (relevant
-  macros can be override [here](./config.cmake)
 - with or without `OpenMP` (switch `OpenMP` ON/OFF by commenting out
   `find_package( OpenMP )` in [CMakeFile](./CMakeLists.txt))

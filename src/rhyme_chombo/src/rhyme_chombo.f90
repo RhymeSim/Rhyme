@@ -28,7 +28,7 @@ module rhyme_chombo
    end type
 
    type, private :: chombo_workspace_t
-      real(kind=8), allocatable :: data(:)
+      real(kind=4), allocatable :: data(:)
       integer, allocatable :: boxes(:, :)
    end type chombo_workspace_t
 
