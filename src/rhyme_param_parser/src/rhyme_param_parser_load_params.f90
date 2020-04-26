@@ -95,7 +95,7 @@ module subroutine load_params(param_file, physics, ic, bc, cfl, &
 
    call config%read ('canvas'.at.1, draw%type, logger, canvas_types)
    if (draw%type .eq. drid%uniform_canvas) then
-      call config%read ('canvas'.at.2.hint.'color', draw%canvas(cid%rho:cid%p), logger)
+      call config%read ('canvas'.at.2.hint.'color', draw%canvas(1:NCMP), logger)
    end if
 
    ! Shapes

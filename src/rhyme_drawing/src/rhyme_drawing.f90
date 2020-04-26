@@ -113,7 +113,7 @@ module rhyme_drawing
 
    type drawing_t
       integer :: type = drid%transparent_canvas
-      real(kind=8) :: canvas(cid%rho:cid%p)
+      real(kind=8) :: canvas(NCMP)
       type(shape_t), pointer :: shapes => null()
       type(perturbation_t), pointer :: perturbs => null()
       logical :: initialized
@@ -132,7 +132,7 @@ module rhyme_drawing
 
       module subroutine rhyme_drawing_uniform_canvas(samr, bg_prim)
          type(samr_t), intent(inout) :: samr
-         real(kind=8), intent(in) :: bg_prim(cid%rho:cid%p)
+         real(kind=8), intent(in) :: bg_prim(NCMP)
       end subroutine rhyme_drawing_uniform_canvas
 
       module subroutine rhyme_drawing_uniform_cuboid(samr, shape)

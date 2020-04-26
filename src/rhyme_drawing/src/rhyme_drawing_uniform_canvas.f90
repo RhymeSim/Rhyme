@@ -4,7 +4,7 @@ module subroutine rhyme_drawing_uniform_canvas(samr, bg_prim)
    implicit none
 
    type(samr_t), intent(inout) :: samr
-   real(kind=8), intent(in) :: bg_prim(cid%rho:cid%p)
+   real(kind=8), intent(in) :: bg_prim(NCMP)
 
 #if NDIM == 1
 #define JDX
@@ -40,7 +40,8 @@ module subroutine rhyme_drawing_uniform_canvas(samr, bg_prim)
          LOOP_K
          LOOP_J
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
-            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = bg
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = bg(cid%rho:cid%e_tot)
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) = bg_prim(cid%p + 1:NCMP)
          end do
          LOOP_J_END
          LOOP_K_END

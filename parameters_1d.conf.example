@@ -46,7 +46,7 @@ solver_type = cpu_intensive
 
 
 # **Drawing**
-canvas = uniform .125d0 0d0 .1d0
+canvas = uniform .125d0 0d0 .1d0 1e4 1d-2 2d-3 3d-4
 
 shape = cuboid 1 56
 shape_filling = uniform 1d0 0d0 1d0
