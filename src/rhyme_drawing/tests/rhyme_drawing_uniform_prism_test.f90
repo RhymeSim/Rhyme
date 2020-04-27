@@ -76,6 +76,7 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
 #endif
    shape%fill%type = drid%uniform
    shape%fill%colors(cid%rho:cid%p, 1) = prim
+   shape%fill%colors(cid%e_tot + 1:NCMP, 1) = 3.45d0
 
    call rhyme_drawing_uniform_prism(samr, shape)
 
@@ -89,6 +90,9 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
                call dr_tester%expect( &
                   samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) &
                   .toBe.cons)
+               call dr_tester%expect( &
+                  samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) &
+                  .toBe.3.45d0)
             end if
          end do
          LOOP_J_END
@@ -99,7 +103,8 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
 
 #endif
 
-   failed = dr_tester%failed()
+   ! failed = dr_tester%failed()
+   failed = .true. ! TODO: no point inside the prism!
 
 #if NDIM > 1
 
@@ -134,6 +139,7 @@ contains
       n(1) = a(2)*b(3) - a(3)*b(2)
       n(2) = a(3)*b(1) - a(1)*b(3)
       n(3) = a(1)*b(2) - a(2)*b(1)
+
       len_n = sqrt(sum(n**2))
 
       theta = acos(sum(n*vec_p0)/(len_n*len_vec_p0))

@@ -32,8 +32,8 @@ courant_number = .2d0
 
 
 # **Exact Riemann Solver**
-vacuum_pressure = 2.2250738585072014E-308
-vacuum_density = 2.2250738585072014E-308
+vacuum_pressure = 1.23d0
+vacuum_density = 2.34d0
 tolerance = 1d-6
 n_iteration = 100
 
@@ -51,16 +51,16 @@ solver_type = cpu_intensive
 canvas = uniform .125d0 0d0 0d0 .1d0 1e4 1d-2 2d-3 3d-4
 
 shape = cuboid 1 1 56 128
-shape_filling = uniform 1d0 0d0 0d0 1d0
+shape_filling = uniform 1d0 0d0 0d0 1d0 1d4 1d-2 1d-3 1d-4
 
 shape = sphere 3d0 4d0 2.34d0 2.34d-1 'unit'
-shape_filling = uniform absolute 1d0 0d0 0d0 1d0 2d0 3d0 3d0 4d0
+shape_filling = uniform absolute 1d0 0d0 0d0 1d0 1d4 1d-2 1d-3 1d-4 2d0 3d0 3d0 4d0 1d4 1d-3 1d-4 1d-5
 
 shape = prism 56 1 56 128 72 1
-shape_filling = uniform 1d0 0d0 0d0 1d0
+shape_filling = uniform 1d0 0d0 0d0 1d0 1d4 1d-2 1d-3 1d-4
 
 shape = smoothed_slab_2d x 56 72 .2 .4
-shape_filling = .125d0 0d0 0d0 .1d0 1d0 0d0 0d0 1d0
+shape_filling = .125d0 0d0 0d0 .1d0 1d4 1d-2 1d-3 1d-4 1d0 0d0 0d0 1d0 1d5 1d-3 1d-4 1d-5
 
 perturb = harmonic cartesian x 0.05 32 0d0 0d0 0d0 1d0
 perturb = symmetric_decaying cartesian y 1d0 56 2 0d0 0d0 0d0 1d0

@@ -38,7 +38,7 @@ module rhyme_drawing
 
    type shape_filling_t
       integer :: type = drid%uniform
-      real(kind=8) :: colors(cid%rho:cid%p, 2) = 0d0
+      real(kind=8) :: colors(cid%rho:NCMP, 2) = 0d0
       integer :: modes(2) = drid%unset
    end type shape_filling_t
 

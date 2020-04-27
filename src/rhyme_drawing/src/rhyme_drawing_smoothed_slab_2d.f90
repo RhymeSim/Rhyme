@@ -51,7 +51,7 @@ module subroutine rhyme_drawing_smoothed_slab_2d(samr, shape, logger)
                return
             end select
 
-            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = ramp_func(x, shape)
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:NCMP) = ramp_func(x, shape)
          end do
          LOOP_J_END
          LOOP_K_END
@@ -60,15 +60,15 @@ module subroutine rhyme_drawing_smoothed_slab_2d(samr, shape, logger)
 
 contains
 
-   pure function ramp_func(x, shape) result(u)
+   pure function ramp_func(x, shape) result(uu)
       implicit none
 
       real(kind=8), intent(in) :: x
       type(shape_t), intent(in) :: shape
-      real(kind=8) :: u(cid%rho:cid%e_tot)
+      real(kind=8) :: uu(cid%rho:NCMP)
 
       real(kind=8) :: factor, Rs, slab_center
-      real(kind=8) :: w(cid%rho:cid%p)
+      real(kind=8) :: ww(cid%rho:NCMP)
 
       slab_center = (shape%slab_2d%pos(1) + shape%slab_2d%pos(2))/2.d0
       Rs = abs(slab_center - shape%slab_2d%pos(1))
@@ -76,12 +76,12 @@ contains
       factor = (1 + tanh((Rs - (x - slab_center))/shape%slab_2d%sigma(1))) &
                *(1 + tanh((Rs + (x - slab_center))/shape%slab_2d%sigma(2)))
 
-      w = shape%fill%colors(cid%rho:cid%e_tot, 1) + 0.25*( &
-          shape%fill%colors(cid%rho:cid%e_tot, 2) &
-          - shape%fill%colors(cid%rho:cid%e_tot, 1) &
-          )*factor
+      ww = shape%fill%colors(:, 1) + 0.25*( &
+           shape%fill%colors(:, 2) - shape%fill%colors(:, 1) &
+           )*factor
 
-      call conv_prim_to_cons(w, u)
+      call conv_prim_to_cons(ww(cid%rho:cid%p), uu(cid%rho:cid%e_tot))
+      uu(cid%e_tot + 1:NCMP) = ww(cid%e_tot + 1:NCMP)
    end function ramp_func
 #endif
 end subroutine rhyme_drawing_smoothed_slab_2d

@@ -70,6 +70,7 @@ logical function rhyme_drawing_uniform_cuboid_test() result(failed)
    shape%cuboid%lengths = lengths
    shape%fill%type = drid%uniform
    shape%fill%colors(cid%rho:cid%p, 1) = prim
+   shape%fill%colors(cid%p + 1:NCMP, 1) = 3.45d0
 
    call rhyme_drawing_uniform_cuboid(samr, shape)
 
@@ -80,9 +81,13 @@ logical function rhyme_drawing_uniform_cuboid_test() result(failed)
          LOOP_J
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if (is_inside_cuboid([i JDX KDX], samr%levels(l)%boxes(b), shape)) then
+               print *, 'man injam', i, j, k
                call dr_tester%expect( &
                   samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) &
-                  .toBe.cons)
+                  .toBe.cons.hint.'hydro values')
+               call dr_tester%expect( &
+                  samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) &
+                  .toBe.3.45d0.hint.'rt values')
             end if
          end do
          LOOP_J_END

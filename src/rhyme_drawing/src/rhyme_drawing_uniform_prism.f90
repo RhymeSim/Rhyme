@@ -24,11 +24,12 @@ module subroutine rhyme_drawing_uniform_prism(samr, shape)
 #define LOOP_K_END end do
 #endif
 
-   real(kind=8) :: color(cid%rho:cid%e_tot)
+   real(kind=8) :: color(cid%rho:NCMP)
    integer :: l, b, i JDX KDX, ax
    integer :: shift(NDIM), lb(NDIM), ub(NDIM)
 
-   call conv_prim_to_cons(shape%fill%colors(cid%rho:cid%p, 1), color)
+   call conv_prim_to_cons(shape%fill%colors(cid%rho:cid%p, 1), color(cid%rho:cid%e_tot))
+   color(cid%e_tot + 1:NCMP) = shape%fill%colors(cid%p + 1:NCMP, 1)
 
    do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -54,7 +55,7 @@ module subroutine rhyme_drawing_uniform_prism(samr, shape)
          LOOP_J
          do i = lb(1), ub(1)
             if (is_inside_prism([i JDX KDX], samr%levels(l)%boxes(b), shape)) then
-               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = color
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:NCMP) = color(cid%rho:NCMP)
             end if
          end do
          LOOP_J_END

@@ -31,9 +31,10 @@ module subroutine rhyme_drawing_uniform_cuboid(samr, shape)
 
    integer :: l, b, i JDX KDX, uid
    integer :: shift(NDIM), lb(NDIM), ub(NDIM)
-   real(kind=8) :: color(cid%rho:cid%e_tot)
+   real(kind=8) :: color(cid%rho:NCMP)
 
-   call conv_prim_to_cons(shape%fill%colors(cid%rho:cid%p, 1), color)
+   call conv_prim_to_cons(shape%fill%colors(cid%rho:cid%p, 1), color(cid%rho:cid%e_tot))
+   color(cid%e_tot + 1:NCMP) = shape%fill%colors(cid%p + 1:NCMP, 1)
 
    do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -47,7 +48,7 @@ module subroutine rhyme_drawing_uniform_cuboid(samr, shape)
          ub = merge(0, ub, ub < 1)
          ub = merge(samr%levels(l)%boxes(b)%dims, ub, ub > samr%levels(l)%boxes(b)%dims)
 
-         do uid = cid%rho, cid%e_tot
+         do uid = cid%rho, NCMP
             LOOP_K
             LOOP_J
             do i = lb(1), ub(1)

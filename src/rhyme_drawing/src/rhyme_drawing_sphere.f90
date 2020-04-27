@@ -31,7 +31,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
 #define LOOP_K_END end do
 #endif
 
-   real(kind=8), dimension(cid%rho:cid%e_tot) :: color
+   real(kind=8), dimension(NCMP) :: color
    integer :: l, b, i JDX KDX, d
    real(kind=8) :: origin_px(NDIM), r_px, sigma_px, box_lengths(NDIM)
 
@@ -60,7 +60,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
                color = smoothing_factor([i JDX KDX] - .5d0, origin_px, r_px, sigma_px, shape%fill%colors)
 
-               do d = cid%rho, cid%e_tot
+               do d = cid%rho, NCMP
                   if (samr%levels(l)%boxes(b)%cells(i JDX KDX, d) < color(d)) then
                      samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
                   end if
@@ -71,6 +71,8 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
          end do
       end do
       call logger%end_section
+   case default
+      print *, 'Unknown mode!'
    end select
 
    call logger%end_section
@@ -81,18 +83,19 @@ function smoothing_factor(x, o, r, sigma, w) result(u)
 
    real(kind=8), dimension(NDIM), intent(in) :: x, o
    real(kind=8), intent(in) :: r, sigma
-   real(kind=8), dimension(cid%rho:cid%p, 2), intent(in) :: w
+   real(kind=8), dimension(NCMP, 2), intent(in) :: w
 
-   real(kind=8), dimension(cid%rho:cid%p) :: new_w
-   real(kind=8), dimension(cid%rho:cid%e_tot) :: u
+   real(kind=8), dimension(NCMP) :: new_w
+   real(kind=8), dimension(NCMP) :: u
 
    real(kind=8) :: dist, f
 
    dist = sqrt(sum((x - o)**2))
    f = (1d0 + tanh((r - dist)/sigma))/2d0
 
-   new_w = f*w(cid%rho:cid%p, 1) + (1 - f)*w(cid%rho:cid%p, 2)
+   new_w = f*w(1:NCMP, 1) + (1 - f)*w(1:NCMP, 2)
 
-   call conv_prim_to_cons(new_w, u)
+   call conv_prim_to_cons(new_w(cid%rho:cid%p), u(cid%rho:cid%e_tot))
+   u(cid%e_tot + 1:NCMP) = new_w(cid%e_tot + 1:NCMP)
 end function smoothing_factor
 end submodule rhyme_drawing_sphere_submodule

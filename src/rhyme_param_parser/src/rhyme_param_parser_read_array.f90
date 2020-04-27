@@ -11,7 +11,7 @@ module subroutine rhyme_param_parser_read_array(this, term, var, logger, switch)
    type(logger_t), intent(inout) :: logger
    type(config_switch_t), optional, intent(in) :: switch
 
-   character(len=1024) :: key, op, str(10), switch_str(size(var))
+   character(len=1024) :: key, op, str(32), switch_str(size(var))
    integer :: i, j, occur, ios, lb, ub
 
    lb = lbound(var, dim=1)

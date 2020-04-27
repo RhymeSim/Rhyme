@@ -91,9 +91,8 @@ contains
       call rhyme_samr_factory_filling(samr, this%init_nboxes, phys)
    end function rhyme_samr_factory_generate
 
-   function rhyme_samr_factory_generate_with(this, nlevels, base_grid, &
-                                             ghost_cells, max_nboxes, init_nboxes, box_lengths, physical) &
-      result(samr)
+   function rhyme_samr_factory_generate_with(this, nlevels, base_grid, ghost_cells, max_nboxes, &
+                                             init_nboxes, box_lengths, physical) result(samr)
       implicit none
 
       class(rhyme_samr_factory_t), intent(inout) :: this
