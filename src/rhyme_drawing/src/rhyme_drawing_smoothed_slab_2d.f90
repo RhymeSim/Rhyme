@@ -76,8 +76,8 @@ contains
       factor = (1 + tanh((Rs - (x - slab_center))/shape%slab_2d%sigma(1))) &
                *(1 + tanh((Rs + (x - slab_center))/shape%slab_2d%sigma(2)))
 
-      ww = shape%fill%colors(:, 1) + 0.25*( &
-           shape%fill%colors(:, 2) - shape%fill%colors(:, 1) &
+      ww = shape%fill%colors(cid%rho:NCMP, 1) + 0.25*( &
+           shape%fill%colors(cid%rho:NCMP, 2) - shape%fill%colors(cid%rho:NCMP, 1) &
            )*factor
 
       call conv_prim_to_cons(ww(cid%rho:cid%p), uu(cid%rho:cid%e_tot))

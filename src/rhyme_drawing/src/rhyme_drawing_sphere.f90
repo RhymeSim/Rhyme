@@ -31,7 +31,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
 #define LOOP_K_END end do
 #endif
 
-   real(kind=8), dimension(NCMP) :: color
+   real(kind=8), dimension(cid%rho:NCMP) :: color
    integer :: l, b, i JDX KDX, d
    real(kind=8) :: origin_px(NDIM), r_px, sigma_px, box_lengths(NDIM)
 
@@ -72,7 +72,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
       end do
       call logger%end_section
    case default
-      print *, 'Unknown mode!'
+      call logger%err('Unknonw mode!')
    end select
 
    call logger%end_section
@@ -83,10 +83,10 @@ function smoothing_factor(x, o, r, sigma, w) result(u)
 
    real(kind=8), dimension(NDIM), intent(in) :: x, o
    real(kind=8), intent(in) :: r, sigma
-   real(kind=8), dimension(NCMP, 2), intent(in) :: w
+   real(kind=8), dimension(cid%rho:NCMP, 2), intent(in) :: w
 
-   real(kind=8), dimension(NCMP) :: new_w
-   real(kind=8), dimension(NCMP) :: u
+   real(kind=8), dimension(cid%rho:NCMP) :: new_w
+   real(kind=8), dimension(cid%rho:NCMP) :: u
 
    real(kind=8) :: dist, f
 
