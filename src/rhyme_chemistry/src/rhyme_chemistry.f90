@@ -1,4 +1,5 @@
 module rhyme_chemistry
+   use rhyme_periodic_table
    use rhyme_logger
 
    implicit none
@@ -10,6 +11,7 @@ module rhyme_chemistry
    type(indices_t), parameter :: chemid = indices_t()
 
    type chemistry_t
+      type(periodic_table_t) :: pt
    contains
       procedure :: rhyme_chemistry_write_formatted
       generic :: write (formatted) => rhyme_chemistry_write_formatted
@@ -20,16 +22,7 @@ module rhyme_chemistry
          type(chemistry_t), intent(inout) :: chem
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_chemistry_init
-
-      pure module function rhyme_chemistry_equality(chem1, chem2) result(eq)
-         type(chemistry_t), intent(in) :: chem1, chem2
-         logical :: eq
-      end function rhyme_chemistry_equality
    end interface
-
-   interface operator(==)
-      module procedure rhyme_chemistry_equality
-   end interface operator(==)
 
 contains
    subroutine rhyme_chemistry_write_formatted( &

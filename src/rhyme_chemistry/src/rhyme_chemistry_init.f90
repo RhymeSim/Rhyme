@@ -6,12 +6,9 @@ module subroutine rhyme_chemistry_init(chem, logger)
    type(chemistry_t), intent(inout) :: chem
    type(logger_t), intent(inout) :: logger
 
-   character(len=128) :: chem_str
-
    call logger%begin_section('chemistry')
 
-   write (chem_str, *) chem
-   call logger%log('', 'chemistry', '=', [chem_str])
+   call rhyme_periodic_table_init(chem%pt, logger)
 
    call logger%end_section
 end subroutine rhyme_chemistry_init

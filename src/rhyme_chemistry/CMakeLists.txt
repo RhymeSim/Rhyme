@@ -11,7 +11,7 @@ endif()
 
 set(deps rhyme_logger)
 
-set(internal_deps)
+set(internal_deps rhyme_periodic_table)
 
 set(srcs src/rhyme_chemistry_init.f90 src/rhyme_chemistry.f90)
 

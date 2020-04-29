@@ -15,9 +15,10 @@ logical function rhyme_chemistry_init_test() result(failed)
    chem = chemistry_factory%generate()
    logger = log_factory%generate()
 
+   call rhyme_nombre_init()
    call rhyme_chemistry_init(chem, logger)
 
-   call tester%expect(.false..toBe..true..hint.'Placeholder test')
+   call tester%expect(chem%pt%elements(1)%symb.toBe.'H'.hint.'Periodic table')
 
    failed = tester%failed()
 

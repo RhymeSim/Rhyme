@@ -13,8 +13,6 @@ logical function rhyme_chemistry_test() result(failed)
    call chemistry_factory%init('Case1')
    chem = chemistry_factory%generate()
 
-   call tester%expect(chemid%idx.toBe.0.hint.'Placeholder test')
-
    failed = tester%failed()
 
    call chemistry_factory%final
