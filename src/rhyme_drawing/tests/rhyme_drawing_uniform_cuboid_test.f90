@@ -81,7 +81,6 @@ logical function rhyme_drawing_uniform_cuboid_test() result(failed)
          LOOP_J
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
             if (is_inside_cuboid([i JDX KDX], samr%levels(l)%boxes(b), shape)) then
-               print *, 'man injam', i, j, k
                call dr_tester%expect( &
                   samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) &
                   .toBe.cons.hint.'hydro values')

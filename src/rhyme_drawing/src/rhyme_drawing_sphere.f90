@@ -60,10 +60,13 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
                color = smoothing_factor([i JDX KDX] - .5d0, origin_px, r_px, sigma_px, shape%fill%colors)
 
-               do d = cid%rho, NCMP
+               do d = cid%rho, cid%e_tot
                   if (samr%levels(l)%boxes(b)%cells(i JDX KDX, d) < color(d)) then
                      samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
                   end if
+               end do
+               do d = cid%temp, NCMP
+                  samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
                end do
             end do
             LOOP_J_END

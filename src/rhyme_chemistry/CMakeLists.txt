@@ -13,8 +13,7 @@ set(deps rhyme_logger)
 
 set(internal_deps)
 
-set(srcs src/rhyme_chemistry_equality.f90 src/rhyme_chemistry_init.f90
-         src/rhyme_chemistry.f90)
+set(srcs src/rhyme_chemistry_init.f90 src/rhyme_chemistry.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

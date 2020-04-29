@@ -13,8 +13,7 @@ set(deps rhyme_logger rhyme_nombre)
 
 set(internal_deps)
 
-set(srcs src/rhyme_periodic_table_equality.f90
-         src/rhyme_periodic_table_init.f90 src/rhyme_periodic_table.f90)
+set(srcs src/rhyme_periodic_table_init.f90 src/rhyme_periodic_table.f90)
 
 set(rhyme_src_dir ../../..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
