@@ -18,7 +18,7 @@ module rhyme_periodic_table
       end function rate_interface
    end interface
 
-   type, private :: element_species_t
+   type element_species_t
       character(len=16) :: symb = ''
       integer :: ionized = 1
       procedure(rate_interface), pointer, nopass :: RI_A => null()  ! Recombination ionization rate (case A)

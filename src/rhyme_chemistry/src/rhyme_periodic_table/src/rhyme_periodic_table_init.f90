@@ -19,11 +19,18 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%H)%atomic_weight = 1.00811d0.u.atomic_mass_unit
 
    allocate (pt%elements(ptid%H)%species)
-   pt%elements(ptid%H)%species%symb = 'HII'
-   pt%elements(ptid%H)%species%ionized = 1
-   pt%elements(ptid%H)%species%RI_A => RI_HII_A
-   pt%elements(ptid%H)%species%RI_B => RI_HII_B
-   pt%elements(ptid%H)%species%CI => CI_HI
+   pt%elements(ptid%H)%species%symb = 'HI'
+   pt%elements(ptid%H)%species%ionized = 0
+   pt%elements(ptid%H)%species%RI_A => null()
+   pt%elements(ptid%H)%species%RI_B => null()
+   pt%elements(ptid%H)%species%CI => null()
+
+   allocate (pt%elements(ptid%H)%species%next)
+   pt%elements(ptid%H)%species%next%symb = 'HII'
+   pt%elements(ptid%H)%species%next%ionized = 1
+   pt%elements(ptid%H)%species%next%RI_A => RI_HII_A
+   pt%elements(ptid%H)%species%next%RI_B => RI_HII_B
+   pt%elements(ptid%H)%species%next%CI => CI_HI
 
    ! Helium
 
@@ -32,19 +39,26 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%He)%atomic_weight = 4.002602d0.u.atomic_mass_unit
 
    allocate (pt%elements(ptid%He)%species)
-   pt%elements(ptid%He)%species%symb = 'HeII'
-   pt%elements(ptid%He)%species%ionized = 1
-   pt%elements(ptid%He)%species%RI_A => RI_HeII_A
-   pt%elements(ptid%He)%species%RI_B => RI_HeII_B
-   pt%elements(ptid%He)%species%CI => CI_HeI
+   pt%elements(ptid%He)%species%symb = 'HeI'
+   pt%elements(ptid%He)%species%ionized = 0
+   pt%elements(ptid%He)%species%RI_A => null()
+   pt%elements(ptid%He)%species%RI_B => null()
+   pt%elements(ptid%He)%species%CI => null()
 
    allocate (pt%elements(ptid%He)%species%next)
-   pt%elements(ptid%He)%species%next%prev => pt%elements(ptid%He)%species
-   pt%elements(ptid%He)%species%next%symb = 'HeIII'
-   pt%elements(ptid%He)%species%next%ionized = 2
-   pt%elements(ptid%He)%species%next%RI_A => RI_HeIII_A
-   pt%elements(ptid%He)%species%next%RI_B => RI_HeIII_B
-   pt%elements(ptid%He)%species%next%CI => CI_HeII
+   pt%elements(ptid%He)%species%next%symb = 'HeII'
+   pt%elements(ptid%He)%species%next%ionized = 1
+   pt%elements(ptid%He)%species%next%RI_A => RI_HeII_A
+   pt%elements(ptid%He)%species%next%RI_B => RI_HeII_B
+   pt%elements(ptid%He)%species%next%CI => CI_HeI
+
+   allocate (pt%elements(ptid%He)%species%next%next)
+   pt%elements(ptid%He)%species%next%next%prev => pt%elements(ptid%He)%species
+   pt%elements(ptid%He)%species%next%next%symb = 'HeIII'
+   pt%elements(ptid%He)%species%next%next%ionized = 2
+   pt%elements(ptid%He)%species%next%next%RI_A => RI_HeIII_A
+   pt%elements(ptid%He)%species%next%next%RI_B => RI_HeIII_B
+   pt%elements(ptid%He)%species%next%next%CI => CI_HeII
 
    call logger%end_section
 
