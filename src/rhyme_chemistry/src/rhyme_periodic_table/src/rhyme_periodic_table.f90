@@ -42,6 +42,7 @@ module rhyme_periodic_table
    contains
       procedure :: rhyme_periodic_table_write_formatted
       generic :: write (formatted) => rhyme_periodic_table_write_formatted
+      procedure :: get_species_by_name => rhyme_periodic_table_get_species_by_name
    end type periodic_table_t
 
    interface
@@ -49,7 +50,17 @@ module rhyme_periodic_table
          type(periodic_table_t), intent(inout) :: pt
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_periodic_table_init
+
+      module function rhyme_periodic_table_get_species_by_name(pt, species_name) result(species)
+         class(periodic_table_t), intent(in) :: pt
+         character(len=*), intent(in) :: species_name
+         type(element_species_t), pointer :: species
+      end function rhyme_periodic_table_get_species_by_name
    end interface
+
+   interface operator(.getspeciesbyname.)
+      procedure rhyme_periodic_table_get_species_by_name
+   end interface operator(.getspeciesbyname.)
 
 contains
    subroutine rhyme_periodic_table_element_write_formatted( &
