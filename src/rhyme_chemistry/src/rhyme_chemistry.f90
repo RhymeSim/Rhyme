@@ -5,13 +5,18 @@ module rhyme_chemistry
    implicit none
 
    type, private :: indices_t
-      integer :: idx = 1
    end type indices_t
 
    type(indices_t), parameter :: chemid = indices_t()
 
+   type species_array_t
+      type(element_species_t), pointer :: s => null()
+   end type species_array_t
+
    type chemistry_t
       type(periodic_table_t) :: pt
+      character(len=8), dimension(NSPE) :: species_name = ''
+      type(species_array_t), dimension(NSPE) :: species
    contains
       procedure :: rhyme_chemistry_write_formatted
       generic :: write (formatted) => rhyme_chemistry_write_formatted

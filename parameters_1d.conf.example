@@ -21,6 +21,11 @@ left_bc = reflective
 right_bc = outflow
 
 
+# **Chemistry**
+elements = H He
+species = HII HeII HeIII
+
+
 # **Thermodynamics**
 ideal_gas_type = diatomic
 

@@ -23,6 +23,11 @@ bottom_bc = periodic
 top_bc = reflective
 
 
+# **Chemistry**
+elements = H He
+species = HII HeII HeIII
+
+
 # **Thermodynamics**
 ideal_gas_type = diatomic
 

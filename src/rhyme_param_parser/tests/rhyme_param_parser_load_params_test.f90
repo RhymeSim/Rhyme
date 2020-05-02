@@ -27,6 +27,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 #define PRISM_VERTEX_3 [ 72d0, 1d0, 1d0 ]
 #endif
 
+   type(chemistry_t) :: chemistry
    type(physics_t) :: physics
    type(initial_condition_t) :: ic
    type(samr_bc_t) :: bc
@@ -45,7 +46,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    logger = log_factory%generate()
 
-   call load_params(param_file, physics, ic, bc, cfl, thermo, draw, irs, &
+   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, draw, irs, &
                     sl, mh, chombo, logger)
 
    ! Structured AMR
@@ -68,6 +69,9 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(bc%types(bcid%back) .toBe.2)
    call tester%expect(bc%types(bcid%front) .toBe.3)
 #endif
+
+   ! Chemistry
+   call tester%expect(chemistry%species_name.toBe. ['HII  ', 'HeII ', 'HeIII'])
 
    ! Physics
    call tester%expect(physics%rho_str.toBe.'kg / m^3')

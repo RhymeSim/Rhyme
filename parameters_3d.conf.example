@@ -25,6 +25,11 @@ back_bc = outflow
 front_bc = periodic
 
 
+# **Chemistry**
+elements = H He
+species = HII HeII HeIII
+
+
 # **Thermodynamics**
 ideal_gas_type = diatomic
 

@@ -1,5 +1,6 @@
 module rhyme_param_parser
    ! TODO: replace it with a JSON object reader
+   use rhyme_chemistry
    use rhyme_physics
    use rhyme_initial_condition
    use rhyme_samr_bc
@@ -40,9 +41,10 @@ module rhyme_param_parser
    end type config_term_t
 
    interface
-      module subroutine load_params(param_file, physics, ic, bc, cfl, &
+      module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
                                     thermo, draw, irs, sl, mh, chombo, logger)
          character(len=1024), intent(in) :: param_file
+         type(chemistry_t), intent(inout) :: chemistry
          type(physics_t), intent(inout) :: physics
          type(initial_condition_t), intent(inout) :: ic
          type(samr_bc_t), intent(inout) :: bc

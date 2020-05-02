@@ -1,10 +1,11 @@
 submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
-module subroutine load_params(param_file, physics, ic, bc, cfl, &
+module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
                               thermo, draw, irs, sl, mh, chombo, logger)
    implicit none
 
    character(len=1024), intent(in) :: param_file
+   type(chemistry_t), intent(inout) :: chemistry
    type(physics_t), intent(inout) :: physics
    type(initial_condition_t), intent(inout) :: ic
    type(samr_bc_t), intent(inout) :: bc
@@ -73,6 +74,9 @@ module subroutine load_params(param_file, physics, ic, bc, cfl, &
    call config%read ('back_bc'.at.1, bc%types(bcid%back), logger, bc_types)
    call config%read ('front_bc'.at.1, bc%types(bcid%front), logger, bc_types)
 #endif
+
+   ! chemistry
+   call config%read_array('species'.at.1, chemistry%species_name, logger)
 
    ! Physics
    call config%read ('density_unit'.at.1, physics%rho_str, logger)
