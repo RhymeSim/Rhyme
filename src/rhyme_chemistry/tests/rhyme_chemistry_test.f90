@@ -10,10 +10,7 @@ logical function rhyme_chemistry_test() result(failed)
 
    tester = .describe."chemistry"
 
-   call chemistry_factory%init('Case1')
-   chem = chemistry_factory%generate()
+   chem = chemistry_factory%generate('H+He')
 
    failed = tester%failed()
-
-   call chemistry_factory%final
 end function rhyme_chemistry_test

@@ -14,21 +14,18 @@ logical function rhyme_chemistry_init_test() result(failed)
 
    tester = .describe."chemistry_init"
 
-   chem = chemistry_factory%generate()
+   chem = chemistry_factory%generate('H+He')
    logger = log_factory%generate()
-
-   chem%species_name = 'HII'
 
    call rhyme_nombre_init()
    call rhyme_chemistry_init(chem, logger)
 
-   call tester%expect(chem%pt%elements(1)%symb.toBe.'H'.hint.'Periodic table')
+   call tester%expect(chem%pt%elements(1)%symb.toBe.'H'.hint.'Check periodic table')
+   call tester%expect(chem%pt%elements(2)%symb.toBe.'He'.hint.'Check periodic table')
 
-   do si = 1, size(chem%species_name)
-      call tester%expect(chem%species(si)%s%symb.toBe.'HII')
+   do si = 1, NSPE
+      call tester%expect(chem%species(si)%s%symb.toBe.chemistry_factory%H_He(si))
    end do
 
    failed = tester%failed()
-
-   call chemistry_factory%final
 end function rhyme_chemistry_init_test
