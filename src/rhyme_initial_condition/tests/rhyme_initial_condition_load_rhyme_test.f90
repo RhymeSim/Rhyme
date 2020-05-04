@@ -22,11 +22,11 @@ logical function rhyme_initial_condition_load_rhyme_test() result(failed)
 
    ic_tester = .describe."initial_condition_load_rhyme"
 
-   ic_write = ic_factory%generate(4)
+   ic_write = initial_condition_factory_generate('4levels')
 
-   physics = ph_factory%generate('SI')
+   physics = physics_factory_generate('SI')
    samr = samr_factory%generate()
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 

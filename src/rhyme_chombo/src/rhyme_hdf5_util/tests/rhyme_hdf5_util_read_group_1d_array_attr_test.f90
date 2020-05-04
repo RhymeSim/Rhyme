@@ -19,7 +19,7 @@ logical function rhyme_hdf5_util_read_group_1d_array_attr_test() result(failed)
 
    h5_tester = .describe."read_group_1d_array_attr"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    ! Creating hdf5 file
    call rhyme_hdf5_util_create(h5, testfile)

@@ -6,22 +6,22 @@ logical function rhyme_chombo_filename_generator_test() result(failed)
 
    type(assertion_t) :: ch_tester
 
-   type(chombo_t) :: chombo, chombo_empty
+   type(chombo_t) :: ch, ch_empty
    character(len=1024) :: filename
 
    ch_tester = .describe."chombo filename_generator"
 
-   chombo = ch_factory%generate()
+   ch = chombo_factory_generate('empty')
 
-   chombo%prefix = "./prefix"
-   chombo%nickname = "nickname"
-   chombo%iteration = 12
+   ch%prefix = "./prefix"
+   ch%nickname = "nickname"
+   ch%iteration = 12
 
-   call rhyme_chombo_filename_generator(chombo, filename)
+   call rhyme_chombo_filename_generator(ch, filename)
    call ch_tester%expect(filename.toBe.'./prefix/nickname-00012.chombo.h5')
 
-   chombo_empty%iteration = 23
-   call rhyme_chombo_filename_generator(chombo_empty, filename)
+   ch_empty%iteration = 23
+   call rhyme_chombo_filename_generator(ch_empty, filename)
    call ch_tester%expect(filename.toBe.'00023.chombo.h5')
 
    failed = ch_tester%failed()

@@ -21,8 +21,8 @@ logical function rhyme_nombre_base_unit_chain_conversion_factor_test() result(fa
       bu = si_base_units(ceiling(rnd(:, 1)*size(si_base_units)))
       where (bu == kilogram) bu = gram
       prfx = prfx_si(ceiling(rnd(:, 2)*48 - 24))
-      buc => nom_buc_factory%generate([ &
-                                      prfx(1)*bu(1), prfx(2)*bu(2), prfx(3)*bu(3)])
+      buc => nom_buc_factory%generate( &
+             [prfx(1)*bu(1), prfx(2)*bu(2), prfx(3)*bu(3)])
 
       cf = rhyme_nombre_base_unit_chain_conversion_factor(buc)
 

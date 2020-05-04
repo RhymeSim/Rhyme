@@ -19,11 +19,11 @@ logical function rhyme_irs_solve_test() result(failed)
 
    call rhyme_nombre_init
 
-   irs = irs_factory%generate()
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   irs = irs_factory_generate('default')
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
 
    call rhyme_irs_init(irs, logger)
@@ -126,7 +126,7 @@ subroutine irs_solve_test_cases(func, irs, tester)
       call rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
 
       call tester%expect(.notToBeNaN.u.hint.'left_side_of_shock')
-      call tester%expect(u.toBe.l.hint.'left_side_of_shock')
+      call tester%expect(u.toBe.l.within.7.hint.'left_side_of_shock')
 
       ! Inside the left shock
       dt = dx/solution%star%left%shock%speed + epsilon(0.d0)
@@ -147,7 +147,7 @@ subroutine irs_solve_test_cases(func, irs, tester)
       call rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
 
       call tester%expect(.notToBeNaN.u.hint.'left_side_of_fan')
-      call tester%expect(u.toBe.l.hint.'left_side_of_fan')
+      call tester%expect(u.toBe.l.within.7.hint.'left_side_of_fan')
 
       ! right side of the left fan (outside the fan)
       dt = dx/solution%star%left%fan%speedT + epsilon(0.d0)

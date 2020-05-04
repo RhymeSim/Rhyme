@@ -57,14 +57,14 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
 #endif
 
    samr = samr_factory%generate()
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 
    prim = hy_factory%generate_primitive()
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
 
    call conv_prim_to_cons(prim, cons)

@@ -15,7 +15,7 @@ logical function rhyme_hdf5_util_open_test() result(failed)
 
    h5_tester = .describe."open"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    call h5open_f(hdferr)
    call h5fopen_f(trim(testfile), H5F_ACC_RDWR_F, fid, hdferr)

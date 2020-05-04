@@ -10,7 +10,7 @@ logical function rhyme_hdf5_util_test() result(failed)
 
    h5_tester = .describe."hdf5_util"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    call h5_tester%expect(h5id%unset.toBe.-1)
    call h5_tester%expect(h5%initialized.toBe..false.)

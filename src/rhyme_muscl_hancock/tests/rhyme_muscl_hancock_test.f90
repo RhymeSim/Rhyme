@@ -16,7 +16,7 @@ logical function rhyme_muscl_hancock_test() result(failed)
    mh_tester = .describe."mh"
 
    samr = samr_factory%generate()
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
 

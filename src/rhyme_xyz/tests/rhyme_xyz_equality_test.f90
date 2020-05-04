@@ -10,15 +10,10 @@ logical function rhyme_xyz_equality_test() result(failed)
 
    tester = .describe."xyz_equality"
 
-   call xyz_factory%init('Case1')
-   xxx(1) = xyz_factory%generate()
-
-   call xyz_factory%init('Case2')
-   xxx(2) = xyz_factory%generate()
+   xxx(1) = xyz_factory_generate('default')
+   xxx(2) = xyz_factory_generate('default')
 
    call tester%expect(.false..toBe..true..hint.'Placeholder test')
 
    failed = tester%failed()
-
-   call xyz_factory%final
 end function rhyme_xyz_equality_test

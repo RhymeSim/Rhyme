@@ -17,8 +17,9 @@ logical function rhyme_ideal_gas_temperature_per_mu_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
+
    u = hy_factory%generate_conserved()
 
    call rhyme_physics_init(physics, logger)

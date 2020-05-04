@@ -48,9 +48,9 @@ logical function rhyme_drawing_uniform_canvas_test() result(failed)
 
    draw%type = drid%uniform_canvas
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    samr = samr_factory%generate()
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
    call rhyme_thermo_base_init(thermo, physics, logger)
 

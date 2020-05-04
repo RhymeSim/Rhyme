@@ -44,7 +44,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    tester = .describe."rhyme_param_parser_load_params"
 
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
    call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, draw, irs, &
                     sl, mh, chombo, logger)

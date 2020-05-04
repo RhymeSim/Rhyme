@@ -4,12 +4,16 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
    use rhyme_irs_factory
    use rhyme_slope_limiter_factory
    use rhyme_chombo_factory
+   use rhyme_samr_bc_factory
+   use rhyme_samr_factory
+   use rhyme_thermo_base_factory
+   use rhyme_cfl_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
    implicit none
 
-   type(assertion_t) :: mh_tester
+   type(assertion_t) :: tester
 
 #if NDIM == 1
 #define BASE_GRID_ARRAY [ 256 ]
@@ -19,58 +23,64 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
 #define BASE_GRID_ARRAY [ 16, 16, 16 ]
 #endif
 
-   type(muscl_hancock_advection_test_t) :: mh_adv_test
    type(muscl_hancock_t) :: mh(NDIM)
    type(mh_workspace_t) :: ws(NDIM)
    type(physics_t) :: physics
+   type(thermo_base_t) :: thermo
    type(irs_t) :: irs
    type(slope_limiter_t) :: sl
    type(chombo_t) :: ch(NDIM)
+   type(samr_t) :: samr(NDIM)
+   type(samr_bc_t) :: bc(NDIM)
+   type(cfl_t) :: cfl(NDIM)
    type(logger_t) :: logger
 
    integer :: i, d
    character(len=32) :: nickname
+   real(kind=8) :: dt(NDIM)
 
-   mh_tester = .describe."mh_solve_cpu_intensive"
+   tester = .describe."mh_solve_cpu_intensive"
 
    call rhyme_nombre_init
 
-   mh_adv_test = mh_adv_factory%generate(BASE_GRID_ARRAY)
-   physics = ph_factory%generate('SI')
-   irs = irs_factory%generate()
-   sl = sl_factory%generate()
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   thermo = thermo_base_factory_generate('diatomic')
+   irs = irs_factory_generate('default')
+   sl = slope_limiter_factory_generate('vanLeer')
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 
-   call rhyme_thermo_base_init(mh_adv_test%thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, physics, logger)
    call rhyme_irs_init(irs, logger)
+
+   dt = muscl_hancock_advection_factory_generate(BASE_GRID_ARRAY, samr, bc, cfl)
 
    do d = 1, NDIM
       ws(d)%type = mhwsid%cpu_intensive
-      call rhyme_muscl_hancock_init(mh(d), mh_adv_test%samr(d), ws(d), logger)
+      call rhyme_muscl_hancock_init(mh(d), samr(d), ws(d), logger)
 
-      ch(d) = ch_factory%generate()
+      ch(d) = chombo_factory_generate('empty')
 
       write (nickname, '(A,I0)') 'test', d
       ch(d)%nickname = nickname
-      call rhyme_chombo_init(ch(d), mh_adv_test%samr(d), logger)
+      call rhyme_chombo_init(ch(d), samr(d), logger)
 
-      do i = 1, 8
-         mh_adv_test%samr(d)%levels(0)%dt = mh_adv_test%dt(d)
-         call rhyme_samr_bc_set_boundaries(mh_adv_test%bc(d), mh_adv_test%samr(d))
+      do i = 1, 4
+         samr(d)%levels(0)%dt = dt(d)
+         call rhyme_samr_bc_set_boundaries(bc(d), samr(d))
 
-         call rhyme_chombo_write_samr(ch(d), physics, mh_adv_test%samr(d))
+         call rhyme_chombo_write_samr(ch(d), physics, samr(d))
 
          call rhyme_muscl_hancock_solve_cpu_intensive( &
-            mh_adv_test%samr(d)%levels(0)%boxes(1), &
-            mh_adv_test%samr(d)%levels(0)%dx, &
-            mh_adv_test%samr(d)%levels(0)%dt, &
+            samr(d)%levels(0)%boxes(1), &
+            samr(d)%levels(0)%dx, &
+            samr(d)%levels(0)%dt, &
             irs, sl, ws(d))
 
-         mh_adv_test%samr(d)%levels(0)%iteration = mh_adv_test%samr(d)%levels(0)%iteration + 1
+         samr(d)%levels(0)%iteration = samr(d)%levels(0)%iteration + 1
       end do
    end do
 
-   failed = mh_tester%failed()
+   failed = tester%failed()
 end function rhyme_muscl_hancock_solve_cpu_intensive_test

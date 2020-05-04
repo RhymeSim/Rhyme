@@ -14,26 +14,23 @@ logical function rhyme_thermo_base_specific_internal_energy_test() result(failed
    type(logger_t) :: logger
    real(kind=8) :: u(cid%rho:cid%e_tot)
 
-   integer :: gas_type
-
    th_tester = .describe."specific_internal_energy"
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
+
    u = hy_factory%generate_conserved()
 
-   do gas_type = thid%monatomic, thid%polyatomic
-      thermo = th_factory%generate(physics, gas_type)
-      call rhyme_thermo_base_init(thermo, physics, logger)
+   thermo = thermo_base_factory_generate('diatomic')
+   call rhyme_thermo_base_init(thermo, physics, logger)
 
-      call th_tester%expect(.notToBeNaN.rhyme_thermo_base_specific_internal_energy(u))
-      call th_tester%expect(rhyme_thermo_base_specific_internal_energy(u) &
-                            .toBe.rhyme_ideal_gas_specific_internal_energy( &
-                            ig_gamma(gas_type), th_factory%kb_amu, u) &
-                            .within.15)
-   end do
+   call th_tester%expect(.notToBeNaN.rhyme_thermo_base_specific_internal_energy(u))
+   call th_tester%expect(rhyme_thermo_base_specific_internal_energy(u) &
+                         .toBe.rhyme_ideal_gas_specific_internal_energy( &
+                         ig_gamma(thid%diatomic), physics%kb%v/physics%amu%v, u) &
+                         .within.15)
 
    call th_tester%expect(calc_sp_int_e(u) &
                          .toBe.rhyme_thermo_base_specific_internal_energy(u) &

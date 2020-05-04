@@ -7,18 +7,10 @@ module rhyme_physics_factory
    character(len=32), parameter, private :: length_str_param = 'm'
    character(len=32), parameter, private :: time_str_param = 's'
 
-   type rhyme_physics_factory_t
-   contains
-      procedure :: generate => rhyme_physics_factory_generate
-   end type rhyme_physics_factory_t
-
-   type(rhyme_physics_factory_t) :: ph_factory = rhyme_physics_factory_t()
-
 contains
-   function rhyme_physics_factory_generate(this, factory_type) result(physics)
+   function physics_factory_generate(factory_type) result(physics)
       implicit none
 
-      class(rhyme_physics_factory_t), intent(inout) :: this
       character(len=*), intent(in) :: factory_type
 
       type(physics_t) :: physics
@@ -30,5 +22,5 @@ contains
       else
          print *, 'Unknow physcis factory type!'
       end if
-   end function rhyme_physics_factory_generate
+   end function physics_factory_generate
 end module rhyme_physics_factory

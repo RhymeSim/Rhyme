@@ -10,11 +10,8 @@ logical function rhyme_ionisation_equilibrium_equality_test() result(failed)
 
    tester = .describe."ionisation_equilibrium_equality"
 
-   call ie_factory%init('CaseA')
-   ie(1) = ie_factory%generate()
-
-   call ie_factory%init('CaseB')
-   ie(2) = ie_factory%generate()
+   ie(1) = ionisation_equilibrium_factory_generate('CaseA')
+   ie(2) = ionisation_equilibrium_factory_generate('CaseB')
 
    call tester%expect(ie(1) == ie(1) .toBe..true.)
    call tester%expect(ie(2) == ie(1) .toBe..false.)
@@ -22,6 +19,4 @@ logical function rhyme_ionisation_equilibrium_equality_test() result(failed)
    call tester%expect(ie(1) == ie(2) .toBe..false.)
 
    failed = tester%failed()
-
-   call ie_factory%final
 end function rhyme_ionisation_equilibrium_equality_test

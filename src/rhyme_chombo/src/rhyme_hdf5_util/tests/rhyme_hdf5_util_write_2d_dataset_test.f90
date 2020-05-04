@@ -21,7 +21,7 @@ logical function rhyme_hdf5_util_write_2d_dataset_test() result(failed)
 
    h5_tester = .describe."hdf5_util write_2d_dataset"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    int_arr = reshape([1, 2, 3, 4, 5, 6], [2, 3])
    real_arr = reshape([1.e0, 2.e0, 3.e0, 4.e0, 5.e0, 6.e0], [2, 3])

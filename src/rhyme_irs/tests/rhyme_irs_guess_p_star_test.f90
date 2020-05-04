@@ -17,8 +17,8 @@ logical function rhyme_irs_guess_p_star_test() result(failed)
 
    tester = .describe.'irs_guess_p_star'
 
-   irs = irs_factory%generate()
-   logger = log_factory%generate()
+   irs = irs_factory_generate('default')
+   logger = logger_factory_generate('default')
 
    call rhyme_irs_init(irs, logger)
 

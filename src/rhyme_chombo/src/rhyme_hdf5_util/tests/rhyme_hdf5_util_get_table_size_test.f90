@@ -16,7 +16,7 @@ logical function rhyme_hdf5_util_get_table_size_test() result(failed)
 
    h5_tester = .describe."get_table_size"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
    int_table = reshape([(i, i=1, 12)], [ncol, nrow])
 
    call rhyme_hdf5_util_create(h5, testfile)

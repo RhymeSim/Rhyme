@@ -17,7 +17,7 @@ logical function rhyme_hdf5_util_create_group_test() result(failed)
 
    h5_tester = .describe."create_group"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    call rhyme_hdf5_util_create(h5, testfile)
    call rhyme_hdf5_util_create_group(h5, "/new_group", group_id)

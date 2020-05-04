@@ -1,35 +1,18 @@
 module rhyme_logger_factory
    use rhyme_logger
 
-   implicit none
-
-   type, private :: rhyme_logger_factory_t
-      logical :: initialized = .false.
-   contains
-      procedure :: init => rhyme_logger_factory_init
-      procedure :: generate => rhyme_logger_factory_generate
-   end type rhyme_logger_factory_t
-
-   type(rhyme_logger_factory_t) :: log_factory = rhyme_logger_factory_t()
-
 contains
 
-   subroutine rhyme_logger_factory_init(this)
+   function logger_factory_generate(factory_type) result(logger)
       implicit none
 
-      class(rhyme_logger_factory_t), intent(inout) :: this
-
-      this%initialized = .true.
-   end subroutine rhyme_logger_factory_init
-
-   function rhyme_logger_factory_generate(this) result(logger)
-      implicit none
-
-      class(rhyme_logger_factory_t), intent(inout) :: this
+      character(len=*), intent(in) :: factory_type
       type(logger_t) :: logger
 
-      if (.not. this%initialized) call this%init
-
-      call logger%log(':)')
-   end function rhyme_logger_factory_generate
+      if (factory_type == 'default') then
+         call logger%log(':)')
+      else
+         print *, 'Unknonw logger factory type!', factory_type
+      end if
+   end function logger_factory_generate
 end module rhyme_logger_factory

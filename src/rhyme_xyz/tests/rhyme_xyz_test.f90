@@ -10,12 +10,9 @@ logical function rhyme_xyz_test() result(failed)
 
    tester = .describe."xyz"
 
-   call xyz_factory%init('Case1')
-   xxx = xyz_factory%generate()
+   xxx = xyz_factory_generate('default')
 
    call tester%expect(xxxid%idx.toBe.0.hint.'Placeholder test')
 
    failed = tester%failed()
-
-   call xyz_factory%final
 end function rhyme_xyz_test

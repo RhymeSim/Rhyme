@@ -20,7 +20,7 @@ logical function rhyme_hdf5_util_read_1d_dataset_test() result(failed)
 
    h5_tester = .describe."read_1d_dataset"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    ! Prepare chombo file
    call rhyme_hdf5_util_create(h5, testfile)

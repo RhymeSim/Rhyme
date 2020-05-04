@@ -24,10 +24,10 @@ logical function rhyme_chombo_write_samr_test() result(failed)
 
    ch_tester = .describe."chombo write_samr"
 
-   ch = ch_factory%generate()
+   ch = chombo_factory_generate('empty')
    samr = samr_factory%generate()
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 

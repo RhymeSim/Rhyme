@@ -17,7 +17,7 @@ module rhyme_irs
    type irs_t
       integer :: n_iteration = 100
       real(kind=8), dimension(cid%rho:cid%p) :: w_vacuum = tiny(0d0)
-      real(kind=8) :: tolerance = 1.d-6
+      real(kind=8) :: tolerance = 1d-6
    end type irs_t
 
    interface

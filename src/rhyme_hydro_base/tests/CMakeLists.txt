@@ -1,7 +1,7 @@
 project(rhyme_hydro_base_tests)
 set(test_subject rhyme_hydro_base)
 
-set(factories rhyme_chemistry rhyme_physics rhyme_hydro_base rhyme_logger)
+set(factories)
 
 set(test_deps rhyme_assertion)
 

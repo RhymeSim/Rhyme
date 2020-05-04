@@ -22,7 +22,7 @@ logical function rhyme_hdf5_util_write_group_comp_1d_array_attr_test() result(fa
 
    h5_tester = .describe."hdf5_util write_group_comp_1d_array_attr"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    call rhyme_hdf5_util_create(h5, testfile)
    call rhyme_hdf5_util_write_group_comp_1d_array_attr(h5, "/", "int_attr", keys, array_i)

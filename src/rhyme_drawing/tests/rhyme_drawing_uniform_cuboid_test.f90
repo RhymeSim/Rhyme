@@ -51,13 +51,13 @@ logical function rhyme_drawing_uniform_cuboid_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate('SI')
+   physics = physics_factory_generate('SI')
    samr = samr_factory%generate()
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
    prim = hy_factory%generate_primitive()
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
 
    call conv_prim_to_cons(prim, cons)

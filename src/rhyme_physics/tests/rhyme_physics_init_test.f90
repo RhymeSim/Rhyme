@@ -15,8 +15,8 @@ logical function rhyme_physics_init_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 

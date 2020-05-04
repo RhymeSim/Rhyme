@@ -47,12 +47,12 @@ logical function rhyme_cfl_dt_test() result(failed)
 
    call rhyme_nombre_init
 
-   cfl = cfl_factory%generate()
-   physics = ph_factory%generate('SI')
+   cfl = cfl_factory_generate(2d-1)
+   physics = physics_factory_generate('SI')
    samr = samr_factory%generate(physical=.true.)
-   logger = log_factory%generate()
+   logger = logger_factory_generate('default')
 
-   thermo = th_factory%generate(physics)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
 
    dt = rhyme_cfl_time_step(cfl%courant_number, samr)

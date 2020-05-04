@@ -16,20 +16,20 @@ logical function rhyme_thermo_base_get_gamma_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
-   thermo = th_factory%generate(physics, thid%monatomic)
+   thermo = thermo_base_factory_generate('monatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.ig_gamma(thid%monatomic))
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.get_gamma())
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.ig_gamma(thid%diatomic))
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.get_gamma())
 
-   thermo = th_factory%generate(physics, thid%polyatomic)
+   thermo = thermo_base_factory_generate('polyatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.ig_gamma(thid%polyatomic))
    call th_tester%expect(rhyme_thermo_base_get_gamma() .toBe.get_gamma())

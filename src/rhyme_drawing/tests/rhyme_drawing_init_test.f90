@@ -1,6 +1,6 @@
 logical function rhyme_drawing_init_test() result(failed)
    use rhyme_drawing_factory
-   use rhyme_samr_factory
+   use rhyme_physics_factory
    use rhyme_initial_condition_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -10,6 +10,7 @@ logical function rhyme_drawing_init_test() result(failed)
    type(assertion_t) :: tester
 
    type(drawing_t) :: draw
+   type(physics_t) :: physics
    type(samr_t) :: samr
    type(initial_condition_t) :: ic
    type(logger_t) :: logger
@@ -17,9 +18,13 @@ logical function rhyme_drawing_init_test() result(failed)
    tester = .describe."drawing_init"
 
    call rhyme_nombre_init
-   samr = samr_factory%generate()
-   ic = ic_factory%generate()
-   logger = log_factory%generate()
+
+   physics = physics_factory_generate('SI')
+   ic = initial_condition_factory_generate('uniform')
+   logger = logger_factory_generate('default')
+
+   call rhyme_physics_init(physics, logger)
+   call rhyme_initial_condition_init(ic, samr, physics, logger)
 
    draw%shapes => draw%new_shape(drid%sphere)
    draw%shapes%sphere%unit_str = 'km'

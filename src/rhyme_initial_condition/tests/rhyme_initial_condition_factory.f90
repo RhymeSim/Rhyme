@@ -1,70 +1,45 @@
 module rhyme_initial_condition_factory
    use rhyme_initial_condition
 
-   implicit none
-
-   type rhyme_initial_condition_factory_t
-      logical :: initialized = .false.
-   contains
-      procedure :: init => rhyme_initial_condition_factory_init
-      procedure :: generate => rhyme_initial_condition_factory_generate
-   end type rhyme_initial_condition_factory_t
-
-   type(rhyme_initial_condition_factory_t) :: ic_factory = rhyme_initial_condition_factory_t()
-
 contains
 
-   subroutine rhyme_initial_condition_factory_init(this)
+   function initial_condition_factory_generate(factory_type) result(ic)
       implicit none
 
-      class(rhyme_initial_condition_factory_t), intent(inout) :: this
+      character(len=*), intent(in) :: factory_type
 
-      this%initialized = .true.
-   end subroutine rhyme_initial_condition_factory_init
+      type(initial_condition_t) :: ic
 
-   function rhyme_initial_condition_factory_generate( &
-      this, nlevels) result(ic_fac)
-      implicit none
+      integer :: l, nlevels
 
-      class(rhyme_initial_condition_factory_t), intent(inout) :: this
-      integer, intent(in), optional :: nlevels
-
-      type(initial_condition_t) :: ic_fac
-      integer :: l, nl
-
-      if (.not. this%initialized) call this%init
-
-      if (present(nlevels)) then
-         nl = nlevels
+      if (factory_type == 'uniform') then
+         nlevels = 1
+      else if (factory_type == '4levels') then
+         nlevels = 4
       else
-         nl = 1
+         nlevels = 1
+         print *, 'Unknown initial condition factory type!', factory_type
       end if
 
-      ic_fac%type = icid%simple
-      ic_fac%snapshot_type = icid%unset
-      ic_fac%snapshot_path = ''
-      ic_fac%box_length_unit = 'm'
+      ic%type = icid%simple
+      ic%snapshot_type = icid%unset
+      ic%snapshot_path = ''
+      ic%box_length_unit = 'm'
 
-      ic_fac%nlevels = nl
-      ic_fac%max_nboxes = 0
-      ic_fac%max_nboxes(0:nl - 1) = [(l**3, l=1, nl)]
+      ic%nlevels = nlevels
+      ic%max_nboxes = 0
+      ic%max_nboxes(0:nlevels - 1) = [(l**3, l=1, nlevels)]
 
 #if NDIM == 1
-      ic_fac%base_grid = [16]
-      ic_fac%box_lengths%v = [1.d0]
-      ic_fac%box_lengths(1)%u => 1*meter
+      ic%base_grid = [16]
+      ic%box_lengths%v = [1.d0]
 #elif NDIM == 2
-      ic_fac%base_grid = [16, 8]
-      ic_fac%box_lengths%v = [1.d0, .5d0]
-      ic_fac%box_lengths(1)%u => 1*meter
-      ic_fac%box_lengths(2)%u => 1*meter
+      ic%base_grid = [16, 8]
+      ic%box_lengths%v = [1.d0, .5d0]
 #elif NDIM == 3
-      ic_fac%base_grid = [16, 8, 4]
-      ic_fac%box_lengths%v = [1.d0, .5d0, .25d0]
-      ic_fac%box_lengths(1)%u => 1*meter
-      ic_fac%box_lengths(2)%u => 1*meter
-      ic_fac%box_lengths(3)%u => 1*meter
+      ic%base_grid = [16, 8, 4]
+      ic%box_lengths%v = [1.d0, .5d0, .25d0]
 #endif
 
-   end function rhyme_initial_condition_factory_generate
+   end function initial_condition_factory_generate
 end module rhyme_initial_condition_factory

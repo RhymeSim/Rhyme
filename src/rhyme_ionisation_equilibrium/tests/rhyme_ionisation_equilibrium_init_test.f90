@@ -12,12 +12,10 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
 
    tester = .describe."ionisation_equilibrium_init"
 
-   ie = ie_factory%generate()
-   logger = log_factory%generate()
+   ie = ionisation_equilibrium_factory_generate('default')
+   logger = logger_factory_generate('default')
 
    call rhyme_ionisation_equilibrium_init(ie, logger)
 
    failed = tester%failed()
-
-   call ie_factory%final
 end function rhyme_ionisation_equilibrium_init_test

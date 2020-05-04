@@ -12,14 +12,12 @@ logical function rhyme_xyz_init_test() result(failed)
 
    tester = .describe."xyz_init"
 
-   xxx = xyz_factory%generate()
-   logger = log_factory%generate()
+   xxx = xyz_factory_generate('default')
+   logger = logger_factory_generate('default')
 
    call rhyme_xyz_init(xxx, logger)
 
    call tester%expect(.false..toBe..true..hint.'Placeholder test')
 
    failed = tester%failed()
-
-   call xyz_factory%final
 end function rhyme_xyz_init_test

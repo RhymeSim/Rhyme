@@ -19,7 +19,7 @@ logical function rhyme_hdf5_util_read_table_test() result(failed)
 
    h5_tester = .describe."read_table"
 
-   h5 = h5_factory%generate()
+   h5 = hdf5_util_factory_generate('empty')
 
    int_table = reshape([(i, i=1, 12)], [ncol, nrow])
    real_table = reshape([(real(i, kind=4), i=1, 12)], [ncol, nrow])

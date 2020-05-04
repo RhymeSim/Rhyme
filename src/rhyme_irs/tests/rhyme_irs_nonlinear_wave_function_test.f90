@@ -23,11 +23,11 @@ logical function rhyme_irs_nonlinear_wave_function_test() result(failed)
 
    call rhyme_nombre_init
 
-   irs = irs_factory%generate()
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   irs = irs_factory_generate('default')
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
-   thermo = th_factory%generate(physics, thid%diatomic)
+   thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, physics, logger)
 
    call rhyme_irs_init(irs, logger)

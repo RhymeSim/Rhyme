@@ -14,8 +14,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
 
    tester = .describe."periodic_table_init"
 
-   pt = periodic_table_factory%generate()
-   logger = log_factory%generate()
+   pt = periodic_table_factory_generate('empty')
+   logger = logger_factory_generate('default')
 
    call rhyme_nombre_init()
    call rhyme_periodic_table_init(pt, logger)
@@ -64,6 +64,4 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HeIII%CI) .toBe..true..hint.'HeIII CI')
 
    failed = tester%failed()
-
-   call periodic_table_factory%final
 end function rhyme_periodic_table_init_test

@@ -10,8 +10,7 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
 
    tester = .describe."ionisation_equilibrium"
 
-   call ie_factory%init('Case1')
-   ie = ie_factory%generate()
+   ie = ionisation_equilibrium_factory_generate('default')
 
    call tester%expect(ieid%unset.toBe.-1.hint.'unset id')
    call tester%expect(ieid%case_a.toBe.1.hint.'Case A id')
@@ -23,6 +22,4 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
    call tester%expect(ie%photo.toBe..false..hint.'default photoionisation flag')
 
    failed = tester%failed()
-
-   call ie_factory%final
 end function rhyme_ionisation_equilibrium_test

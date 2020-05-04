@@ -18,9 +18,9 @@ logical function rhyme_initial_condition_init_simple_test() result(failed)
 
    call rhyme_nombre_init
 
-   simple = ic_factory%generate(4)
-   physics = ph_factory%generate('SI')
-   logger = log_factory%generate()
+   simple = initial_condition_factory_generate('4levels')
+   physics = physics_factory_generate('SI')
+   logger = logger_factory_generate('default')
 
    call rhyme_physics_init(physics, logger)
 
