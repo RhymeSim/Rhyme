@@ -17,7 +17,7 @@ logical function rhyme_irs_init_test() result(failed)
    tester = .describe."irs_init"
 
    irs = irs_factory%generate()
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
 
    thermo = th_factory%generate(physics, thid%monatomic)

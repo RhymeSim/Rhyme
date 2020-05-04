@@ -16,7 +16,7 @@ logical function rhyme_thermo_base_init_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
 
    thermo = th_factory%generate(physics, thid%diatomic)

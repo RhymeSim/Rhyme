@@ -48,7 +48,7 @@ logical function rhyme_cfl_dt_test() result(failed)
    call rhyme_nombre_init
 
    cfl = cfl_factory%generate()
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    samr = samr_factory%generate(physical=.true.)
    logger = log_factory%generate()
 

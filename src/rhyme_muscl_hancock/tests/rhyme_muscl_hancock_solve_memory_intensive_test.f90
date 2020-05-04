@@ -36,10 +36,12 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test() result(failed
    call rhyme_nombre_init
 
    mh_adv_test = mh_adv_factory%generate(BASE_GRID_ARRAY)
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    irs = irs_factory%generate()
    sl = sl_factory%generate()
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    call rhyme_thermo_base_init(mh_adv_test%thermo, physics, logger)
    call rhyme_irs_init(irs, logger)

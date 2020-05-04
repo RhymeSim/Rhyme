@@ -21,7 +21,7 @@ logical function rhyme_irs_w_k_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    irs = irs_factory%generate()
 
    thermo = th_factory%generate(physics, thid%diatomic)

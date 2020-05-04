@@ -20,7 +20,7 @@ logical function rhyme_thermo_base_specific_internal_energy_test() result(failed
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
    u = hy_factory%generate_conserved()
 

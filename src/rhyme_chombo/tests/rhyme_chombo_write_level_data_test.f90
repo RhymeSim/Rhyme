@@ -26,8 +26,10 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
 
    ch = ch_factory%generate()
    samr = samr_factory%generate()
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    call rhyme_chombo_init(ch, samr, logger)
 

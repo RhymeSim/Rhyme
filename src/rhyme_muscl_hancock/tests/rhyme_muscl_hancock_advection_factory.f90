@@ -85,7 +85,7 @@ contains
 
       this%dt = this%dx/v
 
-      this%physics = ph_factory%generate()
+      this%physics = ph_factory%generate('SI')
 
       this%thermo = th_factory%generate(this%physics, gas_type)
       logger = log_factory%generate()

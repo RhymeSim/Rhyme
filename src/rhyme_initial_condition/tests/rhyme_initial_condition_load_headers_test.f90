@@ -22,9 +22,11 @@ logical function rhyme_initial_condition_load_headers_test() result(failed)
 
    ic_write = ic_factory%generate(4)
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    samr = samr_factory%generate()
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    ch%nickname = nickname
    ch%iteration = samr%levels(0)%iteration

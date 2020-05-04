@@ -25,8 +25,10 @@ logical function rhyme_chombo_write_headers_test() result(failed)
 
    ch = ch_factory%generate()
    samr = samr_factory%generate()
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    ch%nickname = nickname
    ch%iteration = samr%levels(0)%iteration

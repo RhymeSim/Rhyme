@@ -19,7 +19,7 @@ logical function rhyme_thermo_base_primitive_to_conserved_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
    w = hy_factory%generate_primitive()
 

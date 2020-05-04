@@ -51,7 +51,7 @@ logical function rhyme_drawing_uniform_cuboid_test() result(failed)
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    samr = samr_factory%generate()
    logger = log_factory%generate()
 

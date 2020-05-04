@@ -20,7 +20,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test() result(fai
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
    rho = hy_factory%rho
    v = hy_factory%v

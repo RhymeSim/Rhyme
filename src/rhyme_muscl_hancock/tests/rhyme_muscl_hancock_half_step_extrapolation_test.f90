@@ -19,8 +19,10 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test() result(faile
 
    call rhyme_nombre_init
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    thermo = th_factory%generate(physics, thid%monatomic)
    call rhyme_thermo_base_init(thermo, physics, logger)

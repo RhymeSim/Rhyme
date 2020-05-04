@@ -26,16 +26,17 @@ module rhyme_hydro_base_factory
 
    type rhyme_hydro_base_factory_t
       real(kind=8) :: g = g_param
-      real(kind=8) :: mu = mu_param
-      real(kind=8) :: kb_amu = kb_amu_param
-      real(kind=8) :: rho = rho_param
-      real(kind=8) :: v(NDIM) = v_param
       real(kind=8) :: p = p_param
+      real(kind=8) :: mu = mu_param
+      real(kind=8) :: kb = kb_param
+      real(kind=8) :: amu = amu_param
+      real(kind=8) :: rho = rho_param
+      real(kind=8) :: temp = temp_param
       real(kind=8) :: t_mu = t_mu_param
       real(kind=8) :: e_int = e_int_param
-      logical :: initialized = .false.
+      real(kind=8) :: kb_amu = kb_amu_param
+      real(kind=8) :: v(NDIM) = v_param
    contains
-      procedure :: init => rhyme_hydro_base_factory_init
       procedure :: generate_primitive => rhyme_hydro_base_factory_generate_primitive
       procedure :: generate_conserved => rhyme_hydro_base_factory_generate_conserved
    end type rhyme_hydro_base_factory_t
@@ -43,37 +44,15 @@ module rhyme_hydro_base_factory
    type(rhyme_hydro_base_factory_t) :: hy_factory = rhyme_hydro_base_factory_t()
 
 contains
-
-   subroutine rhyme_hydro_base_factory_init(this)
-      implicit none
-
-      class(rhyme_hydro_base_factory_t), intent(inout) :: this
-
-      this%g = g_param
-      this%mu = mu_param
-      this%kb_amu = kb_amu_param
-
-      this%rho = rho_param
-      this%v = V_ARRAY
-      this%p = p_param
-      this%t_mu = t_mu_param
-      this%e_int = e_int_param
-
-      this%initialized = .true.
-   end subroutine rhyme_hydro_base_factory_init
-
    function rhyme_hydro_base_factory_generate_primitive(this) result(w)
       implicit none
 
       class(rhyme_hydro_base_factory_t), intent(inout) :: this
       real(kind=8) :: w(cid%rho:cid%p)
 
-      if (.not. this%initialized) call this%init
-
-      w(cid%rho) = this%rho
-      w(cid%u:cid%u + size(this%v) - 1) = this%v
-      w(cid%p) = this%p
-
+      w(cid%rho) = rho_param
+      w(cid%u:cid%u + NDIM - 1) = v_param
+      w(cid%p) = p_param
    end function rhyme_hydro_base_factory_generate_primitive
 
    function rhyme_hydro_base_factory_generate_conserved(this) result(u)
@@ -82,10 +61,8 @@ contains
       class(rhyme_hydro_base_factory_t), intent(inout) :: this
       real(kind=8) :: u(cid%rho:cid%p)
 
-      if (.not. this%initialized) call this%init
-
-      u(cid%rho) = this%rho
-      u(cid%rho_u:cid%rho_u + size(this%v) - 1) = this%rho*this%v
-      u(cid%e_tot) = .5d0*this%rho*sum(this%v**2) + this%e_int
+      u(cid%rho) = rho_param
+      u(cid%rho_u:cid%rho_u + NDIM - 1) = rho_param*v_param
+      u(cid%e_tot) = .5d0*rho_param*sum(v_param**2) + e_int_param
    end function rhyme_hydro_base_factory_generate_conserved
 end module rhyme_hydro_base_factory

@@ -57,7 +57,10 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
 #endif
 
    samr = samr_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
+
+   call rhyme_physics_init(physics, logger)
 
    prim = hy_factory%generate_primitive()
 

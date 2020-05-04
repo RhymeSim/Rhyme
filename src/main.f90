@@ -1,5 +1,6 @@
 program rhyme
    use rhyme_nombre
+   use rhyme_chemistry
    use rhyme_physics
    use rhyme_hydro_base
    use rhyme_samr
@@ -18,6 +19,7 @@ program rhyme
 
    implicit none
 
+   type(chemistry_t) :: chemistry
    type(physics_t) :: physics
    type(samr_t) :: samr
    type(samr_bc_t) :: bc
@@ -49,7 +51,7 @@ program rhyme
    call logger%end_section
 
    ! Reading parameters and converting them to code units
-   call load_params(param_file, physics, ic, bc, cfl, thermo, draw, &
+   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, draw, &
                     irs, sl, mh, chombo, logger)
 
    call logger%begin_section('init')
@@ -60,6 +62,7 @@ program rhyme
    ! TODO: move mh_workspace into muscl_hancock module
    mhws%type = mh%solver_type
 
+   call rhyme_chemistry_init(chemistry, logger)
    call rhyme_physics_init(physics, logger)
    call rhyme_thermo_base_init(thermo, physics, logger)
    call rhyme_initial_condition_init(ic, samr, physics, logger)

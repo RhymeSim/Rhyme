@@ -25,7 +25,7 @@ logical function rhyme_irs_sampling_test() result(failed)
    call rhyme_nombre_init
 
    irs = irs_factory%generate()
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
    axis = 1 ! x-axis
 

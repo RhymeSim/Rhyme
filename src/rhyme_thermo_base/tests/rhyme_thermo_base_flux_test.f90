@@ -22,7 +22,7 @@ logical function rhyme_thermo_base_flux_test() result(failed)
 
    u = hy_factory%generate_conserved()
 
-   physics = ph_factory%generate()
+   physics = ph_factory%generate('SI')
    logger = log_factory%generate()
 
    do gas_type = thid%monatomic, thid%polyatomic
