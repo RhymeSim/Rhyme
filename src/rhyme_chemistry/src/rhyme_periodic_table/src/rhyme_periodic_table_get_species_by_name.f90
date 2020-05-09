@@ -12,6 +12,8 @@ module function rhyme_periodic_table_get_species_by_name(pt, species_name) resul
 
    integer :: ei
 
+   species => null()
+
    do ei = 1, size(pt%elements)
       pntr => pt%elements(ei)%species
 
@@ -23,10 +25,5 @@ module function rhyme_periodic_table_get_species_by_name(pt, species_name) resul
       end do
 
    end do
-
-   if (.not. associated(species)) then
-      species => null()
-   end if
-
 end function rhyme_periodic_table_get_species_by_name
 end submodule get_species_by_name_smod

@@ -11,19 +11,19 @@ module rhyme_periodic_table
 
    type(indices_t), parameter :: ptid = indices_t()
 
-   abstract interface
-      pure function rate_interface(T) result(rate)
-         real(kind=8), intent(in) :: T
-         real(kind=8) :: rate
-      end function rate_interface
-   end interface
-
    type element_species_t
       character(len=16) :: symb = ''
       integer :: ionized = 1
-      procedure(rate_interface), pointer, nopass :: RI_A => null()  ! Recombination ionization rate (case A)
-      procedure(rate_interface), pointer, nopass :: RI_B => null()  ! Recombination ionization rate (case B)
-      procedure(rate_interface), pointer, nopass :: CI => null()  ! Collisional ionization rate
+      ! Recombination ionization rate (case A) [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: RI_A => null()
+      ! Recombination ionization rate (case B) [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: RI_B => null()
+      ! Collisional ionization rate [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: CI => null()
+      ! Collisional ionization equilibrium (case A) [Neutral fraction]
+      procedure(equilibrium_i), pointer, nopass :: CIE_A => null()
+      ! Collisional ionization equilibrium (case B) [Neutral fraction]
+      procedure(equilibrium_i), pointer, nopass :: CIE_B => null()
       type(element_species_t), pointer :: prev => null(), next => null()
    end type element_species_t
 
@@ -61,6 +61,18 @@ module rhyme_periodic_table
    interface operator(.getspeciesbyname.)
       procedure rhyme_periodic_table_get_species_by_name
    end interface operator(.getspeciesbyname.)
+
+   abstract interface
+      pure function rate_i(T) result(rate)
+         real(kind=8), intent(in) :: T
+         real(kind=8) :: rate
+      end function rate_i
+
+      pure function equilibrium_i(T) result(neutral_fraction)
+         real(kind=8), intent(in) :: T
+         real(kind=8) :: neutral_fraction
+      end function equilibrium_i
+   end interface
 
 contains
    subroutine rhyme_periodic_table_element_write_formatted( &
