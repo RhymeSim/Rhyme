@@ -1,4 +1,5 @@
 module rhyme_ionisation_equilibrium
+   use rhyme_chemistry
    use rhyme_logger
 
    implicit none
@@ -10,52 +11,34 @@ module rhyme_ionisation_equilibrium
 
    type(indices_t), parameter :: ieid = indices_t()
 
+   type, private :: ionisation_equilibrium_rate_array_t
+      procedure(rate_i), pointer, nopass :: run => null()
+   end type ionisation_equilibrium_rate_array_t
+
+   type, private :: ionisation_equilibrium_array_t
+      procedure(equilibrium_i), pointer, nopass :: run => null()
+   end type ionisation_equilibrium_array_t
+
    type ionisation_equilibrium_t
-      integer :: case = ieid%unset
+      integer :: cases(NSPE) = ieid%unset
       logical :: uvb = .false.
       logical :: collisional = .false.
       logical :: photo = .false.
-   contains
-      procedure :: rhyme_ionisation_equilibrium_write_formatted
-      generic :: write (formatted) => rhyme_ionisation_equilibrium_write_formatted
+
+      ! Recombination
+      type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: RI
+      ! Collisional ionisation
+      type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: CI
+      ! Collisional ionisation equilibrium
+      type(ionisation_equilibrium_array_t), dimension(NSPE) :: CIE
+      real(kind=4), allocatable :: table(:, :)
    end type ionisation_equilibrium_t
 
    interface
-      module subroutine rhyme_ionisation_equilibrium_init(ie, logger)
+      module subroutine rhyme_ionisation_equilibrium_init(ie, chemistry, logger)
          type(ionisation_equilibrium_t), intent(inout) :: ie
+         type(chemistry_t), intent(in) :: chemistry
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_init
-
-      pure module function rhyme_ionisation_equilibrium_equality(ie1, ie2) result(eq)
-         type(ionisation_equilibrium_t), intent(in) :: ie1, ie2
-         logical :: eq
-      end function rhyme_ionisation_equilibrium_equality
    end interface
-
-   interface operator(==)
-      module procedure rhyme_ionisation_equilibrium_equality
-   end interface operator(==)
-
-contains
-   subroutine rhyme_ionisation_equilibrium_write_formatted( &
-      this, unit, iotype, v_list, iostat, iomsg)
-      implicit none
-
-      class(ionisation_equilibrium_t), intent(in) :: this
-      integer, intent(in) :: unit
-      character(len=*), intent(in) :: iotype
-      integer, intent(in) :: v_list(:)
-      integer, intent(out) :: iostat
-      character(len=*), intent(inout) :: iomsg
-
-      write (unit, fmt='(A,A,I0,A,L,A,L,A,L,A,A,A,A,I0,A)', iostat=iostat, iomsg=iomsg) &
-         '<ionisation_equilibrium_t', &
-         ' case=', this%case, &
-         ' uvb=', this%uvb, &
-         ' coll=', this%collisional, &
-         ' photo=', this%photo, &
-         ' iotype="', trim(iotype), '"', &
-         ' v_list=', size(v_list), &
-         '>'
-   end subroutine rhyme_ionisation_equilibrium_write_formatted
 end module rhyme_ionisation_equilibrium
