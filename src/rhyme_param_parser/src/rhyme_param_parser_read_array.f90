@@ -43,7 +43,25 @@ module subroutine rhyme_param_parser_read_array(this, term, var, logger, switch)
                do j = 1, size(var)
                   do i = 1, switch%len
                      if (switch_str(j) .eq. switch%keys(i)) then
-                        v(j) = switch%values(i)
+                        if (switch%types(i) == 'int') then
+                           v(j) = switch%int_values(i)
+                        else
+                           print *, 'Error in reading array: Switch type is not integer!'
+                        end if
+                     end if
+                  end do
+               end do
+
+               call logger%log('', term%key, '=>', [.toString.switch_str(1:size(var))])
+            type is (logical)
+               do j = 1, size(var)
+                  do i = 1, switch%len
+                     if (switch_str(j) .eq. switch%keys(i)) then
+                        if (switch%types(i) == 'log') then
+                           v(j) = switch%log_values(i)
+                        else
+                           print *, 'Error in reading array: Switch type is not logical!'
+                        end if
                      end if
                   end do
                end do

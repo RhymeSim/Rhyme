@@ -3,6 +3,7 @@ program rhyme
    use rhyme_chemistry
    use rhyme_physics
    use rhyme_hydro_base
+   use rhyme_ionisation_equilibrium
    use rhyme_samr
    use rhyme_samr_bc
    use rhyme_cfl
@@ -23,6 +24,7 @@ program rhyme
    type(physics_t) :: physics
    type(samr_t) :: samr
    type(samr_bc_t) :: bc
+   type(ionisation_equilibrium_t) :: ion_equilib
    type(cfl_t) :: cfl
    type(thermo_base_t) :: thermo
    type(drawing_t) :: draw
@@ -51,8 +53,8 @@ program rhyme
    call logger%end_section
 
    ! Reading parameters and converting them to code units
-   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, draw, &
-                    irs, sl, mh, chombo, logger)
+   call load_params(param_file, chemistry, physics, ic, bc, cfl, &
+                    thermo, ion_equilib, draw, irs, sl, mh, chombo, logger)
 
    call logger%begin_section('init')
 

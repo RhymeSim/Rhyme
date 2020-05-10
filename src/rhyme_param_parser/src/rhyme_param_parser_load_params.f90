@@ -1,7 +1,7 @@
 submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
 module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                              thermo, draw, irs, sl, mh, chombo, logger)
+                              thermo, ie, draw, irs, sl, mh, chombo, logger)
    implicit none
 
    character(len=1024), intent(in) :: param_file
@@ -11,6 +11,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(samr_bc_t), intent(inout) :: bc
    type(cfl_t), intent(inout) :: cfl
    type(thermo_base_t), intent(inout) :: thermo
+   type(ionisation_equilibrium_t), intent(inout) :: ie
    type(drawing_t), intent(inout) :: draw
    type(irs_t), intent(inout) :: irs
    type(slope_limiter_t), intent(inout) :: sl
@@ -19,11 +20,13 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(logger_t), intent(inout) :: logger
 
    type(config_t) :: config
+   type(config_switch_t) :: on_off_switch
    type(config_switch_t) :: ic_types, ic_snapshot_types
    type(config_switch_t) :: bc_types
    type(config_switch_t) :: gas_types
    type(config_switch_t) :: canvas_types, shape_types, filling_types, filling_modes
    type(config_switch_t) :: perturb_types, coord_types, perturb_domain_types
+   type(config_switch_t) :: ionization_cases
    type(config_switch_t) :: limiter_types
    type(config_switch_t) :: solver_types
    type(config_switch_t) :: axes
@@ -36,6 +39,10 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    call logger%begin_section('params')
 
    call config%init(param_file)
+
+   ! Generic switches
+   call on_off_switch%add('enable', .true.)
+   call on_off_switch%add('disable', .false.)
 
    ! Initial Condition
    call ic_types%add('simple', icid%simple)
@@ -92,6 +99,20 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    call gas_types%add('polyatomic', thid%polyatomic)
 
    call config%read ('ideal_gas_type'.at.1, thermo%state_of_matter, logger, gas_types)
+
+   ! Ionization equilibrium
+   call ionization_cases%add('case_a', ieid%case_a)
+   call ionization_cases%add('case_b', ieid%case_b)
+
+   call config%read ('uvb_equilibrium'.at.1, ie%uvb, logger, on_off_switch)
+   call config%read ('collisional_ionization'.at.1, ie%collisional, logger, on_off_switch)
+   call config%read ('photoionization_equilibrium'.at.1, ie%photo, logger, on_off_switch)
+   call config%read_array('species_cases'.at.1, ie%cases, logger, ionization_cases)
+   call config%read_array('equilibrium_table_size'.at.1, ie%table_sizes, logger)
+   call config%read_array('equilibrium_table_temp_range'.at.1, ie%table_temp_range, logger)
+   call config%read ('equilibrium_table_temp_range'.at.3, ie%table_temp_unit_str, logger)
+   call config%read_array('equilibrium_table_density_range'.at.1, ie%table_density_range, logger)
+   call config%read ('equilibrium_table_density_range'.at.3, ie%table_density_unit_str, logger)
 
    ! Drawing
    call canvas_types%add('uniform', drid%uniform_canvas)

@@ -16,6 +16,7 @@ set(deps
     rhyme_samr_bc
     rhyme_cfl
     rhyme_thermo_base
+    rhyme_ionisation_equilibrium
     rhyme_drawing
     rhyme_irs
     rhyme_slope_limiter

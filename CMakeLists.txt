@@ -41,6 +41,7 @@ set(deps
     rhyme_physics
     rhyme_hydro_base
     rhyme_thermo_base
+    rhyme_ionisation_equilibrium
     rhyme_samr
     rhyme_samr_bc
     rhyme_cfl

@@ -6,6 +6,7 @@ module rhyme_param_parser
    use rhyme_samr_bc
    use rhyme_cfl
    use rhyme_thermo_base
+   use rhyme_ionisation_equilibrium
    use rhyme_drawing
    use rhyme_irs
    use rhyme_slope_limiter
@@ -27,14 +28,16 @@ module rhyme_param_parser
 
    type config_switch_t
       integer :: len = 0
+      character(len=32) :: types(32) = ''
       character(len=32) :: keys(32) = ''
-      integer :: values(32)
+      integer :: int_values(32) = -123456
+      logical :: log_values(32) = .false.
    contains
       procedure :: add => rhyme_param_parser_add_switch
    end type config_switch_t
 
    type config_term_t
-      character(len=32) :: key
+      character(len=128) :: key
       integer :: location = 1
       integer :: occurence = 1
       character(len=1024) :: hint = ''
@@ -42,7 +45,7 @@ module rhyme_param_parser
 
    interface
       module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                                    thermo, draw, irs, sl, mh, chombo, logger)
+                                    thermo, ie, draw, irs, sl, mh, chombo, logger)
          character(len=1024), intent(in) :: param_file
          type(chemistry_t), intent(inout) :: chemistry
          type(physics_t), intent(inout) :: physics
@@ -50,6 +53,7 @@ module rhyme_param_parser
          type(samr_bc_t), intent(inout) :: bc
          type(cfl_t), intent(inout) :: cfl
          type(thermo_base_t), intent(inout) :: thermo
+         type(ionisation_equilibrium_t), intent(inout) :: ie
          type(drawing_t), intent(inout) :: draw
          type(irs_t), intent(inout) :: irs
          type(slope_limiter_t), intent(inout) :: sl
@@ -74,10 +78,10 @@ module rhyme_param_parser
          type(config_switch_t), optional, intent(in) :: switch
       end subroutine rhyme_param_parser_read_array
 
-      pure module subroutine rhyme_param_parser_add_switch(this, key, val)
+      module subroutine rhyme_param_parser_add_switch(this, key, val)
          class(config_switch_t), intent(inout) :: this
          character(len=*), intent(in) :: key
-         integer, intent(in) :: val
+         class(*), intent(in) :: val
       end subroutine rhyme_param_parser_add_switch
 
       pure module function rhyme_param_parser_new_term(key, loc) result(term)

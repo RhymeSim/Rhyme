@@ -1,4 +1,5 @@
 module rhyme_ionisation_equilibrium
+   use rhyme_physics
    use rhyme_chemistry
    use rhyme_logger
 
@@ -31,6 +32,14 @@ module rhyme_ionisation_equilibrium
       type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: CI
       ! Collisional ionisation equilibrium
       type(ionisation_equilibrium_array_t), dimension(NSPE) :: CIE
+
+      integer :: table_sizes(2) = ieid%unset
+      real(kind=4) :: table_temp_range(2) = 0e0
+      character(len=64) :: table_temp_unit_str = ''
+      type(nombre_unit_t), pointer :: table_temp_unit => null()
+      real(kind=4) :: table_density_range(2) = 0e0
+      character(len=64) :: table_density_unit_str = ''
+      type(nombre_unit_t), pointer :: table_density_unit => null()
       real(kind=4), allocatable :: table(:, :)
    end type ionisation_equilibrium_t
 

@@ -33,6 +33,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(samr_bc_t) :: bc
    type(cfl_t) :: cfl
    type(thermo_base_t) :: thermo
+   type(ionisation_equilibrium_t) :: ie
    type(drawing_t) :: draw
    type(irs_t) :: irs
    type(slope_limiter_t) :: sl
@@ -46,8 +47,8 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    logger = logger_factory_generate('default')
 
-   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, draw, irs, &
-                    sl, mh, chombo, logger)
+   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, ie, &
+                    draw, irs, sl, mh, chombo, logger)
 
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple)
@@ -70,9 +71,6 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(bc%types(bcid%front) .toBe.3)
 #endif
 
-   ! Chemistry
-   call tester%expect(chemistry%species_name.toBe. ['HII  ', 'HeII ', 'HeIII'])
-
    ! Physics
    call tester%expect(physics%rho_str.toBe.'kg / m^3')
    call tester%expect(physics%length_str.toBe.'m')
@@ -83,6 +81,20 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    ! Ideal Gas
    call tester%expect(thermo%state_of_matter.toBe.thid%diatomic)
+
+   ! Chemistry
+   call tester%expect(chemistry%species_name.toBe. ['HII  ', 'HeII ', 'HeIII'])
+
+   ! Ionization equilibrium
+   call tester%expect(ie%uvb.toBe..false..hint.'IE UVB')
+   call tester%expect(ie%collisional.toBe..true..hint.'IE Collisional Ionization')
+   call tester%expect(ie%photo.toBe..false..hint.'IE Photo-Ionization')
+   call tester%expect(ie%cases.toBe. [ieid%case_a, ieid%case_b, ieid%case_a] .hint.'IE cases')
+   call tester%expect(ie%table_sizes.toBe. [1024, 1024] .hint.'IE table size')
+   call tester%expect(ie%table_temp_range.toBe. [1e2, 1e7] .hint.'IE table temp range')
+   call tester%expect(ie%table_temp_unit_str.toBe.'K'.hint.'IE table temp unit')
+   call tester%expect(ie%table_density_range.toBe. [1d-3, 1d6] .hint.'IE table density range')
+   call tester%expect(ie%table_density_unit_str.toBe.'m_H / cm^3'.hint.'IE table density unit')
 
    ! Drawing
    call tester%expect(draw%type.toBe.drid%uniform_canvas)

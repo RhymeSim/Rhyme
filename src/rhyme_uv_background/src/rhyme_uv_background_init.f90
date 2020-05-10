@@ -1,4 +1,4 @@
-submodule(rhyme_uv_background) rhyme_mh_init_smod
+submodule(rhyme_uv_background) init_smod
 contains
 module subroutine rhyme_uv_background_init(uvb, logger)
    implicit none
@@ -15,4 +15,4 @@ module subroutine rhyme_uv_background_init(uvb, logger)
 
    call logger%end_section
 end subroutine rhyme_uv_background_init
-end submodule rhyme_mh_init_smod
+end submodule init_smod
