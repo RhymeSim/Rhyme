@@ -4,6 +4,7 @@ ic_type = simple
 ic_grid = 128
 ic_box_lengths = 1 "kpc"
 ic_nlevels = 3
+ic_redshift = 1.23d0
 
 
 # **Runtime Options**
@@ -52,8 +53,12 @@ species = HII HeII HeIII
 
 # **Ionization Equilibrium**
 uvb_equilibrium = disable
+uvb_model = HM12
+
 collisional_ionization_equilibrium = enable
+
 photoionization_equilibrium = disable
+
 species_cases = case_b case_b case_b
 equilibrium_table_size = 1024 1024
 equilibrium_table_temp_range = 1d2 1d7 'K'

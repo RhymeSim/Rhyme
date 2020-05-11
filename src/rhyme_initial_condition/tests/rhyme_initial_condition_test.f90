@@ -21,6 +21,7 @@ logical function rhyme_initial_condition_test() result(failed)
    call ic_tester%expect(ic%nlevels.toBe.icid%unset)
    call ic_tester%expect(ic%max_nboxes.toBe.0)
    call ic_tester%expect(ic%snapshot_path.toBe.'')
+   call ic_tester%expect(ic%redshift.toBe.1d0)
 
    failed = ic_tester%failed()
 end function rhyme_initial_condition_test
