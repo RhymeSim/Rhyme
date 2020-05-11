@@ -15,7 +15,7 @@ set(internal_deps)
 
 set(srcs
     src/rhyme_uv_background_equality.f90 src/rhyme_uv_background_init.f90
-    src/rhyme_uv_background.f90 src/rhyme_uv_background_haardt_madau_12.f90)
+    src/rhyme_uv_background_haardt_madau_12.f90 src/rhyme_uv_background.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

@@ -12,7 +12,7 @@ contains
       uvb = uv_background_t()
 
       if (factory_type == 'default') then
-      else if (factory_type == 'HM') then
+      else if (factory_type == 'HM12') then
          uvb%model = uvbid%HM12
       else
          print *, 'Unknown uv_background factory type!', factory_type

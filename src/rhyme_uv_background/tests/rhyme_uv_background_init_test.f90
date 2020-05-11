@@ -12,12 +12,10 @@ logical function rhyme_uv_background_init_test() result(failed)
 
    tester = .describe."uv_background_init"
 
-   uvb = uv_background_factory_generate('HM')
+   uvb = uv_background_factory_generate('HM12')
    logger = logger_factory_generate('default')
 
    call rhyme_uv_background_init(uvb, logger)
-
-   call tester%expect(.false..toBe..true..hint.'Placeholder test')
 
    failed = tester%failed()
 end function rhyme_uv_background_init_test

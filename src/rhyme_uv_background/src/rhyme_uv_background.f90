@@ -6,7 +6,6 @@ module rhyme_uv_background
    type, private :: indices_t
       integer :: unset = -1
       integer :: HM12 = 1 ! Haardt & Madau 12
-      integer :: z = 1, HI = 2, HeI = 3, HeII = 4
    end type indices_t
 
    character(len=32), private, parameter :: &
@@ -35,6 +34,12 @@ module rhyme_uv_background
          type(uv_background_t), intent(in) :: uvb1, uvb2
          logical :: eq
       end function rhyme_uv_background_equality
+
+      module function rhyme_uv_background_haardt_madau_12_get(z, species) result(rates)
+         real(kind=8), intent(in) :: z
+         character(len=*), intent(in) :: species(:)
+         real(kind=4), dimension(2*size(species)) :: rates
+      end function rhyme_uv_background_haardt_madau_12_get
    end interface
 
    interface operator(==)
