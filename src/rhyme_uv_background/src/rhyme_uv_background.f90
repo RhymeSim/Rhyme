@@ -30,6 +30,14 @@ module rhyme_uv_background
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_uv_background_init
 
+      module function rhyme_uv_background_get(uvb, z, species, logger) result(rates)
+         type(uv_background_t), intent(in) :: uvb
+         real(kind=8), intent(in) :: z
+         character(len=*), intent(in) :: species(:)
+         type(logger_t), intent(inout) :: logger
+         real(kind=4), dimension(2*size(species)) :: rates
+      end function rhyme_uv_background_get
+
       pure module function rhyme_uv_background_equality(uvb1, uvb2) result(eq)
          type(uv_background_t), intent(in) :: uvb1, uvb2
          logical :: eq

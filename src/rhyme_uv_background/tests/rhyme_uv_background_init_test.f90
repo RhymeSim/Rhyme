@@ -12,8 +12,9 @@ logical function rhyme_uv_background_init_test() result(failed)
 
    tester = .describe."uv_background_init"
 
-   uvb = uv_background_factory_generate('HM12')
    logger = logger_factory_generate('default')
+
+   uvb = uv_background_factory_generate('HM12')
 
    call rhyme_uv_background_init(uvb, logger)
 

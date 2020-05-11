@@ -1,21 +1,21 @@
 submodule(rhyme_uv_background) get_smod
-implicit none
 contains
-real(kind=4) pure function rhyme_uv_background_get(this, z, species) result(rate)
+module function rhyme_uv_background_get(uvb, z, species, logger) result(rates)
    implicit none
 
-   class(uv_background_t), intent(in) :: this
+   type(uv_background_t), intent(in) :: uvb
    real(kind=8), intent(in) :: z
-   character(len=*), intent(in) :: species
+   character(len=*), intent(in) :: species(:)
+   type(logger_t), intent(inout) :: logger
 
-   integer :: table_size
+   real(kind=4), dimension(2*size(species)) :: rates
 
-   select case (species)
-   case ('HI')
-   case ('HeI')
-   case ('HeII')
+   select case (uvb%model)
+   case (uvbid%HM12)
+      rates = rhyme_uv_background_haardt_madau_12_get(z, species)
    case default
-      rate = 0e0
+      call logger%err('Unknown UVB model!', 'model', '=', [uvb%model])
+      rates = 0e0
    end select
 end function rhyme_uv_background_get
 end submodule get_smod

@@ -139,7 +139,7 @@ real(kind=4), dimension(3, 59), parameter :: &
 
 contains
 
-function rhyme_uv_background_haardt_madau_12_get(z, species) result(rates)
+module function rhyme_uv_background_haardt_madau_12_get(z, species) result(rates)
    implicit none
 
    real(kind=8), intent(in) :: z
