@@ -56,7 +56,7 @@ species = HII HeII HeIII
 
 # **Ionization Equilibrium**
 uvb_equilibrium = disable
-collisional_ionization = enable
+collisional_ionization_equilibrium = enable
 photoionization_equilibrium = disable
 species_cases = case_a case_b case_a
 equilibrium_table_size = 1024 1024

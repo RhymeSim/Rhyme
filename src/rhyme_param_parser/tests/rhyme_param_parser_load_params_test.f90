@@ -91,9 +91,9 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(ie%photo.toBe..false..hint.'IE Photo-Ionization')
    call tester%expect(ie%cases.toBe. [ieid%case_a, ieid%case_b, ieid%case_a] .hint.'IE cases')
    call tester%expect(ie%table_sizes.toBe. [1024, 1024] .hint.'IE table size')
-   call tester%expect(ie%table_temp_range.toBe. [1e2, 1e7] .hint.'IE table temp range')
+   call tester%expect(ie%table_temp_range(:)%v.toBe. [1e2, 1e7] .hint.'IE table temp range')
    call tester%expect(ie%table_temp_unit_str.toBe.'K'.hint.'IE table temp unit')
-   call tester%expect(ie%table_density_range.toBe. [1d-3, 1d6] .hint.'IE table density range')
+   call tester%expect(ie%table_density_range(:)%v.toBe. [1d-3, 1d6] .hint.'IE table density range')
    call tester%expect(ie%table_density_unit_str.toBe.'m_H / cm^3'.hint.'IE table density unit')
 
    ! Drawing

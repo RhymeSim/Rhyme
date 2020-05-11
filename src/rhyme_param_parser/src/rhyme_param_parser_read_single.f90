@@ -52,7 +52,6 @@ module subroutine rhyme_param_parser_read_single(this, term, var, logger, switch
                   if (switch_str .eq. switch%keys(i)) then
                      if (switch%types(i) == 'log') then
                         v = switch%log_values(i)
-                        print *, term%key, switch_str, switch%keys(i), i, switch%log_values(i)
                      else
                         print *, 'Error in read single: Switch type is not logical!'
                      end if

@@ -40,13 +40,13 @@ logical function rhyme_nombre_to_test() result(failed)
       pow(4:6) = rnd(:, 6)*10 - 5
       where (abs(pow) < .1d0) pow = 1d0
 
-      u1 => nom_u_factory%generate_chain([ &
-                                         1*(prfx(1)*bu(1))**pow(1), (prfx(2)*du(1))**pow(2), 1*(prfx(3)*bu(2))**pow(3) &
-                                         ])
+      u1 => nom_u_factory%generate_chain( &
+            [1*(prfx(1)*bu(1))**pow(1), (prfx(2)*du(1))**pow(2), 1*(prfx(3)*bu(2))**pow(3)] &
+            )
 
-      u2 => nom_u_factory%generate_chain([ &
-                                         (prfx(4)*du(2))**pow(4), 1*(prfx(5)*bu(3))**pow(5), (prfx(6)*du(3))**pow(6) &
-                                         ])
+      u2 => nom_u_factory%generate_chain( &
+            [(prfx(4)*du(2))**pow(4), 1*(prfx(5)*bu(3))**pow(5), (prfx(6)*du(3))**pow(6)] &
+            )
 
       n1 = 1.23d4.u.u1
       n2 = n1.to.u2

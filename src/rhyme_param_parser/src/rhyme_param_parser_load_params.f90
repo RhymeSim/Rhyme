@@ -105,13 +105,15 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    call ionization_cases%add('case_b', ieid%case_b)
 
    call config%read ('uvb_equilibrium'.at.1, ie%uvb, logger, on_off_switch)
-   call config%read ('collisional_ionization'.at.1, ie%collisional, logger, on_off_switch)
+   call config%read ('collisional_ionization_equilibrium'.at.1, ie%collisional, logger, on_off_switch)
    call config%read ('photoionization_equilibrium'.at.1, ie%photo, logger, on_off_switch)
    call config%read_array('species_cases'.at.1, ie%cases, logger, ionization_cases)
    call config%read_array('equilibrium_table_size'.at.1, ie%table_sizes, logger)
-   call config%read_array('equilibrium_table_temp_range'.at.1, ie%table_temp_range, logger)
+   call config%read ('equilibrium_table_temp_range'.at.1, ie%table_temp_range(1)%v, logger)
+   call config%read ('equilibrium_table_temp_range'.at.2, ie%table_temp_range(2)%v, logger)
    call config%read ('equilibrium_table_temp_range'.at.3, ie%table_temp_unit_str, logger)
-   call config%read_array('equilibrium_table_density_range'.at.1, ie%table_density_range, logger)
+   call config%read ('equilibrium_table_density_range'.at.1, ie%table_density_range(1)%v, logger)
+   call config%read ('equilibrium_table_density_range'.at.2, ie%table_density_range(2)%v, logger)
    call config%read ('equilibrium_table_density_range'.at.3, ie%table_density_unit_str, logger)
 
    ! Drawing
