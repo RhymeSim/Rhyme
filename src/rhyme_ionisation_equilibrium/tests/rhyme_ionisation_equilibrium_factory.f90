@@ -10,11 +10,12 @@ contains
 
       type(ionisation_equilibrium_t) :: ie
 
-      ie = ionisation_equilibrium_t()
-
       if (factory_type == 'empty') then
       else if (factory_type == 'CaseA') then
-         ie = ionisation_equilibrium_t(ieid%case_a, .false., .false., .false.)
+         ie%cases = ieid%case_a
+         ie%uvb = .false.
+         ie%collisional = .false.
+         ie%photo = .false.
       else if (factory_type == 'CaseA-cgs') then
          ie%cases = ieid%case_a
          ie%uvb = .false.
@@ -26,7 +27,10 @@ contains
          ie%table_density_range(:)%v = [1e-2, 1e3]
          ie%table_density_unit_str = 'm_H / cm^3'
       else if (factory_type == 'CaseB') then
-         ie = ionisation_equilibrium_t(ieid%case_b, .false., .false., .false.)
+         ie%cases = ieid%case_b
+         ie%uvb = .false.
+         ie%collisional = .false.
+         ie%photo = .false.
       else
          print *, 'Unknonw ionization equilibrium factory type!', factory_type
       end if

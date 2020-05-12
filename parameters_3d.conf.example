@@ -56,8 +56,9 @@ species = HII HeII HeIII
 
 
 # **Ionization Equilibrium**
-uvb_equilibrium = disable
+uvb_equilibrium = enable
 uvb_model = HM12
+uvb_self_shielding = enable
 
 collisional_ionization_equilibrium = enable
 

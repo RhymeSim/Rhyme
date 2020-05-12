@@ -18,8 +18,16 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
    call tester%expect(ieid%case_a.toBe.1.hint.'Case A id')
    call tester%expect(ieid%case_b.toBe.2.hint.'Case B id')
 
-   call tester%expect(ie%cases.toBe.ieid%unset.hint.'default cases')
-   call tester%expect(ie%uvb.toBe..false..hint.'default uvb flag')
+   call tester%expect(ie%cases.toBe.ieid%unset.hint.'cases')
+
+   call tester%expect(ie%redhsift.toBe.-1d0.hint.'redhsift')
+
+   call tester%expect(ie%uvb.toBe..false..hint.'uvb flag')
+   call tester%expect(ie%uvb_self_shielding.toBe..false..hint.'uvb self-shielding')
+   call tester%expect(ie%uvb_ssh.toBe.huge(0d0) .hint.'uvb self-shielding values')
+   call tester%expect(ie%gamma_uvb.toBe.-1e0.hint.'uvb gamma')
+   call tester%expect(ie%uvb_photoheating.toBe.-1e0.hint.'uvb photoheating')
+
    call tester%expect(ie%collisional.toBe..false..hint.'default collisional flag')
    call tester%expect(ie%photo.toBe..false..hint.'default photoionisation flag')
 
@@ -27,7 +35,18 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
       call tester%expect(associated(ie%RI(i)%run) .toBe..false..hint.'RI')
       call tester%expect(associated(ie%CI(i)%run) .toBe..false..hint.'CI')
       call tester%expect(associated(ie%CIE(i)%run) .toBe..false..hint.'CIE')
+      call tester%expect(associated(ie%IE(i)%run) .toBe..false..hint.'IE')
    end do
+
+   call tester%expect(ie%table_sizes.toBe.ieid%unset.hint.'table sizes')
+
+   call tester%expect(associated(ie%table_temp_range(1)%u) .toBe..false..hint.'table temp range 1 unit')
+   call tester%expect(associated(ie%table_temp_range(2)%u) .toBe..false..hint.'table temp range 2 unit')
+
+   call tester%expect(associated(ie%table_density_range(1)%u) .toBe..false..hint.'table density range 1 unit')
+   call tester%expect(associated(ie%table_density_range(2)%u) .toBe..false..hint.'table density range 2 unit')
+
+   call tester%expect(allocated(ie%table) .toBe..false..hint.'table')
 
    failed = tester%failed()
 end function rhyme_ionisation_equilibrium_test

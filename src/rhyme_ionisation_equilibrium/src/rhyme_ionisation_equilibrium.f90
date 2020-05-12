@@ -2,6 +2,7 @@ module rhyme_ionisation_equilibrium
    use rhyme_nombre
    use rhyme_physics
    use rhyme_chemistry
+   use rhyme_uv_background
    use rhyme_logger
 
    implicit none
@@ -17,14 +18,26 @@ module rhyme_ionisation_equilibrium
       procedure(rate_i), pointer, nopass :: run => null()
    end type ionisation_equilibrium_rate_array_t
 
+   type, private :: collisional_equilibrium_array_t
+      procedure(collisional_equilibrium_i), pointer, nopass :: run => null()
+   end type collisional_equilibrium_array_t
+
    type, private :: ionisation_equilibrium_array_t
-      procedure(equilibrium_i), pointer, nopass :: run => null()
+      procedure(ionisation_equilibrium_i), pointer, nopass :: run => null()
    end type ionisation_equilibrium_array_t
 
    type ionisation_equilibrium_t
       integer :: cases(NSPE) = ieid%unset
+
       logical :: uvb = .false.
+      logical :: uvb_self_shielding = .false.
+      real(kind=8), dimension(NSPE) :: uvb_ssh = huge(0d0)
+      real(kind=8) :: redhsift = -1d0
+      real(kind=4), dimension(NSPE) :: gamma_uvb = -1e0
+      real(kind=4), dimension(NSPE) :: uvb_photoheating = -1e0
+
       logical :: collisional = .false.
+
       logical :: photo = .false.
 
       ! Recombination
@@ -32,7 +45,9 @@ module rhyme_ionisation_equilibrium
       ! Collisional ionisation
       type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: CI
       ! Collisional ionisation equilibrium
-      type(ionisation_equilibrium_array_t), dimension(NSPE) :: CIE
+      type(collisional_equilibrium_array_t), dimension(NSPE) :: CIE
+      ! Ionisation equilibrium
+      type(ionisation_equilibrium_array_t), dimension(NSPE) :: IE
 
       integer :: table_sizes(2) = ieid%unset
 
@@ -42,15 +57,23 @@ module rhyme_ionisation_equilibrium
       type(nombre_t) :: table_density_range(2)
       character(len=64) :: table_density_unit_str = ''
 
-      real(kind=4), allocatable :: table(:, :)
+      real(kind=4), allocatable :: table(:, :, :)
    end type ionisation_equilibrium_t
 
    interface
-      module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+      module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, uvb, z, logger)
          type(ionisation_equilibrium_t), intent(inout) :: ie
          type(physics_t), intent(in) :: physics
          type(chemistry_t), intent(in) :: chemistry
+         type(uv_background_t), intent(in) :: uvb
+         real(kind=8), intent(in) :: z
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_init
+
+      module subroutine rhyme_ionisation_equilibrium_update_table(ie, z, logger)
+         type(ionisation_equilibrium_t), intent(inout) :: ie
+         real(kind=8), intent(in) :: z
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_ionisation_equilibrium_update_table
    end interface
 end module rhyme_ionisation_equilibrium
