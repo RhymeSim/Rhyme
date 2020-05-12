@@ -5,25 +5,16 @@ module function rhyme_periodic_table_get_species_by_name(pt, species_name) resul
 
    class(periodic_table_t), intent(in) :: pt
    character(len=*), intent(in) :: species_name
+   type(species_t) :: species
 
-   type(element_species_t), pointer :: species
+   integer :: si
 
-   type(element_species_t), pointer :: pntr
+   species = species_t()
 
-   integer :: ei
-
-   species => null()
-
-   do ei = 1, size(pt%elements)
-      pntr => pt%elements(ei)%species
-
-      do while (associated(pntr))
-         if (pntr%symb .eq. species_name) then
-            species => pntr
-         end if
-         pntr => pntr%next
-      end do
-
+   do si = 1, size(pt%species)
+      if (pt%species(si)%symb .eq. species_name) then
+         species = pt%species(si)
+      end if
    end do
 end function rhyme_periodic_table_get_species_by_name
 end submodule get_species_by_name_smod

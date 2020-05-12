@@ -13,7 +13,7 @@ module subroutine rhyme_chemistry_init(chem, logger)
    call rhyme_periodic_table_init(chem%pt, logger)
 
    do si = 1, size(chem%species_name)
-      chem%species(si)%s => chem%pt.getspeciesbyname.chem%species_name(si)
+      chem%species(si) = chem%pt.getspeciesbyname.chem%species_name(si)
    end do
 
    call logger%end_section

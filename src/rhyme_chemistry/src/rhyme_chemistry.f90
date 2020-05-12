@@ -9,14 +9,12 @@ module rhyme_chemistry
 
    type(indices_t), parameter :: chemid = indices_t()
 
-   type species_array_t
-      type(element_species_t), pointer :: s => null()
-   end type species_array_t
-
    type chemistry_t
       type(periodic_table_t) :: pt
+      ! TODO: read each element and its species separately
+      !       This is very important in the case of ionization fractions calculation
       character(len=8), dimension(NSPE) :: species_name = ''
-      type(species_array_t), dimension(NSPE) :: species
+      type(species_t), dimension(NSPE) :: species
    contains
       procedure :: rhyme_chemistry_write_formatted
       generic :: write (formatted) => rhyme_chemistry_write_formatted

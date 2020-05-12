@@ -11,39 +11,33 @@ module rhyme_periodic_table
 
    type(indices_t), parameter :: ptid = indices_t()
 
-   type element_species_t
-      character(len=16) :: symb = ''
-      integer :: ionized = 1
-      ! Recombination ionization rate (case A) [cm^3 s^-1]
-      procedure(rate_i), pointer, nopass :: RI_A => null()
-      ! Recombination ionization rate (case B) [cm^3 s^-1]
-      procedure(rate_i), pointer, nopass :: RI_B => null()
-      ! Collisional ionization rate [cm^3 s^-1]
-      procedure(rate_i), pointer, nopass :: CI => null()
-      ! Collisional ionization equilibrium (case A) [Neutral fraction]
-      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_A => null()
-      ! Collisional ionization equilibrium (case B) [Neutral fraction]
-      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_B => null()
-      ! Ionization equilibrium (case A) [Neutral fraction]
-      procedure(ionization_equilibrium_i), pointer, nopass :: IE_A => null()
-      ! Ionization equilibrium (case B) [Neutral fraction]
-      procedure(ionization_equilibrium_i), pointer, nopass :: IE_B => null()
-
-      type(element_species_t), pointer :: prev => null(), next => null()
-   end type element_species_t
-
-   type, private :: periodic_table_element_t
-      character(len=8) :: symb = ''
+   type species_t
+      character(len=8) :: element = ''
       integer :: atomic_number = 0
       type(nombre_t) :: atomic_weight
-      type(element_species_t), pointer :: species => null()
-   contains
-      procedure :: rhyme_periodic_table_element_write_formatted
-      generic :: write (formatted) => rhyme_periodic_table_element_write_formatted
-   end type periodic_table_element_t
+
+      character(len=16) :: symb = ''
+      integer :: ionized = 1
+      ! Recombination ionisation rate (case A) [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: RI_A => null()
+      ! Recombination ionisation rate (case B) [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: RI_B => null()
+      ! Collisional ionisation rate [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: CI => null()
+      ! Collisional ionisation equilibrium (case A) [Neutral fraction]
+      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_A => null()
+      ! Collisional ionisation equilibrium (case B) [Neutral fraction]
+      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_B => null()
+      ! Ionization equilibrium (case A) [Neutral fraction]
+      procedure(ionisation_equilibrium_i), pointer, nopass :: IE_A => null()
+      ! Ionization equilibrium (case B) [Neutral fraction]
+      procedure(ionisation_equilibrium_i), pointer, nopass :: IE_B => null()
+
+      type(species_t), pointer :: prev => null(), next => null()
+   end type species_t
 
    type periodic_table_t
-      type(periodic_table_element_t) :: elements(26)
+      type(species_t) :: species(5)
    contains
       procedure :: rhyme_periodic_table_write_formatted
       generic :: write (formatted) => rhyme_periodic_table_write_formatted
@@ -59,7 +53,7 @@ module rhyme_periodic_table
       module function rhyme_periodic_table_get_species_by_name(pt, species_name) result(species)
          class(periodic_table_t), intent(in) :: pt
          character(len=*), intent(in) :: species_name
-         type(element_species_t), pointer :: species
+         type(species_t) :: species
       end function rhyme_periodic_table_get_species_by_name
    end interface
 
@@ -78,32 +72,13 @@ module rhyme_periodic_table
          real(kind=8) :: neutral_fraction
       end function collisional_equilibrium_i
 
-      pure function ionization_equilibrium_i(T, Gamma, ne) result(neutral_fraction)
+      pure function ionisation_equilibrium_i(T, Gamma, ne) result(neutral_fraction)
          real(kind=8), intent(in) :: T, Gamma(:), ne
          real(kind=8) :: neutral_fraction
-      end function ionization_equilibrium_i
+      end function ionisation_equilibrium_i
    end interface
 
 contains
-   subroutine rhyme_periodic_table_element_write_formatted( &
-      this, unit, iotype, v_list, iostat, iomsg)
-      implicit none
-
-      class(periodic_table_element_t), intent(in) :: this
-      integer, intent(in) :: unit
-      character(len=*), intent(in) :: iotype
-      integer, intent(in) :: v_list(:)
-      integer, intent(out) :: iostat
-      character(len=*), intent(inout) :: iomsg
-
-      write (unit, fmt='(A,A,A,A,A,A,A,I0,A)', iostat=iostat, iomsg=iomsg) &
-         '<periodic_table_t', &
-         ' symb=', trim(this%symb), &
-         ' iotype="', trim(iotype), '"', &
-         ' v_list=', size(v_list), &
-         '>'
-   end subroutine rhyme_periodic_table_element_write_formatted
-
    subroutine rhyme_periodic_table_write_formatted( &
       this, unit, iotype, v_list, iostat, iomsg)
       implicit none
@@ -116,11 +91,10 @@ contains
       character(len=*), intent(inout) :: iomsg
 
       character(len=1024) :: str_elements = ''
-      integer :: ei
+      integer :: si
 
-      do ei = 1, size(this%elements)
-         if (this%elements(ei)%symb == '') cycle
-         write (str_elements, '(A,A2,A)') trim(str_elements), ', ', trim(this%elements(ei)%symb)
+      do si = 1, size(this%species)
+         write (str_elements, '(A,A2,A)') trim(str_elements), ', ', trim(this%species(si)%symb)
       end do
 
       write (unit, fmt='(A,A,A,A,A,A,A,I0,A)', iostat=iostat, iomsg=iomsg) &

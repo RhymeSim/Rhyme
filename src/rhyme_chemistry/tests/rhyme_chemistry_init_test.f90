@@ -20,11 +20,10 @@ logical function rhyme_chemistry_init_test() result(failed)
    call rhyme_nombre_init()
    call rhyme_chemistry_init(chem, logger)
 
-   call tester%expect(chem%pt%elements(1)%symb.toBe.'H'.hint.'Check periodic table')
-   call tester%expect(chem%pt%elements(2)%symb.toBe.'He'.hint.'Check periodic table')
+   call tester%expect(chem%pt%species(1)%element.toBe.'H'.hint.'Check periodic table')
 
    do si = 1, NSPE
-      call tester%expect(chem%species(si)%s%symb.toBe.chemistry_factory_H_He(si))
+      call tester%expect(chem%species(si)%symb.toBe.chemistry_factory_H_He(si))
    end do
 
    failed = tester%failed()

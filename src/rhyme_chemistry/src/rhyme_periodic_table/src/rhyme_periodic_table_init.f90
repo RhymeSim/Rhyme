@@ -14,71 +14,72 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    ! Hydrogen
 
-   pt%elements(ptid%H)%symb = 'H'
-   pt%elements(ptid%H)%atomic_number = 1
-   pt%elements(ptid%H)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+   pt%species(1)%element = 'H'
+   pt%species(1)%atomic_number = 1
+   pt%species(1)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+   pt%species(1)%symb = 'HI'
+   pt%species(1)%ionized = 0
+   pt%species(1)%RI_A => null()
+   pt%species(1)%RI_B => null()
+   pt%species(1)%CI => null()
+   pt%species(1)%CIE_A => null()
+   pt%species(1)%CIE_B => null()
+   pt%species(1)%IE_A => null()
+   pt%species(1)%IE_B => null()
 
-   allocate (pt%elements(ptid%H)%species)
-   pt%elements(ptid%H)%species%symb = 'HI'
-   pt%elements(ptid%H)%species%ionized = 0
-   pt%elements(ptid%H)%species%RI_A => null()
-   pt%elements(ptid%H)%species%RI_B => null()
-   pt%elements(ptid%H)%species%CI => null()
-   pt%elements(ptid%H)%species%CIE_A => null()
-   pt%elements(ptid%H)%species%CIE_B => null()
-   pt%elements(ptid%H)%species%IE_A => null()
-   pt%elements(ptid%H)%species%IE_B => null()
-
-   allocate (pt%elements(ptid%H)%species%next)
-   pt%elements(ptid%H)%species%next%symb = 'HII'
-   pt%elements(ptid%H)%species%next%ionized = 1
-   pt%elements(ptid%H)%species%next%RI_A => RI_HII_A
-   pt%elements(ptid%H)%species%next%RI_B => RI_HII_B
-   pt%elements(ptid%H)%species%next%CI => CI_HI
-   pt%elements(ptid%H)%species%next%CIE_A => CIE_HI_A
-   pt%elements(ptid%H)%species%next%CIE_B => CIE_HI_B
-   pt%elements(ptid%H)%species%next%IE_A => IE_HI_A
-   pt%elements(ptid%H)%species%next%IE_B => IE_HI_B
+   pt%species(2)%element = 'H'
+   pt%species(2)%atomic_number = 1
+   pt%species(2)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+   pt%species(2)%symb = 'HII'
+   pt%species(2)%ionized = 1
+   pt%species(2)%RI_A => RI_HII_A
+   pt%species(2)%RI_B => RI_HII_B
+   pt%species(2)%CI => CI_HI
+   pt%species(2)%CIE_A => CIE_HI_A
+   pt%species(2)%CIE_B => CIE_HI_B
+   pt%species(2)%IE_A => IE_HI_A
+   pt%species(2)%IE_B => IE_HI_B
 
    ! Helium
 
-   pt%elements(ptid%He)%symb = 'He'
-   pt%elements(ptid%He)%atomic_number = 2
-   pt%elements(ptid%He)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(3)%element = 'He'
+   pt%species(3)%atomic_number = 2
+   pt%species(3)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(3)%symb = 'HeI'
+   pt%species(3)%ionized = 0
+   pt%species(3)%RI_A => null()
+   pt%species(3)%RI_B => null()
+   pt%species(3)%CI => null()
+   pt%species(3)%CIE_A => null()
+   pt%species(3)%CIE_B => null()
+   pt%species(3)%IE_A => null()
+   pt%species(3)%IE_B => null()
 
-   allocate (pt%elements(ptid%He)%species)
-   pt%elements(ptid%He)%species%symb = 'HeI'
-   pt%elements(ptid%He)%species%ionized = 0
-   pt%elements(ptid%He)%species%RI_A => null()
-   pt%elements(ptid%He)%species%RI_B => null()
-   pt%elements(ptid%He)%species%CI => null()
-   pt%elements(ptid%He)%species%CIE_A => null()
-   pt%elements(ptid%He)%species%CIE_B => null()
-   pt%elements(ptid%He)%species%IE_A => null()
-   pt%elements(ptid%He)%species%IE_B => null()
+   pt%species(4)%element = 'He'
+   pt%species(4)%atomic_number = 2
+   pt%species(4)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(4)%symb = 'HeII'
+   pt%species(4)%ionized = 1
+   pt%species(4)%RI_A => RI_HeII_A
+   pt%species(4)%RI_B => RI_HeII_B
+   pt%species(4)%CI => CI_HeI
+   pt%species(4)%CIE_A => CIE_HeI_A
+   pt%species(4)%CIE_B => CIE_HeI_B
+   pt%species(4)%IE_A => IE_HeI_A
+   pt%species(4)%IE_B => IE_HeI_B
 
-   allocate (pt%elements(ptid%He)%species%next)
-   pt%elements(ptid%He)%species%next%symb = 'HeII'
-   pt%elements(ptid%He)%species%next%ionized = 1
-   pt%elements(ptid%He)%species%next%RI_A => RI_HeII_A
-   pt%elements(ptid%He)%species%next%RI_B => RI_HeII_B
-   pt%elements(ptid%He)%species%next%CI => CI_HeI
-   pt%elements(ptid%He)%species%next%CIE_A => CIE_HeI_A
-   pt%elements(ptid%He)%species%next%CIE_B => CIE_HeI_B
-   pt%elements(ptid%He)%species%next%IE_A => IE_HeI_A
-   pt%elements(ptid%He)%species%next%IE_B => IE_HeI_B
-
-   allocate (pt%elements(ptid%He)%species%next%next)
-   pt%elements(ptid%He)%species%next%next%prev => pt%elements(ptid%He)%species
-   pt%elements(ptid%He)%species%next%next%symb = 'HeIII'
-   pt%elements(ptid%He)%species%next%next%ionized = 2
-   pt%elements(ptid%He)%species%next%next%RI_A => RI_HeIII_A
-   pt%elements(ptid%He)%species%next%next%RI_B => RI_HeIII_B
-   pt%elements(ptid%He)%species%next%next%CI => CI_HeII
-   pt%elements(ptid%He)%species%next%next%CIE_A => CIE_HeII_A
-   pt%elements(ptid%He)%species%next%next%CIE_B => CIE_HeII_B
-   pt%elements(ptid%He)%species%next%next%IE_A => IE_HeII_A
-   pt%elements(ptid%He)%species%next%next%IE_B => IE_HeII_B
+   pt%species(5)%element = 'He'
+   pt%species(5)%atomic_number = 2
+   pt%species(5)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(5)%symb = 'HeIII'
+   pt%species(5)%ionized = 2
+   pt%species(5)%RI_A => RI_HeIII_A
+   pt%species(5)%RI_B => RI_HeIII_B
+   pt%species(5)%CI => CI_HeII
+   pt%species(5)%CIE_A => CIE_HeII_A
+   pt%species(5)%CIE_B => CIE_HeII_B
+   pt%species(5)%IE_A => IE_HeII_A
+   pt%species(5)%IE_B => IE_HeII_B
 
    call logger%end_section
 
@@ -179,12 +180,12 @@ contains
 
    real(kind=8) pure function IE_HeI_A(T, Gamma, ne)
       real(kind=8), intent(in) :: T, Gamma(:), ne
-      IE_HeI_A = RI_HeII_A(T)/(RI_HeII_A(T) + CI_HeI(T) + Gamma(1)/ne)
+      IE_HeI_A = RI_HeII_A(T)/(RI_HeII_A(T) + CI_HeI(T) + Gamma(2)/ne)
    end function IE_HeI_A
 
    real(kind=8) pure function IE_HeI_B(T, Gamma, ne)
       real(kind=8), intent(in) :: T, Gamma(:), ne
-      IE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma(1)/ne)
+      IE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma(2)/ne)
    end function IE_HeI_B
 
    real(kind=8) pure function RI_HeIII_A(T)
@@ -238,24 +239,24 @@ contains
    end function CIE_HeII_B
 
    real(kind=8) pure function IE_HeII_A(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
+      real(kind=8), intent(in) :: T, Gamma(:), ne ! Assuming Gamma(HI, HeI, HeII)
 
       IE_HeII_A = &
          ( &
-         RI_HeIII_A(T) - IE_HeI_A(T, Gamma, ne)*(RI_HeIII_A(T) - CI_HeII(T) - Gamma(1)/ne) &
+         RI_HeIII_A(T) - IE_HeI_A(T, Gamma, ne)*(RI_HeIII_A(T) - CI_HeII(T) - Gamma(2)/ne) &
          )/( &
-         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) + Gamma(2)/ne &
+         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) + Gamma(3)/ne &
          )
    end function IE_HeII_A
 
    real(kind=8) pure function IE_HeII_B(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
+      real(kind=8), intent(in) :: T, Gamma(:), ne ! Assuming Gamma(HI, HeI, HeII)
 
       IE_HeII_B = &
          ( &
-         RI_HeIII_B(T) - IE_HeI_B(T, Gamma, ne)*(RI_HeIII_B(T) - CI_HeII(T) - Gamma(1)/ne) &
+         RI_HeIII_B(T) - IE_HeI_B(T, Gamma, ne)*(RI_HeIII_B(T) - CI_HeII(T) - Gamma(2)/ne) &
          )/( &
-         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) + Gamma(2)/ne &
+         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) + Gamma(3)/ne &
          )
    end function IE_HeII_B
 end subroutine rhyme_periodic_table_init
