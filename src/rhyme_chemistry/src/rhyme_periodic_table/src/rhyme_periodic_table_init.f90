@@ -26,6 +26,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%H)%species%CI => null()
    pt%elements(ptid%H)%species%CIE_A => null()
    pt%elements(ptid%H)%species%CIE_B => null()
+   pt%elements(ptid%H)%species%IE_A => null()
+   pt%elements(ptid%H)%species%IE_B => null()
 
    allocate (pt%elements(ptid%H)%species%next)
    pt%elements(ptid%H)%species%next%symb = 'HII'
@@ -35,6 +37,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%H)%species%next%CI => CI_HI
    pt%elements(ptid%H)%species%next%CIE_A => CIE_HI_A
    pt%elements(ptid%H)%species%next%CIE_B => CIE_HI_B
+   pt%elements(ptid%H)%species%next%IE_A => IE_HI_A
+   pt%elements(ptid%H)%species%next%IE_B => IE_HI_B
 
    ! Helium
 
@@ -50,6 +54,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%He)%species%CI => null()
    pt%elements(ptid%He)%species%CIE_A => null()
    pt%elements(ptid%He)%species%CIE_B => null()
+   pt%elements(ptid%He)%species%IE_A => null()
+   pt%elements(ptid%He)%species%IE_B => null()
 
    allocate (pt%elements(ptid%He)%species%next)
    pt%elements(ptid%He)%species%next%symb = 'HeII'
@@ -59,6 +65,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%He)%species%next%CI => CI_HeI
    pt%elements(ptid%He)%species%next%CIE_A => CIE_HeI_A
    pt%elements(ptid%He)%species%next%CIE_B => CIE_HeI_B
+   pt%elements(ptid%He)%species%next%IE_A => IE_HeI_A
+   pt%elements(ptid%He)%species%next%IE_B => IE_HeI_B
 
    allocate (pt%elements(ptid%He)%species%next%next)
    pt%elements(ptid%He)%species%next%next%prev => pt%elements(ptid%He)%species
@@ -69,6 +77,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(ptid%He)%species%next%next%CI => CI_HeII
    pt%elements(ptid%He)%species%next%next%CIE_A => CIE_HeII_A
    pt%elements(ptid%He)%species%next%next%CIE_B => CIE_HeII_B
+   pt%elements(ptid%He)%species%next%next%IE_A => IE_HeII_A
+   pt%elements(ptid%He)%species%next%next%IE_B => IE_HeII_B
 
    call logger%end_section
 
@@ -115,6 +125,18 @@ contains
       CIE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T))
    end function CIE_HI_B
 
+   real(kind=8) pure function IE_HI_A(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+
+      IE_HI_A = RI_HII_A(T)/(RI_HII_A(T) + CI_HI(T) + Gamma(1)/ne)
+   end function IE_HI_A
+
+   real(kind=8) pure function IE_HI_B(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+
+      IE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T) + Gamma(1)/ne)
+   end function IE_HI_B
+
    real(kind=8) pure function RI_HeII_A(T)
       real(kind=8), intent(in) :: T
       real(kind=8) :: lambda
@@ -155,6 +177,16 @@ contains
       CIE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T))
    end function CIE_HeI_B
 
+   real(kind=8) pure function IE_HeI_A(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+      IE_HeI_A = RI_HeII_A(T)/(RI_HeII_A(T) + CI_HeI(T) + Gamma(1)/ne)
+   end function IE_HeI_A
+
+   real(kind=8) pure function IE_HeI_B(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+      IE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma(1)/ne)
+   end function IE_HeI_B
+
    real(kind=8) pure function RI_HeIII_A(T)
       real(kind=8), intent(in) :: T
       real(kind=8) :: lambda
@@ -186,21 +218,45 @@ contains
    real(kind=8) pure function CIE_HeII_A(T)
       real(kind=8), intent(in) :: T
 
-      CIE_HeII_A = ( &
-                   RI_HeIII_A(T) - CIE_HeI_A(T)*(RI_HeIII_A(T) - CI_HeII(T)) &
-                   )/( &
-                   RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) &
-                   )
+      CIE_HeII_A = &
+         ( &
+         RI_HeIII_A(T) - CIE_HeI_A(T)*(RI_HeIII_A(T) - CI_HeII(T)) &
+         )/( &
+         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) &
+         )
    end function CIE_HeII_A
 
    real(kind=8) pure function CIE_HeII_B(T)
       real(kind=8), intent(in) :: T
 
-      CIE_HeII_B = ( &
-                   RI_HeIII_B(T) - CIE_HeI_B(T)*(RI_HeIII_B(T) - CI_HeII(T)) &
-                   )/( &
-                   RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) &
-                   )
+      CIE_HeII_B = &
+         ( &
+         RI_HeIII_B(T) - CIE_HeI_B(T)*(RI_HeIII_B(T) - CI_HeII(T)) &
+         )/( &
+         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) &
+         )
    end function CIE_HeII_B
+
+   real(kind=8) pure function IE_HeII_A(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+
+      IE_HeII_A = &
+         ( &
+         RI_HeIII_A(T) - IE_HeI_A(T, Gamma, ne)*(RI_HeIII_A(T) - CI_HeII(T) - Gamma(1)/ne) &
+         )/( &
+         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) + Gamma(2)/ne &
+         )
+   end function IE_HeII_A
+
+   real(kind=8) pure function IE_HeII_B(T, Gamma, ne)
+      real(kind=8), intent(in) :: T, Gamma(:), ne
+
+      IE_HeII_B = &
+         ( &
+         RI_HeIII_B(T) - IE_HeI_B(T, Gamma, ne)*(RI_HeIII_B(T) - CI_HeII(T) - Gamma(1)/ne) &
+         )/( &
+         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) + Gamma(2)/ne &
+         )
+   end function IE_HeII_B
 end subroutine rhyme_periodic_table_init
 end submodule init_smod

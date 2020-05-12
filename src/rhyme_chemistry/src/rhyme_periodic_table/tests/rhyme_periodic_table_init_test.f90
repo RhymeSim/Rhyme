@@ -32,6 +32,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HI%CI) .toBe..false..hint.'HI CI')
    call tester%expect(associated(HI%CIE_A) .toBe..false..hint.'HI CIE_A')
    call tester%expect(associated(HI%CIE_B) .toBe..false..hint.'HI CIE_B')
+   call tester%expect(associated(HI%IE_A) .toBe..false..hint.'HI IE_A')
+   call tester%expect(associated(HI%IE_B) .toBe..false..hint.'HI IE_B')
 
    HII => pt%elements(ptid%H)%species%next
    call tester%expect(HII%symb.toBe.'HII'.hint.'HII symb')
@@ -41,6 +43,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HII%CI) .toBe..true..hint.'HII CI')
    call tester%expect(associated(HII%CIE_A) .toBe..true..hint.'HII CIE_A')
    call tester%expect(associated(HII%CIE_B) .toBe..true..hint.'HII CIE_B')
+   call tester%expect(associated(HII%IE_A) .toBe..true..hint.'HII IE_A')
+   call tester%expect(associated(HII%IE_B) .toBe..true..hint.'HII IE_B')
 
    call tester%expect(pt%elements(ptid%He)%symb.toBe.'He'.hint.'He symb')
    call tester%expect(pt%elements(ptid%He)%atomic_number.toBe.2.hint.'He number')
@@ -54,6 +58,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HeI%CI) .toBe..false..hint.'HeI CI')
    call tester%expect(associated(HeI%CIE_A) .toBe..false..hint.'HeI CIE_A')
    call tester%expect(associated(HeI%CIE_B) .toBe..false..hint.'HeI CIE_B')
+   call tester%expect(associated(HeI%IE_A) .toBe..false..hint.'HeI IE_A')
+   call tester%expect(associated(HeI%IE_B) .toBe..false..hint.'HeI IE_B')
 
    HeII => pt%elements(ptid%He)%species%next
    call tester%expect(HeII%symb.toBe.'HeII'.hint.'HeII symb')
@@ -63,6 +69,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HeII%CI) .toBe..true..hint.'HeII CI')
    call tester%expect(associated(HeII%CIE_A) .toBe..true..hint.'HeII CIE_A')
    call tester%expect(associated(HeII%CIE_B) .toBe..true..hint.'HeII CIE_B')
+   call tester%expect(associated(HeII%IE_A) .toBe..true..hint.'HeII IE_A')
+   call tester%expect(associated(HeII%IE_B) .toBe..true..hint.'HeII IE_B')
 
    HeIII => pt%elements(ptid%He)%species%next%next
    call tester%expect(HeIII%symb.toBe.'HeIII'.hint.'HeIII symb')
@@ -72,6 +80,8 @@ logical function rhyme_periodic_table_init_test() result(failed)
    call tester%expect(associated(HeIII%CI) .toBe..true..hint.'HeIII CI')
    call tester%expect(associated(HeIII%CIE_A) .toBe..true..hint.'HeIII CIE_A')
    call tester%expect(associated(HeIII%CIE_B) .toBe..true..hint.'HeIII CIE_B')
+   call tester%expect(associated(HeIII%IE_A) .toBe..true..hint.'HeIII IE_A')
+   call tester%expect(associated(HeIII%IE_B) .toBe..true..hint.'HeIII IE_B')
 
    failed = tester%failed()
 end function rhyme_periodic_table_init_test

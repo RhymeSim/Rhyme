@@ -21,9 +21,14 @@ module rhyme_periodic_table
       ! Collisional ionization rate [cm^3 s^-1]
       procedure(rate_i), pointer, nopass :: CI => null()
       ! Collisional ionization equilibrium (case A) [Neutral fraction]
-      procedure(equilibrium_i), pointer, nopass :: CIE_A => null()
+      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_A => null()
       ! Collisional ionization equilibrium (case B) [Neutral fraction]
-      procedure(equilibrium_i), pointer, nopass :: CIE_B => null()
+      procedure(collisional_equilibrium_i), pointer, nopass :: CIE_B => null()
+      ! Ionization equilibrium (case A) [Neutral fraction]
+      procedure(ionization_equilibrium_i), pointer, nopass :: IE_A => null()
+      ! Ionization equilibrium (case B) [Neutral fraction]
+      procedure(ionization_equilibrium_i), pointer, nopass :: IE_B => null()
+
       type(element_species_t), pointer :: prev => null(), next => null()
    end type element_species_t
 
@@ -68,10 +73,15 @@ module rhyme_periodic_table
          real(kind=8) :: rate
       end function rate_i
 
-      pure function equilibrium_i(T) result(neutral_fraction)
+      pure function collisional_equilibrium_i(T) result(neutral_fraction)
          real(kind=8), intent(in) :: T
          real(kind=8) :: neutral_fraction
-      end function equilibrium_i
+      end function collisional_equilibrium_i
+
+      pure function ionization_equilibrium_i(T, Gamma, ne) result(neutral_fraction)
+         real(kind=8), intent(in) :: T, Gamma(:), ne
+         real(kind=8) :: neutral_fraction
+      end function ionization_equilibrium_i
    end interface
 
 contains
