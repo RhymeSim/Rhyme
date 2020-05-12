@@ -5,7 +5,7 @@ module function rhyme_uv_background_get(uvb, z, species, logger) result(rates)
 
    type(uv_background_t), intent(in) :: uvb
    real(kind=8), intent(in) :: z
-   character(len=*), intent(in) :: species(:)
+   character(len=*), dimension(:), intent(in) :: species
    type(logger_t), intent(inout) :: logger
 
    real(kind=4), dimension(2*size(species)) :: rates

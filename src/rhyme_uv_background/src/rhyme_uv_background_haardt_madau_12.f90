@@ -168,4 +168,20 @@ module function rhyme_uv_background_haardt_madau_12_get(z, species) result(rates
       end select
    end do
 end function rhyme_uv_background_haardt_madau_12_get
+
+module function rhyme_uv_background_haardt_madau_12_h_self_shielding_n(z, T, sHI, fg) result(n)
+   implicit none
+
+   real(kind=8), intent(in) :: z, T, sHI, fg
+   real(kind=8) :: n
+
+   real(kind=8) :: T, sHI, fg
+
+   integer :: i
+
+   i = minloc(abs(HM12_redshifts - z), dim=1)
+
+   ! Frong Rahmati et al. 2013 [eq. 13]
+   n = 6.73e-3*(sHI/2.48e-18)**(-2./3.)*(T/1d4)**(.17)*(HM12_photoionization(1, i)*1e12)**(2./3.)*(fg/.17)**(-1./3.)
+end function rhyme_uv_background_haardt_madau_12_h_self_shielding_n
 end submodule haardt_madau_12_smod
