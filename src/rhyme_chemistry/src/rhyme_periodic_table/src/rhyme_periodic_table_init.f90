@@ -16,7 +16,7 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%species(1)%element = 'H'
    pt%species(1)%atomic_number = 1
-   pt%species(1)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+   pt%species(1)%atomic_weight = 1.00811e0
    pt%species(1)%symb = 'HI'
    pt%species(1)%ionized = 0
    pt%species(1)%RI_A => null()
@@ -29,7 +29,7 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%species(2)%element = 'H'
    pt%species(2)%atomic_number = 1
-   pt%species(2)%atomic_weight = 1.00811d0.u.atomic_mass_unit
+   pt%species(2)%atomic_weight = 1.00811e0
    pt%species(2)%symb = 'HII'
    pt%species(2)%ionized = 1
    pt%species(2)%RI_A => RI_HII_A
@@ -44,7 +44,7 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%species(3)%element = 'He'
    pt%species(3)%atomic_number = 2
-   pt%species(3)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(3)%atomic_weight = 4.002602e0
    pt%species(3)%symb = 'HeI'
    pt%species(3)%ionized = 0
    pt%species(3)%RI_A => null()
@@ -57,7 +57,7 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%species(4)%element = 'He'
    pt%species(4)%atomic_number = 2
-   pt%species(4)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(4)%atomic_weight = 4.002602e0
    pt%species(4)%symb = 'HeII'
    pt%species(4)%ionized = 1
    pt%species(4)%RI_A => RI_HeII_A
@@ -70,7 +70,7 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%species(5)%element = 'He'
    pt%species(5)%atomic_number = 2
-   pt%species(5)%atomic_weight = 4.002602d0.u.atomic_mass_unit
+   pt%species(5)%atomic_weight = 4.002602e0
    pt%species(5)%symb = 'HeIII'
    pt%species(5)%ionized = 2
    pt%species(5)%RI_A => RI_HeIII_A

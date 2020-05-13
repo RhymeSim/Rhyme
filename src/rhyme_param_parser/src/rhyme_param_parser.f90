@@ -6,6 +6,7 @@ module rhyme_param_parser
    use rhyme_samr_bc
    use rhyme_cfl
    use rhyme_thermo_base
+   use rhyme_uv_background
    use rhyme_ionisation_equilibrium
    use rhyme_drawing
    use rhyme_irs
@@ -45,7 +46,7 @@ module rhyme_param_parser
 
    interface
       module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                                    thermo, ie, draw, irs, sl, mh, chombo, logger)
+                                    thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
          character(len=1024), intent(in) :: param_file
          type(chemistry_t), intent(inout) :: chemistry
          type(physics_t), intent(inout) :: physics
@@ -53,6 +54,7 @@ module rhyme_param_parser
          type(samr_bc_t), intent(inout) :: bc
          type(cfl_t), intent(inout) :: cfl
          type(thermo_base_t), intent(inout) :: thermo
+         type(uv_background_t), intent(inout) :: uvb
          type(ionisation_equilibrium_t), intent(inout) :: ie
          type(drawing_t), intent(inout) :: draw
          type(irs_t), intent(inout) :: irs

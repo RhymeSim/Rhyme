@@ -1,5 +1,4 @@
 module rhyme_periodic_table
-   use rhyme_nombre
    use rhyme_logger
 
    implicit none
@@ -14,10 +13,10 @@ module rhyme_periodic_table
    type species_t
       character(len=8) :: element = ''
       integer :: atomic_number = 0
-      type(nombre_t) :: atomic_weight
+      real(kind=4) :: atomic_weight = 0e0
 
       character(len=16) :: symb = ''
-      integer :: ionized = 1
+      integer :: ionized = 0
       ! Recombination ionisation rate (case A) [cm^3 s^-1]
       procedure(rate_i), pointer, nopass :: RI_A => null()
       ! Recombination ionisation rate (case B) [cm^3 s^-1]
@@ -50,9 +49,9 @@ module rhyme_periodic_table
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_periodic_table_init
 
-      module function rhyme_periodic_table_get_species_by_name(pt, species_name) result(species)
+      module function rhyme_periodic_table_get_species_by_name(pt, species_names) result(species)
          class(periodic_table_t), intent(in) :: pt
-         character(len=*), intent(in) :: species_name
+         character(len=*), intent(in) :: species_names
          type(species_t) :: species
       end function rhyme_periodic_table_get_species_by_name
    end interface

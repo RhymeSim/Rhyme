@@ -50,6 +50,7 @@ solver_type = cpu_intensive
 
 # **Chemistry**
 elements = H He
+element_abundances = .75d0 .25d0
 species = HII HeII HeIII
 
 
@@ -61,6 +62,9 @@ uvb_self_shielding = enable
 collisional_ionization_equilibrium = enable
 
 photoionization_equilibrium = disable
+
+ie_convergence_rate = 1e-2
+ie_max_niterations = 1000
 
 species_cases = case_b case_b case_b
 equilibrium_table_size = 1024 1024

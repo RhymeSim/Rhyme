@@ -17,7 +17,6 @@ logical function rhyme_periodic_table_get_species_by_name_test() result(failed)
    pt = periodic_table_factory_generate('empty')
    logger = logger_factory_generate('default')
 
-   call rhyme_nombre_init()
    call rhyme_periodic_table_init(pt, logger)
 
    species = rhyme_periodic_table_get_species_by_name(pt, 'HI')

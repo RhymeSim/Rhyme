@@ -13,8 +13,13 @@ module rhyme_chemistry
       type(periodic_table_t) :: pt
       ! TODO: read each element and its species separately
       !       This is very important in the case of ionization fractions calculation
-      character(len=8), dimension(NSPE) :: species_name = ''
+      character(len=8), dimension(NSPE) :: species_names = ''
+      real(kind=4), dimension(NSPE) :: species_abundances = 0e0
       type(species_t), dimension(NSPE) :: species
+
+      character(len=8), dimension(NELE) :: element_names = ''
+      real(kind=4), dimension(NELE) :: element_abundances = 0e0
+      type(species_t), dimension(NELE) :: elements
    contains
       procedure :: rhyme_chemistry_write_formatted
       generic :: write (formatted) => rhyme_chemistry_write_formatted

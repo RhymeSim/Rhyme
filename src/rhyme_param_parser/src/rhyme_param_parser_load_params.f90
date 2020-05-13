@@ -1,7 +1,7 @@
 submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
 module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                              thermo, ie, draw, irs, sl, mh, chombo, logger)
+                              thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
    implicit none
 
    character(len=1024), intent(in) :: param_file
@@ -11,6 +11,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(samr_bc_t), intent(inout) :: bc
    type(cfl_t), intent(inout) :: cfl
    type(thermo_base_t), intent(inout) :: thermo
+   type(uv_background_t), intent(inout) :: uvb
    type(ionisation_equilibrium_t), intent(inout) :: ie
    type(drawing_t), intent(inout) :: draw
    type(irs_t), intent(inout) :: irs
@@ -26,7 +27,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(config_switch_t) :: gas_types
    type(config_switch_t) :: canvas_types, shape_types, filling_types, filling_modes
    type(config_switch_t) :: perturb_types, coord_types, perturb_domain_types
-   type(config_switch_t) :: ionization_cases
+   type(config_switch_t) :: ionization_cases, uvb_models
    type(config_switch_t) :: limiter_types
    type(config_switch_t) :: solver_types
    type(config_switch_t) :: axes
@@ -65,6 +66,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    call config%read ('ic_box_lengths'.at.1 + NDIM, ic%box_length_unit, logger)
    call config%read ('ic_nlevels'.at.1, ic%nlevels, logger)
    call config%read ('max_nboxes'.at.1, ic%max_nboxes(0:ic%nlevels - 1), logger)
+   call config%read ('ic_redshift'.at.1, ic%redshift, logger)
 
    ! Boundary Conditions
    call bc_types%add('reflective', bcid%reflective)
@@ -83,7 +85,9 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
 #endif
 
    ! chemistry
-   call config%read_array('species'.at.1, chemistry%species_name, logger)
+   call config%read_array('species'.at.1, chemistry%species_names, logger)
+   call config%read_array('elements'.at.1, chemistry%element_names, logger)
+   call config%read_array('element_abundances'.at.1, chemistry%element_abundances, logger)
 
    ! Physics
    call config%read ('density_unit'.at.1, physics%rho_str, logger)
@@ -100,14 +104,27 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
 
    call config%read ('ideal_gas_type'.at.1, thermo%state_of_matter, logger, gas_types)
 
+   ! UV Background
+   call uvb_models%add('HM12', uvbid%HM12)
+
+   call config%read ('uvb_model'.at.1, uvb%model, logger, uvb_models)
+
    ! Ionization equilibrium
    call ionization_cases%add('case_a', ieid%case_a)
    call ionization_cases%add('case_b', ieid%case_b)
 
    call config%read ('uvb_equilibrium'.at.1, ie%uvb, logger, on_off_switch)
+   call config%read ('uvb_self_shielding'.at.1, ie%uvb_self_shielding, logger, on_off_switch)
+
    call config%read ('collisional_ionization_equilibrium'.at.1, ie%collisional, logger, on_off_switch)
+
    call config%read ('photoionization_equilibrium'.at.1, ie%photo, logger, on_off_switch)
+
+   call config%read ('ie_convergence_rate'.at.1, ie%convergence_rate, logger)
+   call config%read ('ie_max_niterations'.at.1, ie%max_niterations, logger)
+
    call config%read_array('species_cases'.at.1, ie%cases, logger, ionization_cases)
+
    call config%read_array('equilibrium_table_size'.at.1, ie%table_sizes, logger)
    call config%read ('equilibrium_table_temp_range'.at.1, ie%table_temp_range(1)%v, logger)
    call config%read ('equilibrium_table_temp_range'.at.2, ie%table_temp_range(2)%v, logger)

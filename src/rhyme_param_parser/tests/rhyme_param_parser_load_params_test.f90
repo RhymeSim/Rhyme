@@ -33,6 +33,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(samr_bc_t) :: bc
    type(cfl_t) :: cfl
    type(thermo_base_t) :: thermo
+   type(uv_background_t) :: uvb
    type(ionisation_equilibrium_t) :: ie
    type(drawing_t) :: draw
    type(irs_t) :: irs
@@ -47,17 +48,18 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    logger = logger_factory_generate('default')
 
-   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, ie, &
-                    draw, irs, sl, mh, chombo, logger)
+   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, &
+                    uvb, ie, draw, irs, sl, mh, chombo, logger)
 
    ! Structured AMR
-   call tester%expect(ic%type.toBe.icid%simple)
-   call tester%expect(ic%base_grid.toBe.128)
-   call tester%expect((ic%box_lengths%v) .toBe.1d0)
-   call tester%expect(ic%box_length_unit.toBe.'kpc')
-   call tester%expect(ic%nlevels.toBe.3)
-   call tester%expect(ic%max_nboxes(0:ic%nlevels - 1) .toBe. [1, 10, 100])
-   call tester%expect(ic%max_nboxes(ic%nlevels:) .toBe.0)
+   call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')
+   call tester%expect(ic%base_grid.toBe.128.hint.'IC grid')
+   call tester%expect((ic%box_lengths%v) .toBe.1d0.hint.'IC length')
+   call tester%expect(ic%box_length_unit.toBe.'kpc'.hint.'IC length unit')
+   call tester%expect(ic%nlevels.toBe.3.hint.'IC nlevels')
+   call tester%expect(ic%max_nboxes(0:ic%nlevels - 1) .toBe. [1, 10, 100] .hint.'IC max_nboxes')
+   call tester%expect(ic%max_nboxes(ic%nlevels:) .toBe.0.hint.'IC max_nboxes unused')
+   call tester%expect(ic%redshift.toBe.1.23d0.hint.'IC redshift')
 
    ! Boundary Condition
    call tester%expect(bc%types(bcid%left) .toBe.1)
@@ -83,13 +85,26 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(thermo%state_of_matter.toBe.thid%diatomic)
 
    ! Chemistry
-   call tester%expect(chemistry%species_name.toBe. ['HII  ', 'HeII ', 'HeIII'])
+   call tester%expect(chemistry%species_names.toBe. ['HII  ', 'HeII ', 'HeIII'])
+   call tester%expect(chemistry%element_names.toBe. ['H ', 'He'])
+   call tester%expect(chemistry%element_abundances.toBe. [.75e0, .25e0])
+
+   ! UV background
+   call tester%expect(uvb%model.toBe.uvbid%HM12.hint.'UVB Model')
 
    ! Ionization equilibrium
-   call tester%expect(ie%uvb.toBe..false..hint.'IE UVB')
+   call tester%expect(ie%uvb.toBe..true..hint.'IE UVB')
+   call tester%expect(ie%uvb_self_shielding.toBe..true..hint.'IE UVB Self-Shielding')
+
    call tester%expect(ie%collisional.toBe..true..hint.'IE Collisional Ionization')
+
    call tester%expect(ie%photo.toBe..false..hint.'IE Photo-Ionization')
+
+   call tester%expect(ie%convergence_rate.toBe.1e-2.hint.'IE convergence rate')
+   call tester%expect(ie%max_niterations.toBe.1000.hint.'IE maximum niterations')
+
    call tester%expect(ie%cases.toBe. [ieid%case_a, ieid%case_b, ieid%case_a] .hint.'IE cases')
+
    call tester%expect(ie%table_sizes.toBe. [1024, 1024] .hint.'IE table size')
    call tester%expect(ie%table_temp_range(:)%v.toBe. [1e2, 1e7] .hint.'IE table temp range')
    call tester%expect(ie%table_temp_unit_str.toBe.'K'.hint.'IE table temp unit')
