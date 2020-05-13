@@ -106,7 +106,7 @@ pure function rhyme_assertion_to_be_rr(val, exp) result(test)
    test%real_val = real(val, kind=8)
    test%real_exp = real(exp, kind=8)
 
-   test%is_passed = abs(val - exp) < epsilon(0e0)
+   test%is_passed = abs(val - exp) < max((epsilon(0e0)*val), tiny(0e0))
 end function rhyme_assertion_to_be_rr
 
 pure function rhyme_assertion_to_be_rr8(val, exp) result(test)
@@ -189,7 +189,7 @@ pure function rhyme_assertion_to_be_r8r8(val, exp) result(test)
    test%real_val = val
    test%real_exp = exp
 
-   test%is_passed = abs(val - exp) < epsilon(0d0)
+   test%is_passed = abs(val - exp) < max(epsilon(0d0)*val, tiny(0d0))
 end function rhyme_assertion_to_be_r8r8
 
 pure function rhyme_assertion_to_be_chch(val, exp) result(test)

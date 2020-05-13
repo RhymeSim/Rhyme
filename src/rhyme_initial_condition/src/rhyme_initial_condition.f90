@@ -23,7 +23,7 @@ module rhyme_initial_condition
       character(len=32) :: box_length_unit
       type(nombre_t) :: box_lengths(NDIM)
       character(len=1024) :: snapshot_path = ''
-      real(kind=8) :: redshift = 0d0
+      real(kind=8) :: redshift = -1d0
    end type initial_condition_t
 
    interface

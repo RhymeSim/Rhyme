@@ -41,5 +41,7 @@ contains
       ic%box_lengths%v = [1.d0, .5d0, .25d0]
 #endif
 
+      ic%redshift = 0d0
+
    end function initial_condition_factory_generate
 end module rhyme_initial_condition_factory

@@ -42,8 +42,8 @@ module rhyme_uv_background
          type(uv_background_t), intent(in) :: uvb
          real(kind=8), intent(in) :: z
          type(logger_t), intent(inout) :: logger
-         real(kind=8), intent(in), optional :: temp, sigma_HI, gas_fraction
-         real(kind=8) :: n
+         real(kind=4), intent(in), optional :: temp, sigma_HI, gas_fraction
+         real(kind=4) :: n
       end function rhyme_uv_background_h_self_shielding_n
 
       pure module function rhyme_uv_background_equality(uvb1, uvb2) result(eq)
@@ -58,8 +58,9 @@ module rhyme_uv_background
       end function rhyme_uv_background_haardt_madau_12_get
 
       module function rhyme_uv_background_haardt_madau_12_h_self_shielding_n(z, T, sHI, fg) result(n)
-         real(kind=8), intent(in) :: z, T, sHI, fg
-         real(kind=8) :: n
+         real(kind=8), intent(in) :: z
+         real(kind=4), intent(in) :: T, sHI, fg
+         real(kind=4) :: n
       end function rhyme_uv_background_haardt_madau_12_h_self_shielding_n
    end interface
 

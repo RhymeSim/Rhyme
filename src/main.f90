@@ -16,6 +16,7 @@ program rhyme
    use rhyme_param_parser
    use rhyme_chombo
    use rhyme_initial_condition
+   use rhyme_uv_background
    use rhyme_logger
 
    implicit none
@@ -24,7 +25,7 @@ program rhyme
    type(physics_t) :: physics
    type(samr_t) :: samr
    type(samr_bc_t) :: bc
-   type(ionisation_equilibrium_t) :: ion_equilib
+   type(ionisation_equilibrium_t) :: ie
    type(cfl_t) :: cfl
    type(thermo_base_t) :: thermo
    type(drawing_t) :: draw
@@ -34,6 +35,7 @@ program rhyme
    type(mh_workspace_t) :: mhws
    type(chombo_t) :: chombo
    type(initial_condition_t) :: ic
+   type(uv_background_t) :: uvb
    type(logger_t) :: logger
 
    integer :: l, b
@@ -54,7 +56,7 @@ program rhyme
 
    ! Reading parameters and converting them to code units
    call load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                    thermo, ion_equilib, draw, irs, sl, mh, chombo, logger)
+                    thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
 
    call logger%begin_section('init')
 

@@ -20,13 +20,8 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
 
    call tester%expect(ie%cases.toBe.ieid%unset.hint.'cases')
 
-   call tester%expect(ie%redhsift.toBe.-1d0.hint.'redhsift')
-
    call tester%expect(ie%uvb.toBe..false..hint.'uvb flag')
    call tester%expect(ie%uvb_self_shielding.toBe..false..hint.'uvb self-shielding')
-   call tester%expect(ie%uvb_ssh.toBe.huge(0d0) .hint.'uvb self-shielding values')
-   call tester%expect(ie%gamma_uvb.toBe.-1e0.hint.'uvb gamma')
-   call tester%expect(ie%uvb_photoheating.toBe.-1e0.hint.'uvb photoheating')
 
    call tester%expect(ie%collisional.toBe..false..hint.'default collisional flag')
    call tester%expect(ie%photo.toBe..false..hint.'default photoionisation flag')

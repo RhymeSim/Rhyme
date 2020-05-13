@@ -1,4 +1,4 @@
-submodule(rhyme_chemistry) rhyme_mh_init_smod
+submodule(rhyme_chemistry) init_smod
 contains
 module subroutine rhyme_chemistry_init(chem, logger)
    implicit none
@@ -27,4 +27,4 @@ module subroutine rhyme_chemistry_init(chem, logger)
 
    call logger%end_section
 end subroutine rhyme_chemistry_init
-end submodule rhyme_mh_init_smod
+end submodule init_smod
