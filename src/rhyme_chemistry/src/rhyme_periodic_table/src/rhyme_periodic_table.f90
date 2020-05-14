@@ -11,10 +11,6 @@ module rhyme_periodic_table
    type(indices_t), parameter :: ptid = indices_t()
 
    type species_t
-      character(len=8) :: element = ''
-      integer :: atomic_number = 0
-      real(kind=4) :: atomic_weight = 0e0
-
       character(len=16) :: symb = ''
       integer :: ionized = 0
       ! Recombination ionisation rate (case A) [cm^3 s^-1]
@@ -31,16 +27,25 @@ module rhyme_periodic_table
       procedure(ionisation_equilibrium_i), pointer, nopass :: IE_A => null()
       ! Ionization equilibrium (case B) [Neutral fraction]
       procedure(ionisation_equilibrium_i), pointer, nopass :: IE_B => null()
-
-      type(species_t), pointer :: prev => null(), next => null()
    end type species_t
 
+   type element_t
+      character(len=8) :: symb = ''
+      integer :: atomic_number = 0
+      real(kind=4) :: atomic_weight = 0e0
+
+      integer :: nspecies = 0
+      type(species_t), allocatable :: species(:)
+
+      procedure(one_over_mu_i), pointer, nopass :: one_over_mu => null()
+   end type element_t
+
    type periodic_table_t
-      type(species_t) :: species(5)
+      type(element_t) :: elements(2)
    contains
       procedure :: rhyme_periodic_table_write_formatted
       generic :: write (formatted) => rhyme_periodic_table_write_formatted
-      procedure :: get_species_by_name => rhyme_periodic_table_get_species_by_name
+      procedure :: get_element_by_name => rhyme_periodic_table_get_element_by_name
    end type periodic_table_t
 
    interface
@@ -49,16 +54,12 @@ module rhyme_periodic_table
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_periodic_table_init
 
-      module function rhyme_periodic_table_get_species_by_name(pt, species_names) result(species)
+      module function rhyme_periodic_table_get_element_by_name(pt, element_symb) result(element)
          class(periodic_table_t), intent(in) :: pt
-         character(len=*), intent(in) :: species_names
-         type(species_t) :: species
-      end function rhyme_periodic_table_get_species_by_name
+         character(len=*), intent(in) :: element_symb
+         type(element_t) :: element
+      end function rhyme_periodic_table_get_element_by_name
    end interface
-
-   interface operator(.getspeciesbyname.)
-      procedure rhyme_periodic_table_get_species_by_name
-   end interface operator(.getspeciesbyname.)
 
    abstract interface
       pure function rate_i(T) result(rate)
@@ -75,6 +76,11 @@ module rhyme_periodic_table
          real(kind=8), intent(in) :: T, Gamma(:), ne
          real(kind=8) :: neutral_fraction
       end function ionisation_equilibrium_i
+
+      pure function one_over_mu_i(rho) result(one_over_mu)
+         real(kind=8), intent(in) :: rho
+         real(kind=8) :: one_over_mu
+      end function one_over_mu_i
    end interface
 
 contains
@@ -90,10 +96,10 @@ contains
       character(len=*), intent(inout) :: iomsg
 
       character(len=1024) :: str_elements = ''
-      integer :: si
+      integer :: ei
 
-      do si = 1, size(this%species)
-         write (str_elements, '(A,A2,A)') trim(str_elements), ', ', trim(this%species(si)%symb)
+      do ei = 1, size(this%elements)
+         write (str_elements, '(A,A2,A)') trim(str_elements), ', ', trim(this%elements(ei)%symb)
       end do
 
       write (unit, fmt='(A,A,A,A,A,A,A,I0,A)', iostat=iostat, iomsg=iomsg) &

@@ -14,72 +14,51 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    ! Hydrogen
 
-   pt%species(1)%element = 'H'
-   pt%species(1)%atomic_number = 1
-   pt%species(1)%atomic_weight = 1.00811e0
-   pt%species(1)%symb = 'HI'
-   pt%species(1)%ionized = 0
-   pt%species(1)%RI_A => null()
-   pt%species(1)%RI_B => null()
-   pt%species(1)%CI => null()
-   pt%species(1)%CIE_A => null()
-   pt%species(1)%CIE_B => null()
-   pt%species(1)%IE_A => null()
-   pt%species(1)%IE_B => null()
+   pt%elements(1)%symb = 'H'
+   pt%elements(1)%atomic_number = 1
+   pt%elements(1)%atomic_weight = 1.00811e0
+   pt%elements(1)%nspecies = 1
 
-   pt%species(2)%element = 'H'
-   pt%species(2)%atomic_number = 1
-   pt%species(2)%atomic_weight = 1.00811e0
-   pt%species(2)%symb = 'HII'
-   pt%species(2)%ionized = 1
-   pt%species(2)%RI_A => RI_HII_A
-   pt%species(2)%RI_B => RI_HII_B
-   pt%species(2)%CI => CI_HI
-   pt%species(2)%CIE_A => CIE_HI_A
-   pt%species(2)%CIE_B => CIE_HI_B
-   pt%species(2)%IE_A => IE_HI_A
-   pt%species(2)%IE_B => IE_HI_B
+   allocate (pt%elements(1)%species(pt%elements(1)%nspecies))
+
+   pt%elements(1)%species(1)%symb = 'HII'
+   pt%elements(1)%species(1)%ionized = 1
+   pt%elements(1)%species(1)%RI_A => RI_HII_A
+   pt%elements(1)%species(1)%RI_B => RI_HII_B
+   pt%elements(1)%species(1)%CI => CI_HI
+   pt%elements(1)%species(1)%CIE_A => CIE_HI_A
+   pt%elements(1)%species(1)%CIE_B => CIE_HI_B
+   pt%elements(1)%species(1)%IE_A => IE_HI_A
+   pt%elements(1)%species(1)%IE_B => IE_HI_B
 
    ! Helium
 
-   pt%species(3)%element = 'He'
-   pt%species(3)%atomic_number = 2
-   pt%species(3)%atomic_weight = 4.002602e0
-   pt%species(3)%symb = 'HeI'
-   pt%species(3)%ionized = 0
-   pt%species(3)%RI_A => null()
-   pt%species(3)%RI_B => null()
-   pt%species(3)%CI => null()
-   pt%species(3)%CIE_A => null()
-   pt%species(3)%CIE_B => null()
-   pt%species(3)%IE_A => null()
-   pt%species(3)%IE_B => null()
+   pt%elements(2)%symb = 'He'
+   pt%elements(2)%atomic_number = 2
+   pt%elements(2)%atomic_weight = 4.002602e0
+   pt%elements(2)%nspecies = 2
 
-   pt%species(4)%element = 'He'
-   pt%species(4)%atomic_number = 2
-   pt%species(4)%atomic_weight = 4.002602e0
-   pt%species(4)%symb = 'HeII'
-   pt%species(4)%ionized = 1
-   pt%species(4)%RI_A => RI_HeII_A
-   pt%species(4)%RI_B => RI_HeII_B
-   pt%species(4)%CI => CI_HeI
-   pt%species(4)%CIE_A => CIE_HeI_A
-   pt%species(4)%CIE_B => CIE_HeI_B
-   pt%species(4)%IE_A => IE_HeI_A
-   pt%species(4)%IE_B => IE_HeI_B
+   allocate (pt%elements(2)%species(pt%elements(2)%nspecies))
 
-   pt%species(5)%element = 'He'
-   pt%species(5)%atomic_number = 2
-   pt%species(5)%atomic_weight = 4.002602e0
-   pt%species(5)%symb = 'HeIII'
-   pt%species(5)%ionized = 2
-   pt%species(5)%RI_A => RI_HeIII_A
-   pt%species(5)%RI_B => RI_HeIII_B
-   pt%species(5)%CI => CI_HeII
-   pt%species(5)%CIE_A => CIE_HeII_A
-   pt%species(5)%CIE_B => CIE_HeII_B
-   pt%species(5)%IE_A => IE_HeII_A
-   pt%species(5)%IE_B => IE_HeII_B
+   pt%elements(2)%species(1)%symb = 'HeII'
+   pt%elements(2)%species(1)%ionized = 1
+   pt%elements(2)%species(1)%RI_A => RI_HeII_A
+   pt%elements(2)%species(1)%RI_B => RI_HeII_B
+   pt%elements(2)%species(1)%CI => CI_HeI
+   pt%elements(2)%species(1)%CIE_A => CIE_HeI_A
+   pt%elements(2)%species(1)%CIE_B => CIE_HeI_B
+   pt%elements(2)%species(1)%IE_A => IE_HeI_A
+   pt%elements(2)%species(1)%IE_B => IE_HeI_B
+
+   pt%elements(2)%species(2)%symb = 'HeIII'
+   pt%elements(2)%species(2)%ionized = 2
+   pt%elements(2)%species(2)%RI_A => RI_HeIII_A
+   pt%elements(2)%species(2)%RI_B => RI_HeIII_B
+   pt%elements(2)%species(2)%CI => CI_HeII
+   pt%elements(2)%species(2)%CIE_A => CIE_HeII_A
+   pt%elements(2)%species(2)%CIE_B => CIE_HeII_B
+   pt%elements(2)%species(2)%IE_A => IE_HeII_A
+   pt%elements(2)%species(2)%IE_B => IE_HeII_B
 
    call logger%end_section
 
