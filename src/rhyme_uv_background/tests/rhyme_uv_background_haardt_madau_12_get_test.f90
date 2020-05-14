@@ -10,7 +10,7 @@ logical function rhyme_uv_background_haardt_madau_12_get_test() result(failed)
    type(uv_background_t) :: uvb
    type(logger_t) :: logger
 
-   real(kind=4), dimension(8) :: rates = -1e0
+   real(kind=8), dimension(8) :: rates = -1d0
 
    tester = .describe."uv_background_haardt_madau_12_get"
 
@@ -19,14 +19,14 @@ logical function rhyme_uv_background_haardt_madau_12_get_test() result(failed)
 
    rates = rhyme_uv_background_haardt_madau_12_get(1.37d0, ['HI  ', 'HeI ', 'HeII', 'CIV '])
 
-   call tester%expect(rates(1) .toBe.0.660e-12.hint.'HM12 HI photo')
-   call tester%expect(rates(2) .toBe.0.391e-12.hint.'HM12 HeI photo')
-   call tester%expect(rates(3) .toBe.0.119e-13.hint.'HM12 HeII photo')
-   call tester%expect(rates(4) .toBe.0e0.hint.'HM12 CIV photo')
-   call tester%expect(rates(5) .toBe.0.262e-11.hint.'HM12 HI heat')
-   call tester%expect(rates(6) .toBe.0.323e-11.hint.'HM12 HeI heat')
-   call tester%expect(rates(7) .toBe.0.221e-12.hint.'HM12 HeII heat')
-   call tester%expect(rates(8) .toBe.0e0.hint.'HM12 CIV heat')
+   call tester%expect(rates(1) .toBe.0.660d-12.hint.'HM12 HI photo')
+   call tester%expect(rates(2) .toBe.0.391d-12.hint.'HM12 HeI photo')
+   call tester%expect(rates(3) .toBe.0.119d-13.hint.'HM12 HeII photo')
+   call tester%expect(rates(4) .toBe.0d0.hint.'HM12 CIV photo')
+   call tester%expect(rates(5) .toBe.0.262d-11.hint.'HM12 HI heat')
+   call tester%expect(rates(6) .toBe.0.323d-11.hint.'HM12 HeI heat')
+   call tester%expect(rates(7) .toBe.0.221d-12.hint.'HM12 HeII heat')
+   call tester%expect(rates(8) .toBe.0d0.hint.'HM12 CIV heat')
 
    failed = tester%failed()
 end function rhyme_uv_background_haardt_madau_12_get_test

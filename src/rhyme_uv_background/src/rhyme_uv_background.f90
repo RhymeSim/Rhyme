@@ -1,4 +1,5 @@
 module rhyme_uv_background
+   use rhyme_physics
    use rhyme_logger
 
    implicit none
@@ -19,14 +20,16 @@ module rhyme_uv_background
 
    type uv_background_t
       integer :: model = uvbid%unset
+      real(kind=8) :: rho_to_code_unit = 0d0
    contains
       procedure :: rhyme_uv_background_write_formatted
       generic :: write (formatted) => rhyme_uv_background_write_formatted
    end type uv_background_t
 
    interface
-      module subroutine rhyme_uv_background_init(uvb, logger)
+      module subroutine rhyme_uv_background_init(uvb, physics, logger)
          type(uv_background_t), intent(inout) :: uvb
+         type(physics_t), intent(in) :: physics
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_uv_background_init
 
@@ -35,15 +38,15 @@ module rhyme_uv_background
          real(kind=8), intent(in) :: z
          character(len=*), dimension(:), intent(in) :: species
          type(logger_t), intent(inout) :: logger
-         real(kind=4), dimension(2*size(species)) :: rates
+         real(kind=8), dimension(2*size(species)) :: rates
       end function rhyme_uv_background_get
 
       module function rhyme_uv_background_h_self_shielding_n(uvb, z, logger, temp, sigma_HI, gas_fraction) result(n)
          type(uv_background_t), intent(in) :: uvb
          real(kind=8), intent(in) :: z
          type(logger_t), intent(inout) :: logger
-         real(kind=4), intent(in), optional :: temp, sigma_HI, gas_fraction
-         real(kind=4) :: n
+         real(kind=8), intent(in), optional :: temp, sigma_HI, gas_fraction
+         real(kind=8) :: n
       end function rhyme_uv_background_h_self_shielding_n
 
       pure module function rhyme_uv_background_equality(uvb1, uvb2) result(eq)
@@ -54,13 +57,13 @@ module rhyme_uv_background
       module function rhyme_uv_background_haardt_madau_12_get(z, species) result(rates)
          real(kind=8), intent(in) :: z
          character(len=*), intent(in) :: species(:)
-         real(kind=4), dimension(2*size(species)) :: rates
+         real(kind=8), dimension(2*size(species)) :: rates
       end function rhyme_uv_background_haardt_madau_12_get
 
       module function rhyme_uv_background_haardt_madau_12_h_self_shielding_n(z, T, sHI, fg) result(n)
          real(kind=8), intent(in) :: z
-         real(kind=4), intent(in) :: T, sHI, fg
-         real(kind=4) :: n
+         real(kind=8), intent(in) :: T, sHI, fg
+         real(kind=8) :: n
       end function rhyme_uv_background_haardt_madau_12_h_self_shielding_n
    end interface
 

@@ -15,5 +15,8 @@ logical function rhyme_uv_background_test() result(failed)
    call tester%expect(uvbid%unset.toBe.-1.hint.'unset')
    call tester%expect(uvbid%HM12.toBe.1.hint.'Haardt & Madau 12')
 
+   call tester%expect(uvb%model.toBe.uvbid%unset.hint.'uvb model')
+   call tester%expect(uvb%rho_to_code_unit.toBe.0d0.hint.'uvb convert to code density')
+
    failed = tester%failed()
 end function rhyme_uv_background_test
