@@ -10,7 +10,7 @@ module rhyme_periodic_table
 
    type(indices_t), parameter :: ptid = indices_t()
 
-   type species_t
+   type, private :: species_t
       character(len=16) :: symb = ''
       integer :: ionized = 0
       ! Recombination ionisation rate (case A) [cm^3 s^-1]
@@ -27,21 +27,25 @@ module rhyme_periodic_table
       procedure(ionisation_equilibrium_i), pointer, nopass :: IE_A => null()
       ! Ionization equilibrium (case B) [Neutral fraction]
       procedure(ionisation_equilibrium_i), pointer, nopass :: IE_B => null()
+      ! Number of electrons
+      procedure(number_of_electron_i), pointer, nopass :: ne => null()
+      ! Ionisation fraction
+      procedure(ionization_fraction_i), pointer, nopass :: f => null()
    end type species_t
 
-   type element_t
+   type periodic_table_element_t
       character(len=8) :: symb = ''
       integer :: atomic_number = 0
-      real(kind=4) :: atomic_weight = 0e0
+      real(kind=8) :: atomic_weight = 0e0
 
       integer :: nspecies = 0
       type(species_t), allocatable :: species(:)
 
-      procedure(one_over_mu_i), pointer, nopass :: one_over_mu => null()
-   end type element_t
+      procedure(number_of_electron_i), pointer, nopass :: ne => null()
+   end type periodic_table_element_t
 
    type periodic_table_t
-      type(element_t) :: elements(2)
+      type(periodic_table_element_t) :: elements(2)
    contains
       procedure :: rhyme_periodic_table_write_formatted
       generic :: write (formatted) => rhyme_periodic_table_write_formatted
@@ -57,7 +61,7 @@ module rhyme_periodic_table
       module function rhyme_periodic_table_get_element_by_name(pt, element_symb) result(element)
          class(periodic_table_t), intent(in) :: pt
          character(len=*), intent(in) :: element_symb
-         type(element_t) :: element
+         type(periodic_table_element_t) :: element
       end function rhyme_periodic_table_get_element_by_name
    end interface
 
@@ -77,10 +81,15 @@ module rhyme_periodic_table
          real(kind=8) :: neutral_fraction
       end function ionisation_equilibrium_i
 
-      pure function one_over_mu_i(rho) result(one_over_mu)
-         real(kind=8), intent(in) :: rho
-         real(kind=8) :: one_over_mu
-      end function one_over_mu_i
+      pure function number_of_electron_i(ntr_frac) result(ne)
+         real(kind=8), intent(in) :: ntr_frac(:)
+         real(kind=8) :: ne
+      end function number_of_electron_i
+
+      pure function ionization_fraction_i(ntr_frac) result(f)
+         real(kind=8), intent(in) :: ntr_frac(:)
+         real(kind=8) :: f
+      end function ionization_fraction_i
    end interface
 
 contains

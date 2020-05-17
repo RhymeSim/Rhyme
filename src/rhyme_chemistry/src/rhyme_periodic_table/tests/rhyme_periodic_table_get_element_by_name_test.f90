@@ -10,7 +10,7 @@ logical function rhyme_periodic_table_get_element_by_name_test() result(failed)
    type(periodic_table_t) :: pt
    type(logger_t) :: logger
 
-   type(element_t) :: element
+   type(periodic_table_element_t) :: element
 
    tester = .describe."periodic_table_get_element_by_name"
 

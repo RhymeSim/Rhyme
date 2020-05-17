@@ -1,5 +1,6 @@
 logical function rhyme_chemistry_init_test() result(failed)
    use rhyme_chemistry_factory
+   use rhyme_physics_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -8,31 +9,28 @@ logical function rhyme_chemistry_init_test() result(failed)
    type(assertion_t) :: tester
 
    type(chemistry_t) :: chemistry
+   type(physics_t) :: physics
    type(logger_t) :: logger
 
-   integer :: si, ei
+   integer :: ei
 
    tester = .describe."chemistry_init"
 
    chemistry = chemistry_factory_generate('H+He')
+   physics = physics_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_chemistry_init(chemistry, logger)
+   call rhyme_nombre_init()
+   call rhyme_physics_init(physics, logger)
 
-   call tester%expect(chemistry%pt%species(1)%element.toBe.'H'.hint.'Check periodic table')
-
-   do si = 1, NSPE
-      call tester%expect(chemistry%species(si)%symb.toBe.chemistry(si) .hint.'species names')
-      call tester%expect(chemistry%species_abundances(si) .toBe.chemistry(si) .hint.'species abundances')
-   end do
-
-   call tester%expect(size(chemistry%elements) .toBe.2.hint.'elements size')
+   call rhyme_chemistry_init(chemistry, physics, logger)
 
    do ei = 1, 2
-      call tester%expect(chemistry%elements(ei)%element.toBe.chemistry(ei) .hint.'element names')
-      call tester%expect(chemistry%elements(ei)%ionized.toBe.0.hint.'element ionization')
-      call tester%expect(chemistry%element_abundances(ei) .toBe.chemistry(ei) .hint.'element abundances')
+      call tester%expect(chemistry%elements(ei)%symb.toBe.chemistry_factory_element_names(ei) .hint.'element names')
+      call tester%expect(chemistry%element_abundances(ei) .toBe.chemistry_factory_element_abundances(ei) .hint.'element abundances')
    end do
+
+   call tester%expect(chemistry%rho_to_number_density.toBe. (1d-6/hydrogen_mass%conv) .hint.'rho_to_number_density')
 
    failed = tester%failed()
 end function rhyme_chemistry_init_test

@@ -60,14 +60,12 @@ program rhyme
 
    call logger%begin_section('init')
 
-   ! Initializing nombre module
-   call rhyme_nombre_init
-
    ! TODO: move mh_workspace into muscl_hancock module
    mhws%type = mh%solver_type
 
-   call rhyme_chemistry_init(chemistry, logger)
+   call rhyme_nombre_init
    call rhyme_physics_init(physics, logger)
+   call rhyme_chemistry_init(chemistry, physics, logger)
    call rhyme_thermo_base_init(thermo, physics, logger)
    call rhyme_initial_condition_init(ic, samr, physics, logger)
    call rhyme_samr_bc_init(bc, samr, logger)

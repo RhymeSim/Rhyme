@@ -1,5 +1,6 @@
 module rhyme_chemistry
    use rhyme_periodic_table
+   use rhyme_physics
    use rhyme_logger
 
    implicit none
@@ -9,27 +10,37 @@ module rhyme_chemistry
 
    type(indices_t), parameter :: chemid = indices_t()
 
+   type(periodic_table_t), private :: periodic_table
+
    type chemistry_t
-      type(periodic_table_t) :: pt
-      ! TODO: read each element and its species separately
-      !       This is very important in the case of ionization fractions calculation
-      character(len=8), dimension(NSPE) :: species_names = ''
-      real(kind=4), dimension(NSPE) :: species_abundances = 0e0
-      type(species_t), dimension(NSPE) :: species
+      real(kind=8) :: rho_to_number_density = 0d0
 
       character(len=8), dimension(NELE) :: element_names = ''
-      real(kind=4), dimension(NELE) :: element_abundances = 0e0
-      type(species_t), dimension(NELE) :: elements
+      real(kind=8), dimension(NELE) :: element_abundances = 0d0
+      type(periodic_table_element_t), dimension(NELE) :: elements
    contains
       procedure :: rhyme_chemistry_write_formatted
       generic :: write (formatted) => rhyme_chemistry_write_formatted
    end type chemistry_t
 
    interface
-      module subroutine rhyme_chemistry_init(chem, logger)
-         type(chemistry_t), intent(inout) :: chem
+      module subroutine rhyme_chemistry_init(chemistry, physics, logger)
+         type(chemistry_t), intent(inout) :: chemistry
+         type(physics_t), intent(in) :: physics
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_chemistry_init
+
+      pure module function rhyme_chemistry_ne(chemistry, density, ntr_frac) result(ne)
+         type(chemistry_t), intent(in) :: chemistry
+         real(kind=8), intent(in) :: density, ntr_frac(:)
+         real(kind=8) :: ne
+      end function rhyme_chemistry_ne
+
+      pure module function rhyme_chemistry_one_over_mu(chemistry, ntr_frac) result(one_over_mu)
+         type(chemistry_t), intent(in) :: chemistry
+         real(kind=8), intent(in) :: ntr_frac(NSPE)
+         real(kind=8) :: one_over_mu
+      end function rhyme_chemistry_one_over_mu
    end interface
 
 contains

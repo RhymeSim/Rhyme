@@ -5,7 +5,7 @@ module function rhyme_periodic_table_get_element_by_name(pt, element_symb) resul
 
    class(periodic_table_t), intent(in) :: pt
    character(len=*), intent(in) :: element_symb
-   type(element_t) :: element
+   type(periodic_table_element_t) :: element
 
    integer :: ei
 

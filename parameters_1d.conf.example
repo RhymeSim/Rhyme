@@ -48,8 +48,7 @@ solver_type = cpu_intensive
 
 # **Chemistry**
 elements = H He
-element_abundances = .75e0 .25e0
-species = HII HeII HeIII
+element_abundances = .75d0 .25d0  # Composition
 
 
 # **Ionization Equilibrium**
@@ -64,7 +63,8 @@ photoionization_equilibrium = disable
 ie_convergence_rate = 1e-2
 ie_max_niterations = 1000
 
-species_cases = case_b case_b case_b
+species_cases = case_b case_b case_b  # HII HeII HeIII
+
 equilibrium_table_size = 1024 1024
 equilibrium_table_temp_range = 1d2 1d7 'K'
 equilibrium_table_density_range =  1d-3 1d6 'm_H / cm^3'

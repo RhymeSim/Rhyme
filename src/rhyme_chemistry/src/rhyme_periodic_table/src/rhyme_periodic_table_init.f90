@@ -16,8 +16,9 @@ module subroutine rhyme_periodic_table_init(pt, logger)
 
    pt%elements(1)%symb = 'H'
    pt%elements(1)%atomic_number = 1
-   pt%elements(1)%atomic_weight = 1.00811e0
+   pt%elements(1)%atomic_weight = 1.00811d0
    pt%elements(1)%nspecies = 1
+   pt%elements(1)%ne => ne_H
 
    allocate (pt%elements(1)%species(pt%elements(1)%nspecies))
 
@@ -30,13 +31,16 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(1)%species(1)%CIE_B => CIE_HI_B
    pt%elements(1)%species(1)%IE_A => IE_HI_A
    pt%elements(1)%species(1)%IE_B => IE_HI_B
+   pt%elements(1)%species(1)%ne => ne_HII
+   pt%elements(1)%species(1)%f => f_HII
 
    ! Helium
 
    pt%elements(2)%symb = 'He'
    pt%elements(2)%atomic_number = 2
-   pt%elements(2)%atomic_weight = 4.002602e0
+   pt%elements(2)%atomic_weight = 4.002602d0
    pt%elements(2)%nspecies = 2
+   pt%elements(2)%ne => ne_He
 
    allocate (pt%elements(2)%species(pt%elements(2)%nspecies))
 
@@ -49,6 +53,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(2)%species(1)%CIE_B => CIE_HeI_B
    pt%elements(2)%species(1)%IE_A => IE_HeI_A
    pt%elements(2)%species(1)%IE_B => IE_HeI_B
+   pt%elements(2)%species(1)%ne => ne_HeII
+   pt%elements(2)%species(1)%f => f_HeII
 
    pt%elements(2)%species(2)%symb = 'HeIII'
    pt%elements(2)%species(2)%ionized = 2
@@ -59,17 +65,38 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(2)%species(2)%CIE_B => CIE_HeII_B
    pt%elements(2)%species(2)%IE_A => IE_HeII_A
    pt%elements(2)%species(2)%IE_B => IE_HeII_B
+   pt%elements(2)%species(2)%ne => ne_HeIII
+   pt%elements(2)%species(2)%f => f_HeIII
 
    call logger%end_section
 
 contains
-   ! From Hui & Gnedin (1996)
+   ! Hydrogen and helium coefficients from Hui & Gnedin (1996)
+
+   ! Hydrogen
+   real(kind=8) pure function ne_H(ntr_frac) result(ne)
+      real(kind=8), intent(in) :: ntr_frac(:)
+
+      ne = 1 - ntr_frac(1)
+   end function ne_H
+
+   real(kind=8) pure function ne_HII(ntr_frac) result(ne)
+      real(kind=8), intent(in) :: ntr_frac(:)
+
+      ne = 1 - ntr_frac(1)
+   end function ne_HII
+
+   real(kind=8) pure function f_HII(ntr_frac) result(f)
+      real(kind=8), intent(in) :: ntr_frac(:)
+
+      f = 1 - ntr_frac(1)
+   end function f_HII
 
    real(kind=8) pure function RI_HII_A(T)
       real(kind=8), intent(in) :: T
       real(kind=8) :: lambda
 
-      lambda = 2d0*T_H/T
+      lambda = 2*T_H/T
       RI_HII_A = 1.269d-13*(lambda**1.503)/(1d0 + (lambda/0.522)**0.47)**1.923
    end function RI_HII_A
 
@@ -77,7 +104,7 @@ contains
       real(kind=8), intent(in) :: T
       real(kind=8) :: lambda
 
-      lambda = 2d0*T_H/T
+      lambda = 2*T_H/T
       RI_HII_B = 2.753d-14*(lambda**1.500)/(1d0 + (lambda/2.740)**0.407)**2.242
    end function RI_HII_B
 
@@ -85,7 +112,7 @@ contains
       real(kind=8), intent(in) :: T
       real(kind=8) :: lambda
 
-      lambda = 2d0*T_H/T
+      lambda = 2*T_H/T
       if (lambda < 140d0) then
          CI_HI = 21.11/(T**1.5)*exp(-0.5*lambda)*(lambda**(-1.089))/(1.+(lambda/0.354)**0.874)**1.101
       else
@@ -116,6 +143,26 @@ contains
 
       IE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T) + Gamma(1)/ne)
    end function IE_HI_B
+
+   ! Helium
+
+   real(kind=8) pure function ne_He(ntr_frac) result(ne)
+      real(kind=8), intent(in) :: ntr_frac(:)  ! HeII HeIII
+
+      ne = 2 - 2*ntr_frac(1) - ntr_frac(2)
+   end function ne_He
+
+   real(kind=8) pure function ne_HeII(ntr_frac) result(ne)
+      real(kind=8), intent(in) :: ntr_frac(:)  ! HeII HeIII
+
+      ne = 1 - ntr_frac(1)
+   end function ne_HeII
+
+   real(kind=8) pure function f_HeII(ntr_frac) result(f)
+      real(kind=8), intent(in) :: ntr_frac(:)  ! HeII HeIII
+
+      f = ntr_frac(2)
+   end function f_HeII
 
    real(kind=8) pure function RI_HeII_A(T)
       real(kind=8), intent(in) :: T
@@ -166,6 +213,18 @@ contains
       real(kind=8), intent(in) :: T, Gamma(:), ne
       IE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma(2)/ne)
    end function IE_HeI_B
+
+   real(kind=8) pure function ne_HeIII(ntr_frac) result(ne)
+      real(kind=8), intent(in) :: ntr_frac(:)
+
+      ne = 1 - ntr_frac(1) - ntr_frac(2)
+   end function ne_HeIII
+
+   real(kind=8) pure function f_HeIII(ntr_frac) result(f)
+      real(kind=8), intent(in) :: ntr_frac(:)  ! HeII HeIII
+
+      f = 1 - ntr_frac(1) - ntr_frac(2)
+   end function f_HeIII
 
    real(kind=8) pure function RI_HeIII_A(T)
       real(kind=8), intent(in) :: T

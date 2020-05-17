@@ -85,7 +85,6 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(thermo%state_of_matter.toBe.thid%diatomic)
 
    ! Chemistry
-   call tester%expect(chemistry%species_names.toBe. ['HII  ', 'HeII ', 'HeIII'])
    call tester%expect(chemistry%element_names.toBe. ['H ', 'He'])
    call tester%expect(chemistry%element_abundances.toBe. [.75e0, .25e0])
 

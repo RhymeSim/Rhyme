@@ -9,12 +9,12 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-std=f2008")
 endif()
 
-set(deps rhyme_logger)
+set(deps rhyme_physics rhyme_logger)
 
 set(internal_deps rhyme_periodic_table)
 
-set(srcs src/rhyme_chemistry_init.f90 src/rhyme_chemistry_mu.f90
-         src/rhyme_chemistry.f90)
+set(srcs src/rhyme_chemistry_init.f90 src/rhyme_chemistry_ne.f90
+         src/rhyme_chemistry_one_over_mu.f90 src/rhyme_chemistry.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
