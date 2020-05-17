@@ -5,7 +5,8 @@ pure module function rhyme_chemistry_ne(chemistry, density, ntr_frac) result(ne)
    implicit none
 
    type(chemistry_t), intent(in) :: chemistry
-   real(kind=8), intent(in) :: density, ntr_frac(:)
+   real(kind=8), intent(in) :: density  ! in code unit
+   real(kind=8), intent(in) :: ntr_frac(:)
 
    real(kind=8) :: ne
 

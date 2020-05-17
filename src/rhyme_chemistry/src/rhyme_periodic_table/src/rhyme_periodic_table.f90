@@ -24,9 +24,9 @@ module rhyme_periodic_table
       ! Collisional ionisation equilibrium (case B) [Neutral fraction]
       procedure(collisional_equilibrium_i), pointer, nopass :: CIE_B => null()
       ! Ionization equilibrium (case A) [Neutral fraction]
-      procedure(ionisation_equilibrium_i), pointer, nopass :: IE_A => null()
+      procedure(ionisation_equilibrium_i), pointer, nopass :: CPIE_A => null()
       ! Ionization equilibrium (case B) [Neutral fraction]
-      procedure(ionisation_equilibrium_i), pointer, nopass :: IE_B => null()
+      procedure(ionisation_equilibrium_i), pointer, nopass :: CPIE_B => null()
       ! Number of electrons
       procedure(number_of_electron_i), pointer, nopass :: ne => null()
       ! Ionisation fraction
@@ -76,8 +76,8 @@ module rhyme_periodic_table
          real(kind=8) :: neutral_fraction
       end function collisional_equilibrium_i
 
-      pure function ionisation_equilibrium_i(T, Gamma, ne) result(neutral_fraction)
-         real(kind=8), intent(in) :: T, Gamma(:), ne
+      pure function ionisation_equilibrium_i(T, Gamma_photo, ne) result(neutral_fraction)
+         real(kind=8), intent(in) :: T, Gamma_photo(:), ne
          real(kind=8) :: neutral_fraction
       end function ionisation_equilibrium_i
 

@@ -26,15 +26,16 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
    ie = ionisation_equilibrium_factory_generate('CaseA-cgs')
 
    call rhyme_nombre_init
-   call rhyme_chemistry_init(chemistry, logger)
    call rhyme_physics_init(physics, logger)
+   call rhyme_chemistry_init(chemistry, physics, logger)
 
    call rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
 
    do si = 1, NSPE
-      call tester%expect(associated(ie%RI(si)%run) .toBe..true..hint.'ie RI')
-      call tester%expect(associated(ie%CI(si)%run) .toBe..true..hint.'ie CI')
-      call tester%expect(associated(ie%CIE(si)%run) .toBe..true..hint.'ie CIE')
+      call tester%expect(associated(ie%species(si)%RI) .toBe..true..hint.'ie RI')
+      call tester%expect(associated(ie%species(si)%CI) .toBe..true..hint.'ie CI')
+      call tester%expect(associated(ie%species(si)%CIE) .toBe..true..hint.'ie CIE')
+      call tester%expect(associated(ie%species(si)%CPIE) .toBe..true..hint.'ie CPIE')
    end do
 
    call tester%expect(ie%table_temp_range(1)%u.toBe.physics%temperature.hint.'temp unit')

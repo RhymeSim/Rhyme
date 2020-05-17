@@ -14,19 +14,19 @@ module rhyme_ionisation_equilibrium
 
    type(indices_t), parameter :: ieid = indices_t()
 
-   type, private :: ionisation_equilibrium_rate_array_t
-      procedure(rate_i), pointer, nopass :: run => null()
-   end type ionisation_equilibrium_rate_array_t
-
-   type, private :: collisional_equilibrium_array_t
-      procedure(collisional_equilibrium_i), pointer, nopass :: run => null()
-   end type collisional_equilibrium_array_t
-
-   type, private :: ionisation_equilibrium_array_t
-      procedure(ionisation_equilibrium_i), pointer, nopass :: run => null()
-   end type ionisation_equilibrium_array_t
+   type, private :: species_t
+      ! Recombination ionisation rate [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: RI => null()
+      ! Collisional ionisation rate [cm^3 s^-1]
+      procedure(rate_i), pointer, nopass :: CI => null()
+      ! Collisional ionisation equilibrium [Neutral fraction]
+      procedure(collisional_equilibrium_i), pointer, nopass :: CIE => null()
+      ! Ionization equilibrium [Neutral fraction]
+      procedure(ionisation_equilibrium_i), pointer, nopass :: CPIE => null()
+   end type species_t
 
    type ionisation_equilibrium_t
+      character(len=16) :: species_names(NSPE) = ''
       integer :: cases(NSPE) = ieid%unset
 
       logical :: uvb = .false.
@@ -36,17 +36,10 @@ module rhyme_ionisation_equilibrium
 
       logical :: photo = .false.
 
-      real(kind=4) :: convergence_rate
+      real(kind=8) :: convergence_rate
       integer :: max_niterations
 
-      ! Recombination
-      type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: RI
-      ! Collisional ionisation
-      type(ionisation_equilibrium_rate_array_t), dimension(NSPE) :: CI
-      ! Collisional ionisation equilibrium
-      type(collisional_equilibrium_array_t), dimension(NSPE) :: CIE
-      ! Ionisation equilibrium
-      type(ionisation_equilibrium_array_t), dimension(NSPE) :: IE
+      type(species_t) :: species(NSPE)
 
       integer :: table_sizes(2) = ieid%unset
 
@@ -57,7 +50,7 @@ module rhyme_ionisation_equilibrium
       character(len=64) :: table_density_unit_str = ''
 
       real(kind=8) :: table_redhsift = -1d0
-      real(kind=4), allocatable :: table(:, :, :)
+      real(kind=8), allocatable :: table(:, :, :)
    end type ionisation_equilibrium_t
 
    interface
@@ -68,10 +61,10 @@ module rhyme_ionisation_equilibrium
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_init
 
-      module subroutine rhyme_ionisation_equilibrium_update_table(ie, uvb, chemistry, z, logger)
+      module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, z, logger)
          type(ionisation_equilibrium_t), intent(inout) :: ie
-         type(uv_background_t), intent(in) :: uvb
          type(chemistry_t), intent(in) :: chemistry
+         type(uv_background_t), intent(in) :: uvb
          real(kind=8), intent(in) :: z
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_update_table

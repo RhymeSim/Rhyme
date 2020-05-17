@@ -27,10 +27,10 @@ logical function rhyme_ionisation_equilibrium_test() result(failed)
    call tester%expect(ie%photo.toBe..false..hint.'default photoionisation flag')
 
    do i = 1, NSPE
-      call tester%expect(associated(ie%RI(i)%run) .toBe..false..hint.'RI')
-      call tester%expect(associated(ie%CI(i)%run) .toBe..false..hint.'CI')
-      call tester%expect(associated(ie%CIE(i)%run) .toBe..false..hint.'CIE')
-      call tester%expect(associated(ie%IE(i)%run) .toBe..false..hint.'IE')
+      call tester%expect(associated(ie%species(i)%RI) .toBe..false..hint.'RI')
+      call tester%expect(associated(ie%species(i)%CI) .toBe..false..hint.'CI')
+      call tester%expect(associated(ie%species(i)%CIE) .toBe..false..hint.'CIE')
+      call tester%expect(associated(ie%species(i)%CPIE) .toBe..false..hint.'CPIE')
    end do
 
    call tester%expect(ie%table_sizes.toBe.ieid%unset.hint.'table sizes')

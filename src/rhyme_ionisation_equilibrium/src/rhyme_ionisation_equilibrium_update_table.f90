@@ -1,38 +1,42 @@
 submodule(rhyme_ionisation_equilibrium) update_table_smod
 contains
 
-module subroutine rhyme_ionisation_equilibrium_update_table(ie, uvb, chemistry, z, logger)
+module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, z, logger)
    implicit none
 
    type(ionisation_equilibrium_t), intent(inout) :: ie
-   type(uv_background_t), intent(in) :: uvb
    type(chemistry_t), intent(in) :: chemistry
+   type(uv_background_t), intent(in) :: uvb
    real(kind=8), intent(in) :: z
    type(logger_t), intent(inout) :: logger
 
-   integer :: i, j, niterations
-   real(kind=4) :: uvb_rates(2*NSPE)
-   real(kind=4) :: uvb_self_shielding(NSPE)
-   real(kind=4) :: gamma_phot
-   real(kind=4) :: log_temp_min, log_temp_max, dtemp, temp
-   real(kind=4) :: log_density_min, log_density_max, ddensity, density
-   real(kind=4) :: ne, ne_prev, convergence_rate, equilibrium(NSPE)
+   integer :: i, j, si, niterations
+   real(kind=8) :: uvb_rates(2*NSPE)
+   real(kind=8) :: uvb_self_shielding(NSPE)
+   real(kind=8) :: gamma_h_phot(NSPE)
+   real(kind=8) :: log_temp_min, log_temp_max, dtemp, temp
+   real(kind=8) :: log_density_min, log_density_max, ddensity, density
+   real(kind=8) :: ne, ne_prev, convergence_rate, ntr_frac(NSPE)
 
    if (.not. allocated(ie%table)) then
       call logger%err('Ionization equilibrium tables is not allocated!')
    end if
 
    if (ie%uvb) then
-      uvb_rates = rhyme_uv_background_get(uvb, z, chemistry%species_names, logger)
-      do i = 1, size(chemistry%species_names)
-         select case (chemistry%species_names(i))
-         case ('HII')
-            uvb_self_shielding(i) = rhyme_uv_background_h_self_shielding_n(uvb, z, logger)
-         case default
-            ! TODO: caculate self-shielding of other species
-            uvb_self_shielding(i) = huge(0e0)
-         end select
-      end do
+      uvb_rates = rhyme_uv_background_get(uvb, z, ie%species_names, logger)
+      if (ie%uvb_self_shielding) then
+         do i = 1, size(ie%species_names)
+            select case (ie%species_names(i))
+            case ('HII')
+               uvb_self_shielding(i) = rhyme_uv_background_h_self_shielding_n(uvb, z, logger)
+            case default
+               ! TODO: caculate self-shielding of other species
+               uvb_self_shielding(i) = huge(0d0)
+            end select
+         end do
+      else
+         uvb_self_shielding = huge(0d0)
+      end if
    end if
 
    log_temp_min = real(log10(ie%table_temp_range(1)%v), kind=4)
@@ -48,21 +52,43 @@ module subroutine rhyme_ionisation_equilibrium_update_table(ie, uvb, chemistry, 
       do j = 1, ie%table_sizes(2)
          density = 10**(log_density_min + (i - .5)*ddensity)
 
-         ! From Rahmati et al. 2013
-         gamma_phot = &
-            uvb_rates(1)*(.98*(density/uvb_self_shielding(1))**1.64)**(-2.28) &
-            + .02*(1 + density/uvb_self_shielding(1))**(-.84)
+         if (ie%uvb) then
+            ! From Rahmati et al. 2013
+            gamma_h_phot = uvb_rates(1:NSPE)
 
-         ne = -1e0
-         equilibrium = 5e-1
+            if (ie%uvb_self_shielding .and. ie%species_names(1) == 'HII') then
+               gamma_h_phot(1) = &
+                  uvb_rates(1)*(.98*(density/uvb_self_shielding(1))**1.64)**(-2.28) &
+                  + .02*(1 + density/uvb_self_shielding(1))**(-.84)
+            end if
 
-         if (gamma_phot/uvb_rates(1) > 1e-5) then
-            do while (convergence_rate > ie%convergence_rate .and. niterations < ie%max_niterations)
-               ne_prev = ne
-            end do
+            ne = -1d0
+            ntr_frac = .5
+            convergence_rate = 1d0
+            niterations = 0
+
+            if (gamma_h_phot(1)/uvb_rates(1) > 1e-5) then
+               do while (convergence_rate > ie%convergence_rate .and. niterations < ie%max_niterations)
+                  ne_prev = ne
+                  ne = max(rhyme_chemistry_ne(chemistry, density, ntr_frac), epsilon(0d0))
+
+                  do si = 1, NSPE
+                     ntr_frac(si) = ie%species(si)%CPIE(temp, gamma_h_phot, ne)
+                  end do
+
+                  convergence_rate = abs(ne - ne_prev)/ne_prev
+                  niterations = niterations + 1
+               end do
+            else
+               do si = 1, NSPE
+                  ntr_frac = ie%species(si)%CIE(temp)
+               end do
+            end if
          else
+            do si = 1, NSPE
+               ntr_frac = ie%species(si)%CIE(temp)
+            end do
          end if
-
       end do
    end do
 end subroutine rhyme_ionisation_equilibrium_update_table

@@ -8,25 +8,32 @@ module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logg
    type(chemistry_t), intent(in) :: chemistry
    type(logger_t), intent(inout) :: logger
 
-   integer :: si
+   integer :: ei, si, i
    type(nombre_unit_t), pointer :: u => null()
 
    call logger%begin_section('ionisation_equilibrium')
 
-   do si = 1, NSPE
-      if (ie%cases(si) == ieid%case_a) then
-         ie%RI(si)%run => chemistry%species(si)%RI_A
-         ie%CIE(si)%run => chemistry%species(si)%CIE_A
-         ie%IE(si)%run => chemistry%species(si)%IE_A
-      else if (ie%cases(si) == ieid%case_b) then
-         ie%RI(si)%run => chemistry%species(si)%RI_B
-         ie%CIE(si)%run => chemistry%species(si)%CIE_B
-         ie%IE(si)%run => chemistry%species(si)%IE_B
-      else
-         call logger%err('', 'Unknown case', ':', [ie%cases(si)])
-      end if
+   i = 1
+   do ei = 1, NELE
+      do si = 1, chemistry%elements(ei)%nspecies
+         ie%species_names(i) = chemistry%elements(ei)%species(si)%symb
 
-      ie%CI(si)%run => chemistry%species(si)%CI
+         select case (ie%cases(i))
+         case (ieid%case_a)
+            ie%species(i)%RI => chemistry%elements(ei)%species(si)%RI_A
+            ie%species(i)%CIE => chemistry%elements(ei)%species(si)%CIE_A
+            ie%species(i)%CPIE => chemistry%elements(ei)%species(si)%CPIE_A
+         case (ieid%case_b)
+            ie%species(i)%RI => chemistry%elements(ei)%species(si)%RI_B
+            ie%species(i)%CIE => chemistry%elements(ei)%species(si)%CIE_B
+            ie%species(i)%CPIE => chemistry%elements(ei)%species(si)%CPIE_B
+         case default
+            call logger%err('Unknown case!', 'case', '=', [ie%cases(i)])
+         end select
+
+         ie%species(i)%CI => chemistry%elements(ei)%species(si)%CI
+         i = i + 1
+      end do
    end do
 
    u => .parse.ie%table_temp_unit_str

@@ -29,8 +29,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(1)%species(1)%CI => CI_HI
    pt%elements(1)%species(1)%CIE_A => CIE_HI_A
    pt%elements(1)%species(1)%CIE_B => CIE_HI_B
-   pt%elements(1)%species(1)%IE_A => IE_HI_A
-   pt%elements(1)%species(1)%IE_B => IE_HI_B
+   pt%elements(1)%species(1)%CPIE_A => CPIE_HI_A
+   pt%elements(1)%species(1)%CPIE_B => CPIE_HI_B
    pt%elements(1)%species(1)%ne => ne_HII
    pt%elements(1)%species(1)%f => f_HII
 
@@ -51,8 +51,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(2)%species(1)%CI => CI_HeI
    pt%elements(2)%species(1)%CIE_A => CIE_HeI_A
    pt%elements(2)%species(1)%CIE_B => CIE_HeI_B
-   pt%elements(2)%species(1)%IE_A => IE_HeI_A
-   pt%elements(2)%species(1)%IE_B => IE_HeI_B
+   pt%elements(2)%species(1)%CPIE_A => CPIE_HeI_A
+   pt%elements(2)%species(1)%CPIE_B => CPIE_HeI_B
    pt%elements(2)%species(1)%ne => ne_HeII
    pt%elements(2)%species(1)%f => f_HeII
 
@@ -63,8 +63,8 @@ module subroutine rhyme_periodic_table_init(pt, logger)
    pt%elements(2)%species(2)%CI => CI_HeII
    pt%elements(2)%species(2)%CIE_A => CIE_HeII_A
    pt%elements(2)%species(2)%CIE_B => CIE_HeII_B
-   pt%elements(2)%species(2)%IE_A => IE_HeII_A
-   pt%elements(2)%species(2)%IE_B => IE_HeII_B
+   pt%elements(2)%species(2)%CPIE_A => CPIE_HeII_A
+   pt%elements(2)%species(2)%CPIE_B => CPIE_HeII_B
    pt%elements(2)%species(2)%ne => ne_HeIII
    pt%elements(2)%species(2)%f => f_HeIII
 
@@ -132,17 +132,17 @@ contains
       CIE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T))
    end function CIE_HI_B
 
-   real(kind=8) pure function IE_HI_A(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
+   real(kind=8) pure function CPIE_HI_A(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne
 
-      IE_HI_A = RI_HII_A(T)/(RI_HII_A(T) + CI_HI(T) + Gamma(1)/ne)
-   end function IE_HI_A
+      CPIE_HI_A = RI_HII_A(T)/(RI_HII_A(T) + CI_HI(T) + Gamma_phot(1)/ne)
+   end function CPIE_HI_A
 
-   real(kind=8) pure function IE_HI_B(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
+   real(kind=8) pure function CPIE_HI_B(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne
 
-      IE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T) + Gamma(1)/ne)
-   end function IE_HI_B
+      CPIE_HI_B = RI_HII_B(T)/(RI_HII_B(T) + CI_HI(T) + Gamma_phot(1)/ne)
+   end function CPIE_HI_B
 
    ! Helium
 
@@ -204,15 +204,15 @@ contains
       CIE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T))
    end function CIE_HeI_B
 
-   real(kind=8) pure function IE_HeI_A(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
-      IE_HeI_A = RI_HeII_A(T)/(RI_HeII_A(T) + CI_HeI(T) + Gamma(2)/ne)
-   end function IE_HeI_A
+   real(kind=8) pure function CPIE_HeI_A(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne
+      CPIE_HeI_A = RI_HeII_A(T)/(RI_HeII_A(T) + CI_HeI(T) + Gamma_phot(2)/ne)
+   end function CPIE_HeI_A
 
-   real(kind=8) pure function IE_HeI_B(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne
-      IE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma(2)/ne)
-   end function IE_HeI_B
+   real(kind=8) pure function CPIE_HeI_B(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne
+      CPIE_HeI_B = RI_HeII_B(T)/(RI_HeII_B(T) + CI_HeI(T) + Gamma_phot(2)/ne)
+   end function CPIE_HeI_B
 
    real(kind=8) pure function ne_HeIII(ntr_frac) result(ne)
       real(kind=8), intent(in) :: ntr_frac(:)
@@ -276,26 +276,26 @@ contains
          )
    end function CIE_HeII_B
 
-   real(kind=8) pure function IE_HeII_A(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne ! Assuming Gamma(HI, HeI, HeII)
+   real(kind=8) pure function CPIE_HeII_A(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne ! Assuming Gamma_phot(HI, HeI, HeII)
 
-      IE_HeII_A = &
+      CPIE_HeII_A = &
          ( &
-         RI_HeIII_A(T) - IE_HeI_A(T, Gamma, ne)*(RI_HeIII_A(T) - CI_HeII(T) - Gamma(2)/ne) &
+         RI_HeIII_A(T) - CPIE_HeI_A(T, Gamma_phot, ne)*(RI_HeIII_A(T) - CI_HeII(T) - Gamma_phot(2)/ne) &
          )/( &
-         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) + Gamma(3)/ne &
+         RI_HeII_A(T) + RI_HeIII_A(T) + CI_HeII(T) + Gamma_phot(3)/ne &
          )
-   end function IE_HeII_A
+   end function CPIE_HeII_A
 
-   real(kind=8) pure function IE_HeII_B(T, Gamma, ne)
-      real(kind=8), intent(in) :: T, Gamma(:), ne ! Assuming Gamma(HI, HeI, HeII)
+   real(kind=8) pure function CPIE_HeII_B(T, Gamma_phot, ne)
+      real(kind=8), intent(in) :: T, Gamma_phot(:), ne ! Assuming Gamma_phot(HI, HeI, HeII)
 
-      IE_HeII_B = &
+      CPIE_HeII_B = &
          ( &
-         RI_HeIII_B(T) - IE_HeI_B(T, Gamma, ne)*(RI_HeIII_B(T) - CI_HeII(T) - Gamma(2)/ne) &
+         RI_HeIII_B(T) - CPIE_HeI_B(T, Gamma_phot, ne)*(RI_HeIII_B(T) - CI_HeII(T) - Gamma_phot(2)/ne) &
          )/( &
-         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) + Gamma(3)/ne &
+         RI_HeII_B(T) + RI_HeIII_B(T) + CI_HeII(T) + Gamma_phot(3)/ne &
          )
-   end function IE_HeII_B
+   end function CPIE_HeII_B
 end subroutine rhyme_periodic_table_init
 end submodule init_smod
