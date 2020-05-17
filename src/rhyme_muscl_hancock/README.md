@@ -1,4 +1,4 @@
-# XYZ
+# MUSCL-Hancock scheme
 
 <!--
   Module description
@@ -97,7 +97,6 @@ enhancements and submitting pull requests.
 
 # References
 
-<!--
-List of references
-- [title](link) by Author [year] (§XX)
--->
+- [Riemann Solvers and Numerical Methods for Fluid Dynamics](https://www.springer.com/gp/book/9783540252023) by Toro [2008](chapter§14)
+
+- [Low-storage Runge-Kutta schemes](https://www.sciencedirect.com/science/article/pii/0021999180900339) by Williamson [1980]
