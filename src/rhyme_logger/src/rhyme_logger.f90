@@ -35,6 +35,9 @@ module rhyme_logger
       procedure :: warn => rhyme_logger_warn
       procedure :: err => rhyme_logger_err
 
+      procedure :: plot_image => rhyme_logger_plot_image
+      generic :: plot => plot_image
+
       procedure :: update_time => rhyme_logger_update_time
       procedure :: time => rhyme_logger_time
       procedure :: time_and_section => rhyme_logger_time_and_section
@@ -74,6 +77,17 @@ module rhyme_logger
          character(len=*), intent(in), optional :: ope
          class(*), intent(in), optional :: val(:)
       end subroutine rhyme_logger_err
+
+      module subroutine rhyme_logger_plot_image( &
+         this, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme)
+         class(logger_t), intent(inout) :: this
+         real(kind=8), intent(in) :: values(:, :)
+         real(kind=8), intent(in) :: xrange(2), yrange(2)
+         character(len=32), intent(in), optional :: labels
+         real(kind=8), intent(in), optional :: cs_range(2)
+         integer, intent(in), optional :: cs_scale
+         type(colorscheme_t), intent(in), optional :: colorscheme
+      end subroutine rhyme_logger_plot_image
 
       module subroutine rhyme_logger_update_time(this)
          class(logger_t), intent(inout) :: this

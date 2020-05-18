@@ -14,6 +14,7 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
 
    call random_seed(size=dl)
 
+   call rhyme_color_init
    call canvas%init(res, res/2)
 
    call random_number(dd)

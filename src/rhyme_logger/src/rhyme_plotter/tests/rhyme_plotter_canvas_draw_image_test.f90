@@ -12,10 +12,10 @@ logical function rhyme_plotter_canvas_draw_image_test() result(failed)
    real(kind=8) :: values(1024, 1024)
 
    call random_seed(seed)
-
-   call canvas%init(res, res/2)
-
    call random_number(values)
+
+   call rhyme_color_init
+   call canvas%init(res, res/2)
 
    image%x%scale = plid%linear
    image%x%min = -10
@@ -29,7 +29,6 @@ logical function rhyme_plotter_canvas_draw_image_test() result(failed)
    call canvas%add_axis( &
       plid%bottom, 5, [-10d0, 10d0], scale=plid%linear, &
       label='X', color=tc%blue)
-
    call canvas%add_axis( &
       plid%left, 5, [-10d0, 10d0], scale=plid%linear, &
       label='Y', color=tc%blue)

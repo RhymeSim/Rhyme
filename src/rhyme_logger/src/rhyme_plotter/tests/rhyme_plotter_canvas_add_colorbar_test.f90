@@ -7,6 +7,7 @@ logical function rhyme_plotter_canvas_add_colorbar_test() result(failed)
 
    type(plotter_canvas_t) :: canvas
 
+   call rhyme_color_init
    call canvas%init(res, res/3)
 
    call canvas%add_axis( &

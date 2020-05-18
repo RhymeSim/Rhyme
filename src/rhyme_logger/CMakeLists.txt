@@ -23,6 +23,7 @@ set(srcs
     src/rhyme_logger_io.f90
     src/rhyme_logger_logo.f90
     src/rhyme_logger_time.f90
+    src/rhyme_logger_plot_image.f90
     src/rhyme_logger_section.f90)
 
 set(rhyme_src_dir ..)

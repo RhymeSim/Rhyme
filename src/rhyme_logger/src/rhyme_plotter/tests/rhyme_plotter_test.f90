@@ -20,6 +20,7 @@ logical function rhyme_plotter_test() result(failed)
 
    call random_seed(size=dl)
 
+   call rhyme_color_init
    call canvas%init(80, 20)
 
 ! 1D

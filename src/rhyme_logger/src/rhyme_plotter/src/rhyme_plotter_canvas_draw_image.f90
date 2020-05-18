@@ -84,6 +84,7 @@ module subroutine rhyme_plotter_canvas_draw_image( &
    call canvas%add_corner(xaxis, yaxis)
 
 contains
+   ! TODO: move these functions to plotter module
    type(color_t) function pick_color(val) result(color)
       implicit none
 
