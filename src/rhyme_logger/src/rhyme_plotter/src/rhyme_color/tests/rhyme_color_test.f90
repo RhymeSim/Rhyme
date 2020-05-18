@@ -17,7 +17,10 @@ logical function rhyme_color_test() result(failed)
 
    failed = &
       csid%magma_grey /= 1 &
-      .and. csid%len /= 1 &
+      .and. csid%rainbow /= 2 &
+      .and. csid%smooth_rainbow /= 3 &
+      .and. csid%viridis /= 3 &
+      .and. csid%len /= 4 &
       .and. csid%unknown /= -2 &
       .and. csid%low_end /= -1 &
       .and. csid%high_end /= 0 &

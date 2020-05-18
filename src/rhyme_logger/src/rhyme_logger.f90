@@ -79,14 +79,16 @@ module rhyme_logger
       end subroutine rhyme_logger_err
 
       module subroutine rhyme_logger_plot_image( &
-         this, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme)
+         this, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
+         axes_scales)
          class(logger_t), intent(inout) :: this
          real(kind=8), intent(in) :: values(:, :)
          real(kind=8), intent(in) :: xrange(2), yrange(2)
-         character(len=32), intent(in), optional :: labels
+         character(len=*), intent(in), optional :: labels(2)
          real(kind=8), intent(in), optional :: cs_range(2)
          integer, intent(in), optional :: cs_scale
          type(colorscheme_t), intent(in), optional :: colorscheme
+         integer, intent(in), optional :: axes_scales(2)
       end subroutine rhyme_logger_plot_image
 
       module subroutine rhyme_logger_update_time(this)

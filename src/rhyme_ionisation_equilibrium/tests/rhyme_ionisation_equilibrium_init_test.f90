@@ -23,7 +23,7 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
    chemistry = chemistry_factory_generate('H+He')
    logger = logger_factory_generate('default')
 
-   ie = ionisation_equilibrium_factory_generate('CaseA-cgs')
+   ie = ionisation_equilibrium_factory_generate('CaseA-CIE')
 
    call rhyme_nombre_init
    call rhyme_physics_init(physics, logger)

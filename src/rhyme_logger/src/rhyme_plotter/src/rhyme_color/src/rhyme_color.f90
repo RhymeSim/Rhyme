@@ -10,8 +10,11 @@ module rhyme_color
    type(rhyme_color_indices_t), parameter :: clrid = rhyme_color_indices_t()
 
    type, private :: rhyme_colorscheme_indices_t
-      integer :: len = 1
+      integer :: len = 4
       integer :: magma_grey = 1
+      integer :: rainbow = 2
+      integer :: smooth_rainbow = 3
+      integer :: viridis = 4
       integer :: unknown = -2 ! color for values below the range of the cs
       integer :: low_end = -1 ! color for values below the range of the cs
       integer :: high_end = 0 ! color for values above the range of the cs

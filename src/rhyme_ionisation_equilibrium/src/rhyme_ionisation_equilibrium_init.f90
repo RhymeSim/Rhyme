@@ -39,11 +39,13 @@ module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logg
    u => .parse.ie%table_temp_unit_str
    ie%table_temp_range(1) = ie%table_temp_range(1)%v.u.u.to.physics%temperature
    ie%table_temp_range(2) = ie%table_temp_range(2)%v.u.u.to.physics%temperature
+   ie%table_temp_unit_str = .printchain.physics%temperature
    call logger%log('', 'table_temp_range', '=', [ie%table_temp_range(1)%p(), ie%table_temp_range(2)%p()])
 
    u => .parse.ie%table_density_unit_str
    ie%table_density_range(1) = ie%table_density_range(1)%v.u.u.to.physics%rho
    ie%table_density_range(2) = ie%table_density_range(2)%v.u.u.to.physics%rho
+   ie%table_density_unit_str = .printchain.physics%rho
    call logger%log('', 'table_density_range', '=', [ie%table_density_range(1)%p(), ie%table_density_range(2)%p()])
 
    call logger%log('Allocating equilibrium table', 'size', '=', [NSPE, ie%table_sizes(1), ie%table_sizes(2)])
