@@ -8,6 +8,7 @@ module rhyme_plotter
    integer, parameter, private :: canvas_border = 2
    integer, parameter, private :: max_nticks = 16
    integer, parameter, private :: max_nbins = 256
+   integer, parameter, private :: max_image_resolution = 128
 
    integer, parameter :: ucs4 = selected_char_kind('ISO_10646')
 
@@ -44,9 +45,10 @@ module rhyme_plotter
       procedure :: add_colorbar => rhyme_plotter_canvas_add_colorbar
       procedure :: draw_histogram => rhyme_plotter_canvas_draw_histogram
       procedure :: draw_2d_histogram => rhyme_plotter_canvs_draw_2d_histogram
+      procedure :: draw_image => rhyme_plotter_canvas_draw_image
       procedure :: plot => rhyme_plotter_canvas_plot
       procedure :: clear => rhyme_plotter_canvas_clear
-      generic :: draw => draw_histogram, draw_2d_histogram
+      generic :: draw => draw_histogram, draw_2d_histogram, draw_image
    end type plotter_canvas_t
 
    type plotter_histogram_t
@@ -64,6 +66,15 @@ module rhyme_plotter
       type(plotter_histogram_axis_t) :: x, y
       real(kind=8), dimension(max_nbins, max_nbins) :: counts = 0
    end type plotter_2d_histogram_t
+
+   type plotter_image_axis_t
+      integer :: resolution = 0, scale = plid%linear
+      real(kind=8) :: min = 0, max = 0
+   end type plotter_image_axis_t
+
+   type plotter_image_t
+      type(plotter_image_axis_t) :: x, y
+   end type plotter_image_t
 
    interface
       module subroutine rhyme_plotter_canvas_init(canvas, x, y)
@@ -115,6 +126,18 @@ module rhyme_plotter
          real(kind=8), intent(in), optional :: cs_min_op, cs_max_op
          integer, intent(in), optional :: cs_scale_op
       end subroutine rhyme_plotter_canvs_draw_2d_histogram
+
+      module subroutine rhyme_plotter_canvas_draw_image( &
+         canvas, image, values, xaxis_op, yaxis_op, colorscheme_op, &
+         cs_min_op, cs_max_op, cs_scale_op)
+         class(plotter_canvas_t), intent(inout) :: canvas
+         type(plotter_image_t), intent(in) :: image
+         real(kind=8), intent(in) :: values(:, :)
+         integer, intent(in), optional :: xaxis_op, yaxis_op
+         type(colorscheme_t), intent(in), optional :: colorscheme_op
+         real(kind=8), intent(in), optional :: cs_min_op, cs_max_op
+         integer, intent(in), optional :: cs_scale_op
+      end subroutine rhyme_plotter_canvas_draw_image
 
       module subroutine rhyme_plotter_canvas_plot(canvas, output, colored)
          class(plotter_canvas_t), intent(inout) :: canvas

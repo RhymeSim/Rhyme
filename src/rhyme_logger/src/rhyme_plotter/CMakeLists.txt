@@ -16,6 +16,7 @@ set(internal_deps rhyme_color)
 set(srcs
     src/rhyme_plotter_2d_histogram.f90
     src/rhyme_plotter_histogram.f90
+    src/rhyme_plotter_canvas_draw_image.f90
     src/rhyme_plotter_canvas_draw_2d_histogram.f90
     src/rhyme_plotter_canvas_draw_histogram.f90
     src/rhyme_plotter_canvas_plot.f90

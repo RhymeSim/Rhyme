@@ -103,6 +103,6 @@ logical function rhyme_plotter_canvas_draw_2d_histogram_test() result(failed)
    call canvas%plot
    call canvas%clear
 
-! To see the output set failed to .true.
+   ! To see the output set failed to .true.
    failed = .false.
 end function rhyme_plotter_canvas_draw_2d_histogram_test
