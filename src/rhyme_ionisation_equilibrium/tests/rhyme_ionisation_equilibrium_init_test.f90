@@ -40,8 +40,21 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
 
    call tester%expect(ie%table_temp_range(1)%u.toBe.physics%temperature.hint.'temp unit')
    call tester%expect(ie%table_temp_range(2)%u.toBe.physics%temperature.hint.'temp unit')
+   call tester%expect(ie%log_temp_min.toBe.log10(ie%table_temp_range(1)%v) .hint.'log temp_min')
+   call tester%expect(ie%log_temp_max.toBe.log10(ie%table_temp_range(2)%v) .hint.'log temp_max')
+   call tester%expect( &
+      ie%dlog_temp.toBe. &
+      ((log10(ie%table_temp_range(2)%v) - log10(ie%table_temp_range(1)%v))/ie%table_sizes(1)) &
+      .hint.'d(log(temp))')
+
    call tester%expect(ie%table_density_range(1)%u.toBe.physics%rho.hint.'density unit')
    call tester%expect(ie%table_density_range(2)%u.toBe.physics%rho.hint.'density unit')
+   call tester%expect(ie%log_density_min.toBe.log10(ie%table_density_range(1)%v) .hint.'log density_min')
+   call tester%expect(ie%log_density_max.toBe.log10(ie%table_density_range(2)%v) .hint.'log density_max')
+   call tester%expect( &
+      ie%dlog_density.toBe. &
+      ((log10(ie%table_density_range(2)%v) - log10(ie%table_density_range(1)%v))/ie%table_sizes(1)) &
+      .hint.'d(log(density))')
 
    failed = tester%failed()
 end function rhyme_ionisation_equilibrium_init_test

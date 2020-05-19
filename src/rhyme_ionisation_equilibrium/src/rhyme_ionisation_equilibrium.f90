@@ -44,9 +44,11 @@ module rhyme_ionisation_equilibrium
       integer :: table_sizes(2) = ieid%unset
 
       type(nombre_t) :: table_temp_range(2)
+      real(kind=8) :: log_temp_min = 0d0, log_temp_max = 0d0, dlog_temp = 0d0
       character(len=64) :: table_temp_unit_str = ''
 
       type(nombre_t) :: table_density_range(2)
+      real(kind=8) :: log_density_min = 0d0, log_density_max = 0d0, dlog_density = 0d0
       character(len=64) :: table_density_unit_str = ''
 
       real(kind=8) :: table_redhsift = -1d0
@@ -68,5 +70,11 @@ module rhyme_ionisation_equilibrium
          real(kind=8), intent(in) :: z
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_update_table
+
+      pure module function rhyme_ionisation_equilibrium_pick(ie, temp, density) result(ntr_frac)
+         type(ionisation_equilibrium_t), intent(in) :: ie
+         real(kind=8), intent(in) :: temp, density
+         real(kind=8) :: ntr_frac(NSPE)
+      end function rhyme_ionisation_equilibrium_pick
    end interface
 end module rhyme_ionisation_equilibrium

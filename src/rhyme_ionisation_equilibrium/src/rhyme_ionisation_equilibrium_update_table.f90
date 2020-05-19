@@ -57,6 +57,7 @@ module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, 
 
    do i = 1, ie%table_sizes(1)
       temp = 10**(log_temp_min + (i - .5)*dtemp)
+
       do j = 1, ie%table_sizes(2)
          density = 10**(log_density_min + (j - .5)*ddensity)
 

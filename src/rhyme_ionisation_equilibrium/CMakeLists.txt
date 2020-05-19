@@ -17,6 +17,7 @@ set(internal_deps)
 set(srcs
     src/rhyme_ionisation_equilibrium_init.f90
     src/rhyme_ionisation_equilibrium_update_table.f90
+    src/rhyme_ionisation_equilibrium_pick.f90
     src/rhyme_ionisation_equilibrium.f90)
 
 set(rhyme_src_dir ..)
