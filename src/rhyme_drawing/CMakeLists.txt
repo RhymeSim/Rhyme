@@ -9,8 +9,15 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008")
 endif()
 
-set(deps rhyme_physics rhyme_thermo_base rhyme_hydro_base
-         rhyme_initial_condition rhyme_samr rhyme_logger)
+set(deps
+    rhyme_physics
+    rhyme_chemistry
+    rhyme_thermo_base
+    rhyme_hydro_base
+    rhyme_initial_condition
+    rhyme_ionisation_equilibrium
+    rhyme_samr
+    rhyme_logger)
 
 set(internal_deps)
 

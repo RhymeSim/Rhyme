@@ -14,8 +14,7 @@ module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, 
    real(kind=8) :: uvb_rates(2*NSPE)
    real(kind=8) :: uvb_self_shielding(NSPE)
    real(kind=8) :: gamma_h_phot(NSPE)
-   real(kind=8) :: log_temp_min, log_temp_max, dtemp, temp
-   real(kind=8) :: log_density_min, log_density_max, ddensity, density
+   real(kind=8) :: temp, density
    real(kind=8) :: ne, ne_prev, convergence_rate, ntr_frac(NSPE)
    character(len=128) :: temp_label, density_label
 
@@ -42,24 +41,16 @@ module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, 
       end if
    end if
 
-   log_temp_min = real(log10(ie%table_temp_range(1)%v), kind=4)
-   log_temp_max = real(log10(ie%table_temp_range(2)%v), kind=4)
-   dtemp = (log_temp_max - log_temp_min)/ie%table_sizes(1)
-
-   log_density_min = real(log10(ie%table_density_range(1)%v), kind=4)
-   log_density_max = real(log10(ie%table_density_range(2)%v), kind=4)
-   ddensity = (log_density_max - log_density_min)/ie%table_sizes(2)
-
    call logger%begin_section('filling')
    ie%table_redhsift = z
 
    call logger%log('redshift', '', '=', [ie%table_redhsift])
 
    do i = 1, ie%table_sizes(1)
-      temp = 10**(log_temp_min + (i - .5)*dtemp)
+      temp = 10**(ie%log_temp_min + (i - .5)*ie%dlog_temp)
 
       do j = 1, ie%table_sizes(2)
-         density = 10**(log_density_min + (j - .5)*ddensity)
+         density = 10**(ie%log_density_min + (j - .5)*ie%dlog_density)
 
          if (ie%uvb) then
             ! From Rahmati et al. 2013
@@ -118,7 +109,7 @@ module subroutine rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, 
          minval(ie%table(si, :, :), ie%table(si, :, :) > 0d0), &
          maxval(ie%table(si, :, :)) &
          ], cs_scale=plid%log, colorscheme=colorschemes(csid%rainbow), &
-         axes_scales=[plid%linear, plid%linear])
+         axes_scales=[plid%linear, plid%log])
    end do
 
    call logger%end_section(print_duration=.true.)  ! ionisation_equilibrium_table

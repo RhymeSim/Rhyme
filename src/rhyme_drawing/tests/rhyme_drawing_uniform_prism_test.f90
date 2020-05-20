@@ -1,4 +1,5 @@
 logical function rhyme_drawing_uniform_prism_test() result(failed)
+   ! TODO: no point inside the prism!
    use rhyme_drawing
    use rhyme_physics_factory
    use rhyme_samr_factory
@@ -106,8 +107,7 @@ logical function rhyme_drawing_uniform_prism_test() result(failed)
 
 #endif
 
-   ! failed = dr_tester%failed()
-   failed = .true. ! TODO: no point inside the prism!
+   failed = dr_tester%failed()
 
 #if NDIM > 1
 

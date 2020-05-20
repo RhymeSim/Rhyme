@@ -46,6 +46,10 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
       ie%dlog_temp.toBe. &
       ((log10(ie%table_temp_range(2)%v) - log10(ie%table_temp_range(1)%v))/ie%table_sizes(1)) &
       .hint.'d(log(temp))')
+   call tester%expect( &
+      10**(ie%log_temp_min + ie%table_sizes(1)*ie%dlog_temp) .toBe. &
+      (ie%table_temp_range(2)%v) .within.15 &
+      .hint.'dlog_temp compare to temp range')
 
    call tester%expect(ie%table_density_range(1)%u.toBe.physics%rho.hint.'density unit')
    call tester%expect(ie%table_density_range(2)%u.toBe.physics%rho.hint.'density unit')
@@ -55,6 +59,10 @@ logical function rhyme_ionisation_equilibrium_init_test() result(failed)
       ie%dlog_density.toBe. &
       ((log10(ie%table_density_range(2)%v) - log10(ie%table_density_range(1)%v))/ie%table_sizes(1)) &
       .hint.'d(log(density))')
+   call tester%expect( &
+      10**(ie%log_density_min + ie%table_sizes(1)*ie%dlog_density) .toBe. &
+      (ie%table_density_range(2)%v) .within.15 &
+      .hint.'dlog_density compare to density range')
 
    failed = tester%failed()
 end function rhyme_ionisation_equilibrium_init_test

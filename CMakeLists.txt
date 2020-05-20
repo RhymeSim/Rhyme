@@ -6,10 +6,10 @@ enable_language(Fortran)
 # Check config file (config.cmake) before compiling
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  add_compile_options(-warn all -fpp -O2)
+  add_compile_options(-warn all -fpp -O3)
   set(CMAKE_Fortran_FLAGS "-stand f08")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  add_compile_options(-Wall -Wextra -cpp -O2) # -fopt-info )
+  add_compile_options(-Wall -Wextra -cpp -O3) # -fopt-info )
   set(CMAKE_Fortran_FLAGS "-std=f2008")
 endif()
 

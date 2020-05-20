@@ -19,8 +19,8 @@ logical function rhyme_ionisation_equilibrium_update_table_test() result(failed)
 
    tester = .describe.'ionisation_equilibrium_update_table'
 
-   ie = ionisation_equilibrium_factory_generate('CaseA-CPIE')
-   physics = physics_factory_generate('SI')
+   ie = ionisation_equilibrium_factory_generate('CaseB-CIE')
+   physics = physics_factory_generate('radamesh')
    chemistry = chemistry_factory_generate('H+He')
    uvb = uv_background_factory_generate('HM12')
    logger = logger_factory_generate('default')
@@ -35,7 +35,6 @@ logical function rhyme_ionisation_equilibrium_update_table_test() result(failed)
 
    z = 1.37d0
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, z, logger)
-
    call tester%expect(ie%table_redhsift.toBe.z.hint.'table redshift')
 
    failed = tester%failed()

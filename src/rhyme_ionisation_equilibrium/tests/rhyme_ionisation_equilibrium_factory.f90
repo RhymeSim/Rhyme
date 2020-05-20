@@ -11,12 +11,6 @@ contains
       type(ionisation_equilibrium_t) :: ie
 
       if (factory_type == 'empty') then
-      else if (factory_type == 'CaseA') then
-         ie%cases = ieid%case_a
-         ie%uvb = .false.
-         ie%uvb_self_shielding = .false.
-         ie%collisional = .false.
-         ie%photo = .false.
       else if (factory_type == 'CaseA-CIE') then
          ie%cases = ieid%case_a
          ie%uvb = .false.
@@ -25,9 +19,9 @@ contains
          ie%photo = .false.
          ie%table_sizes = [1024, 1024]
          ie%table_temp_range(1)%v = 1d2
-         ie%table_temp_range(2)%v = 1d7
+         ie%table_temp_range(2)%v = 1d8
          ie%table_temp_unit_str = 'K'
-         ie%table_density_range(1)%v = 1d-2
+         ie%table_density_range(1)%v = 1d-4
          ie%table_density_range(2)%v = 1d3
          ie%table_density_unit_str = 'm_H / cm^3'
          ie%convergence_rate = .01
@@ -40,19 +34,28 @@ contains
          ie%photo = .false.
          ie%table_sizes = [1024, 1024]
          ie%table_temp_range(1)%v = 1d2
-         ie%table_temp_range(2)%v = 1d7
+         ie%table_temp_range(2)%v = 1d8
          ie%table_temp_unit_str = 'K'
-         ie%table_density_range(1)%v = 1d-2
+         ie%table_density_range(1)%v = 1d-4
          ie%table_density_range(2)%v = 1d3
          ie%table_density_unit_str = 'm_H / cm^3'
          ie%convergence_rate = .01
          ie%max_niterations = 1000
-      else if (factory_type == 'CaseB') then
+      else if (factory_type == 'CaseB-CIE') then
          ie%cases = ieid%case_b
          ie%uvb = .false.
          ie%uvb_self_shielding = .false.
-         ie%collisional = .false.
+         ie%collisional = .true.
          ie%photo = .false.
+         ie%table_sizes = [1024, 1024]
+         ie%table_temp_range(1)%v = 1d3
+         ie%table_temp_range(2)%v = 1d8
+         ie%table_temp_unit_str = 'K'
+         ie%table_density_range(1)%v = 1d-4
+         ie%table_density_range(2)%v = 1d3
+         ie%table_density_unit_str = 'm_H / cm^3'
+         ie%convergence_rate = .01
+         ie%max_niterations = 1000
       else if (factory_type == 'CaseA-CPIE') then
          ie%cases = ieid%case_a
          ie%uvb = .true.
@@ -66,7 +69,6 @@ contains
          ie%table_density_unit_str = 'm_H / cm^3'
          ie%convergence_rate = .01
          ie%max_niterations = 1000
-      else if (factory_type == 'CaseB') then
       else
          print *, 'Unknonw ionization equilibrium factory type!', factory_type
       end if

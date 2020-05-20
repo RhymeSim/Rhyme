@@ -1,9 +1,11 @@
 module rhyme_drawing
    ! TODO: Move shapes, fillings and perturbations into separate modules
    use rhyme_physics
+   use rhyme_chemistry
    use rhyme_thermo_base
    use rhyme_hydro_base
    use rhyme_initial_condition
+   use rhyme_ionisation_equilibrium
    use rhyme_samr
    use rhyme_logger
 
@@ -116,18 +118,20 @@ module rhyme_drawing
       real(kind=8) :: canvas(NCMP)
       type(shape_t), pointer :: shapes => null()
       type(perturbation_t), pointer :: perturbs => null()
-      logical :: initialized
    contains
       procedure :: new_shape => rhyme_drawing_new_shape
       procedure :: new_perturb => rhyme_drawing_new_perturb
    end type drawing_t
 
    interface
-      module subroutine rhyme_drawing_init(draw, samr, ic, logger)
+      module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
          type(drawing_t), intent(inout) :: draw
          type(samr_t), intent(inout) :: samr
          type(initial_condition_t), intent(in) :: ic
          type(logger_t), intent(inout) :: logger
+         type(ionisation_equilibrium_t), intent(in), optional :: ie
+         type(physics_t), intent(in), optional :: physics
+         type(chemistry_t), intent(in), optional :: chemistry
       end subroutine rhyme_drawing_init
 
       module subroutine rhyme_drawing_uniform_canvas(samr, bg_prim)
@@ -140,11 +144,14 @@ module rhyme_drawing
          type(shape_t), intent(in) :: shape
       end subroutine rhyme_drawing_uniform_cuboid
 
-      module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
+      module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
          type(samr_t), intent(inout) :: samr
          type(initial_condition_t), intent(in) :: ic
          type(shape_t), intent(in) :: shape
          type(logger_t), intent(inout) :: logger
+         type(ionisation_equilibrium_t), intent(in), optional :: ie
+         type(physics_t), intent(in), optional :: physics
+         type(chemistry_t), intent(in), optional :: chemistry
       end subroutine rhyme_drawing_sphere
 
 #if NDIM > 1

@@ -39,7 +39,7 @@ program rhyme
    type(logger_t) :: logger
 
    integer :: l, b
-   character(len=1024) :: exe_filename, param_file
+   character(len=1024) :: exe_filename, param_file, nickname
 
    ! TODO: use getopt to read flag-based additional command line arguments
    call get_command_argument(0, exe_filename)
@@ -64,17 +64,29 @@ program rhyme
    mhws%type = mh%solver_type
 
    call rhyme_nombre_init
+   call rhyme_color_init
    call rhyme_physics_init(physics, logger)
    call rhyme_chemistry_init(chemistry, physics, logger)
    call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_uv_background_init(uvb, physics, logger)
    call rhyme_initial_condition_init(ic, samr, physics, logger)
+   call rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+   call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
    call rhyme_samr_bc_init(bc, samr, logger)
-   call rhyme_drawing_init(draw, samr, ic, logger)
    call rhyme_irs_init(irs, logger)
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
    call rhyme_chombo_init(chombo, samr, logger)
 
+   call rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
+
    call logger%end_section
+
+   call logger%begin_section('IC')
+   nickname = chombo%nickname
+   chombo%nickname = 'IC'
+   call rhyme_chombo_write_samr(chombo, physics, samr)
+   chombo%nickname = nickname
+   call logger%end_section  ! IC
 
    ! Main loop
    do while (.true.)

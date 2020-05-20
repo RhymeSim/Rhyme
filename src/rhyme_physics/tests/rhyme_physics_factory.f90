@@ -1,12 +1,5 @@
 module rhyme_physics_factory
    use rhyme_physics
-
-   implicit none
-
-   character(len=32), parameter, private :: rho_str_param = 'kg / m^3'
-   character(len=32), parameter, private :: length_str_param = 'm'
-   character(len=32), parameter, private :: time_str_param = 's'
-
 contains
    function physics_factory_generate(factory_type) result(physics)
       implicit none
@@ -16,9 +9,13 @@ contains
       type(physics_t) :: physics
 
       if (factory_type == 'SI') then
-         physics%rho_str = rho_str_param
-         physics%length_str = length_str_param
-         physics%time_str = time_str_param
+         physics%rho_str = 'kg / m^3'
+         physics%length_str = 'm'
+         physics%time_str = 's'
+      else if (factory_type == 'radamesh') then
+         physics%rho_str = 'm_H / cm^3'
+         physics%length_str = 'Mpc'
+         physics%time_str = 'Myr'
       else
          print *, 'Unknow physcis factory type!'
       end if

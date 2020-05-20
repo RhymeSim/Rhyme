@@ -1,8 +1,8 @@
 # Set generic compiler flags
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  add_compile_options(-warn all -fpp -O2)
+  add_compile_options(-warn all -fpp -O3)
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  add_compile_options(-Wall -Wextra -cpp -O2)
+  add_compile_options(-Wall -Wextra -cpp -O3)
 endif()
 
 # Set Fortran compiler flags

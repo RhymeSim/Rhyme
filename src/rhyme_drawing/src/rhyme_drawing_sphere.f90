@@ -1,12 +1,15 @@
 submodule(rhyme_drawing) rhyme_drawing_sphere_submodule
 contains
-module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
+module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
    implicit none
 
    type(samr_t), intent(inout) :: samr
    type(initial_condition_t), intent(in) :: ic
    type(shape_t), intent(in) :: shape
    type(logger_t), intent(inout) :: logger
+   type(ionisation_equilibrium_t), intent(in), optional :: ie
+   type(physics_t), intent(in), optional :: physics
+   type(chemistry_t), intent(in), optional :: chemistry
 
 #if NDIM == 1
 #define JDX
@@ -34,6 +37,10 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
    real(kind=8), dimension(cid%rho:NCMP) :: color
    integer :: l, b, i JDX KDX, d
    real(kind=8) :: origin_px(NDIM), r_px, sigma_px, box_lengths(NDIM)
+   real(kind=8) :: temp_over_mu, temp, temp_prev, density, density_prev, p, v(NDIM)
+   real(kind=8) :: ntr_frac(NSPE), one_over_mu, kb_over_amu
+   real(kind=8) :: temp_accuracy, density_accuracy
+   integer :: niterations
 
    call logger%begin_section('sphere')
 
@@ -54,29 +61,111 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger)
    case (drid%absolute)
       call logger%begin_section('absolute')
       do l = 0, samr%nlevels - 1
-         do b = 1, samr%levels(l)%nboxes
-            LOOP_K
-            LOOP_J
-            do i = 1, samr%levels(l)%boxes(b)%dims(1)
-               color = smoothing_factor([i JDX KDX] - .5d0, origin_px, r_px, sigma_px, shape%fill%colors)
+      do b = 1, samr%levels(l)%nboxes
+         LOOP_K
+         LOOP_J
+         do i = 1, samr%levels(l)%boxes(b)%dims(1)
+            color = smoothing_factor([i JDX KDX] - .5d0, origin_px, r_px, sigma_px, shape%fill%colors)
 
-               do d = cid%rho, cid%e_tot
-                  if (samr%levels(l)%boxes(b)%cells(i JDX KDX, d) < color(d)) then
-                     samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
-                  end if
-               end do
-               do d = cid%temp, NCMP
+            do d = cid%rho, cid%e_tot
+               if (samr%levels(l)%boxes(b)%cells(i JDX KDX, d) < color(d)) then
                   samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
-               end do
+               end if
             end do
-            LOOP_J_END
-            LOOP_K_END
+            do d = cid%temp, NCMP
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
+            end do
          end do
+         LOOP_J_END
+         LOOP_K_END
+      end do
       end do
       call logger%end_section
    case default
       call logger%err('Unknonw mode!')
    end select
+
+   if ( &
+      present(ie) &
+      .and. present(physics) &
+      .and. present(chemistry) &
+      .and. abs( &
+      shape%fill%colors(cid%p, 1) - shape%fill%colors(cid%p, 2) &
+      ) < epsilon(0d0)*abs(shape%fill%colors(cid%p, 1)) &
+      ) then
+      ! Pressure equilibrium
+      call logger%begin_section('pressure_equilibrium')
+
+      kb_over_amu = physics%kb%v/physics%amu%v
+
+      temp_accuracy = 1d-3
+      density_accuracy = 1d-2
+      call logger%log('temp accuracy', '[%]', '=', [100*temp_accuracy])
+      call logger%log('density accuracy', '[%]', '=', [100*density_accuracy])
+
+      p = shape%fill%colors(cid%p, 1)
+
+      do l = 0, samr%nlevels - 1
+      do b = 1, samr%levels(l)%nboxes
+         !$OMP PARALLEL DO &
+         !$OMP& SHARED(l, b, samr, chemistry, ie, physics, &
+         !$OMP& temp_accuracy, density_accuracy, kb_over_amu, p) &
+         !$OMP& PRIVATE(ntr_frac, temp_over_mu, one_over_mu, v, &
+         !$OMP& temp, density, temp_prev, density_prev, &
+         !$OMP& niterations)
+         LOOP_K
+         LOOP_J
+         do i = 1, samr%levels(l)%boxes(b)%dims(1)
+            ntr_frac = samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%ntr_frac_0:cid%ntr_frac_0 + NSPE - 1)
+            temp_over_mu = calc_t_mu(samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot))
+            one_over_mu = rhyme_chemistry_one_over_mu(chemistry, ntr_frac)
+
+            temp = temp_over_mu/one_over_mu
+            density = samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho)
+
+            temp_prev = temp/1d2
+            density_prev = density/1d2
+
+            v = samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%rho_u + NDIM - 1) &
+                /samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho)
+            niterations = 0
+
+            do while ( &
+               ( &
+               abs((temp_prev - temp)/temp_prev) > temp_accuracy &
+               .or. abs((density_prev - density)/density_prev) > density_accuracy &
+               ) &
+               .and. niterations < ie%max_niterations &
+               )
+               temp_prev = temp
+               density_prev = density
+
+               ntr_frac = rhyme_ionisation_equilibrium_pick(ie, temp, density)
+
+               temp_over_mu = calc_t_mu(samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot))
+               one_over_mu = rhyme_chemistry_one_over_mu(chemistry, ntr_frac)
+               temp = temp_over_mu/one_over_mu
+
+               density = p/one_over_mu/kb_over_amu/temp
+
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho) = density
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%rho_u + NDIM - 1) = density*v
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot) = .5d0*density*sum(v**2) + p/(get_gamma() - 1)
+
+               niterations = niterations + 1
+            end do
+
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%temp) = p/(density*one_over_mu*kb_over_amu)
+            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%ntr_frac_0:cid%ntr_frac_0 + NSPE - 1) = ntr_frac
+         end do
+         LOOP_J_END
+         LOOP_K_END
+         !$OMP END PARALLEL DO
+      end do
+      end do
+
+      call logger%end_section(print_duration=.true.)  ! pressure_equilibrium
+   end if
 
    call logger%end_section
 end subroutine rhyme_drawing_sphere
