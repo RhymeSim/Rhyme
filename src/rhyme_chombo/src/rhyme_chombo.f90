@@ -60,6 +60,13 @@ module rhyme_chombo
          type(physics_t), intent(in) :: physics
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_samr
+
+      module subroutine rhyme_chombo_write_samr_with_nickname(nickname, chombo, physics, samr)
+         character(len=*), intent(in) :: nickname
+         type(chombo_t), intent(inout) :: chombo
+         type(physics_t), intent(in) :: physics
+         type(samr_t), intent(in) :: samr
+      end subroutine rhyme_chombo_write_samr_with_nickname
    end interface
 
 contains

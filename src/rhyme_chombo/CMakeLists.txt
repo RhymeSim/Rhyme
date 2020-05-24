@@ -14,9 +14,13 @@ set(deps rhyme_physics rhyme_samr rhyme_logger)
 set(internal_deps rhyme_hdf5_util)
 
 set(srcs
-    src/rhyme_chombo_write_samr.f90 src/rhyme_chombo_write_level_data.f90
-    src/rhyme_chombo_write_headers.f90 src/rhyme_chombo_create_chombo.f90
-    src/rhyme_chombo_filename_generator.f90 src/rhyme_chombo.f90)
+    src/rhyme_chombo_write_samr_with_nickname.f90
+    src/rhyme_chombo_write_samr.f90
+    src/rhyme_chombo_write_level_data.f90
+    src/rhyme_chombo_write_headers.f90
+    src/rhyme_chombo_create_chombo.f90
+    src/rhyme_chombo_filename_generator.f90
+    src/rhyme_chombo.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

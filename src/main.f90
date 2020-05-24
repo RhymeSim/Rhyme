@@ -39,7 +39,7 @@ program rhyme
    type(logger_t) :: logger
 
    integer :: l, b
-   character(len=1024) :: exe_filename, param_file, nickname
+   character(len=1024) :: exe_filename, param_file
 
    ! TODO: use getopt to read flag-based additional command line arguments
    call get_command_argument(0, exe_filename)
@@ -54,6 +54,9 @@ program rhyme
    call logger%log('', 'err_file', '=', [logger%errfile])
    call logger%end_section
 
+   call rhyme_nombre_init
+   call rhyme_color_init  ! TODO: move this to logger_init
+
    ! Reading parameters and converting them to code units
    call load_params(param_file, chemistry, physics, ic, bc, cfl, &
                     thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
@@ -63,8 +66,6 @@ program rhyme
    ! TODO: move mh_workspace into muscl_hancock module
    mhws%type = mh%solver_type
 
-   call rhyme_nombre_init
-   call rhyme_color_init
    call rhyme_physics_init(physics, logger)
    call rhyme_chemistry_init(chemistry, physics, logger)
    call rhyme_thermo_base_init(thermo, physics, logger)
@@ -79,14 +80,10 @@ program rhyme
 
    call rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
 
-   call logger%end_section
+   call logger%end_section  ! init
 
-   call logger%begin_section('IC')
-   nickname = chombo%nickname
-   chombo%nickname = 'IC'
-   call rhyme_chombo_write_samr(chombo, physics, samr)
-   chombo%nickname = nickname
-   call logger%end_section  ! IC
+   call logger%log('saving IC')
+   call rhyme_chombo_write_samr_with_nickname('IC', chombo, physics, samr)
 
    ! Main loop
    do while (.true.)
@@ -99,7 +96,7 @@ program rhyme
 
       call logger%begin_section('bc')
       call rhyme_samr_bc_set_boundaries(bc, samr)
-      call logger%end_section(print_duration=.true.)
+      call logger%end_section(print_duration=.true.)  ! bc
 
       ! Update structured AMR
       ! Update ghost cells of boxes
@@ -108,7 +105,7 @@ program rhyme
       if (modulo(samr%levels(0)%iteration, 1) .eq. 0) then
          call logger%begin_section('save-chombo')
          call rhyme_chombo_write_samr(chombo, physics, samr)
-         call logger%end_section(print_duration=.true.)
+         call logger%end_section(print_duration=.true.)  ! save-chombo
       end if
 
       call logger%begin_section('hydro')
@@ -118,11 +115,11 @@ program rhyme
                                            samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger)
          end do
       end do
-      call logger%end_section(print_duration=.true.)
+      call logger%end_section(print_duration=.true.)  ! hydro
 
       samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
 
-      call logger%end_section(print_duration=.true.)
+      call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
    end do
 end program rhyme
