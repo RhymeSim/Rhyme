@@ -38,6 +38,10 @@ module rhyme_logger
       procedure :: plot_image => rhyme_logger_plot_image
       generic :: plot => plot_image
 
+      procedure :: plot_histogram => rhyme_logger_plot_histogram
+      procedure :: plot_2d_histogram => rhyme_logger_plot_2d_histogram
+      generic :: histogram => plot_histogram, plot_2d_histogram
+
       procedure :: update_time => rhyme_logger_update_time
       procedure :: time => rhyme_logger_time
       procedure :: time_and_section => rhyme_logger_time_and_section
@@ -90,6 +94,32 @@ module rhyme_logger
          type(colorscheme_t), intent(in), optional :: colorscheme
          integer, intent(in), optional :: axes_scales(2)
       end subroutine rhyme_logger_plot_image
+
+      module subroutine rhyme_logger_plot_histogram( &
+         this, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
+         class(logger_t), intent(inout) :: this
+         real(kind=8), intent(in) :: values(:)
+         integer, intent(in), optional :: nbins, bin_scale
+         real(kind=8), intent(in), optional :: domain(2)
+         logical, intent(in), optional :: normalized
+         character(len=*), intent(in), optional :: labels(2)
+         integer, intent(in), optional :: axes_scales(2)
+      end subroutine rhyme_logger_plot_histogram
+
+      module subroutine rhyme_logger_plot_2d_histogram( &
+         this, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
+         normalized, labels, cs_range, cs_scale, colorscheme, axes_scales)
+         class(logger_t), intent(inout) :: this
+         real(kind=8), intent(in) :: xvalues(:), yvalues(:)
+         integer, intent(in), optional :: nbins(2), bin_scales(2)
+         real(kind=8), intent(in), optional :: xdomain(2), ydomain(2)
+         logical, intent(in), optional :: normalized
+         character(len=*), intent(in), optional :: labels(2)
+         real(kind=8), intent(in), optional :: cs_range(2)
+         integer, intent(in), optional :: cs_scale
+         type(colorscheme_t), intent(in), optional :: colorscheme
+         integer, intent(in), optional :: axes_scales(2)
+      end subroutine rhyme_logger_plot_2d_histogram
 
       module subroutine rhyme_logger_update_time(this)
          class(logger_t), intent(inout) :: this
