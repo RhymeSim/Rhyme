@@ -98,8 +98,8 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
 
       kb_over_amu = physics%kb%v/physics%amu%v
 
-      temp_accuracy = 1d-3
-      density_accuracy = 1d-2
+      temp_accuracy = 1d-4
+      density_accuracy = 1d-4
       call logger%log('temp accuracy', '[%]', '=', [100*temp_accuracy])
       call logger%log('density accuracy', '[%]', '=', [100*density_accuracy])
 
@@ -107,12 +107,6 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
 
       do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
-         !$OMP PARALLEL DO &
-         !$OMP& SHARED(l, b, samr, chemistry, ie, physics, &
-         !$OMP& temp_accuracy, density_accuracy, kb_over_amu, p) &
-         !$OMP& PRIVATE(ntr_frac, temp_over_mu, one_over_mu, v, &
-         !$OMP& temp, density, temp_prev, density_prev, &
-         !$OMP& niterations)
          LOOP_K
          LOOP_J
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
@@ -123,8 +117,8 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
             temp = temp_over_mu/one_over_mu
             density = samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho)
 
-            temp_prev = temp/1d2
-            density_prev = density/1d2
+            temp_prev = 1d0
+            density_prev = 1d0
 
             v = samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%rho_u + NDIM - 1) &
                 /samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho)
@@ -160,7 +154,6 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
          end do
          LOOP_J_END
          LOOP_K_END
-         !$OMP END PARALLEL DO
       end do
       end do
 
@@ -170,7 +163,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
    call logger%end_section
 end subroutine rhyme_drawing_sphere
 
-function smoothing_factor(x, o, r, sigma, w) result(u)
+pure function smoothing_factor(x, o, r, sigma, w) result(u)
    implicit none
 
    real(kind=8), dimension(NDIM), intent(in) :: x, o

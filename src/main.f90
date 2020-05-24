@@ -82,8 +82,9 @@ program rhyme
 
    call logger%end_section  ! init
 
-   call logger%log('saving IC')
+   call logger%begin_section('saving-IC')
    call rhyme_chombo_write_samr_with_nickname('IC', chombo, physics, samr)
+   call logger%end_section(print_duration=.true.)  ! saving-IC
 
    ! Main loop
    do while (.true.)
