@@ -1,11 +1,11 @@
 submodule(rhyme_logger) plot_image_smod
 contains
 module subroutine rhyme_logger_plot_image( &
-   this, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
+   logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
    axes_scales)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    real(kind=8), intent(in) :: values(:, :)
    real(kind=8), intent(in) :: xrange(2), yrange(2)
    character(len=*), intent(in), optional :: labels(2)
@@ -18,11 +18,13 @@ module subroutine rhyme_logger_plot_image( &
 
    type(plotter_canvas_t) :: canvas
    type(plotter_image_t) :: image
-   character(len=32) :: l(2)
+   character(len=128) :: l(2)
    real(kind=8) :: csr(2)
    integer :: css
    type(colorscheme_t) :: cs
    integer :: axsc(2)
+
+   if (.not. logger%unicode_plotting) return
 
    if (present(labels)) then
       l = labels

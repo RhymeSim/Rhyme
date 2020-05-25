@@ -6,30 +6,30 @@ real(kind=4), parameter :: to_seconds(8) = [ &
                            ]
 
 contains
-module subroutine rhyme_logger_begin_section(this, section)
+module subroutine rhyme_logger_begin_section(logger, section)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    class(*), intent(in) :: section
 
    character(len=2048) :: section_str
 
    section_str = .toString.section
-   this%secid = this%secid + 1
+   logger%secid = logger%secid + 1
 
-   call date_and_time(values=this%section_starts_at(this%secid, :))
+   call date_and_time(values=logger%section_starts_at(logger%secid, :))
 
    if (len_trim(section_str) < 32) then
-      this%sections(this%secid) = trim(section_str)
+      logger%sections(logger%secid) = trim(section_str)
    else
-      this%sections(this%secid) = trim(section_str(:32))
+      logger%sections(logger%secid) = trim(section_str(:32))
    end if
 end subroutine rhyme_logger_begin_section
 
-module subroutine rhyme_logger_end_section(this, print_duration)
+module subroutine rhyme_logger_end_section(logger, print_duration)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    logical, intent(in), optional :: print_duration
 
    real(kind=4) :: dt
@@ -40,23 +40,23 @@ module subroutine rhyme_logger_end_section(this, print_duration)
       if (print_duration) then
          call date_and_time(values=now)
 
-         dt = sum((now - this%section_starts_at(this%secid, :))*to_seconds)
+         dt = sum((now - logger%section_starts_at(logger%secid, :))*to_seconds)
          write (dt_str, '(F0.3)') dt
-         call rhyme_logger_log(this, 'done in', dt_str, 'sec')
+         call rhyme_logger_log(logger, 'done in', dt_str, 'sec')
       end if
    end if
 
-   this%sections(this%secid) = ''
-   this%section_starts_at(this%secid, :) = 0
-   this%secid = this%secid - 1
+   logger%sections(logger%secid) = ''
+   logger%section_starts_at(logger%secid, :) = 0
+   logger%secid = logger%secid - 1
 
-   if (this%secid .eq. 0) then
-      call this%open_logfile
+   if (logger%secid .eq. 0) then
+      call logger%open_logfile
 
       write (stdout, *) ''
-      write (this%logfile_unit, *) ''
+      write (logger%logfile_unit, *) ''
 
-      call this%close_logfile
+      call logger%close_logfile
    end if
 end subroutine rhyme_logger_end_section
 end submodule section_smod

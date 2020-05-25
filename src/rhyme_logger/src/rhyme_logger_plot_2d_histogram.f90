@@ -1,11 +1,11 @@
 submodule(rhyme_logger) plot_2d_histogram_smod
 contains
 module subroutine rhyme_logger_plot_2d_histogram( &
-   this, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
+   logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
    normalized, labels, cs_range, cs_scale, colorscheme, axes_scales)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    real(kind=8), intent(in) :: xvalues(:), yvalues(:)
    integer, intent(in), optional :: nbins(2), bin_scales(2)
    real(kind=8), intent(in), optional :: xdomain(2), ydomain(2)
@@ -28,6 +28,8 @@ module subroutine rhyme_logger_plot_2d_histogram( &
    real(kind=8) :: csr(2)
    integer :: css
    type(colorscheme_t) :: cs
+
+   if (.not. logger%unicode_plotting) return
 
    call canvas%init(res(1), res(2))
 

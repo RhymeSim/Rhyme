@@ -51,6 +51,9 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, &
                     uvb, ie, draw, irs, sl, mh, chombo, logger)
 
+   ! Logging
+   call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
+
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')
    call tester%expect(ic%base_grid.toBe.128.hint.'IC grid')

@@ -26,6 +26,7 @@ module rhyme_logger
       integer :: logfile_unit = logger_const%closed
       integer :: errfile_unit = logger_const%closed
       integer :: t(8)
+      logical :: unicode_plotting = .false.
    contains
       procedure :: init => rhyme_logger_init
       procedure :: begin_section => rhyme_logger_begin_section
@@ -58,24 +59,24 @@ module rhyme_logger
    end type logger_t
 
    interface
-      module subroutine rhyme_logger_log(this, message, key, ope, val)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_log(logger, message, key, ope, val)
+         class(logger_t), intent(inout) :: logger
          character(len=*), intent(in) :: message
          class(*), intent(in), optional :: key
          character(len=*), intent(in), optional :: ope
          class(*), intent(in), optional :: val(:)
       end subroutine rhyme_logger_log
 
-      module subroutine rhyme_logger_warn(this, message, key, ope, val)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_warn(logger, message, key, ope, val)
+         class(logger_t), intent(inout) :: logger
          character(len=*), intent(in) :: message
          class(*), intent(in), optional :: key
          character(len=*), intent(in), optional :: ope
          class(*), intent(in), optional :: val(:)
       end subroutine rhyme_logger_warn
 
-      module subroutine rhyme_logger_err(this, message, key, ope, val)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_err(logger, message, key, ope, val)
+         class(logger_t), intent(inout) :: logger
          character(len=*), intent(in) :: message
          class(*), intent(in), optional :: key
          character(len=*), intent(in), optional :: ope
@@ -83,9 +84,9 @@ module rhyme_logger
       end subroutine rhyme_logger_err
 
       module subroutine rhyme_logger_plot_image( &
-         this, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
+         logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
          axes_scales)
-         class(logger_t), intent(inout) :: this
+         class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:, :)
          real(kind=8), intent(in) :: xrange(2), yrange(2)
          character(len=*), intent(in), optional :: labels(2)
@@ -96,8 +97,8 @@ module rhyme_logger
       end subroutine rhyme_logger_plot_image
 
       module subroutine rhyme_logger_plot_histogram( &
-         this, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
-         class(logger_t), intent(inout) :: this
+         logger, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
+         class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:)
          integer, intent(in), optional :: nbins, bin_scale
          real(kind=8), intent(in), optional :: domain(2)
@@ -107,9 +108,9 @@ module rhyme_logger
       end subroutine rhyme_logger_plot_histogram
 
       module subroutine rhyme_logger_plot_2d_histogram( &
-         this, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
+         logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
          normalized, labels, cs_range, cs_scale, colorscheme, axes_scales)
-         class(logger_t), intent(inout) :: this
+         class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: xvalues(:), yvalues(:)
          integer, intent(in), optional :: nbins(2), bin_scales(2)
          real(kind=8), intent(in), optional :: xdomain(2), ydomain(2)
@@ -121,97 +122,99 @@ module rhyme_logger
          integer, intent(in), optional :: axes_scales(2)
       end subroutine rhyme_logger_plot_2d_histogram
 
-      module subroutine rhyme_logger_update_time(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_update_time(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_update_time
 
-      module function rhyme_logger_time(this, color) result(time_str)
-         class(logger_t), intent(inout) :: this
+      module function rhyme_logger_time(logger, color) result(time_str)
+         class(logger_t), intent(inout) :: logger
          character(len=*), intent(in), optional :: color
          character(len=64) :: time_str
       end function rhyme_logger_time
 
-      module function rhyme_logger_time_and_section(this, color) result(tas_str)
-         class(logger_t), intent(inout) :: this
+      module function rhyme_logger_time_and_section(logger, color) result(tas_str)
+         class(logger_t), intent(inout) :: logger
          character(len=*), intent(in), optional :: color
          character(len=126) :: tas_str
       end function rhyme_logger_time_and_section
 
-      module subroutine rhyme_logger_open_logfile(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_open_logfile(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_open_logfile
 
-      module subroutine rhyme_logger_close_logfile(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_close_logfile(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_close_logfile
 
-      module subroutine rhyme_logger_open_errfile(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_open_errfile(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_open_errfile
 
-      module subroutine rhyme_logger_close_errfile(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_close_errfile(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_close_errfile
 
-      module subroutine rhyme_logger_set_colored_logo(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_set_colored_logo(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_set_colored_logo
 
-      module subroutine rhyme_logger_set_logo(this)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_set_logo(logger)
+         class(logger_t), intent(inout) :: logger
       end subroutine rhyme_logger_set_logo
 
-      module subroutine rhyme_logger_begin_section(this, section)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_begin_section(logger, section)
+         class(logger_t), intent(inout) :: logger
          class(*), intent(in) :: section
       end subroutine rhyme_logger_begin_section
 
-      module subroutine rhyme_logger_end_section(this, print_duration)
-         class(logger_t), intent(inout) :: this
+      module subroutine rhyme_logger_end_section(logger, print_duration)
+         class(logger_t), intent(inout) :: logger
          logical, intent(in), optional :: print_duration
       end subroutine rhyme_logger_end_section
    end interface
 
 contains
 
-   subroutine rhyme_logger_init(this, str)
+   subroutine rhyme_logger_init(logger, str)
       implicit none
 
-      class(logger_t), intent(inout) :: this
+      class(logger_t), intent(inout) :: logger
       character(len=*), intent(in) :: str
 
       integer :: i
 
-      if (this%initialized) return
+      if (logger%initialized) return
 
-      call this%update_time
-      call this%set_logo
-      call this%set_colored_logo
+      call rhyme_color_init
 
-      write (this%logfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)") &
-         this%t(1), '-', this%t(2), '-', this%t(3), '-', this%t(5), '-', &
-         this%t(6), '-', this%t(7), '-'//trim(.filename.str), '.log.txt'
+      call logger%update_time
+      call logger%set_logo
+      call logger%set_colored_logo
 
-      write (this%errfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)") &
-         this%t(1), '-', this%t(2), '-', this%t(3), '-', this%t(5), '-', &
-         this%t(6), '-', this%t(7), '-'//trim(.filename.str), '.err.txt'
+      write (logger%logfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)") &
+         logger%t(1), '-', logger%t(2), '-', logger%t(3), '-', logger%t(5), '-', &
+         logger%t(6), '-', logger%t(7), '-'//trim(.filename.str), '.log.txt'
+
+      write (logger%errfile, fmt="(I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,A)") &
+         logger%t(1), '-', logger%t(2), '-', logger%t(3), '-', logger%t(5), '-', &
+         logger%t(6), '-', logger%t(7), '-'//trim(.filename.str), '.err.txt'
 
       ! Logo
-      call this%open_logfile
-      call this%open_errfile
+      call logger%open_logfile
+      call logger%open_errfile
 
-      do i = 1, size(this%logo)
-         write (stdout, *) trim(this%colored_logo(i))
-         write (this%logfile_unit, *) trim(this%logo(i))
-         write (this%errfile_unit, *) trim(this%logo(i))
+      do i = 1, size(logger%logo)
+         write (stdout, *) trim(logger%colored_logo(i))
+         write (logger%logfile_unit, *) trim(logger%logo(i))
+         write (logger%errfile_unit, *) trim(logger%logo(i))
       end do
 
-      call this%close_logfile
-      call this%close_errfile
+      call logger%close_logfile
+      call logger%close_errfile
 
-      this%secid = 0
+      logger%secid = 0
 
-      this%initialized = .true.
+      logger%initialized = .true.
    end subroutine rhyme_logger_init
 
    function concat_components(msg, key, op, val, color) result(str)

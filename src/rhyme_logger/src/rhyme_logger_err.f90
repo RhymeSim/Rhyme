@@ -1,9 +1,9 @@
 submodule(rhyme_logger) err_smod
 contains
-module subroutine rhyme_logger_err(this, message, key, ope, val)
+module subroutine rhyme_logger_err(logger, message, key, ope, val)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    character(len=*), intent(in) :: message
    class(*), intent(in), optional :: key
    character(len=*), intent(in), optional :: ope
@@ -30,18 +30,18 @@ module subroutine rhyme_logger_err(this, message, key, ope, val)
       v = ''
    end if
 
-   call this%open_logfile
-   call this%open_errfile
+   call logger%open_logfile
+   call logger%open_errfile
 
    str = concat_components(message, k, op, v, tc%bl)
-   write (stdout, *) trim(this%tas(color=tc%rd))//tc%rd//' (error) '//tc%nc//adjustl(trim(str))
+   write (stdout, *) trim(logger%tas(color=tc%rd))//tc%rd//' (error) '//tc%nc//adjustl(trim(str))
 
    str = ''
    str = concat_components(message, k, op, v)
-   write (this%logfile_unit, *) trim(this%tas())//' (error) '//adjustl(trim(str))
-   write (this%errfile_unit, *) trim(this%tas())//' (error) '//adjustl(trim(str))
+   write (logger%logfile_unit, *) trim(logger%tas())//' (error) '//adjustl(trim(str))
+   write (logger%errfile_unit, *) trim(logger%tas())//' (error) '//adjustl(trim(str))
 
-   call this%close_logfile
-   call this%close_errfile
+   call logger%close_logfile
+   call logger%close_errfile
 end subroutine rhyme_logger_err
 end submodule err_smod

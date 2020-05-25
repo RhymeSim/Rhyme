@@ -11,6 +11,8 @@ contains
 
       if (factory_type == 'default') then
          call logger%log(':)')
+      else if (factory_type == 'unicode-plotting') then
+         logger%unicode_plotting = .true.
       else
          print *, 'Unknonw logger factory type!', factory_type
       end if

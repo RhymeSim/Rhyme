@@ -1,3 +1,7 @@
+# **Logging**
+unicode_plotting = enable
+
+
 # **Initial Condition**
 ic_type = simple
 

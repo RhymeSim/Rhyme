@@ -10,6 +10,8 @@ logical function rhyme_logger_plot_2d_histogram_test() result(failed)
    integer :: seed = 1234
    real(kind=8) :: xvalues(vlen), yvalues(vlen), pi
 
+   logger = logger_factory_generate('unicode-plotting')
+
    call random_seed(seed)
    call random_number(xvalues)
    call random_number(yvalues)

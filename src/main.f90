@@ -55,7 +55,6 @@ program rhyme
    call logger%end_section
 
    call rhyme_nombre_init
-   call rhyme_color_init  ! TODO: move this to logger_init
 
    ! Reading parameters and converting them to code units
    call load_params(param_file, chemistry, physics, ic, bc, cfl, &

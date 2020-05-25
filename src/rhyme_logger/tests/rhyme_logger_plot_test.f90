@@ -1,5 +1,5 @@
 logical function rhyme_logger_plot_test() result(failed)
-   use rhyme_logger
+   use rhyme_logger_factory
 
    implicit none
 
@@ -8,6 +8,8 @@ logical function rhyme_logger_plot_test() result(failed)
    integer :: i, j, seed = 1234
    real(kind=8) :: x, y
    real(kind=8) :: values(-512:512, -512:512)
+
+   logger = logger_factory_generate('unicode-plotting')
 
    call random_seed(seed)
    call random_number(values)

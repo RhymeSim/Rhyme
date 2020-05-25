@@ -44,6 +44,15 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    ! Generic switches
    call on_off_switch%add('enable', .true.)
    call on_off_switch%add('disable', .false.)
+   call on_off_switch%add('true', .true.)
+   call on_off_switch%add('false', .false.)
+   call on_off_switch%add('.true.', .true.)
+   call on_off_switch%add('.false.', .false.)
+   call on_off_switch%add('on', .true.)
+   call on_off_switch%add('off', .false.)
+
+   ! Logging
+   call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
 
    ! Initial Condition
    call ic_types%add('simple', icid%simple)

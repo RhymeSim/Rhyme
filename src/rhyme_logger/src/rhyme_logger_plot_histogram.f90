@@ -1,10 +1,10 @@
 submodule(rhyme_logger) plot_histogram_smod
 contains
 module subroutine rhyme_logger_plot_histogram( &
-   this, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
+   logger, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    real(kind=8), intent(in) :: values(:)
    integer, intent(in), optional :: nbins, bin_scale
    real(kind=8), intent(in), optional :: domain(2)
@@ -21,6 +21,8 @@ module subroutine rhyme_logger_plot_histogram( &
    logical :: norm
    character(len=128) :: l(2)
    real(kind=8) :: d(2)
+
+   if (.not. logger%unicode_plotting) return
 
    if (present(nbins)) then
       nb = nbins

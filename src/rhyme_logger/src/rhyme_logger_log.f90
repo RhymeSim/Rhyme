@@ -1,9 +1,9 @@
 submodule(rhyme_logger) log_smod
 contains
-module subroutine rhyme_logger_log(this, message, key, ope, val)
+module subroutine rhyme_logger_log(logger, message, key, ope, val)
    implicit none
 
-   class(logger_t), intent(inout) :: this
+   class(logger_t), intent(inout) :: logger
    character(len=*), intent(in) :: message
    class(*), intent(in), optional :: key
    character(len=*), intent(in), optional :: ope
@@ -30,15 +30,15 @@ module subroutine rhyme_logger_log(this, message, key, ope, val)
       v = ''
    end if
 
-   call this%open_logfile
+   call logger%open_logfile
 
    str = concat_components(message, k, op, v, tc%bl)
-   write (stdout, *) trim(this%tas(color=tc%gn))//' '//adjustl(trim(str))
+   write (stdout, *) trim(logger%tas(color=tc%gn))//' '//adjustl(trim(str))
 
    str = ''
    str = concat_components(message, k, op, v)
-   write (this%logfile_unit, *) trim(this%tas())//' '//adjustl(trim(str))
+   write (logger%logfile_unit, *) trim(logger%tas())//' '//adjustl(trim(str))
 
-   call this%close_logfile
+   call logger%close_logfile
 end subroutine rhyme_logger_log
 end submodule log_smod
