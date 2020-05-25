@@ -53,6 +53,8 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
+   call tester%expect(logger%projection_axis.toBe.lgid%z.hint.'Logging projection axis')
+   call tester%expect(logger%colormap.toBe.csid%viridis.hint.'Logging projection axis')
 
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')

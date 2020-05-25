@@ -2,7 +2,7 @@ submodule(rhyme_logger) plot_image_smod
 contains
 module subroutine rhyme_logger_plot_image( &
    logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
-   axes_scales)
+   axes_scales, auto_setup)
    implicit none
 
    class(logger_t), intent(inout) :: logger
@@ -13,18 +13,32 @@ module subroutine rhyme_logger_plot_image( &
    integer, intent(in), optional :: cs_scale
    type(colorscheme_t), intent(in), optional :: colorscheme
    integer, intent(in), optional :: axes_scales(2)
+   logical, intent(in), optional :: auto_setup
 
    integer, parameter :: res = 72
 
    type(plotter_canvas_t) :: canvas
    type(plotter_image_t) :: image
    character(len=128) :: l(2)
-   real(kind=8) :: csr(2)
+   real(kind=8) :: csr(2), cs_sign_range, minval_values, maxval_values
    integer :: css
    type(colorscheme_t) :: cs
    integer :: axsc(2)
+   logical :: as, min_max_values_are_equal
 
    if (.not. logger%unicode_plotting) return
+
+   if (present(auto_setup)) then
+      as = auto_setup
+      minval_values = minval(values)
+      maxval_values = maxval(values)
+      cs_sign_range = minval_values*maxval_values
+      min_max_values_are_equal = abs(maxval_values) > tiny(0d0) .and. &
+                                 abs((minval_values - maxval_values)/maxval_values) < epsilon(0d0)
+   else
+      as = .false.
+      cs_sign_range = 0d0
+   end if
 
    if (present(labels)) then
       l = labels
@@ -35,13 +49,39 @@ module subroutine rhyme_logger_plot_image( &
    if (present(cs_range)) then
       csr = cs_range
    else
-      csr = [minval(values), maxval(values)]
+      if (as) then
+         if (min_max_values_are_equal) then
+            csr = [ &
+                  minval_values - epsilon(0d0)*minval_values, &
+                  maxval_values + epsilon(0d0)*maxval_values]
+         else if (cs_sign_range < 0d0) then
+            csr = [minval_values, maxval_values]
+         else if (cs_sign_range > 0d0) then
+            csr = [minval_values, maxval_values]
+         else
+            csr = [minval(values, values > 0d0), maxval_values]
+         end if
+      else
+         csr = [minval_values, maxval_values]
+      end if
    end if
 
    if (present(cs_scale)) then
       css = cs_scale
    else
-      css = plid%linear
+      if (as) then
+         if (min_max_values_are_equal) then
+            css = plid%log
+         else if (cs_sign_range < 0d0) then
+            css = plid%linear
+         else if (cs_sign_range > 0d0) then
+            css = plid%log
+         else
+            css = plid%log
+         end if
+      else
+         css = plid%linear
+      end if
    end if
 
    if (present(colorscheme)) then

@@ -21,7 +21,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(logger_t), intent(inout) :: logger
 
    type(config_t) :: config
-   type(config_switch_t) :: on_off_switch
+   type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch
    type(config_switch_t) :: ic_types, ic_snapshot_types
    type(config_switch_t) :: bc_types
    type(config_switch_t) :: gas_types
@@ -30,7 +30,6 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(config_switch_t) :: ionization_cases, uvb_models
    type(config_switch_t) :: limiter_types
    type(config_switch_t) :: solver_types
-   type(config_switch_t) :: axes
 
    type(shape_t), pointer :: shape
    type(perturbation_t), pointer :: perturb
@@ -51,8 +50,18 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    call on_off_switch%add('on', .true.)
    call on_off_switch%add('off', .false.)
 
+   call axis_switch%add('x', 1)
+   call axis_switch%add('y', 2)
+   call axis_switch%add('z', 3)
+
+   call colormap_switch%add('rainbow', csid%rainbow)
+   call colormap_switch%add('viridis', csid%viridis)
+   call colormap_switch%add('magma_grey', csid%magma_grey)
+   call colormap_switch%add('smooth_rainbow', csid%smooth_rainbow)
+
    ! Logging
    call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
+   call config%read('projection_axis'.at.1, logger%projection_axis, logger, axis_switch)
 
    ! Initial Condition
    call ic_types%add('simple', icid%simple)
@@ -160,14 +169,6 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
 
    n_occur = config%occur('shape')
 
-   call axes%add('x', samrid%x)
-#if NDIM > 1
-   call axes%add('y', samrid%y)
-#endif
-#if NDIM > 2
-   call axes%add('z', samrid%z)
-#endif
-
    call filling_types%add('uniform', drid%uniform)
 
    call filling_modes%add('add', drid%add)
@@ -209,7 +210,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
 
 #if NDIM > 1
       case (drid%smoothed_slab_2d)
-         call config%read('shape'.at.2.occur.i.hint.'axis', shape%slab_2d%axis, logger, axes)
+         call config%read('shape'.at.2.occur.i.hint.'axis', shape%slab_2d%axis, logger, axis_switch)
          call config%read('shape'.at.3.occur.i.hint.'positions', shape%slab_2d%pos(1:2), logger)
          call config%read('shape'.at.5.occur.i.hint.'sigmas', shape%slab_2d%sigma(1:2), logger)
 

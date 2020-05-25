@@ -1,5 +1,7 @@
 # **Logging**
 unicode_plotting = enable
+projection_axis = z
+colormap = viridis
 
 
 # **Initial Condition**

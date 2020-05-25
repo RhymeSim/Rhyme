@@ -5,6 +5,13 @@ module rhyme_logger
 
    implicit none
 
+   type, private :: logger_indices_t
+      integer :: unset = -1
+      integer :: x = 1, y = 2, z = 3
+   end type logger_indices_t
+
+   type(logger_indices_t), parameter :: lgid = logger_indices_t()
+
    type, private :: logger_const_t
       integer :: closed = -10
       character(len=45) :: time_fmt = "(A,I4,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A,I0.2,A)"
@@ -27,6 +34,8 @@ module rhyme_logger
       integer :: errfile_unit = logger_const%closed
       integer :: t(8)
       logical :: unicode_plotting = .false.
+      integer :: projection_axis = lgid%unset
+      integer :: colormap = lgid%unset
    contains
       procedure :: init => rhyme_logger_init
       procedure :: begin_section => rhyme_logger_begin_section
@@ -85,7 +94,7 @@ module rhyme_logger
 
       module subroutine rhyme_logger_plot_image( &
          logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
-         axes_scales)
+         axes_scales, auto_setup)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:, :)
          real(kind=8), intent(in) :: xrange(2), yrange(2)
@@ -94,6 +103,7 @@ module rhyme_logger
          integer, intent(in), optional :: cs_scale
          type(colorscheme_t), intent(in), optional :: colorscheme
          integer, intent(in), optional :: axes_scales(2)
+         logical, intent(in), optional :: auto_setup
       end subroutine rhyme_logger_plot_image
 
       module subroutine rhyme_logger_plot_histogram( &

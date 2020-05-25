@@ -8,7 +8,7 @@ module subroutine rhyme_chombo_write_samr_with_nickname(nickname, chombo, physic
    type(physics_t), intent(in) :: physics
    type(samr_t), intent(in) :: samr
 
-   character(len=256) :: old_nickname
+   character(len=1024) :: old_nickname
 
    old_nickname = chombo%nickname
    chombo%nickname = nickname

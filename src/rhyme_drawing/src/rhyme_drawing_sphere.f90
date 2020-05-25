@@ -51,15 +51,18 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
    r_px = shape%sphere%r/box_lengths(1)*ic%base_grid(1)
    sigma_px = shape%sphere%sigma/box_lengths(1)*ic%base_grid(1)
 
-   call logger%log('', 'origin_px', '=', origin_px)
-   call logger%log('', 'r_px', '=', [r_px])
-   call logger%log('', 'sigma_px', '=', [sigma_px])
+   call logger%log('origin', '[px]', '=', origin_px)
+   call logger%log('r', '[px]', '=', [r_px])
+   call logger%log('sigma', '[px]', '=', [sigma_px])
+   call logger%log('color1', '', '=', shape%fill%colors(:, 1))
+   call logger%log('color2', '', '=', shape%fill%colors(:, 2))
 
    select case (shape%fill%modes(1))
    case (drid%add)
+      call logger%err('Add mode is not implemented yet!')
 
    case (drid%absolute)
-      call logger%begin_section('absolute')
+      call logger%log('Absolute mode')
       do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
          LOOP_K
@@ -80,7 +83,6 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
          LOOP_K_END
       end do
       end do
-      call logger%end_section
    case default
       call logger%err('Unknonw mode!')
    end select

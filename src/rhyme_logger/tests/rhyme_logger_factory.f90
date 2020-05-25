@@ -9,6 +9,9 @@ contains
       character(len=*), intent(in) :: factory_type
       type(logger_t) :: logger
 
+      logger%projection_axis = lgid%z
+      logger%colormap = csid%rainbow
+
       if (factory_type == 'default') then
          call logger%log(':)')
       else if (factory_type == 'unicode-plotting') then

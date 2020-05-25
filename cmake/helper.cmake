@@ -50,6 +50,6 @@ add_custom_target(
   inotifywait --excludei /*build*/ -m -r -e modify ${CMAKE_CURRENT_SOURCE_DIR} \
   | while read -r path action file; do \
     echo \"$path $action $file\"; \
-    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 10; \
+    rm -rf CMakeFiles tests/CMakeFiles; cmake .. && make && ctest --output-on-failure --timeout 100; \
   done"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
