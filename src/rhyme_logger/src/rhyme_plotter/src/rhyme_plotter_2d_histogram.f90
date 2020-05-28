@@ -48,8 +48,8 @@ pure module function rhyme_plotter_two_d_histogram( &
    hist2d%counts = 0d0
 
    do i = 1, size(x)
-      if (x(i) < hist2d%x%min .and. x(i) > hist2d%x%max) cycle
-      if (y(i) < hist2d%y%min .and. y(i) > hist2d%y%max) cycle
+      if (x(i) < hist2d%x%min .or. x(i) > hist2d%x%max) cycle
+      if (y(i) < hist2d%y%min .or. y(i) > hist2d%y%max) cycle
 
       total_number = total_number + 1
 

@@ -26,6 +26,7 @@ set(srcs
     src/rhyme_logger_plot_image.f90
     src/rhyme_logger_plot_histogram.f90
     src/rhyme_logger_plot_2d_histogram.f90
+    src/rhyme_logger_plot_2d_histogram_3d.f90
     src/rhyme_logger_section.f90)
 
 set(rhyme_src_dir ..)

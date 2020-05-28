@@ -13,6 +13,7 @@ module rhyme_param_parser
    use rhyme_slope_limiter
    use rhyme_muscl_hancock
    use rhyme_chombo
+   use rhyme_report
    use rhyme_logger
 
    implicit none
@@ -45,8 +46,9 @@ module rhyme_param_parser
    end type config_term_t
 
    interface
-      module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                                    thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
+      module subroutine load_params( &
+         param_file, chemistry, physics, ic, bc, cfl, thermo, uvb, &
+         ie, draw, irs, sl, mh, chombo, report, logger)
          character(len=1024), intent(in) :: param_file
          type(chemistry_t), intent(inout) :: chemistry
          type(physics_t), intent(inout) :: physics
@@ -61,6 +63,7 @@ module rhyme_param_parser
          type(slope_limiter_t), intent(inout) :: sl
          type(muscl_hancock_t), intent(inout) :: mh
          type(chombo_t), intent(inout) :: chombo
+         type(report_t), intent(inout) :: report
          type(logger_t), intent(inout) :: logger
       end subroutine load_params
 

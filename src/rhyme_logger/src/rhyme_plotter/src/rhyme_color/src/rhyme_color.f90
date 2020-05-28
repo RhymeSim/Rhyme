@@ -59,6 +59,7 @@ module rhyme_color
 
    type colorscheme_t
       integer :: n = 0
+      character(len=32) :: name = ''
       type(color_t), dimension(-2:csid%pallet_len) :: pallet
       character(len=1), dimension(-2:csid%pallet_len) :: chars = '0'
    end type colorscheme_t

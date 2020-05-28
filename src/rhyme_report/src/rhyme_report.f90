@@ -79,6 +79,7 @@ module rhyme_report
    end type report_histogram_t
 
    type report_t
+      integer :: every = repid%unset
       type(report_pseudocolor_t), pointer :: pseudocolors => null()
       type(report_2d_histogram_t), pointer :: phase_diagrams => null()
       type(report_histogram_t), pointer :: histograms => null()

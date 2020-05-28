@@ -1,7 +1,8 @@
 submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
-module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
-                              thermo, uvb, ie, draw, irs, sl, mh, chombo, logger)
+module subroutine load_params( &
+   param_file, chemistry, physics, ic, bc, cfl, thermo, uvb, &
+   ie, draw, irs, sl, mh, chombo, report, logger)
    implicit none
 
    character(len=1024), intent(in) :: param_file
@@ -18,10 +19,11 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    type(slope_limiter_t), intent(inout) :: sl
    type(muscl_hancock_t), intent(inout) :: mh
    type(chombo_t), intent(inout) :: chombo
+   type(report_t), intent(inout) :: report
    type(logger_t), intent(inout) :: logger
 
    type(config_t) :: config
-   type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch
+   type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch, report_switch
    type(config_switch_t) :: ic_types, ic_snapshot_types
    type(config_switch_t) :: bc_types
    type(config_switch_t) :: gas_types
@@ -33,6 +35,7 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
 
    type(shape_t), pointer :: shape
    type(perturbation_t), pointer :: perturb
+   integer :: report_type
 
    integer :: shape_type, perturb_type, n_occur, i
 
@@ -62,6 +65,53 @@ module subroutine load_params(param_file, chemistry, physics, ic, bc, cfl, &
    ! Logging
    call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
    call config%read('projection_axis'.at.1, logger%projection_axis, logger, axis_switch)
+   call config%read('colormap'.at.1, logger%colormap, logger, colormap_switch)
+
+   ! Report
+   call report_switch%add('p-temp', repid%p_temp)
+   call report_switch%add('rho-temp', repid%rho_temp)
+   call report_switch%add('v2', repid%v2)
+   call report_switch%add('|v|', repid%abs_v)
+   call report_switch%add('w', repid%w)
+   call report_switch%add('v', repid%v)
+   call report_switch%add('u', repid%u)
+   call report_switch%add('rho', repid%rho)
+   call report_switch%add('rho_u', repid%rho_u)
+#if NDIM > 1
+   call report_switch%add('rho_v', repid%rho_v)
+#endif
+#if NDIM > 2
+   call report_switch%add('rho_w', repid%rho_w)
+#endif
+   call report_switch%add('e_tot', repid%e_tot)
+   call report_switch%add('temp', repid%temp)
+   call report_switch%add('ntr_frac_0', repid%ntr_frac_0)
+#if NSPE > 1
+   call report_switch%add('ntr_frac_1', repid%ntr_frac_1)
+#endif
+#if NSPE > 2
+   call report_switch%add('ntr_frac_2', repid%ntr_frac_2)
+#endif
+
+   call config%read('report_frequency'.at.1, report%every, logger)
+
+   n_occur = config%occur('report_pseudocolor')
+   do i = 1, n_occur
+      call config%read('report_pseudocolor'.at.1.occur.i, report_type, logger, report_switch)
+      call report%new_psudocolor(report_type)
+   end do
+
+   n_occur = config%occur('report_phase_diagram')
+   do i = 1, n_occur
+      call config%read('report_phase_diagram'.at.1.occur.i, report_type, logger, report_switch)
+      call report%new_phase_diagram(report_type)
+   end do
+
+   n_occur = config%occur('report_histogram')
+   do i = 1, n_occur
+      call config%read('report_histogram'.at.1.occur.i, report_type, logger, report_switch)
+      call report%new_histogram(report_type)
+   end do
 
    ! Initial Condition
    call ic_types%add('simple', icid%simple)

@@ -2,7 +2,8 @@ submodule(rhyme_logger) plot_2d_histogram_smod
 contains
 module subroutine rhyme_logger_plot_2d_histogram( &
    logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
-   normalized, labels, cs_range, cs_scale, colorscheme, axes_scales)
+   normalized, labels, cs_range, cs_scale, colorscheme, axes_scales, &
+   resolution)
    implicit none
 
    class(logger_t), intent(inout) :: logger
@@ -15,8 +16,7 @@ module subroutine rhyme_logger_plot_2d_histogram( &
    integer, intent(in), optional :: cs_scale
    type(colorscheme_t), intent(in), optional :: colorscheme
    integer, intent(in), optional :: axes_scales(2)
-
-   integer, parameter :: res(2) = [72, 30]
+   integer, intent(in), optional :: resolution(2)
 
    type(plotter_canvas_t) :: canvas
    type(plotter_2d_histogram_t) :: histogram
@@ -28,16 +28,27 @@ module subroutine rhyme_logger_plot_2d_histogram( &
    real(kind=8) :: csr(2)
    integer :: css
    type(colorscheme_t) :: cs
+   integer :: res(2)
 
    if (.not. logger%unicode_plotting) return
 
-   call canvas%init(res(1), res(2))
+   if (present(resolution)) then
+      res = resolution
+   else
+      res = [72, 60]
+   end if
+
+   call logger%log('resolution', 'px', '=', res)
+
+   call canvas%init(res(1), res(2)/2)
 
    if (present(nbins)) then
       nb = nbins
    else
-      nb = [res(1), 2*res(2)]
+      nb = [res(1), res(2)]
    end if
+
+   call logger%log('nbins', '', '=', nb)
 
    if (present(bin_scales)) then
       bs = bin_scales
@@ -45,23 +56,41 @@ module subroutine rhyme_logger_plot_2d_histogram( &
       bs = [plid%linear, plid%linear]
    end if
 
+   call logger%log('bin scales', '', '=', bs)
+
    if (present(axes_scales)) then
       axsc = axes_scales
    else
       axsc = [plid%linear, plid%linear]
    end if
 
+   call logger%log('axes scales', '', '=', axsc)
+
    if (present(xdomain)) then
       xd = xdomain
    else
-      xd = [minval(xvalues), maxval(xvalues)]
+      if (present(axes_scales) .and. axes_scales(1) == plid%log) then
+         xd(1) = minval(xvalues, xvalues > 0d0)
+         xd(2) = maxval(xvalues, yvalues > 0d0)
+      else
+         xd = [minval(xvalues), maxval(xvalues)]
+      end if
    end if
+
+   call logger%log('x-axis range', '', '=', xd)
 
    if (present(ydomain)) then
       yd = ydomain
    else
-      yd = [minval(yvalues), maxval(yvalues)]
+      if (present(axes_scales) .and. axes_scales(2) == plid%log) then
+         yd(1) = minval(yvalues, yvalues > 0d0)
+         yd(2) = maxval(yvalues, yvalues > 0d0)
+      else
+         yd = [minval(yvalues), maxval(yvalues)]
+      end if
    end if
+
+   call logger%log('y-axis range', '', '=', yd)
 
    if (present(normalized)) then
       norm = normalized
@@ -69,27 +98,32 @@ module subroutine rhyme_logger_plot_2d_histogram( &
       norm = .false.
    end if
 
+   call logger%log('normalized', '', '=', [norm])
+
    if (present(labels)) then
       l = labels
    else
       l = ['X', 'Y']
    end if
 
+   call logger%log('calculating 2d histogram')
    histogram = rhyme_plotter_two_d_histogram( &
                xvalues, yvalues, nb(1), nb(2), bs(1), bs(2), &
                xminmax=xd, yminmax=yd, normalized=norm)
 
-   print *, minval(histogram%counts(1:nb(1), 1:nb(2)))
-   print *, maxval(histogram%counts(1:nb(1), 1:nb(2)))
-
    if (present(cs_range)) then
       csr = cs_range
    else
-      csr = [ &
-            minval(histogram%counts(1:nb(1), 1:nb(2))), &
-            maxval(histogram%counts(1:nb(1), 1:nb(2))) &
-            ]
+      if (present(cs_scale) .and. cs_scale == plid%log) then
+         csr(1) = minval(histogram%counts(1:nb(1), 1:nb(2)), histogram%counts(1:nb(1), 1:nb(2)) > 0d0)
+         csr(2) = maxval(histogram%counts(1:nb(1), 1:nb(2)), histogram%counts(1:nb(1), 1:nb(2)) > 0d0)
+      else
+         csr(1) = minval(histogram%counts(1:nb(1), 1:nb(2)))
+         csr(2) = maxval(histogram%counts(1:nb(1), 1:nb(2)))
+      end if
    end if
+
+   call logger%log('color scheme', '(range)', '=', csr)
 
    if (present(cs_scale)) then
       css = cs_scale
@@ -97,11 +131,15 @@ module subroutine rhyme_logger_plot_2d_histogram( &
       css = plid%linear
    end if
 
+   call logger%log('color scheme', '(scale)', '=', [css])
+
    if (present(colorscheme)) then
       cs = colorscheme
    else
-      cs = colorschemes(csid%magma_grey)
+      cs = colorschemes(logger%colormap)
    end if
+
+   call logger%log('color scheme', '', '=', [cs%name])
 
    call canvas%add_axis( &
       plid%bottom, 7, xd, scale=axsc(1), label=l(1), color=tc%blue)

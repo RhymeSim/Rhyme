@@ -24,6 +24,7 @@ set(deps
     rhyme_muscl_hancock
     rhyme_chombo
     rhyme_initial_condition
+    rhyme_report
     rhyme_logger)
 
 set(internal_deps)

@@ -4,6 +4,17 @@ projection_axis = z
 colormap = viridis
 
 
+# Report
+report_pseudocolor = rho
+report_pseudocolor = temp
+report_pseudocolor = ntr_frac_0
+report_phase_diagram = rho-temp
+report_phase_diagram = p-temp
+report_histogram = |v|
+report_histogram = e_tot
+report_frequency = 100  # steps
+
+
 # **Initial Condition**
 ic_type = simple
 

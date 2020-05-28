@@ -50,7 +50,8 @@ module rhyme_logger
 
       procedure :: plot_histogram => rhyme_logger_plot_histogram
       procedure :: plot_2d_histogram => rhyme_logger_plot_2d_histogram
-      generic :: histogram => plot_histogram, plot_2d_histogram
+      procedure :: plot_2d_histogram_3d => rhyme_logger_plot_2d_histogram_3d
+      generic :: histogram => plot_histogram, plot_2d_histogram, plot_2d_histogram_3d
 
       procedure :: update_time => rhyme_logger_update_time
       procedure :: time => rhyme_logger_time
@@ -64,7 +65,6 @@ module rhyme_logger
       procedure :: close_logfile => rhyme_logger_close_logfile
       procedure :: open_errfile => rhyme_logger_open_errfile
       procedure :: close_errfile => rhyme_logger_close_errfile
-
    end type logger_t
 
    interface
@@ -94,7 +94,7 @@ module rhyme_logger
 
       module subroutine rhyme_logger_plot_image( &
          logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
-         axes_scales, auto_setup)
+         axes_scales, auto_setup, resolution)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:, :)
          real(kind=8), intent(in) :: xrange(2), yrange(2)
@@ -104,10 +104,12 @@ module rhyme_logger
          type(colorscheme_t), intent(in), optional :: colorscheme
          integer, intent(in), optional :: axes_scales(2)
          logical, intent(in), optional :: auto_setup
+         integer, intent(in), optional :: resolution(2)
       end subroutine rhyme_logger_plot_image
 
       module subroutine rhyme_logger_plot_histogram( &
-         logger, values, nbins, bin_scale, domain, normalized, labels, axes_scales)
+         logger, values, nbins, bin_scale, domain, normalized, labels, &
+         axes_scales, resolution)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:)
          integer, intent(in), optional :: nbins, bin_scale
@@ -115,11 +117,13 @@ module rhyme_logger
          logical, intent(in), optional :: normalized
          character(len=*), intent(in), optional :: labels(2)
          integer, intent(in), optional :: axes_scales(2)
+         integer, intent(in), optional :: resolution(2)
       end subroutine rhyme_logger_plot_histogram
 
       module subroutine rhyme_logger_plot_2d_histogram( &
          logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
-         normalized, labels, cs_range, cs_scale, colorscheme, axes_scales)
+         normalized, labels, cs_range, cs_scale, colorscheme, axes_scales, &
+         resolution)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: xvalues(:), yvalues(:)
          integer, intent(in), optional :: nbins(2), bin_scales(2)
@@ -130,7 +134,25 @@ module rhyme_logger
          integer, intent(in), optional :: cs_scale
          type(colorscheme_t), intent(in), optional :: colorscheme
          integer, intent(in), optional :: axes_scales(2)
+         integer, intent(in), optional :: resolution(2)
       end subroutine rhyme_logger_plot_2d_histogram
+
+      module subroutine rhyme_logger_plot_2d_histogram_3d( &
+         logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
+         normalized, labels, cs_range, cs_scale, colorscheme, axes_scales, &
+         resolution)
+         class(logger_t), intent(inout) :: logger
+         real(kind=8), intent(in) :: xvalues(:, :, :), yvalues(:, :, :)
+         integer, intent(in), optional :: nbins(2), bin_scales(2)
+         real(kind=8), intent(in), optional :: xdomain(2), ydomain(2)
+         logical, intent(in), optional :: normalized
+         character(len=*), intent(in), optional :: labels(2)
+         real(kind=8), intent(in), optional :: cs_range(2)
+         integer, intent(in), optional :: cs_scale
+         type(colorscheme_t), intent(in), optional :: colorscheme
+         integer, intent(in), optional :: axes_scales(2)
+         integer, intent(in), optional :: resolution(2)
+      end subroutine rhyme_logger_plot_2d_histogram_3d
 
       module subroutine rhyme_logger_update_time(logger)
          class(logger_t), intent(inout) :: logger

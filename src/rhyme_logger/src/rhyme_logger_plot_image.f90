@@ -2,7 +2,7 @@ submodule(rhyme_logger) plot_image_smod
 contains
 module subroutine rhyme_logger_plot_image( &
    logger, values, xrange, yrange, labels, cs_range, cs_scale, colorscheme, &
-   axes_scales, auto_setup)
+   axes_scales, auto_setup, resolution)
    implicit none
 
    class(logger_t), intent(inout) :: logger
@@ -14,8 +14,7 @@ module subroutine rhyme_logger_plot_image( &
    type(colorscheme_t), intent(in), optional :: colorscheme
    integer, intent(in), optional :: axes_scales(2)
    logical, intent(in), optional :: auto_setup
-
-   integer, parameter :: res = 72
+   integer, intent(in), optional :: resolution(2)
 
    type(plotter_canvas_t) :: canvas
    type(plotter_image_t) :: image
@@ -25,16 +24,21 @@ module subroutine rhyme_logger_plot_image( &
    type(colorscheme_t) :: cs
    integer :: axsc(2)
    logical :: as, min_max_values_are_equal
+   integer :: res(2)
 
    if (.not. logger%unicode_plotting) return
+
+   minval_values = -huge(0d0)
+   maxval_values = huge(0d0)
 
    if (present(auto_setup)) then
       as = auto_setup
       minval_values = minval(values)
       maxval_values = maxval(values)
       cs_sign_range = minval_values*maxval_values
-      min_max_values_are_equal = abs(maxval_values) > tiny(0d0) .and. &
-                                 abs((minval_values - maxval_values)/maxval_values) < epsilon(0d0)
+      min_max_values_are_equal = &
+         abs(maxval_values) > tiny(0d0) .and. &
+         abs((minval_values - maxval_values)/maxval_values) < epsilon(0d0)
    else
       as = .false.
       cs_sign_range = 0d0
@@ -87,7 +91,7 @@ module subroutine rhyme_logger_plot_image( &
    if (present(colorscheme)) then
       cs = colorscheme
    else
-      cs = colorschemes(csid%magma_grey)
+      cs = colorschemes(logger%colormap)
    end if
 
    if (present(axes_scales)) then
@@ -96,7 +100,13 @@ module subroutine rhyme_logger_plot_image( &
       axsc = [plid%linear, plid%linear]
    end if
 
-   call canvas%init(res, res/2)
+   if (present(resolution)) then
+      res = resolution
+   else
+      res = [72, 72]
+   end if
+
+   call canvas%init(res(1), res(2)/2)
 
    image%x%scale = axsc(1)
    image%x%min = xrange(1)

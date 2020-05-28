@@ -40,6 +40,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(slope_limiter_t) :: sl
    type(muscl_hancock_t) :: mh
    type(chombo_t) :: chombo
+   type(report_t) :: report
    type(logger_t) :: logger
 
    character(len=1024), parameter :: param_file = PARAM_FILE_NAME
@@ -48,13 +49,27 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    logger = logger_factory_generate('default')
 
-   call load_params(param_file, chemistry, physics, ic, bc, cfl, thermo, &
-                    uvb, ie, draw, irs, sl, mh, chombo, logger)
+   call load_params( &
+      param_file, chemistry, physics, ic, bc, cfl, thermo, &
+      uvb, ie, draw, irs, sl, mh, chombo, report, logger)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
    call tester%expect(logger%projection_axis.toBe.lgid%z.hint.'Logging projection axis')
    call tester%expect(logger%colormap.toBe.csid%viridis.hint.'Logging projection axis')
+
+   ! Report
+   call tester%expect(report%every.toBe.100.hint.'Report frequency')
+   call tester%expect(report%pseudocolors%type.toBe.repid%rho.hint.'Report pseudocolors rho')
+   call tester%expect(report%pseudocolors%next%type.toBe.repid%temp.hint.'Report pseudocolors temp')
+   call tester%expect(report%pseudocolors%next%next%type.toBe.repid%ntr_frac_0.hint.'Report pseudocolors ntr_frac_0')
+   call tester%expect(associated(report%pseudocolors%next%next%next) .toBe..false..hint.'Report pseudocolors last')
+   call tester%expect(report%phase_diagrams%type.toBe.repid%rho_temp.hint.'Report phase diagrams rho-temp')
+   call tester%expect(report%phase_diagrams%next%type.toBe.repid%p_temp.hint.'Report phase diagrams p-temp')
+   call tester%expect(associated(report%phase_diagrams%next%next) .toBe..false..hint.'Report phase diagrams last')
+   call tester%expect(report%histograms%type.toBe.repid%abs_v.hint.'Report histograms |v|')
+   call tester%expect(report%histograms%next%type.toBe.repid%e_tot.hint.'Report histograms e_tot')
+   call tester%expect(associated(report%histograms%next%next) .toBe..false..hint.'Report histograms last')
 
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')
