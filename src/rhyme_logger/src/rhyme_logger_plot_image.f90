@@ -25,6 +25,7 @@ module subroutine rhyme_logger_plot_image( &
    integer :: axsc(2)
    logical :: as, min_max_values_are_equal
    integer :: res(2)
+   real(kind=8) :: factor_ratio(2)
 
    if (.not. logger%unicode_plotting) return
 
@@ -101,7 +102,9 @@ module subroutine rhyme_logger_plot_image( &
    end if
 
    if (present(resolution)) then
-      res = resolution
+      factor_ratio = 72./resolution
+      res(1) = min(int(factor_ratio(1)*resolution(1)), 72)
+      res(2) = max(int(factor_ratio(2)*resolution(2)), 1)
    else
       res = [72, 72]
    end if

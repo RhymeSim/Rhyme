@@ -12,6 +12,8 @@ contains
 
       integer :: l, nlevels
 
+      nlevels = 0
+
       if (factory_type == 'uniform') then
          nlevels = 1
       else if (factory_type == '4levels') then

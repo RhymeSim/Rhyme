@@ -10,7 +10,7 @@ module subroutine rhyme_report_plot_histograms(report, samr, logger)
    type(report_histogram_t), pointer :: pntr
    real(kind=8), allocatable :: v(:)
    character(len=32) :: l(2)
-   integer :: dims(3)
+   integer :: dims(NDIM)
    type(samr_box_t) :: box
 
    if (.not. associated(report%histograms)) return
@@ -57,6 +57,7 @@ module subroutine rhyme_report_plot_histograms(report, samr, logger)
             v, bin_scale=plid%linear, &
             axes_scales=[plid%linear, plid%linear], &
             labels=l, normalized=.true.)
+#if NDIM > 2
       case (repid%w)
          v = pack( &
              box%cells(IDX IDY IDZ, cid%rho_w)/box%cells(IDX IDY IDZ, cid%rho), .true.)
@@ -65,6 +66,8 @@ module subroutine rhyme_report_plot_histograms(report, samr, logger)
             v, bin_scale=plid%linear, &
             axes_scales=[plid%linear, plid%linear], &
             labels=l, normalized=.true.)
+#endif
+#if NDIM > 1
       case (repid%v)
          v = pack( &
              box%cells(IDX IDY IDZ, cid%rho_v)/box%cells(IDX IDY IDZ, cid%rho), .true.)
@@ -73,6 +76,7 @@ module subroutine rhyme_report_plot_histograms(report, samr, logger)
             v, bin_scale=plid%linear, &
             axes_scales=[plid%linear, plid%linear], &
             labels=l, normalized=.true.)
+#endif
       case (repid%u)
          v = pack( &
              box%cells(IDX IDY IDZ, cid%rho_u)/box%cells(IDX IDY IDZ, cid%rho), .true.)

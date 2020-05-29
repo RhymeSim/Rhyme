@@ -5,7 +5,7 @@ include(
   ${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/CalcNumberOfComponents.cmake
 )
 
-set(NUMBER_OF_DIM 3)
+set(NUMBER_OF_DIM 2)
 set(NUMBER_OF_ELEMENTS 2)
 set(NUMBER_OF_SPECIES 3)
 

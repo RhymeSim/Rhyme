@@ -53,5 +53,4 @@ logical function rhyme_drawing_init_test() result(failed)
    call rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
 
    failed = tester%failed()
-   failed = .true.
 end function rhyme_drawing_init_test

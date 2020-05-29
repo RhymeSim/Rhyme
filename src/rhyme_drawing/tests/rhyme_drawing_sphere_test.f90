@@ -55,19 +55,22 @@ logical function rhyme_drawing_sphere_test() result(failed)
 
    call rhyme_drawing_sphere(samr, ic, shape, logger)
 
-#if NDIM == 1
-#elif NDIM == 2
-#define JDX ,1
-#define JDXEND ,8
+#define IDX 1
+
+#if NDIM == 2
+#define JDX , 1
+#define JDXEND , 128
+#define KDX
+#define KDXEND
 #elif NDIM == 3
-#define JDX ,1
-#define JDXEND ,8
-#define KDX ,1
-#define KDXEND ,4
+#define JDX , 1
+#define JDXEND , 64
+#define KDX , 1
+#define KDXEND , 8
 #endif
 
-   call tester%expect(samr%levels(0)%boxes(1)%cells(1 JDX KDX, cid%rho:cid%e_tot) .toBe.cons(cid%rho:cid%e_tot) .within.7)
-   call tester%expect(samr%levels(0)%boxes(1)%cells(1 JDX KDX, cid%e_tot + 1:NCMP) .toBe.5.23e0.within.7)
+   call tester%expect(samr%levels(0)%boxes(1)%cells(IDX JDX KDX, cid%rho:cid%e_tot) .toBe.cons(cid%rho:cid%e_tot) .within.7)
+   call tester%expect(samr%levels(0)%boxes(1)%cells(IDX JDX KDX, cid%e_tot + 1:NCMP) .toBe.5.23e0.within.7)
    ! TODO: add more tests
 
    failed = tester%failed()

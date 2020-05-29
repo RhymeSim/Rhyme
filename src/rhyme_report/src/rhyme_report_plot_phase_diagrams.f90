@@ -9,8 +9,8 @@ module subroutine rhyme_report_plot_phase_diagrams(report, samr, logger)
 
    type(report_2d_histogram_t), pointer :: pntr
 
-   integer :: dims(3)
-   real(kind=8) :: box_lengths(3)
+   integer :: dims(NDIM)
+   real(kind=8) :: box_lengths(NDIM)
    real(kind=8), allocatable :: v(:, :)
    character(len=32) :: l(2)
 

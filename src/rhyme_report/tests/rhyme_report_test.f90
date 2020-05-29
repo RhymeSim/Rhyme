@@ -46,7 +46,7 @@ logical function rhyme_report_test() result(failed)
    call tester%expect(repid%labels(repid%rho_v) .toBe.'rho_v'.hint.'rho_v')
 #endif
 
-#if NDIM > 1
+#if NDIM > 2
    call tester%expect(repid%rho_w.toBe.4.hint.'rho_w')
    call tester%expect(repid%labels(repid%rho_w) .toBe.'rho_w'.hint.'rho_v')
 #endif

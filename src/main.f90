@@ -88,6 +88,10 @@ program rhyme
    call rhyme_chombo_write_samr_with_nickname('IC', chombo, physics, samr)
    call logger%end_section(print_duration=.true.)  ! saving-IC
 
+   call logger%begin_section('initial_report')
+   call report%publish(samr, logger)
+   call logger%end_section  ! initial_report
+
    ! Main loop
    do while (.true.)
       call logger%begin_section(samr%levels(0)%iteration)

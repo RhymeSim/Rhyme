@@ -24,8 +24,10 @@ module subroutine rhyme_initial_condition_init(ic, samr, physics, logger)
    end do
 
    if (ic%type .eq. icid%simple) then
+      call logger%log('Simple drawing')
       call rhyme_initial_condition_init_simple(ic, samr, physics, logger)
    else if (ic%type .eq. icid%snapshot) then
+      call logger%log('Loading snapshot', '', '=>', [ic%snapshot_path])
       call rhyme_initial_condition_load_snapshot(ic, samr, logger)
    else
       call logger%err('Unknown initial condition type', 'ic_type', '=', [ic%type])

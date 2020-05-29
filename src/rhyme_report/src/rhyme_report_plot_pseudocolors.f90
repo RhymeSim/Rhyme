@@ -9,40 +9,32 @@ module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
 
    type(report_pseudocolor_t), pointer :: pntr
 
-   integer :: dims(3)
-   real(kind=8) :: box_lengths(3)
+   integer :: dims(NDIM)
+   real(kind=8) :: box_lengths(NDIM)
 
    if (.not. associated(report%pseudocolors)) return
 
    dims = samr%levels(0)%boxes(1)%dims
    box_lengths = samr%box_lengths
 
-#if NDIM == 1
-#define IDXX dims(1)/2
-#define IDXY 1:dims(1)
-#define IDXZ 1:dims(1)
-#define JDXX
-#define JDXY
-#define JDXZ
-#define KDXX
-#define KDXY
-#define KDXZ
-#define RESX dims(1)
-#define RESY 1
-#define RESZ 1
-#elif NDIM == 2
-#define IDXX dims(1)/2
+#if NDIM > 1
+
+#if NDIM == 2
+#define IDXX 1:dims(1)
 #define IDXY 1:dims(1)
 #define IDXZ 1:dims(1)
 #define JDXX , 1:dims(2)
 #define JDXY , 1:dims(2)
-#define JDXZ
+#define JDXZ , 1:dims(2)
 #define KDXX
 #define KDXY
 #define KDXZ
 #define RESX dims(1)
 #define RESY dims(2)
 #define RESZ 1
+#define BLX box_lengths(1)
+#define BLY box_lengths(2)
+#define BLZ 1d0
 #elif NDIM ==3
 #define IDXX dims(1)/2
 #define IDXY 1:dims(1)
@@ -56,6 +48,9 @@ module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
 #define RESX dims(1)
 #define RESY dims(2)
 #define RESZ dims(3)
+#define BLX box_lengths(1)
+#define BLY box_lengths(2)
+#define BLZ box_lengths(3)
 #endif
 
    pntr => report%pseudocolors
@@ -66,19 +61,19 @@ module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
       case (lgid%x)
          call logger%plot( &
             samr%levels(0)%boxes(1)%cells(IDXX JDXX KDXX, pntr%type), &
-            [0d0, box_lengths(2)], [0d0, box_lengths(3)], labels=['X', 'Y'], &
+            [0d0, BLY], [0d0, BLZ], labels=['X', 'Y'], &
             colorscheme=colorschemes(logger%colormap), &
             auto_setup=.true., resolution=[RESY, RESZ])
       case (lgid%y)
          call logger%plot( &
             samr%levels(0)%boxes(1)%cells(IDXY JDXY KDXY, pntr%type), &
-            [0d0, box_lengths(1)], [0d0, box_lengths(3)], labels=['X', 'Y'], &
+            [0d0, BLX], [0d0, BLZ], labels=['X', 'Y'], &
             colorscheme=colorschemes(logger%colormap), &
             auto_setup=.true., resolution=[RESX, RESZ])
       case (lgid%z)
          call logger%plot( &
             samr%levels(0)%boxes(1)%cells(IDXZ JDXZ KDXZ, pntr%type), &
-            [0d0, box_lengths(1)], [0d0, box_lengths(2)], labels=['X', 'Y'], &
+            [0d0, BLX], [0d0, BLY], labels=['X', 'Y'], &
             colorscheme=colorschemes(logger%colormap), &
             auto_setup=.true., resolution=[RESX, RESY])
       case default
@@ -87,5 +82,6 @@ module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
 
       pntr => pntr%next
    end do
+#endif
 end subroutine rhyme_report_plot_pseudocolors
 end submodule plot_pseudocolors

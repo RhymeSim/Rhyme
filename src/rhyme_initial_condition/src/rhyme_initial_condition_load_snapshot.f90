@@ -21,6 +21,7 @@ module subroutine rhyme_initial_condition_load_snapshot(ic, samr, logger)
 
    select case (ic%snapshot_type)
    case (icid%rhyme)
+      call logger%log('Loading Rhyme snapshot')
       call rhyme_initial_condition_load_rhyme(ic, samr, logger)
    case default
       call logger%err('Unsupported snapshot format', &
