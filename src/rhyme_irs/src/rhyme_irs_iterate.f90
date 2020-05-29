@@ -53,7 +53,7 @@ pure module subroutine rhyme_irs_iterate(irs, solution, axis)
 
    if (solution%star%p > solution%left%p) then
       solution%star%left%is_shock = .true.
-      solution%star%left%shock%rho = solution%left%rho*(gm1_gp1 + ps_pl)/(gm1_gp1*ps_pl + 1.0)
+      solution%star%left%shock%rho = solution%left%rho*(gm1_gp1 + ps_pl)/(gm1_gp1*ps_pl + 1d0)
       solution%star%left%shock%speed = solution%left%v(axis) - solution%left%cs*sqrt(gp1_2g*ps_pl + gm1_2g)
    else
       solution%star%left%is_shock = .false.
@@ -65,7 +65,7 @@ pure module subroutine rhyme_irs_iterate(irs, solution, axis)
 
    if (solution%star%p > solution%right%p) then
       solution%star%right%is_shock = .true.
-      solution%star%right%shock%rho = solution%right%rho*(gm1_gp1 + ps_pr)/(gm1_gp1*ps_pr + 1.0)
+      solution%star%right%shock%rho = solution%right%rho*(gm1_gp1 + ps_pr)/(gm1_gp1*ps_pr + 1d0)
       solution%star%right%shock%speed = solution%right%v(axis) + solution%right%cs*sqrt(gp1_2g*ps_pr + gm1_2g)
    else
       solution%star%right%is_shock = .false.

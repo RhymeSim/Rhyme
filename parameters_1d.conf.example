@@ -55,8 +55,8 @@ n_iteration = 100
 
 
 # **Slope Limiter**
-slope_limiter = van_leer
-slope_limiter_omega = 0d0
+slope_limiter = minmod
+slope_limiter_omega = -1d0
 
 
 # **MUSCL-Hancock solver**

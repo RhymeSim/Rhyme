@@ -39,6 +39,7 @@ module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemis
 
       case (drid%sphere)
          shape%sphere%unit => .parse.shape%sphere%unit_str
+
          if (present(ie) .and. present(physics) .and. present(chemistry)) then
             call rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
          else

@@ -47,6 +47,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
    do d = 1, NDIM
       box_lengths(d) = rhyme_nombre_get_value(ic%box_lengths(d) .to.shape%sphere%unit)
    end do
+
    origin_px = shape%sphere%origin/box_lengths*ic%base_grid
    r_px = shape%sphere%r/box_lengths(1)*ic%base_grid(1)
    sigma_px = shape%sphere%sigma/box_lengths(1)*ic%base_grid(1)
@@ -71,7 +72,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
             color = smoothing_factor([i JDX KDX] - .5d0, origin_px, r_px, sigma_px, shape%fill%colors)
 
             do d = cid%rho, cid%e_tot
-               if (samr%levels(l)%boxes(b)%cells(i JDX KDX, d) < color(d)) then
+               if (abs(samr%levels(l)%boxes(b)%cells(i JDX KDX, d)) < abs(color(d))) then
                   samr%levels(l)%boxes(b)%cells(i JDX KDX, d) = color(d)
                end if
             end do

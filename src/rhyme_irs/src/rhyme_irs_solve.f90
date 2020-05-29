@@ -36,11 +36,11 @@ pure module subroutine rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
 
       s_starl = sol%left%v(axis) - 2*sol%left%cs/gm1
 
-      if (dxdt > s_starl) then                                        !-- W_0
-         u = 0d0
-      else if (dxdt > sol%left%v(axis) - sol%left%cs) then             !-- W_lfan
+      if (dxdt > s_starl) then  ! W_0
+         call conv_prim_to_cons(irs%w_vacuum, u)
+      else if (dxdt > sol%left%v(axis) - sol%left%cs) then  ! W_lfan
          u = irs_w_kfan(sol%left, dxdt, axis, is_right=.false.)
-      else                                                              !-- W_l
+      else  ! W_l
          u = irs_rp_side_to_cons(sol%left)
       end if
 
@@ -55,17 +55,17 @@ pure module subroutine rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
 
       s_starr = sol%right%v(axis) + 2*sol%right%cs/gm1
 
-      if (dxdt > sol%right%v(axis) + sol%right%cs) then                !-- W_r
+      if (dxdt > sol%right%v(axis) + sol%right%cs) then  ! W_r
          u = irs_rp_side_to_cons(sol%right)
-      else if (dxdt > s_starr) then                                   !-- W_rfan
+      else if (dxdt > s_starr) then  ! W_rfan
          u = irs_w_kfan(sol%right, dxdt, axis, is_right=.true.)
-      else                                                              !-- W_0
-         u = 0d0
+      else  ! W_0
+         call conv_prim_to_cons(irs%w_vacuum, u)
       end if
 
    else if (vacuum_both_sides) then
-      u = 0d0
-   else                                                                ! Non-vacuum cases
+      call conv_prim_to_cons(irs%w_vacuum, u)
+   else  ! Non-vacuum cases
 
       sol%left%v(1:NDIM) = l(cid%rho_u:cid%rho_u + NDIM - 1)/l(cid%rho)
       sol%left%p = max(calc_p(l), irs%w_vacuum(cid%p))
@@ -80,23 +80,23 @@ pure module subroutine rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
       du = sol%right%v(axis) - sol%left%v(axis)
       du_crit = 2*(sol%left%cs + sol%right%cs)/gm1
 
-      if (du_crit < du) then                                          ! Generation of vacuum
-         if (dxdt > s_starr) then                                      !-- W_r0
-            if (dxdt > sol%right%v(axis) + sol%right%cs) then            !---- W_r
+      if (du_crit < du) then  ! Generation of vacuum
+         if (dxdt > s_starr) then  ! W_r0
+            if (dxdt > sol%right%v(axis) + sol%right%cs) then  ! W_r
                u = irs_rp_side_to_cons(sol%right)
-            else                                                          !---- W_rfan
+            else  ! W_rfan
                u = irs_w_kfan(sol%right, dxdt, axis, is_right=.true.)
             end if
-         else if (dxdt > s_starl) then                                 !-- W_0
-            u = 0d0
-         else                                                            !-- W_l0
-            if (dxdt > sol%left%v(axis) - sol%left%cs) then              !---- W_lfan
+         else if (dxdt > s_starl) then  ! W_0
+            call conv_prim_to_cons(irs%w_vacuum, u)
+         else  ! W_l0
+            if (dxdt > sol%left%v(axis) - sol%left%cs) then  ! W_lfan
                u = irs_w_kfan(sol%left, dxdt, axis, is_right=.false.)
-            else                                                          !---- W_l
+            else  ! W_l
                u = irs_rp_side_to_cons(sol%left)
             end if
          end if
-      else                                                              ! Normal cases
+      else  ! Normal cases
          call rhyme_irs_iterate(irs, sol, axis)
          call rhyme_irs_sampling(sol, axis, dx, dt, u)
       end if

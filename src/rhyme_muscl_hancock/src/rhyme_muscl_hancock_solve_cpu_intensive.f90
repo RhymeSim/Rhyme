@@ -62,11 +62,12 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
          box%cells(i JDX KDX, cid%rho:cid%e_tot)
 
       do idx = -1, 1
-         call rhyme_slope_limiter_run(sl, &
-                                      box%cells(i + idx - 1 JDX KDX, cid%rho:cid%e_tot), &
-                                      box%cells(i + idx JDX KDX, cid%rho:cid%e_tot), &
-                                      box%cells(i + idx + 1 JDX KDX, cid%rho:cid%e_tot), &
-                                      delta(idx, cid%rho:cid%e_tot, samrid%x))
+         call rhyme_slope_limiter_run( &
+            sl, &
+            box%cells(i + idx - 1 JDX KDX, cid%rho:cid%e_tot), &
+            box%cells(i + idx JDX KDX, cid%rho:cid%e_tot), &
+            box%cells(i + idx + 1 JDX KDX, cid%rho:cid%e_tot), &
+            delta(idx, cid%rho:cid%e_tot, samrid%x))
 
          call rhyme_muscl_hancock_half_step_extrapolation( &
             box%cells(i + idx JDX KDX, cid%rho:cid%e_tot), &
@@ -78,11 +79,12 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
 
 #if NDIM > 1
       do idx = -1, 1
-         call rhyme_slope_limiter_run(sl, &
-                                      box%cells(i JDX + idx - 1 KDX, cid%rho:cid%e_tot), &
-                                      box%cells(i JDX + idx KDX, cid%rho:cid%e_tot), &
-                                      box%cells(i JDX + idx + 1 KDX, cid%rho:cid%e_tot), &
-                                      delta(idx, cid%rho:cid%e_tot, samrid%y))
+         call rhyme_slope_limiter_run( &
+            sl, &
+            box%cells(i JDX + idx - 1 KDX, cid%rho:cid%e_tot), &
+            box%cells(i JDX + idx KDX, cid%rho:cid%e_tot), &
+            box%cells(i JDX + idx + 1 KDX, cid%rho:cid%e_tot), &
+            delta(idx, cid%rho:cid%e_tot, samrid%y))
 
          call rhyme_muscl_hancock_half_step_extrapolation( &
             box%cells(i JDX + idx KDX, cid%rho:cid%e_tot), &
@@ -95,11 +97,12 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
 
 #if NDIM > 2
       do idx = -1, 1
-         call rhyme_slope_limiter_run(sl, &
-                                      box%cells(i JDX KDX + idx - 1, cid%rho:cid%e_tot), &
-                                      box%cells(i JDX KDX + idx, cid%rho:cid%e_tot), &
-                                      box%cells(i JDX KDX + idx + 1, cid%rho:cid%e_tot), &
-                                      delta(idx, cid%rho:cid%e_tot, samrid%z))
+         call rhyme_slope_limiter_run( &
+            sl, &
+            box%cells(i JDX KDX + idx - 1, cid%rho:cid%e_tot), &
+            box%cells(i JDX KDX + idx, cid%rho:cid%e_tot), &
+            box%cells(i JDX KDX + idx + 1, cid%rho:cid%e_tot), &
+            delta(idx, cid%rho:cid%e_tot, samrid%z))
 
          call rhyme_muscl_hancock_half_step_extrapolation( &
             box%cells(i JDX KDX + idx, cid%rho:cid%e_tot), &
@@ -112,14 +115,15 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
 
       do axis = samrid%x, samrid%x + NDIM - 1
          do idx = -1, 0
-            call rhyme_irs_solve(irs, &
-                                 half_step_right(idx, cid%rho:cid%e_tot, axis), &
-                                 half_step_left(idx + 1, cid%rho:cid%e_tot, axis), &
-                                 0.d0, dt, axis, &
-                                 edge_state(idx, cid%rho:cid%e_tot, axis))
+            call rhyme_irs_solve( &
+               irs, &
+               half_step_right(idx, cid%rho:cid%e_tot, axis), &
+               half_step_left(idx + 1, cid%rho:cid%e_tot, axis), &
+               0.d0, dt, axis, &
+               edge_state(idx, cid%rho:cid%e_tot, axis))
 
-            flux(idx, cid%rho:cid%e_tot, axis) = calc_flux( &
-                                                 edge_state(idx, cid%rho:cid%e_tot, axis), axis)
+            flux(idx, cid%rho:cid%e_tot, axis) = &
+               calc_flux(edge_state(idx, cid%rho:cid%e_tot, axis), axis)
          end do
 
          df(cid%rho:cid%e_tot, axis) = flux(-1, cid%rho:cid%e_tot, axis) &

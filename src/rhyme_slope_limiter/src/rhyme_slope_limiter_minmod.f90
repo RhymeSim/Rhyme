@@ -19,9 +19,8 @@ pure module subroutine rhyme_slope_limiter_minmod(sl, ul, u, ur, delta)
 
    do i = cid%rho, cid%e_tot
       if (r(i) > 1.d0) then
-         delta(i) = min( &
-                    1.d0, rhyme_slope_limiter_xi_R(sl, r(i)) &
-                    )*d(i)
+         delta(i) = &
+            min(1.d0, rhyme_slope_limiter_xi_R(sl, r(i)))*d(i)
       else if (r(i) > 0.d0) then
          delta(i) = r(i)*d(i)
       else
