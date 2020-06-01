@@ -35,7 +35,10 @@ module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemis
    do while (associated(shape))
       select case (shape%type)
       case (drid%cuboid)
-         call rhyme_drawing_uniform_cuboid(samr, shape)
+         call rhyme_drawing_uniform_cuboid(samr, shape, logger)
+
+      case (drid%sharp_cuboid)
+         call rhyme_drawing_sharp_cuboid(samr, shape, logger)
 
       case (drid%sphere)
          shape%sphere%unit => .parse.shape%sphere%unit_str

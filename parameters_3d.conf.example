@@ -94,7 +94,10 @@ equilibrium_table_density_range =  1d-3 1d6 'm_H / cm^3'
 # **Drawing**
 canvas = uniform .125d0 0d0 0d0 0d0 .1d0 1e4 1d-2 2d-3 3d-4
 
-shape = cuboid 1 1 1 56 128 1
+shape = cuboid 1 1 1 56 128 1 2.34d-1
+shape_filling = uniform absolute 1d0 0d0 0d0 0d0 1d0 1d4 1d-2 1d-3 1d-4 2d0 3d0 3d0 3d0 4d0 1d5 1d-3 1d-4 1d-5
+
+shape = sharp-cuboid 1 1 1 56 128 1
 shape_filling = uniform 1d0 0d0 0d0 0d0 1d0 1d4 1d-2 1d-3 1d-4
 
 shape = sphere 3d0 4d0 5d0 2.34d0 2.34d-1 'unit'

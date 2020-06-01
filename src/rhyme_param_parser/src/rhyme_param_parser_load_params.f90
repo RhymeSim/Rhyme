@@ -211,6 +211,7 @@ module subroutine load_params( &
 
    ! Shapes
    call shape_types%add('cuboid', drid%cuboid)
+   call shape_types%add('sharp-cuboid', drid%sharp_cuboid)
 #if NDIM > 1
    call shape_types%add('prism', drid%prism)
    call shape_types%add('smoothed_slab_2d', drid%smoothed_slab_2d)
@@ -232,8 +233,12 @@ module subroutine load_params( &
       case (drid%cuboid)
          call config%read('shape'.at.2.occur.i.hint.'left_corner', shape%cuboid%left_corner(1:NDIM), logger)
          call config%read('shape'.at.2 + NDIM.occur.i.hint.'lengths', shape%cuboid%lengths(1:NDIM), logger)
+         call config%read('shape'.at.2 + 2*NDIM.occur.i.hint.'sigma', shape%cuboid%sigma, logger)
+
          call config%read('shape_filling'.at.1.occur.i, shape%fill%type, logger, filling_types)
-         call config%read('shape_filling'.at.2.occur.i.hint.'color', shape%fill%colors(cid%rho:NCMP, 1), logger)
+         call config%read('shape_filling'.at.2.occur.i, shape%fill%modes(1), logger, filling_modes)
+         call config%read_array('shape_filling'.at.3.occur.i.hint.'color_1', shape%fill%colors(cid%rho:NCMP, 1), logger)
+         call config%read_array('shape_filling'.at.3 + NCMP.occur.i.hint.'color_2', shape%fill%colors(cid%rho:NCMP, 2), logger)
 
 #if NDIM > 1
       case (drid%prism)
@@ -243,9 +248,10 @@ module subroutine load_params( &
 #if NDIM > 2
          call config%read('shape'.at.2 + 3*NDIM.occur.i.hint.'thickness', shape%prism%thickness, logger)
 #endif
-#endif
+
          call config%read('shape_filling'.at.1.occur.i, shape%fill%type, logger, filling_types)
          call config%read('shape_filling'.at.2.occur.i.hint.'color', shape%fill%colors(cid%rho:NCMP, 1), logger)
+#endif
 
       case (drid%sphere)
          call config%read('shape'.at.2.occur.i.hint.'origin', shape%sphere%origin(1:NDIM), logger)
@@ -255,8 +261,8 @@ module subroutine load_params( &
 
          call config%read('shape_filling'.at.1.occur.i, shape%fill%type, logger, filling_types)
          call config%read('shape_filling'.at.2.occur.i, shape%fill%modes(1), logger, filling_modes)
-         call config%read('shape_filling'.at.3.occur.i.hint.'color_1', shape%fill%colors(cid%rho:NCMP, 1), logger)
-         call config%read('shape_filling'.at.3 + NCMP.occur.i.hint.'color_2', shape%fill%colors(cid%rho:NCMP, 2), logger)
+         call config%read_array('shape_filling'.at.3.occur.i.hint.'color_1', shape%fill%colors(cid%rho:NCMP, 1), logger)
+         call config%read_array('shape_filling'.at.3 + NCMP.occur.i.hint.'color_2', shape%fill%colors(cid%rho:NCMP, 2), logger)
 
 #if NDIM > 1
       case (drid%smoothed_slab_2d)
@@ -267,6 +273,12 @@ module subroutine load_params( &
          call config%read('shape_filling'.at.1.occur.i.hint.'color(1)', shape%fill%colors(cid%rho:NCMP, 1), logger)
          call config%read('shape_filling'.at.1 + NCMP.occur.i.hint.'color(2)', shape%fill%colors(cid%rho:NCMP, 2), logger)
 #endif
+!
+      case (drid%sharp_cuboid)
+         call config%read('shape'.at.2.occur.i.hint.'left_corner', shape%cuboid%left_corner(1:NDIM), logger)
+         call config%read('shape'.at.2 + NDIM.occur.i.hint.'lengths', shape%cuboid%lengths(1:NDIM), logger)
+         call config%read('shape_filling'.at.1.occur.i, shape%fill%type, logger, filling_types)
+         call config%read_array('shape_filling'.at.2.occur.i.hint.'color_1', shape%fill%colors(cid%rho:NCMP, 1), logger)
 
       end select
    end do

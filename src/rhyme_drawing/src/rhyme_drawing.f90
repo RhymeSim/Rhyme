@@ -16,7 +16,7 @@ module rhyme_drawing
       integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
       integer :: uniform = 10 ! Filling type
       integer :: add = 30, absolute = 31 ! Modes
-      integer :: cuboid = 20, sphere = 21
+      integer :: sharp_cuboid = 19, cuboid = 20, sphere = 21
 #if NDIM > 1
       integer :: prism = 22
       integer :: smoothed_slab_2d = 23 ! Shapes
@@ -71,6 +71,7 @@ module rhyme_drawing
    type shape_cuboid_t
       integer :: left_corner(NDIM) = 0 ! in unif of pixels
       integer :: lengths(NDIM) = 0 ! in unif of pixels
+      real(kind=8) :: sigma = 0d0
    end type shape_cuboid_t
 
    type shape_sphere_t
@@ -139,9 +140,16 @@ module rhyme_drawing
          real(kind=8), intent(in) :: bg_prim(NCMP)
       end subroutine rhyme_drawing_uniform_canvas
 
-      module subroutine rhyme_drawing_uniform_cuboid(samr, shape)
+      module subroutine rhyme_drawing_sharp_cuboid(samr, shape, logger)
          type(samr_t), intent(inout) :: samr
          type(shape_t), intent(in) :: shape
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_drawing_sharp_cuboid
+
+      module subroutine rhyme_drawing_uniform_cuboid(samr, shape, logger)
+         type(samr_t), intent(inout) :: samr
+         type(shape_t), intent(in) :: shape
+         type(logger_t), intent(inout) :: logger
       end subroutine rhyme_drawing_uniform_cuboid
 
       module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)

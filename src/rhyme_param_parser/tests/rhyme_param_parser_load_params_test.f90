@@ -44,6 +44,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(logger_t) :: logger
 
    character(len=1024), parameter :: param_file = PARAM_FILE_NAME
+   type(shape_t), pointer :: shape
 
    tester = .describe."rhyme_param_parser_load_params"
 
@@ -144,59 +145,77 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(draw%canvas(cid%ntr_frac_2) .toBe.3d-4)
 #endif
 
-   call tester%expect(draw%shapes%type.toBe.drid%cuboid)
-   call tester%expect(draw%shapes%cuboid%left_corner.toBe.1)
-   call tester%expect(draw%shapes%cuboid%lengths.toBe.CUBOID_LENGTH_ARRAY.hint.'cuboid length array')
-   call tester%expect(draw%shapes%fill%type.toBe.drid%uniform)
-   call tester%expect(draw%shapes%fill%colors(cid%rho:cid%rho, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
-   call tester%expect(draw%shapes%fill%colors(cid%p, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%fill%colors(cid%temp, 1) .toBe.1d4)
-   call tester%expect(draw%shapes%fill%colors(cid%ntr_frac_0, 1) .toBe.1d-2)
+   shape => draw%shapes
+   call tester%expect(shape%type.toBe.drid%cuboid)
+   call tester%expect(shape%cuboid%left_corner.toBe.1)
+   call tester%expect(shape%cuboid%lengths.toBe.CUBOID_LENGTH_ARRAY.hint.'cuboid length array')
+   call tester%expect(shape%cuboid%sigma.toBe.2.34d-1)
+   call tester%expect(shape%fill%type.toBe.drid%uniform)
+   call tester%expect(shape%fill%colors(cid%rho:cid%rho, 1) .toBe.1d0)
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
+   call tester%expect(shape%fill%colors(cid%p, 1) .toBe.1d0)
+   call tester%expect(shape%fill%colors(cid%temp, 1) .toBe.1d4)
+   call tester%expect(shape%fill%colors(cid%ntr_frac_0, 1) .toBe.1d-2)
 #if NSPE > 1
-   call tester%expect(draw%shapes%fill%colors(cid%ntr_frac_1, 1) .toBe.1d-3)
+   call tester%expect(shape%fill%colors(cid%ntr_frac_1, 1) .toBe.1d-3)
 #endif
 #if NSPE > 2
-   call tester%expect(draw%shapes%fill%colors(cid%ntr_frac_2, 1) .toBe.1d-4)
+   call tester%expect(shape%fill%colors(cid%ntr_frac_2, 1) .toBe.1d-4)
+#endif
+   call tester%expect(shape%fill%colors(cid%rho, 2) .toBe.2d0.hint.'color_2 rho')
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 2) .toBe.3d0)
+   call tester%expect(shape%fill%colors(cid%p, 2) .toBe.4d0)
+#if NSPE > 1
+   call tester%expect(shape%fill%colors(cid%ntr_frac_1, 2) .toBe.1d-4.hint.'cuboid color_2 ntr_frac_1')
+#endif
+#if NSPE > 2
+   call tester%expect(shape%fill%colors(cid%ntr_frac_2, 2) .toBe.1d-5.hint.'cuboid color_2 ntr_frac_2')
 #endif
 
-   call tester%expect(draw%shapes%next%type.toBe.drid%sphere)
-   call tester%expect(draw%shapes%next%sphere%origin.toBe.SPHERE_ORIGIN_ARRAY)
-   call tester%expect(draw%shapes%next%sphere%r.toBe.2.34d0)
-   call tester%expect(draw%shapes%next%sphere%sigma.toBe.2.34d-1)
-   call tester%expect(draw%shapes%next%sphere%unit_str.toBe.'unit')
-   call tester%expect(draw%shapes%next%fill%type.toBe.drid%uniform)
-   call tester%expect(draw%shapes%next%fill%modes(1) .toBe.drid%absolute)
-   call tester%expect(draw%shapes%next%fill%colors(cid%rho, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%p, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%temp, 1) .toBe.1d4)
-   call tester%expect(draw%shapes%next%fill%colors(cid%rho, 2) .toBe.2d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%u:cid%u + NDIM - 1, 2) .toBe.3d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%p, 2) .toBe.4d0)
+   ! sharp cuboid
+   shape => shape%next
+   call tester%expect(shape%type.toBe.drid%sharp_cuboid.hint.'sharp_cuboid')
+
+   ! sphere
+   shape => shape%next
+   call tester%expect(shape%type.toBe.drid%sphere.hint.'sphere')
+   call tester%expect(shape%sphere%origin.toBe.SPHERE_ORIGIN_ARRAY)
+   call tester%expect(shape%sphere%r.toBe.2.34d0)
+   call tester%expect(shape%sphere%sigma.toBe.2.34d-1)
+   call tester%expect(shape%sphere%unit_str.toBe.'unit')
+   call tester%expect(shape%fill%type.toBe.drid%uniform)
+   call tester%expect(shape%fill%modes(1) .toBe.drid%absolute)
+   call tester%expect(shape%fill%colors(cid%rho, 1) .toBe.1d0)
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
+   call tester%expect(shape%fill%colors(cid%p, 1) .toBe.1d0)
+   call tester%expect(shape%fill%colors(cid%temp, 1) .toBe.1d4)
+   call tester%expect(shape%fill%colors(cid%rho, 2) .toBe.2d0)
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 2) .toBe.3d0)
+   call tester%expect(shape%fill%colors(cid%p, 2) .toBe.4d0)
 
 #if NDIM > 1
-   call tester%expect(draw%shapes%next%next%type.toBe.drid%prism)
-   call tester%expect(draw%shapes%next%next%prism%vertices(:, 1) .toBe.PRISM_VERTEX_1)
-   call tester%expect(draw%shapes%next%next%prism%vertices(:, 2) .toBe.PRISM_VERTEX_2)
-   call tester%expect(draw%shapes%next%next%prism%vertices(:, 3) .toBe.PRISM_VERTEX_3)
+   ! prism
+   shape => shape%next
+   call tester%expect(shape%type.toBe.drid%prism.hint.'prism')
+   call tester%expect(shape%prism%vertices(:, 1) .toBe.PRISM_VERTEX_1)
+   call tester%expect(shape%prism%vertices(:, 2) .toBe.PRISM_VERTEX_2)
+   call tester%expect(shape%prism%vertices(:, 3) .toBe.PRISM_VERTEX_3)
 #if NDIM > 2
-   call tester%expect(draw%shapes%next%next%prism%thickness.toBe.1.0)
+   call tester%expect(shape%prism%thickness.toBe.1.0.hint.'thickness')
 #endif
-   call tester%expect(draw%shapes%next%fill%type.toBe.drid%uniform)
-   call tester%expect(draw%shapes%next%fill%colors(cid%rho, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
-   call tester%expect(draw%shapes%next%fill%colors(cid%p, 1) .toBe.1d0)
-   call tester%expect(draw%shapes%next%next%next%type.toBe.drid%smoothed_slab_2d)
-   call tester%expect(draw%shapes%next%next%next%slab_2d%axis.toBe.drid%x)
-   call tester%expect(draw%shapes%next%next%next%slab_2d%pos.toBe. [56.0, 72.0])
-   call tester%expect(draw%shapes%next%next%next%slab_2d%sigma.toBe. [.2d0, .4d0])
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%rho, 1) .toBe..125d0)
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%p, 1) .toBe..1d0)
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%rho, 2) .toBe.1d0)
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%u:cid%u + NDIM - 1, 2) .toBe.0d0)
-   call tester%expect(draw%shapes%next%next%next%fill%colors(cid%p, 2) .toBe.1d0)
+
+   ! smoothed_slab_2d
+   shape => shape%next
+   call tester%expect(shape%type.toBe.drid%smoothed_slab_2d.hint.'smoothed_slab')
+   call tester%expect(shape%slab_2d%axis.toBe.drid%x)
+   call tester%expect(shape%slab_2d%pos.toBe. [56.0, 72.0])
+   call tester%expect(shape%slab_2d%sigma.toBe. [.2d0, .4d0])
+   call tester%expect(shape%fill%colors(cid%rho, 1) .toBe..125d0)
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 1) .toBe.0d0)
+   call tester%expect(shape%fill%colors(cid%p, 1) .toBe..1d0)
+   call tester%expect(shape%fill%colors(cid%rho, 2) .toBe.1d0)
+   call tester%expect(shape%fill%colors(cid%u:cid%u + NDIM - 1, 2) .toBe.0d0)
+   call tester%expect(shape%fill%colors(cid%p, 2) .toBe.1d0)
 #endif
 
    ! Perturbation
@@ -237,8 +256,8 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(irs%n_iteration.toBe.100)
 
    ! Slope Limiter
-   call tester%expect(sl%w.toBe.0d0)
-   call tester%expect(sl%type.toBe.slid%van_Leer)
+   call tester%expect(sl%type.toBe.slid%minmod.hint.'Slope limiter type')
+   call tester%expect(sl%w.toBe.-1d0.hint.'Slope limiter omega')
 
    ! MUSCL-Hancock solver
    call tester%expect(mh%solver_type.toBe.mhid%cpu_intensive)

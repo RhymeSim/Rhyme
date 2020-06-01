@@ -28,6 +28,7 @@ set(srcs
     src/rhyme_drawing_smoothed_slab_2d.f90
     src/rhyme_drawing_uniform_prism.f90
     src/rhyme_drawing_sphere.f90
+    src/rhyme_drawing_sharp_cuboid.f90
     src/rhyme_drawing_uniform_cuboid.f90
     src/rhyme_drawing_uniform_canvas.f90
     src/rhyme_drawing_init.f90
