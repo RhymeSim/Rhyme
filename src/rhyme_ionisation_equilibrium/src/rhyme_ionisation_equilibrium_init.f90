@@ -1,10 +1,10 @@
 submodule(rhyme_ionisation_equilibrium) init_smod
 contains
-module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+module subroutine rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    implicit none
 
    type(ionisation_equilibrium_t), intent(inout) :: ie
-   type(physics_t), intent(in) :: physics
+   type(units_t), intent(in) :: units
    type(chemistry_t), intent(in) :: chemistry
    type(logger_t), intent(inout) :: logger
 
@@ -37,21 +37,21 @@ module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logg
    end do
 
    u => .parse.ie%table_temp_unit_str
-   ie%table_temp_range(1) = ie%table_temp_range(1)%v.u.u.to.physics%temperature
-   ie%table_temp_range(2) = ie%table_temp_range(2)%v.u.u.to.physics%temperature
+   ie%table_temp_range(1) = ie%table_temp_range(1)%v.u.u.to.units%temperature
+   ie%table_temp_range(2) = ie%table_temp_range(2)%v.u.u.to.units%temperature
    ie%log_temp_min = log10(ie%table_temp_range(1)%v)
    ie%log_temp_max = log10(ie%table_temp_range(2)%v)
    ie%dlog_temp = (ie%log_temp_max - ie%log_temp_min)/ie%table_sizes(1)
-   ie%table_temp_unit_str = .printchain.physics%temperature
+   ie%table_temp_unit_str = .printchain.units%temperature
    call logger%log('', 'table_temp_range', '=', [ie%table_temp_range(1)%p(), ie%table_temp_range(2)%p()])
 
    u => .parse.ie%table_density_unit_str
-   ie%table_density_range(1) = ie%table_density_range(1)%v.u.u.to.physics%rho
-   ie%table_density_range(2) = ie%table_density_range(2)%v.u.u.to.physics%rho
+   ie%table_density_range(1) = ie%table_density_range(1)%v.u.u.to.units%rho
+   ie%table_density_range(2) = ie%table_density_range(2)%v.u.u.to.units%rho
    ie%log_density_min = log10(ie%table_density_range(1)%v)
    ie%log_density_max = log10(ie%table_density_range(2)%v)
    ie%dlog_density = (ie%log_density_max - ie%log_density_min)/ie%table_sizes(2)
-   ie%table_density_unit_str = .printchain.physics%rho
+   ie%table_density_unit_str = .printchain.units%rho
    call logger%log('', 'table_density_range', '=', [ie%table_density_range(1)%p(), ie%table_density_range(2)%p()])
 
    call logger%log('Allocating equilibrium table', 'size', '=', [NSPE, ie%table_sizes(1), ie%table_sizes(2)])

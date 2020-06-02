@@ -3,7 +3,6 @@ module rhyme_muscl_hancock_advection_factory
    use rhyme_samr_bc_factory
    use rhyme_samr_factory
    use rhyme_cfl_factory
-   use rhyme_physics_factory
 
    implicit none
 

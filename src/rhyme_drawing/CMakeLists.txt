@@ -10,7 +10,7 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 set(deps
-    rhyme_physics
+    rhyme_units
     rhyme_chemistry
     rhyme_thermo_base
     rhyme_hydro_base

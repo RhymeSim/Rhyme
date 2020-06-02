@@ -1,10 +1,10 @@
 submodule(rhyme_chombo) write_headers_smod
 contains
-module subroutine rhyme_chombo_write_headers(chombo, physics, samr)
+module subroutine rhyme_chombo_write_headers(chombo, units, samr)
    implicit none
 
    type(chombo_t), intent(inout) :: chombo
-   type(physics_t), intent(in) :: physics
+   type(units_t), intent(in) :: units
    type(samr_t), intent(in) :: samr
 
    integer :: l, i, boxes_shape(6)
@@ -44,17 +44,23 @@ module subroutine rhyme_chombo_write_headers(chombo, physics, samr)
    call rhyme_hdf5_util_create_group(chombo%file, '/Chombo_global', chombo%chombo_global_id)
 
    call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', 'SpaceDim', 3)
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'length_unit', trim(.printchain.physics%length))
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'density_unit', trim(.printchain.physics%rho))
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'time_unit', trim(.printchain.physics%time))
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'velocity_unit', trim(.printchain.physics%velocity))
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'pressure_unit', trim(.printchain.physics%pressure))
-   call rhyme_hdf5_util_write_group_attr(chombo%file, '/Chombo_global', &
-                                         'temperature_unit', trim(.printchain.physics%temperature))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'length_unit', trim(.printchain.units%length))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'density_unit', trim(.printchain.units%rho))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'time_unit', trim(.printchain.units%time))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'velocity_unit', trim(.printchain.units%velocity))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'pressure_unit', trim(.printchain.units%pressure))
+   call rhyme_hdf5_util_write_group_attr( &
+      chombo%file, '/Chombo_global', &
+      'temperature_unit', trim(.printchain.units%temperature))
 end subroutine rhyme_chombo_write_headers
 end submodule write_headers_smod

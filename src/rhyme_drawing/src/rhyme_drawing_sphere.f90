@@ -1,6 +1,6 @@
 submodule(rhyme_drawing) rhyme_drawing_sphere_submodule
 contains
-module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
+module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, units, chemistry)
    implicit none
 
    type(samr_t), intent(inout) :: samr
@@ -8,7 +8,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
    type(shape_t), intent(in) :: shape
    type(logger_t), intent(inout) :: logger
    type(ionisation_equilibrium_t), intent(in), optional :: ie
-   type(physics_t), intent(in), optional :: physics
+   type(units_t), intent(in), optional :: units
    type(chemistry_t), intent(in), optional :: chemistry
 
 #if NDIM == 1
@@ -90,7 +90,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
 
    if ( &
       present(ie) &
-      .and. present(physics) &
+      .and. present(units) &
       .and. present(chemistry) &
       .and. abs( &
       shape%fill%colors(cid%p, 1) - shape%fill%colors(cid%p, 2) &
@@ -99,7 +99,7 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, che
       ! Pressure equilibrium
       call logger%begin_section('pressure_equilibrium')
 
-      kb_over_amu = physics%kb%v/physics%amu%v
+      kb_over_amu = units%kb%v/units%amu%v
 
       temp_accuracy = 1d-4
       density_accuracy = 1d-4

@@ -1,5 +1,5 @@
 module rhyme_thermo_base
-   use rhyme_physics
+   use rhyme_units
    use rhyme_ideal_gas
    use rhyme_logger
 
@@ -104,11 +104,11 @@ module rhyme_thermo_base
    end interface calc_sp_int_e
 
 contains
-   module subroutine rhyme_thermo_base_init(thermo, physics, logger)
+   module subroutine rhyme_thermo_base_init(thermo, units, logger)
       implicit none
 
       type(thermo_base_t), intent(in) :: thermo
-      type(physics_t), intent(in) :: physics
+      type(units_t), intent(in) :: units
       type(logger_t), intent(inout) :: logger
 
       call logger%begin_section('thermo_base')
@@ -116,7 +116,7 @@ contains
       rhyme_thermo_base_state_of_matter = thermo%state_of_matter
       call logger%log('', 'state_of_matter', '=', [rhyme_thermo_base_state_of_matter])
 
-      rhyme_thermo_base_kb_amu = physics%kb%v/physics%amu%v
+      rhyme_thermo_base_kb_amu = units%kb%v/units%amu%v
       call logger%log('', 'kB / 1 amu', '=', [rhyme_thermo_base_kb_amu])
 
       call logger%end_section

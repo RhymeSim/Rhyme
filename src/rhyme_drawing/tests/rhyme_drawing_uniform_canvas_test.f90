@@ -1,6 +1,6 @@
 logical function rhyme_drawing_uniform_canvas_test() result(failed)
    use rhyme_drawing
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_samr_factory
    use rhyme_hydro_base_factory
    use rhyme_thermo_base_factory
@@ -36,7 +36,7 @@ logical function rhyme_drawing_uniform_canvas_test() result(failed)
 
    type(drawing_t) :: draw
    type(samr_t) :: samr
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
    real(kind=8) :: prim(cid%rho:cid%p)
@@ -52,7 +52,7 @@ logical function rhyme_drawing_uniform_canvas_test() result(failed)
    samr = samr_factory%generate()
    logger = logger_factory_generate('default')
 
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
 
    prim = hy_factory%generate_primitive()
 

@@ -1,7 +1,7 @@
 project(rhyme_ionisation_equilibrium_tests)
 set(test_subject rhyme_ionisation_equilibrium)
 
-set(factories rhyme_physics rhyme_chemistry rhyme_uv_background rhyme_logger)
+set(factories rhyme_units rhyme_chemistry rhyme_uv_background rhyme_logger)
 
 set(test_deps rhyme_assertion)
 

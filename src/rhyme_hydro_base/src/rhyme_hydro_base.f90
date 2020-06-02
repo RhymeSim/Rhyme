@@ -1,5 +1,5 @@
 module rhyme_hydro_base
-   use rhyme_physics
+   use rhyme_units
 
    implicit none
 

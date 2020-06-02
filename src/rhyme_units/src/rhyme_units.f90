@@ -1,4 +1,4 @@
-module rhyme_physics
+module rhyme_units
    ! TODO Rename this module to rhyme_units
    use rhyme_nombre
    use rhyme_logger
@@ -56,16 +56,16 @@ module rhyme_physics
 
    type(component_indices_t), parameter :: cid = component_indices_t()
 
-   type, private :: physics_indices_t
+   type, private :: units_indices_t
       integer :: none = 0
       integer :: mh = 1, muscl_hancock = 1
-   end type physics_indices_t
+   end type units_indices_t
 
-   type(physics_indices_t), parameter :: phid = physics_indices_t()
+   type(units_indices_t), parameter :: unid = units_indices_t()
 
-   type physics_t
-      integer :: hydro = phid%none
-      integer :: rt = phid%none
+   type units_t
+      integer :: hydro = unid%none
+      integer :: rt = unid%none
       character(len=1024) :: rho_str, length_str, time_str
       type(nombre_unit_t), pointer :: rho => null()
       type(nombre_unit_t), pointer :: length => null()
@@ -79,12 +79,12 @@ module rhyme_physics
       type(nombre_t) :: r ! Gas constant, R
       type(nombre_t) :: kb ! Boltzmann constant, k_B
       type(nombre_t) :: amu ! 1 atomic mass unit (amu)
-   end type physics_t
+   end type units_t
 
    interface
-      module subroutine rhyme_physics_init(physics, logger)
-         type(physics_t), intent(inout) :: physics
+      module subroutine rhyme_units_init(units, logger)
+         type(units_t), intent(inout) :: units
          type(logger_t), intent(inout) :: logger
-      end subroutine rhyme_physics_init
+      end subroutine rhyme_units_init
    end interface
-end module rhyme_physics
+end module rhyme_units

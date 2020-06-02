@@ -1,6 +1,6 @@
 module rhyme_chombo
    use rhyme_hdf5_util
-   use rhyme_physics
+   use rhyme_units
    use rhyme_samr
    use rhyme_logger
 
@@ -44,9 +44,9 @@ module rhyme_chombo
          type(chombo_t), intent(inout) :: chombo
       end subroutine rhyme_chombo_create_chombo
 
-      module subroutine rhyme_chombo_write_headers(chombo, physics, samr)
+      module subroutine rhyme_chombo_write_headers(chombo, units, samr)
          type(chombo_t), intent(inout) :: chombo
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_headers
 
@@ -55,16 +55,16 @@ module rhyme_chombo
          type(samr_level_t), intent(in) :: level
       end subroutine rhyme_chombo_write_level_data
 
-      module subroutine rhyme_chombo_write_samr(chombo, physics, samr)
+      module subroutine rhyme_chombo_write_samr(chombo, units, samr)
          type(chombo_t), intent(inout) :: chombo
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_samr
 
-      module subroutine rhyme_chombo_write_samr_with_nickname(nickname, chombo, physics, samr)
+      module subroutine rhyme_chombo_write_samr_with_nickname(nickname, chombo, units, samr)
          character(len=*), intent(in) :: nickname
          type(chombo_t), intent(inout) :: chombo
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_samr_with_nickname
    end interface

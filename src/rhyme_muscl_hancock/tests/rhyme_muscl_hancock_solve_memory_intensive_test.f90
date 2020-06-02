@@ -1,6 +1,6 @@
 logical function rhyme_muscl_hancock_solve_memory_intensive_test() result(failed)
    use rhyme_muscl_hancock_advection_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_irs_factory
    use rhyme_slope_limiter_factory
    use rhyme_chombo_factory
@@ -25,7 +25,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test() result(failed
 
    type(muscl_hancock_t) :: mh(NDIM)
    type(mh_workspace_t) :: ws(NDIM)
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(irs_t) :: irs
    type(slope_limiter_t) :: sl
@@ -43,15 +43,15 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test() result(failed
 
    call rhyme_nombre_init
 
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    thermo = thermo_base_factory_generate('diatomic')
    irs = irs_factory_generate('default')
    sl = slope_limiter_factory_generate('vanLeer')
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
    call rhyme_irs_init(irs, logger)
 
    dt = muscl_hancock_advection_factory_generate(BASE_GRID_ARRAY, samr, bc, cfl)
@@ -70,7 +70,7 @@ logical function rhyme_muscl_hancock_solve_memory_intensive_test() result(failed
          samr(d)%levels(0)%dt = dt(d)
          call rhyme_samr_bc_set_boundaries(bc(d), samr(d))
 
-         call rhyme_chombo_write_samr(ch(d), physics, samr(d))
+         call rhyme_chombo_write_samr(ch(d), units, samr(d))
 
          call rhyme_muscl_hancock_solve_memory_intensive( &
             samr(d)%levels(0)%boxes(1), &

@@ -1,6 +1,6 @@
 logical function rhyme_muscl_hancock_half_step_extrapolation_test() result(failed)
    use rhyme_muscl_hancock_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_thermo_base_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -9,7 +9,7 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test() result(faile
 
    type(assertion_t) :: tester
 
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
 
@@ -19,13 +19,13 @@ logical function rhyme_muscl_hancock_half_step_extrapolation_test() result(faile
 
    call rhyme_nombre_init
 
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
    thermo = thermo_base_factory_generate('diatomic')
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
 
    u = 1.d0
    delta = 0.d0

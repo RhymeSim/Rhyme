@@ -1,5 +1,5 @@
-project(rhyme_physics_tests)
-set(test_subject rhyme_physics)
+project(rhyme_units_tests)
+set(test_subject rhyme_units)
 
 set(factories rhyme_logger)
 

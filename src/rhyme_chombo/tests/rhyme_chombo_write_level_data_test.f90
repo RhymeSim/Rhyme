@@ -1,7 +1,7 @@
 logical function rhyme_chombo_write_level_data_test() result(failed)
    use rhyme_chombo_factory
    use rhyme_samr_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -13,7 +13,7 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
 
    type(chombo_t) :: ch
    type(samr_t) :: samr
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(logger_t) :: logger
 
    character(len=1024) :: filename = ''
@@ -26,10 +26,10 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
 
    ch = chombo_factory_generate('empty')
    samr = samr_factory%generate()
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
    call rhyme_chombo_init(ch, samr, logger)
 
@@ -39,7 +39,7 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
    call rhyme_chombo_filename_generator(ch, filename)
 
    call rhyme_chombo_create_chombo(ch)
-   call rhyme_chombo_write_headers(ch, physics, samr)
+   call rhyme_chombo_write_headers(ch, units, samr)
 
    do l = 0, samr%nlevels - 1
       call rhyme_chombo_write_level_data(ch, samr%levels(l))

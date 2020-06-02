@@ -1,7 +1,7 @@
 logical function rhyme_report_plot_pseudocolors_test() result(failed)
    use rhyme_report_factory
    use rhyme_nombre_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_samr_factory
    use rhyme_initial_condition_factory
    use rhyme_logger_factory
@@ -12,21 +12,25 @@ logical function rhyme_report_plot_pseudocolors_test() result(failed)
    type(assertion_t) :: tester
 
    type(report_t) :: report
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(samr_t) :: samr
    type(initial_condition_t) :: ic
    type(logger_t) :: logger
 
+   integer :: seed
+
    report = report_factory_generate('pseudocolors')
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    ic = initial_condition_factory_generate('uniform')
    logger = logger_factory_generate('unicode-plotting')
 
    call rhyme_logger_init(logger, '')
    call rhyme_nombre_init
-   call rhyme_physics_init(physics, logger)
-   call rhyme_initial_condition_init(ic, samr, physics, logger)
+   call rhyme_units_init(units, logger)
+   call rhyme_initial_condition_init(ic, samr, units, logger)
 
+   seed = 1234
+   call random_seed(seed)
    call random_number(samr%levels(0)%boxes(1)%cells)
 
    call rhyme_report_plot_pseudocolors(report, samr, logger)

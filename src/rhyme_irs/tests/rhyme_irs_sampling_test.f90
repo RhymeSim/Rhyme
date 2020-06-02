@@ -1,6 +1,6 @@
 logical function rhyme_irs_sampling_test() result(failed)
    use rhyme_irs_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_irs_tests_factory
    use rhyme_thermo_base_factory
    use rhyme_logger_factory
@@ -11,7 +11,7 @@ logical function rhyme_irs_sampling_test() result(failed)
    type(assertion_t) :: irs_tester
 
    type(irs_t) :: irs
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
    real(kind=8), dimension(cid%rho:cid%e_tot) :: l, r, u
@@ -25,12 +25,12 @@ logical function rhyme_irs_sampling_test() result(failed)
    call rhyme_nombre_init
 
    irs = irs_factory_generate('default')
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
    axis = 1 ! x-axis
 
    thermo = thermo_base_factory_generate('diatomic')
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
 
    call rhyme_irs_init(irs, logger)
 

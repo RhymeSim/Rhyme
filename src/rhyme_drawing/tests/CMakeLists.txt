@@ -2,7 +2,7 @@ project(rhyme_drawing_tests)
 set(test_subject rhyme_drawing)
 
 set(factories
-    rhyme_physics
+    rhyme_units
     rhyme_thermo_base
     rhyme_chemistry
     rhyme_samr

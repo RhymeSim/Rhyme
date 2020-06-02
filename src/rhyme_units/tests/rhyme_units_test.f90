@@ -1,14 +1,14 @@
-logical function rhyme_physics_test() result(failed)
-   use rhyme_physics
+logical function rhyme_units_test() result(failed)
+   use rhyme_units
    use rhyme_assertion
 
    implicit none
 
    type(assertion_t) :: ph_tester
 
-   type(physics_t) :: physics
+   type(units_t) :: units
 
-   ph_tester = .describe."rhyme_physics"
+   ph_tester = .describe."rhyme_units"
 
    call ph_tester%expect(cid%rho.toBe.1.hint.'hydro, rho')
    call ph_tester%expect(cid%u.toBe.2.hint.'hydro, u')
@@ -32,11 +32,11 @@ logical function rhyme_physics_test() result(failed)
    call ph_tester%expect(cid%ntr_frac_2.toBe.1 + NDIM + 1 + 4.hint.'rhd, ntr_frac_2')
 #endif
 
-   call ph_tester%expect(associated(physics%rho) .toBe..false.)
-   call ph_tester%expect(associated(physics%length) .toBe..false.)
-   call ph_tester%expect(associated(physics%time) .toBe..false.)
-   call ph_tester%expect(associated(physics%pressure) .toBe..false.)
-   call ph_tester%expect(associated(physics%temperature) .toBe..false.)
+   call ph_tester%expect(associated(units%rho) .toBe..false.)
+   call ph_tester%expect(associated(units%length) .toBe..false.)
+   call ph_tester%expect(associated(units%time) .toBe..false.)
+   call ph_tester%expect(associated(units%pressure) .toBe..false.)
+   call ph_tester%expect(associated(units%temperature) .toBe..false.)
 
    failed = ph_tester%failed()
-end function rhyme_physics_test
+end function rhyme_units_test

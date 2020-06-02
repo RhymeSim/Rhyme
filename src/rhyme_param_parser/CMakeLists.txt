@@ -11,7 +11,7 @@ endif()
 
 set(deps
     rhyme_chemistry
-    rhyme_physics
+    rhyme_units
     rhyme_string
     rhyme_samr_bc
     rhyme_cfl

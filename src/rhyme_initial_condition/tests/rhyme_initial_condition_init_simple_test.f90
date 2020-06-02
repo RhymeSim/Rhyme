@@ -1,6 +1,6 @@
 logical function rhyme_initial_condition_init_simple_test() result(failed)
    use rhyme_initial_condition_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -10,7 +10,7 @@ logical function rhyme_initial_condition_init_simple_test() result(failed)
 
    type(initial_condition_t) :: simple
    type(samr_t) :: samr
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(logger_t) :: logger
    integer :: i, actual_grid_size(NDIM)
 
@@ -19,12 +19,12 @@ logical function rhyme_initial_condition_init_simple_test() result(failed)
    call rhyme_nombre_init
 
    simple = initial_condition_factory_generate('4levels')
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
-   call rhyme_initial_condition_init(simple, samr, physics, logger)
+   call rhyme_initial_condition_init(simple, samr, units, logger)
 
    call ic_tester%expect(samr%nlevels.toBe.simple%nlevels)
    call ic_tester%expect(samr%max_nboxes.toBe.simple%max_nboxes)

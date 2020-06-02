@@ -1,6 +1,6 @@
 module rhyme_chemistry
    use rhyme_periodic_table
-   use rhyme_physics
+   use rhyme_units
    use rhyme_logger
 
    implicit none
@@ -24,9 +24,9 @@ module rhyme_chemistry
    end type chemistry_t
 
    interface
-      module subroutine rhyme_chemistry_init(chemistry, physics, logger)
+      module subroutine rhyme_chemistry_init(chemistry, units, logger)
          type(chemistry_t), intent(inout) :: chemistry
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_chemistry_init
 

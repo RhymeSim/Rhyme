@@ -1,6 +1,6 @@
 module rhyme_drawing
    ! TODO: Move shapes, fillings and perturbations into separate modules
-   use rhyme_physics
+   use rhyme_units
    use rhyme_chemistry
    use rhyme_thermo_base
    use rhyme_hydro_base
@@ -125,13 +125,13 @@ module rhyme_drawing
    end type drawing_t
 
    interface
-      module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
+      module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
          type(drawing_t), intent(inout) :: draw
          type(samr_t), intent(inout) :: samr
          type(initial_condition_t), intent(in) :: ic
          type(logger_t), intent(inout) :: logger
          type(ionisation_equilibrium_t), intent(in), optional :: ie
-         type(physics_t), intent(in), optional :: physics
+         type(units_t), intent(in), optional :: units
          type(chemistry_t), intent(in), optional :: chemistry
       end subroutine rhyme_drawing_init
 
@@ -152,13 +152,13 @@ module rhyme_drawing
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_drawing_uniform_cuboid
 
-      module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
+      module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, units, chemistry)
          type(samr_t), intent(inout) :: samr
          type(initial_condition_t), intent(in) :: ic
          type(shape_t), intent(in) :: shape
          type(logger_t), intent(inout) :: logger
          type(ionisation_equilibrium_t), intent(in), optional :: ie
-         type(physics_t), intent(in), optional :: physics
+         type(units_t), intent(in), optional :: units
          type(chemistry_t), intent(in), optional :: chemistry
       end subroutine rhyme_drawing_sphere
 

@@ -1,6 +1,6 @@
 module rhyme_irs
    use rhyme_riemann_problem
-   use rhyme_physics
+   use rhyme_units
    use rhyme_hydro_base
    use rhyme_thermo_base
    use rhyme_logger

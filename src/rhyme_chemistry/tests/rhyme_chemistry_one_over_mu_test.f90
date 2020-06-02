@@ -1,6 +1,6 @@
 logical function rhyme_chemistry_one_over_mu_test() result(failed)
    use rhyme_chemistry_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -9,7 +9,7 @@ logical function rhyme_chemistry_one_over_mu_test() result(failed)
    type(assertion_t) :: tester
 
    type(chemistry_t) :: chemistry
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(logger_t) :: logger
 
    real(kind=8) :: one_over_mu, one_over_mu_expected, ntr_frac(NSPE)
@@ -17,13 +17,13 @@ logical function rhyme_chemistry_one_over_mu_test() result(failed)
    tester = .describe.'chemistry_one_over_mu'
 
    chemistry = chemistry_factory_generate('H+He')
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
    call rhyme_nombre_init()
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
-   call rhyme_chemistry_init(chemistry, physics, logger)
+   call rhyme_chemistry_init(chemistry, units, logger)
 
 #if NSPE > 2
    ntr_frac(1:3) = [1, 1, 0]

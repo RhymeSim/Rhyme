@@ -1,7 +1,7 @@
 logical function rhyme_chombo_write_headers_test() result(failed)
    use rhyme_chombo_factory
    use rhyme_samr_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -11,7 +11,7 @@ logical function rhyme_chombo_write_headers_test() result(failed)
 
    type(chombo_t) :: ch
    type(samr_t) :: samr
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(logger_t) :: logger
 
    character(len=1024), parameter :: nickname = "rhyme_chombo_write_headers"
@@ -25,10 +25,10 @@ logical function rhyme_chombo_write_headers_test() result(failed)
 
    ch = chombo_factory_generate('empty')
    samr = samr_factory%generate()
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
    ch%nickname = nickname
    ch%iteration = samr%levels(0)%iteration
@@ -38,7 +38,7 @@ logical function rhyme_chombo_write_headers_test() result(failed)
    call rhyme_chombo_filename_generator(ch, filename)
    call rhyme_chombo_create_chombo(ch)
 
-   call rhyme_chombo_write_headers(ch, physics, samr)
+   call rhyme_chombo_write_headers(ch, units, samr)
 
    call rhyme_hdf5_util_close(ch%file)
 
@@ -56,12 +56,12 @@ logical function rhyme_chombo_write_headers_test() result(failed)
    call rhyme_hdf5_util_read_group_attr(ch%file, "/Chombo_global", "temperature_unit", temperature_unit)
 
    call ch_tester%expect(ndims_read.toBe.3)
-   call ch_tester%expect(density_unit.toBe..printchain.physics%rho)
-   call ch_tester%expect(length_unit.toBe..printchain.physics%length)
-   call ch_tester%expect(time_unit.toBe..printchain.physics%time)
-   call ch_tester%expect(velocity_unit.toBe..printchain.physics%velocity)
-   call ch_tester%expect(pressure_unit.toBe..printchain.physics%pressure)
-   call ch_tester%expect(temperature_unit.toBe..printchain.physics%temperature)
+   call ch_tester%expect(density_unit.toBe..printchain.units%rho)
+   call ch_tester%expect(length_unit.toBe..printchain.units%length)
+   call ch_tester%expect(time_unit.toBe..printchain.units%time)
+   call ch_tester%expect(velocity_unit.toBe..printchain.units%velocity)
+   call ch_tester%expect(pressure_unit.toBe..printchain.units%pressure)
+   call ch_tester%expect(temperature_unit.toBe..printchain.units%temperature)
 
    call rhyme_hdf5_util_close(ch%file)
 

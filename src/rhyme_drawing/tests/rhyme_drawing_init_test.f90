@@ -1,6 +1,6 @@
 logical function rhyme_drawing_init_test() result(failed)
    use rhyme_drawing_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_thermo_base_factory
    use rhyme_chemistry_factory
    use rhyme_initial_condition_factory
@@ -14,7 +14,7 @@ logical function rhyme_drawing_init_test() result(failed)
    type(assertion_t) :: tester
 
    type(drawing_t) :: draw
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(chemistry_t) :: chemistry
    type(samr_t) :: samr
@@ -27,7 +27,7 @@ logical function rhyme_drawing_init_test() result(failed)
 
    tester = .describe."drawing_init"
 
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    chemistry = chemistry_factory_generate('H+He')
    ic = initial_condition_factory_generate('uniform')
    ie = ionisation_equilibrium_factory_generate('CaseA-CIE')
@@ -42,15 +42,15 @@ logical function rhyme_drawing_init_test() result(failed)
 
    call rhyme_color_init
    call rhyme_nombre_init
-   call rhyme_physics_init(physics, logger)
-   call rhyme_thermo_base_init(thermo, physics, logger)
-   call rhyme_uv_background_init(uvb, physics, logger)
-   call rhyme_initial_condition_init(ic, samr, physics, logger)
-   call rhyme_chemistry_init(chemistry, physics, logger)
-   call rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+   call rhyme_units_init(units, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
+   call rhyme_uv_background_init(uvb, units, logger)
+   call rhyme_initial_condition_init(ic, samr, units, logger)
+   call rhyme_chemistry_init(chemistry, units, logger)
+   call rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
 
-   call rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
+   call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
 
    failed = tester%failed()
 end function rhyme_drawing_init_test

@@ -1,6 +1,6 @@
 logical function rhyme_initial_condition_load_headers_test() result(failed)
    use rhyme_initial_condition_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_samr_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -13,7 +13,7 @@ logical function rhyme_initial_condition_load_headers_test() result(failed)
    character(len=1024) :: filename
 
    type(initial_condition_t) :: ic_read, ic_write
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(samr_t) :: samr, samr_read
    type(chombo_t) :: ch
    type(logger_t) :: logger
@@ -22,18 +22,18 @@ logical function rhyme_initial_condition_load_headers_test() result(failed)
 
    ic_write = initial_condition_factory_generate('4levels')
 
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    samr = samr_factory%generate()
    logger = logger_factory_generate('default')
 
-   call rhyme_physics_init(physics, logger)
+   call rhyme_units_init(units, logger)
 
    ch%nickname = nickname
    ch%iteration = samr%levels(0)%iteration
    call rhyme_chombo_init(ch, samr, logger)
 
    call rhyme_chombo_filename_generator(ch, filename)
-   call rhyme_chombo_write_samr(ch, physics, samr)
+   call rhyme_chombo_write_samr(ch, units, samr)
 
    ic_read%type = icid%snapshot
    ic_read%snapshot_type = icid%rhyme

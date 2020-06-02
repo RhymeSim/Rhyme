@@ -38,8 +38,8 @@ set(deps
     rhyme_logger
     rhyme_report
     rhyme_nombre
+    rhyme_units
     rhyme_chemistry
-    rhyme_physics
     rhyme_hydro_base
     rhyme_thermo_base
     rhyme_ionisation_equilibrium

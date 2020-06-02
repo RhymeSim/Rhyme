@@ -1,5 +1,5 @@
 module rhyme_slope_limiter
-   use rhyme_physics
+   use rhyme_units
 
    implicit none
 

@@ -25,10 +25,11 @@ pure module subroutine rhyme_irs_iterate(irs, solution, axis)
          call rhyme_irs_nonlinear_wave_function( &
             solution%right, solution%star%p, solution%star%right)
 
-         solution%star%p = solution%star%p - ( &
-                           solution%star%left%f + solution%star%right%f &
-                           + (solution%right%v(axis) - solution%left%v(axis)) &
-                           )/(solution%star%left%fprime + solution%star%right%fprime)
+         solution%star%p = &
+            solution%star%p - ( &
+            solution%star%left%f + solution%star%right%f &
+            + (solution%right%v(axis) - solution%left%v(axis)) &
+            )/(solution%star%left%fprime + solution%star%right%fprime)
 
          if (solution%star%p < 0.d0) exit
 
@@ -43,10 +44,11 @@ pure module subroutine rhyme_irs_iterate(irs, solution, axis)
 
    if (solution%star%p < 0.d0) solution%star%p = irs%w_vacuum(cid%p)
 
-   solution%star%u = 0.5d0*( &
-                     (solution%right%v(axis) + solution%left%v(axis)) &
-                     + (solution%star%right%f - solution%star%left%f) &
-                     )
+   solution%star%u = &
+      0.5d0*( &
+      (solution%right%v(axis) + solution%left%v(axis)) &
+      + (solution%star%right%f - solution%star%left%f) &
+      )
 
    ps_pl = solution%star%p/solution%left%p
    ps_pr = solution%star%p/solution%right%p

@@ -1,11 +1,11 @@
 submodule(rhyme_initial_condition) rhyme_ic_init_smod
 contains
-module subroutine rhyme_initial_condition_init(ic, samr, physics, logger)
+module subroutine rhyme_initial_condition_init(ic, samr, units, logger)
    implicit none
 
    type(initial_condition_t), intent(inout) :: ic
    type(samr_t), intent(inout) :: samr
-   type(physics_t), intent(in) :: physics
+   type(units_t), intent(in) :: units
    type(logger_t), intent(inout) :: logger
 
    integer :: d
@@ -25,7 +25,7 @@ module subroutine rhyme_initial_condition_init(ic, samr, physics, logger)
 
    if (ic%type .eq. icid%simple) then
       call logger%log('Simple drawing')
-      call rhyme_initial_condition_init_simple(ic, samr, physics, logger)
+      call rhyme_initial_condition_init_simple(ic, samr, units, logger)
    else if (ic%type .eq. icid%snapshot) then
       call logger%log('Loading snapshot', '', '=>', [ic%snapshot_path])
       call rhyme_initial_condition_load_snapshot(ic, samr, logger)

@@ -1,11 +1,11 @@
 submodule(rhyme_initial_condition) rhyme_ic_init_simple_smod
 contains
-module subroutine rhyme_initial_condition_init_simple(ic, samr, physics, logger)
+module subroutine rhyme_initial_condition_init_simple(ic, samr, units, logger)
    implicit none
 
    type(initial_condition_t), intent(in) :: ic
    type(samr_t), intent(inout) :: samr
-   type(physics_t), intent(in) :: physics
+   type(units_t), intent(in) :: units
    type(logger_t), intent(inout) :: logger
 
 #if NDIM == 1
@@ -32,7 +32,7 @@ module subroutine rhyme_initial_condition_init_simple(ic, samr, physics, logger)
 
    do d = 1, NDIM
       samr%box_lengths(d) = rhyme_nombre_get_value( &
-                            ic%box_lengths(d) .to.physics%length)
+                            ic%box_lengths(d) .to.units%length)
    end do
 
    samr%max_nboxes = ic%max_nboxes

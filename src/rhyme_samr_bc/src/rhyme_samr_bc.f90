@@ -1,5 +1,5 @@
 module rhyme_samr_bc
-   use rhyme_physics
+   use rhyme_units
    use rhyme_samr
    use rhyme_logger
 

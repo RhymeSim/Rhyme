@@ -1,13 +1,13 @@
 submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
 module subroutine load_params( &
-   param_file, chemistry, physics, ic, bc, cfl, thermo, uvb, &
+   param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
    ie, draw, irs, sl, mh, chombo, report, logger)
    implicit none
 
    character(len=1024), intent(in) :: param_file
    type(chemistry_t), intent(inout) :: chemistry
-   type(physics_t), intent(inout) :: physics
+   type(units_t), intent(inout) :: units
    type(initial_condition_t), intent(inout) :: ic
    type(samr_bc_t), intent(inout) :: bc
    type(cfl_t), intent(inout) :: cfl
@@ -156,10 +156,10 @@ module subroutine load_params( &
    call config%read_array('elements'.at.1, chemistry%element_names, logger)
    call config%read_array('element_abundances'.at.1, chemistry%element_abundances, logger)
 
-   ! Physics
-   call config%read('density_unit'.at.1, physics%rho_str, logger)
-   call config%read('length_unit'.at.1, physics%length_str, logger)
-   call config%read('time_unit'.at.1, physics%time_str, logger)
+   ! units
+   call config%read('density_unit'.at.1, units%rho_str, logger)
+   call config%read('length_unit'.at.1, units%length_str, logger)
+   call config%read('time_unit'.at.1, units%time_str, logger)
 
    ! CFL
    call config%read('courant_number'.at.1, cfl%courant_number, logger)

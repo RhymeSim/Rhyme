@@ -28,7 +28,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 #endif
 
    type(chemistry_t) :: chemistry
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(initial_condition_t) :: ic
    type(samr_bc_t) :: bc
    type(cfl_t) :: cfl
@@ -51,7 +51,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    logger = logger_factory_generate('default')
 
    call load_params( &
-      param_file, chemistry, physics, ic, bc, cfl, thermo, &
+      param_file, chemistry, units, ic, bc, cfl, thermo, &
       uvb, ie, draw, irs, sl, mh, chombo, report, logger)
 
    ! Logging
@@ -94,10 +94,10 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(bc%types(bcid%front) .toBe.3)
 #endif
 
-   ! Physics
-   call tester%expect(physics%rho_str.toBe.'kg / m^3')
-   call tester%expect(physics%length_str.toBe.'m')
-   call tester%expect(physics%time_str.toBe.'s')
+   ! units
+   call tester%expect(units%rho_str.toBe.'kg / m^3')
+   call tester%expect(units%length_str.toBe.'m')
+   call tester%expect(units%time_str.toBe.'s')
 
    ! CFL
    call tester%expect(cfl%courant_number.toBe..2d0)

@@ -1,5 +1,5 @@
 module rhyme_uv_background
-   use rhyme_physics
+   use rhyme_units
    use rhyme_logger
 
    implicit none
@@ -27,9 +27,9 @@ module rhyme_uv_background
    end type uv_background_t
 
    interface
-      module subroutine rhyme_uv_background_init(uvb, physics, logger)
+      module subroutine rhyme_uv_background_init(uvb, units, logger)
          type(uv_background_t), intent(inout) :: uvb
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_uv_background_init
 

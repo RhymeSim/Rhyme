@@ -1,6 +1,6 @@
 logical function rhyme_cfl_dt_test() result(failed)
    use rhyme_cfl_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_thermo_base_factory
    use rhyme_samr_factory
    use rhyme_logger_factory
@@ -11,7 +11,7 @@ logical function rhyme_cfl_dt_test() result(failed)
    type(assertion_t) :: cfl_tester
 
    type(cfl_t) :: cfl
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(samr_t) :: samr
    type(logger_t) :: logger
@@ -48,12 +48,12 @@ logical function rhyme_cfl_dt_test() result(failed)
    call rhyme_nombre_init
 
    cfl = cfl_factory_generate(2d-1)
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    samr = samr_factory%generate(physical=.true.)
    logger = logger_factory_generate('default')
 
    thermo = thermo_base_factory_generate('diatomic')
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
 
    dt = rhyme_cfl_time_step(cfl%courant_number, samr)
 

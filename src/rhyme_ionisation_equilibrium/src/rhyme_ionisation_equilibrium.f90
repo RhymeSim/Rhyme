@@ -1,6 +1,6 @@
 module rhyme_ionisation_equilibrium
    use rhyme_nombre
-   use rhyme_physics
+   use rhyme_units
    use rhyme_chemistry
    use rhyme_uv_background
    use rhyme_logger
@@ -56,9 +56,9 @@ module rhyme_ionisation_equilibrium
    end type ionisation_equilibrium_t
 
    interface
-      module subroutine rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+      module subroutine rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
          type(ionisation_equilibrium_t), intent(inout) :: ie
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(chemistry_t), intent(in) :: chemistry
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_ionisation_equilibrium_init

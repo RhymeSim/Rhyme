@@ -1,7 +1,7 @@
 module rhyme_param_parser
    ! TODO: replace it with a JSON object reader
    use rhyme_chemistry
-   use rhyme_physics
+   use rhyme_units
    use rhyme_initial_condition
    use rhyme_samr_bc
    use rhyme_cfl
@@ -47,11 +47,11 @@ module rhyme_param_parser
 
    interface
       module subroutine load_params( &
-         param_file, chemistry, physics, ic, bc, cfl, thermo, uvb, &
+         param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
          ie, draw, irs, sl, mh, chombo, report, logger)
          character(len=1024), intent(in) :: param_file
          type(chemistry_t), intent(inout) :: chemistry
-         type(physics_t), intent(inout) :: physics
+         type(units_t), intent(inout) :: units
          type(initial_condition_t), intent(inout) :: ic
          type(samr_bc_t), intent(inout) :: bc
          type(cfl_t), intent(inout) :: cfl

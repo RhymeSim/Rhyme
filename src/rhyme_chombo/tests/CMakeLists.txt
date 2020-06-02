@@ -1,7 +1,7 @@
 project(rhyme_chombo_tests)
 set(test_subject rhyme_chombo)
 
-set(factories rhyme_physics rhyme_samr rhyme_logger)
+set(factories rhyme_units rhyme_samr rhyme_logger)
 
 set(test_deps rhyme_assertion)
 

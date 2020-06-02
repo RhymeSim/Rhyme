@@ -1,7 +1,7 @@
 program rhyme
    use rhyme_nombre
    use rhyme_chemistry
-   use rhyme_physics
+   use rhyme_units
    use rhyme_hydro_base
    use rhyme_ionisation_equilibrium
    use rhyme_samr
@@ -23,7 +23,7 @@ program rhyme
    implicit none
 
    type(chemistry_t) :: chemistry
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(samr_t) :: samr
    type(samr_bc_t) :: bc
    type(ionisation_equilibrium_t) :: ie
@@ -60,7 +60,7 @@ program rhyme
 
    ! Reading parameters and converting them to code units
    call load_params( &
-      param_file, chemistry, physics, ic, bc, cfl, thermo, uvb, &
+      param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
       ie, draw, irs, sl, mh, chombo, report, logger)
 
    call logger%begin_section('init')
@@ -68,24 +68,24 @@ program rhyme
    ! TODO: move mh_workspace into muscl_hancock module
    mhws%type = mh%solver_type
 
-   call rhyme_physics_init(physics, logger)
-   call rhyme_chemistry_init(chemistry, physics, logger)
-   call rhyme_thermo_base_init(thermo, physics, logger)
-   call rhyme_uv_background_init(uvb, physics, logger)
-   call rhyme_initial_condition_init(ic, samr, physics, logger)
-   call rhyme_ionisation_equilibrium_init(ie, physics, chemistry, logger)
+   call rhyme_units_init(units, logger)
+   call rhyme_chemistry_init(chemistry, units, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
+   call rhyme_uv_background_init(uvb, units, logger)
+   call rhyme_initial_condition_init(ic, samr, units, logger)
+   call rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
    call rhyme_samr_bc_init(bc, samr, logger)
    call rhyme_irs_init(irs, logger)
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
    call rhyme_chombo_init(chombo, samr, logger)
 
-   call rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
+   call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
 
    call logger%end_section  ! init
 
    call logger%begin_section('saving-IC')
-   call rhyme_chombo_write_samr_with_nickname('IC', chombo, physics, samr)
+   call rhyme_chombo_write_samr_with_nickname('IC', chombo, units, samr)
    call logger%end_section(print_duration=.true.)  ! saving-IC
 
    call logger%begin_section('initial_report')
@@ -111,7 +111,7 @@ program rhyme
       ! Store a snapshot if necessary
       if (modulo(samr%levels(0)%iteration, 1) .eq. 0) then
          call logger%begin_section('save-chombo')
-         call rhyme_chombo_write_samr(chombo, physics, samr)
+         call rhyme_chombo_write_samr(chombo, units, samr)
          call logger%end_section(print_duration=.true.)  ! save-chombo
       end if
 

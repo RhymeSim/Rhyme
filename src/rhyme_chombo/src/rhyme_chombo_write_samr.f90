@@ -1,10 +1,10 @@
 submodule(rhyme_chombo) write_samr_smod
 contains
-module subroutine rhyme_chombo_write_samr(chombo, physics, samr)
+module subroutine rhyme_chombo_write_samr(chombo, units, samr)
    implicit none
 
    type(chombo_t), intent(inout) :: chombo
-   type(physics_t), intent(in) :: physics
+   type(units_t), intent(in) :: units
    type(samr_t), intent(in) :: samr
 
    integer :: l, hdferr
@@ -12,7 +12,7 @@ module subroutine rhyme_chombo_write_samr(chombo, physics, samr)
    chombo%iteration = samr%levels(0)%iteration
    call rhyme_chombo_create_chombo(chombo)
 
-   call rhyme_chombo_write_headers(chombo, physics, samr)
+   call rhyme_chombo_write_headers(chombo, units, samr)
 
    do l = 0, samr%nlevels - 1
       call rhyme_chombo_write_level_data(chombo, samr%levels(l))

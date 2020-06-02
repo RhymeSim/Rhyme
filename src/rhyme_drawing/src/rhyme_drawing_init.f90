@@ -1,6 +1,6 @@
 submodule(rhyme_drawing) init_smod
 contains
-module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemistry)
+module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
    implicit none
 
    type(drawing_t), intent(inout) :: draw
@@ -8,7 +8,7 @@ module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemis
    type(initial_condition_t), intent(in) :: ic
    type(logger_t), intent(inout) :: logger
    type(ionisation_equilibrium_t), intent(in), optional :: ie
-   type(physics_t), intent(in), optional :: physics
+   type(units_t), intent(in), optional :: units
    type(chemistry_t), intent(in), optional :: chemistry
 
    type(shape_t), pointer :: shape
@@ -43,8 +43,8 @@ module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, physics, chemis
       case (drid%sphere)
          shape%sphere%unit => .parse.shape%sphere%unit_str
 
-         if (present(ie) .and. present(physics) .and. present(chemistry)) then
-            call rhyme_drawing_sphere(samr, ic, shape, logger, ie, physics, chemistry)
+         if (present(ie) .and. present(units) .and. present(chemistry)) then
+            call rhyme_drawing_sphere(samr, ic, shape, logger, ie, units, chemistry)
          else
             call rhyme_drawing_sphere(samr, ic, shape, logger)
          end if

@@ -1,6 +1,6 @@
 logical function rhyme_thermo_base_primitive_vars_to_conserved_test() result(failed)
    use rhyme_thermo_base_factory
-   use rhyme_physics_factory
+   use rhyme_units_factory
    use rhyme_hydro_base_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -9,7 +9,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test() result(fai
 
    type(assertion_t) :: th_tester
 
-   type(physics_t) :: physics
+   type(units_t) :: units
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
    real(kind=8), dimension(cid%rho:cid%e_tot) :: u, u_interface, u_exp
@@ -19,7 +19,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test() result(fai
 
    call rhyme_nombre_init
 
-   physics = physics_factory_generate('SI')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
    rho = hy_factory%rho
@@ -27,7 +27,7 @@ logical function rhyme_thermo_base_primitive_vars_to_conserved_test() result(fai
    p = hy_factory%p
 
    thermo = thermo_base_factory_generate('diatomic')
-   call rhyme_thermo_base_init(thermo, physics, logger)
+   call rhyme_thermo_base_init(thermo, units, logger)
 
    call rhyme_thermo_base_primitive_vars_to_conserved(rho, v, p, u)
    call rhyme_ideal_gas_primitive_vars_to_conserved(ig_gamma(thid%diatomic), rho, v, p, u_exp)

@@ -1,5 +1,5 @@
 module rhyme_initial_condition
-   use rhyme_physics
+   use rhyme_units
    use rhyme_samr
    use rhyme_chombo
    use rhyme_logger
@@ -27,17 +27,17 @@ module rhyme_initial_condition
    end type initial_condition_t
 
    interface
-      module subroutine rhyme_initial_condition_init(ic, samr, physics, logger)
+      module subroutine rhyme_initial_condition_init(ic, samr, units, logger)
          type(initial_condition_t), intent(inout) :: ic
          type(samr_t), intent(inout) :: samr
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_initial_condition_init
 
-      module subroutine rhyme_initial_condition_init_simple(ic, samr, physics, logger)
+      module subroutine rhyme_initial_condition_init_simple(ic, samr, units, logger)
          type(initial_condition_t), intent(in) :: ic
          type(samr_t), intent(inout) :: samr
-         type(physics_t), intent(in) :: physics
+         type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_initial_condition_init_simple
 

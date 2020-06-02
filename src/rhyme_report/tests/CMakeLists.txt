@@ -1,7 +1,7 @@
 project(rhyme_report_tests)
 set(test_subject rhyme_report)
 
-set(factories rhyme_nombre rhyme_physics rhyme_samr rhyme_initial_condition
+set(factories rhyme_nombre rhyme_units rhyme_samr rhyme_initial_condition
               rhyme_logger)
 
 set(test_deps rhyme_assertion)
