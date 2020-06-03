@@ -50,15 +50,17 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
    ub = box%dims + 1
 
    !$OMP PARALLEL DO &
-   !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub) &
+   !$OMP& SHARED(box, ws) &
+   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
    !$OMP& PRIVATE(delta)
    LOOP_K
    LOOP_J
    do i = lb(1), ub(1)
-      call rhyme_slope_limiter_run(sl, &
-                                   box%cells(i - 1 JDX KDX, cid%rho:cid%e_tot), &
-                                   box%cells(i JDX KDX, cid%rho:cid%e_tot), &
-                                   box%cells(i + 1 JDX KDX, cid%rho:cid%e_tot), delta)
+      call rhyme_slope_limiter_run( &
+         sl, &
+         box%cells(i - 1 JDX KDX, cid%rho:cid%e_tot), &
+         box%cells(i JDX KDX, cid%rho:cid%e_tot), &
+         box%cells(i + 1 JDX KDX, cid%rho:cid%e_tot), delta)
       call rhyme_muscl_hancock_half_step_extrapolation( &
          box%cells(i JDX KDX, cid%rho:cid%e_tot), &
          delta, samrid%x, dx(samrid%x), dt, &
@@ -66,10 +68,11 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
          ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%x))
 
 #if NDIM > 1
-      call rhyme_slope_limiter_run(sl, &
-                                   box%cells(i JDX - 1 KDX, cid%rho:cid%e_tot), &
-                                   box%cells(i JDX KDX, cid%rho:cid%e_tot), &
-                                   box%cells(i JDX + 1 KDX, cid%rho:cid%e_tot), delta)
+      call rhyme_slope_limiter_run( &
+         sl, &
+         box%cells(i JDX - 1 KDX, cid%rho:cid%e_tot), &
+         box%cells(i JDX KDX, cid%rho:cid%e_tot), &
+         box%cells(i JDX + 1 KDX, cid%rho:cid%e_tot), delta)
       call rhyme_muscl_hancock_half_step_extrapolation( &
          box%cells(i JDX KDX, cid%rho:cid%e_tot), &
          delta, samrid%y, dx(samrid%y), dt, &
@@ -78,10 +81,11 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
 #endif
 
 #if NDIM > 2
-      call rhyme_slope_limiter_run(sl, &
-                                   box%cells(i, j KDX - 1, cid%rho:cid%e_tot), &
-                                   box%cells(i, j KDX, cid%rho:cid%e_tot), &
-                                   box%cells(i, j KDX + 1, cid%rho:cid%e_tot), delta)
+      call rhyme_slope_limiter_run( &
+         sl, &
+         box%cells(i, j KDX - 1, cid%rho:cid%e_tot), &
+         box%cells(i, j KDX, cid%rho:cid%e_tot), &
+         box%cells(i, j KDX + 1, cid%rho:cid%e_tot), delta)
       call rhyme_muscl_hancock_half_step_extrapolation( &
          box%cells(i, j KDX, cid%rho:cid%e_tot), &
          delta, samrid%z, dx(samrid%z), dt, &
@@ -97,32 +101,36 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
    ub = box%dims
 
    !$OMP PARALLEL DO &
-   !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub) &
+   !$OMP& SHARED(box, ws) &
+   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
    !$OMP& PRIVATE(evolved_state)
    LOOP_K
    LOOP_J
    do i = lb(1), ub(1)
-      call rhyme_irs_solve(irs, &
-                           ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%x), &
-                           ws%levels(l)%boxes(b)%ul(i + 1 JDX KDX, cid%rho:cid%e_tot, samrid%x), &
-                           0.d0, dt, samrid%x, evolved_state)
+      call rhyme_irs_solve( &
+         irs, &
+         ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%x), &
+         ws%levels(l)%boxes(b)%ul(i + 1 JDX KDX, cid%rho:cid%e_tot, samrid%x), &
+         0.d0, dt, samrid%x, evolved_state)
       ws%levels(l)%boxes(b)%fr(i JDX KDX, cid%rho:cid%e_tot, samrid%x) = &
          calc_flux(evolved_state, samrid%x)
 
 #if NDIM > 1
-      call rhyme_irs_solve(irs, &
-                           ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%y), &
-                           ws%levels(l)%boxes(b)%ul(i JDX + 1 KDX, cid%rho:cid%e_tot, samrid%y), &
-                           0.d0, dt, samrid%y, evolved_state)
+      call rhyme_irs_solve( &
+         irs, &
+         ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%y), &
+         ws%levels(l)%boxes(b)%ul(i JDX + 1 KDX, cid%rho:cid%e_tot, samrid%y), &
+         0.d0, dt, samrid%y, evolved_state)
       ws%levels(l)%boxes(b)%fr(i JDX KDX, cid%rho:cid%e_tot, samrid%y) = &
          calc_flux(evolved_state, samrid%y)
 #endif
 
 #if NDIM > 2
-      call rhyme_irs_solve(irs, &
-                           ws%levels(l)%boxes(b)%ur(i, j KDX, cid%rho:cid%e_tot, samrid%z), &
-                           ws%levels(l)%boxes(b)%ul(i, j KDX + 1, cid%rho:cid%e_tot, samrid%z), &
-                           0.d0, dt, samrid%z, evolved_state)
+      call rhyme_irs_solve( &
+         irs, &
+         ws%levels(l)%boxes(b)%ur(i, j KDX, cid%rho:cid%e_tot, samrid%z), &
+         ws%levels(l)%boxes(b)%ul(i, j KDX + 1, cid%rho:cid%e_tot, samrid%z), &
+         0.d0, dt, samrid%z, evolved_state)
       ws%levels(l)%boxes(b)%fr(i, j KDX, cid%rho:cid%e_tot, samrid%z) = &
          calc_flux(evolved_state, samrid%z)
 #endif
@@ -135,7 +143,8 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
    ub = box%dims
 
    !$OMP PARALLEL DO &
-   !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b, lb, ub)
+   !$OMP& SHARED(box, ws) &
+   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub)
    LOOP_K
    LOOP_J
    do i = 1, box%dims(1)

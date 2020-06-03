@@ -53,7 +53,8 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
    call rhyme_mh_workspace_check(ws, box)
 
    !$OMP PARALLEL DO &
-   !$OMP& SHARED(box, dx, dt, irs, sl, ws, l, b) &
+   !$OMP& SHARED(box, ws) &
+   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b) &
    !$OMP& PRIVATE(idx, axis, ub, delta, half_step_left, half_step_right, edge_state, flux, df)
    LOOP_K
    LOOP_J
