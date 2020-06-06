@@ -1,4 +1,4 @@
-submodule(rhyme_xyz) rhyme_mh_init_smod
+submodule(rhyme_xyz) init_smod
 contains
 module subroutine rhyme_xyz_init(xxx, logger)
    implicit none
@@ -15,4 +15,4 @@ module subroutine rhyme_xyz_init(xxx, logger)
 
    call logger%end_section
 end subroutine rhyme_xyz_init
-end submodule rhyme_mh_init_smod
+end submodule init_smod

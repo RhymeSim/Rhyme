@@ -10,10 +10,11 @@ contains
 
       type(xyz_t) :: xxx
 
-      if (factory_type == 'default') then
+      select case (factory_type)
+      case ('defulat')
          xxx = xyz_t()
-      else
+      case default
          print *, 'Unknown xyz factory type!', factory_type
-      end if
+      end select
    end function xyz_factory_generate
 end module rhyme_xyz_factory
