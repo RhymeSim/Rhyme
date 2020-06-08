@@ -17,7 +17,7 @@ module subroutine rhyme_hdf5_util_read_group_1d_array_attr(h5, where, key, array
 
    dims(1) = size(array)
 
-   select type (arr=>array)
+   select type (arr => array)
    type is (integer)
       call h5aread_f(attr_id, H5T_NATIVE_INTEGER, arr, dims, hdferr)
    type is (real(kind=4))

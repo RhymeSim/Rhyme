@@ -73,7 +73,7 @@ contains
       call h5aget_space_f(attr_id, space_id, hdferr)
       call h5sget_simple_extent_dims_f(space_id, dims, maxdims, hdferr)
 
-      select type (arr=>buf)
+      select type (arr => buf)
       type is (integer)
          call h5aread_f(attr_id, mem_id, arr, dims, hdferr)
       type is (real(kind=4))

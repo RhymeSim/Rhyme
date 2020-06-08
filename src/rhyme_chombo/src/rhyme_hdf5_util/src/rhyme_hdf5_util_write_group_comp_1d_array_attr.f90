@@ -15,14 +15,14 @@ module subroutine rhyme_hdf5_util_write_group_comp_1d_array_attr( &
 
    if (.not. h5%initialized) return
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gopen_f(h5%fid, trim(w), group_id, hdferr)
    type is (integer(hid_t))
       group_id = w
    end select
 
-   select type (vals=>values)
+   select type (vals => values)
    type is (integer)
       call write_comp_array_attr(H5T_NATIVE_INTEGER)
    type is (real(kind=4))
@@ -31,7 +31,7 @@ module subroutine rhyme_hdf5_util_write_group_comp_1d_array_attr( &
       call write_comp_array_attr(H5T_NATIVE_DOUBLE)
    end select
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gclose_f(group_id, hdferr)
    end select
@@ -60,7 +60,7 @@ contains
       call h5screate_simple_f(1, dims, space_id, hdferr)
       call h5acreate_f(group_id, trim(key), comp_id, space_id, attr_id, hdferr)
 
-      select type (vals=>values)
+      select type (vals => values)
       type is (integer)
          call h5awrite_f(attr_id, comp_id, vals, dims, hdferr)
       type is (real(kind=4))

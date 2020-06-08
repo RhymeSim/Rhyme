@@ -30,7 +30,7 @@ pure elemental module function rhyme_string_to_string(input) result(str)
    if (rhyme_string_is_nan(input)) then
       str = 'NaN'
    else
-      select type (inp=>input)
+      select type (inp => input)
       type is (integer)
          write (str, strcnst%int_fmt) inp
       type is (real(kind=4))

@@ -11,7 +11,7 @@ module subroutine rhyme_param_parser_add_switch(this, key, val)
 
    this%keys(this%len) = trim(key)
 
-   select type (v=>val)
+   select type (v => val)
    type is (integer)
       this%types(this%len) = 'int'
       this%int_values(this%len) = v

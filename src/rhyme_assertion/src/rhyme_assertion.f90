@@ -824,7 +824,7 @@ contains
       class(test_t), intent(inout) :: this
       class(*), intent(in) :: input
 
-      select type (inp=>input)
+      select type (inp => input)
       type is (integer)
          this%type = assertid%int
       type is (real(kind=4))
@@ -848,7 +848,7 @@ contains
       class(test_t), intent(inout) :: this
       class(*), intent(in) :: input
 
-      select type (inp=>input)
+      select type (inp => input)
       type is (integer)
          this%real_val = real(inp, kind=8)
       type is (real(kind=4))

@@ -15,7 +15,7 @@ module subroutine rhyme_hdf5_util_read_group_comp_1d_array_attr(h5, where, key, 
 
    call h5gopen_f(h5%fid, trim(where), group_id, hdferr)
 
-   select type (buf=>buffer)
+   select type (buf => buffer)
    type is (integer)
       call h5tcopy_f(H5T_NATIVE_INTEGER, type_id, hdferr)
    type is (real(kind=4))
@@ -38,7 +38,7 @@ module subroutine rhyme_hdf5_util_read_group_comp_1d_array_attr(h5, where, key, 
 
    dims = int(size(buffer), kind=hsize_t)
 
-   select type (buf=>buffer)
+   select type (buf => buffer)
    type is (integer)
       call h5aread_f(attr_id, comp_id, buf, dims, hdferr)
    type is (real(kind=4))

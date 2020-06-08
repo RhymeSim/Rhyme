@@ -11,7 +11,7 @@ module function rhyme_nombre_div(n, div) result(n_new)
 
    u => .clonechain.n%u
 
-   select type (d=>div)
+   select type (d => div)
    type is (integer)
       n_new = nombre_t(n%v/real(d, kind=8), u)
    type is (real(kind=4))
@@ -32,7 +32,7 @@ module function rhyme_nombre_div_rev(div, n) result(n_new)
 
    u => .clonechain.n%u
 
-   select type (d=>div)
+   select type (d => div)
    type is (nombre_t)
       u_div => .clonechain.d%u
       n_new = nombre_t(d%v/n%v, u_div/u)

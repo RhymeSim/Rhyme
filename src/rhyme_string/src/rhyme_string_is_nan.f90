@@ -8,7 +8,7 @@ pure elemental module function rhyme_string_is_nan(input) result(is_nan)
    class(*), intent(in) :: input
    logical :: is_nan
 
-   select type (inp=>input)
+   select type (inp => input)
    type is (real(kind=4))
       if (ieee_is_nan(inp)) then
          is_nan = .true.

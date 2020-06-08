@@ -11,7 +11,7 @@ pure module function rhyme_assertion_within(test, accuracy) result(ntest)
 
    call test%copy_essentials_to(ntest)
 
-   select type (acc=>accuracy)
+   select type (acc => accuracy)
    type is (integer) ! Significant figures
       power = int(log10(abs(ntest%real_val)))
       ntest%within = 1.d1**(power - acc + 1)

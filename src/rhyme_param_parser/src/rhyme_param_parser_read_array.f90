@@ -38,7 +38,7 @@ module subroutine rhyme_param_parser_read_array(this, term, var, logger, switch)
          if (present(switch)) then
             read (1234, *) key, op, str(1:term%location - 1), switch_str(1:size(var))
 
-            select type (v=>var)
+            select type (v => var)
             type is (integer)
                do j = 1, size(var)
                   do i = 1, switch%len
@@ -74,7 +74,7 @@ module subroutine rhyme_param_parser_read_array(this, term, var, logger, switch)
             end select
 
          else
-            select type (v=>var)
+            select type (v => var)
             type is (integer)
                read (1234, *) key, op, str(1:term%location - 1), v(lb:ub)
                call logger%log(term%key, term%hint, '=', v)

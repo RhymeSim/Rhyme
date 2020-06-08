@@ -12,7 +12,7 @@ module subroutine rhyme_hdf5_util_read_group_attr(h5, where, key, value)
    integer(hsize_t) :: dims(1) = 1
    integer :: hdferr
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gopen_f(h5%fid, trim(w), group_id, hdferr)
    type is (integer(hid_t))
@@ -21,7 +21,7 @@ module subroutine rhyme_hdf5_util_read_group_attr(h5, where, key, value)
 
    call h5aopen_f(group_id, trim(key), attr_id, hdferr)
 
-   select type (val=>value)
+   select type (val => value)
    type is (integer)
       call h5aread_f(attr_id, H5T_NATIVE_INTEGER, val, dims, hdferr)
    type is (real(kind=4))
@@ -36,7 +36,7 @@ module subroutine rhyme_hdf5_util_read_group_attr(h5, where, key, value)
 
    call h5aclose_f(attr_id, hdferr)
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gclose_f(group_id, hdferr)
    end select

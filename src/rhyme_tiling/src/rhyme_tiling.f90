@@ -4,58 +4,60 @@ module rhyme_tiling
    implicit none
 
 #if NDIM == 1
+#define YDIM
+#define ZDIM
+#define YDIM_DEF
+#define ZDIM_DEF
 #define COLON_J
 #define COLON_K
 #elif NDIM == 2
+#define YDIM , ydim
+#define ZDIM
+#define YDIM_DEF , ydim = 0
+#define ZDIM_DEF
 #define COLON_J , :
 #define COLON_K
 #elif NDIM == 3
+#define YDIM , ydim
+#define ZDIM , zdim
+#define YDIM_DEF , ydim = 0
+#define ZDIM_DEF , zdim = 0
 #define COLON_J , :
 #define COLON_K , :
 #endif
 
    type, private :: indices_t
       integer :: unset = -1234
+      integer :: max_levels = 32
    end type indices_t
 
    type(indices_t), parameter :: tileid = indices_t()
 
    type, private :: tile_t
-      integer :: domain(NDIM) = tileid%unset
-      integer :: level = tileid%unset
-
-      integer :: iteration = tileid%unset
-      real(kind=8) :: dx(NDIM) = tileid%unset, dt = tileid%unset
-      real(kind=8) :: t = tileid%unset
-
-      logical, allocatable :: is_allocated(:COLON_J COLON_K)
-      type(tile_t), pointer :: tiles(:COLON_J COLON_K) => null()
-
       real(kind=8), allocatable :: cells(:COLON_J COLON_K, :)
    end type tile_t
 
    type tiling_t
-      integer :: max_level = tileid%unset
-      integer :: domain(NDIM) = tileid%unset
-      real(kind=8) :: lengths(NDIM) = tileid%unset
+      integer :: max_levels = 0
 
-      integer :: iteration = tileid%unset
-      real(kind=8) :: dx(NDIM) = tileid%unset, dt = tileid%unset
-      real(kind=8) :: t = tileid%unset
+      integer :: grid(NDIM) = 0
+      integer :: domain(NDIM) = 0
+      integer :: tile_domain(NDIM) = 0
 
-      integer :: tiling_grid(NDIM) = tileid%unset
-      logical, allocatable :: is_allocated(:COLON_J COLON_K)
-      type(tile_t), pointer :: tiles(:COLON_J COLON_K) => null()
+      real(kind=8) :: lengths(NDIM) = 0d0
+      real(kind=8) :: dx(NDIM, 0:tileid%max_levels) = 0d0
 
+      integer :: iteration = 0
+      real(kind=8) :: dt(0:tileid%max_levels) = 0d0
+      real(kind=8) :: t(0:tileid%max_levels) = 0d0
+
+      type(tile_t), allocatable :: tiles(:, :COLON_J COLON_K)
       real(kind=8), allocatable :: cells(:COLON_J COLON_K, :)
-   contains
-      procedure :: rhyme_tiling_write_formatted
-      generic :: write (formatted) => rhyme_tiling_write_formatted
    end type tiling_t
 
    interface
-      module subroutine rhyme_tiling_init(tile, logger)
-         type(tiling_t), intent(inout) :: tile
+      module subroutine rhyme_tiling_init(tiling, logger)
+         type(tiling_t), intent(inout) :: tiling
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_tiling_init
    end interface

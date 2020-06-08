@@ -12,14 +12,14 @@ module subroutine rhyme_hdf5_util_write_table(h5, where, key, headers, values)
    integer(hid_t) :: group_id
    integer :: hdferr
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gopen_f(h5%fid, trim(w), group_id, hdferr)
    type is (integer(hid_t))
       group_id = w
    end select
 
-   select type (vals=>values)
+   select type (vals => values)
    type is (integer)
       call write_table(H5T_NATIVE_INTEGER)
    type is (real(kind=4))
@@ -28,7 +28,7 @@ module subroutine rhyme_hdf5_util_write_table(h5, where, key, headers, values)
       call write_table(H5T_NATIVE_DOUBLE)
    end select
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gclose_f(group_id, hdferr)
    end select
@@ -59,7 +59,7 @@ contains
       call h5screate_simple_f(1, dims, space_id, hdferr)
       call h5dcreate_f(group_id, trim(key), table_id, space_id, dset_id, hdferr)
 
-      select type (vals=>values)
+      select type (vals => values)
       type is (integer)
          call h5dwrite_f(dset_id, table_id, vals, dims, hdferr)
       type is (real(kind=4))

@@ -14,7 +14,7 @@ module subroutine rhyme_hdf5_util_write_group_attr(h5, where, key, value)
 
    call h5gopen_f(h5%fid, trim(where), group_id, hdferr)
 
-   select type (val=>value)
+   select type (val => value)
    type is (integer)
       call write_group_attr(H5T_NATIVE_INTEGER, 1)
    type is (real(kind=4))
@@ -44,7 +44,7 @@ contains
 
       call h5acreate_f(group_id, key, dtype, space_id, attr_id, hdferr)
 
-      select type (val=>value)
+      select type (val => value)
       type is (integer)
          call h5awrite_f(attr_id, dtype, val, dims, hdferr)
       type is (real(kind=4))

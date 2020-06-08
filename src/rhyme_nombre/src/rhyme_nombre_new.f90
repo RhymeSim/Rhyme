@@ -11,7 +11,7 @@ module function rhyme_nombre_new_vdu(val, u) result(n)
 
    u_ptr => u
 
-   select type (v=>val)
+   select type (v => val)
    type is (integer)
       n = nombre_t(real(v, kind=8), .head.u_ptr)
    type is (real(kind=4))
@@ -32,7 +32,7 @@ module function rhyme_nombre_new_vbu(val, u) result(n)
 
    u_ptr => 1*u
 
-   select type (v=>val)
+   select type (v => val)
    type is (integer)
       n = nombre_t(real(v, kind=8), .head.u_ptr)
    type is (real(kind=4))

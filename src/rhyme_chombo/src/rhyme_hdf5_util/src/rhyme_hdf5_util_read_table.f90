@@ -15,7 +15,7 @@ module subroutine rhyme_hdf5_util_read_table(h5, where, key, headers, buffer)
    call h5gopen_f(h5%fid, trim(where), group_id, hdferr)
    call h5dopen_f(group_id, trim(key), dset_id, hdferr)
 
-   select type (buf=>buffer)
+   select type (buf => buffer)
    type is (integer)
       call h5tcopy_f(H5T_NATIVE_INTEGER, type_id, hdferr)
    type is (real(kind=4))
@@ -36,7 +36,7 @@ module subroutine rhyme_hdf5_util_read_table(h5, where, key, headers, buffer)
 
    dims = int(size(buffer), kind=hsize_t)
 
-   select type (buf=>buffer)
+   select type (buf => buffer)
    type is (integer)
       call h5dread_f(dset_id, table_id, buf, dims, hdferr)
    type is (real(kind=4))

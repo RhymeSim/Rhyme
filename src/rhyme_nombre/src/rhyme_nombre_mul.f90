@@ -11,7 +11,7 @@ module function rhyme_nombre_mul(mul, n) result(n_new)
 
    u => .clonechain.n%u
 
-   select type (m=>mul)
+   select type (m => mul)
    type is (integer)
       n_new = nombre_t(n%v*m, u)
    type is (real(kind=4))
@@ -32,7 +32,7 @@ module function rhyme_nombre_mul_rev(n, mul) result(n_new)
 
    u => .clonechain.n%u
 
-   select type (m=>mul)
+   select type (m => mul)
    type is (nombre_t)
       u_mul => .clonechain.m%u
       n_new = nombre_t(m%v*n%v, u*u_mul)

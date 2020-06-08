@@ -19,7 +19,7 @@ module subroutine rhyme_hdf5_util_write_group_1d_array_attr(h5, where, key, arra
    dims(1) = size(array)
    call h5screate_simple_f(1, dims, space_id, hdferr)
 
-   select type (arr=>array)
+   select type (arr => array)
    type is (integer)
       call h5acreate_f(group_id, trim(key), H5T_NATIVE_INTEGER, space_id, attr_id, hdferr)
       call h5awrite_f(attr_id, H5T_NATIVE_INTEGER, arr, dims, hdferr)

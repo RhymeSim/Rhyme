@@ -15,7 +15,7 @@ module subroutine rhyme_hdf5_util_read_1d_dataset(h5, where, data)
 
    call h5dopen_f(h5%fid, trim(where), dset_id, hdferr)
 
-   select type (d=>data)
+   select type (d => data)
    type is (integer)
       call h5dread_f(dset_id, H5T_NATIVE_INTEGER, d, dims, hdferr)
    type is (real(kind=4))

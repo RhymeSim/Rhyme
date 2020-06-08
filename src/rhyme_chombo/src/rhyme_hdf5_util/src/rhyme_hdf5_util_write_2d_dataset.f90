@@ -12,7 +12,7 @@ module subroutine rhyme_hdf5_util_write_2d_dataset(h5, where, key, data)
    integer(hsize_t) :: dims(2)
    integer :: hdferr
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gopen_f(h5%fid, trim(w), group_id, hdferr)
    type is (integer(hid_t))
@@ -23,7 +23,7 @@ module subroutine rhyme_hdf5_util_write_2d_dataset(h5, where, key, data)
 
    call h5screate_simple_f(2, dims, space_id, hdferr)
 
-   select type (d=>data)
+   select type (d => data)
    type is (integer)
       call h5dcreate_f(group_id, key, H5T_NATIVE_INTEGER, space_id, dsetid, hdferr)
       call h5dwrite_f(dsetid, H5T_NATIVE_INTEGER, d, dims, hdferr)
@@ -38,7 +38,7 @@ module subroutine rhyme_hdf5_util_write_2d_dataset(h5, where, key, data)
    call h5dclose_f(dsetid, hdferr)
    call h5sclose_f(space_id, hdferr)
 
-   select type (w=>where)
+   select type (w => where)
    type is (character(*))
       call h5gclose_f(group_id, hdferr)
    end select
