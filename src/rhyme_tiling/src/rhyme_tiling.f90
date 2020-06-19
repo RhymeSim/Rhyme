@@ -43,6 +43,7 @@ module rhyme_tiling
       integer :: grid(NDIM) = 0
       integer :: domain(NDIM) = 0
       integer :: tile_domain(NDIM) = 0
+      integer :: ref_factor = 2  ! Refinement factor
 
       real(kind=8) :: lengths(NDIM) = 0d0
       real(kind=8) :: dx(NDIM, 0:tileid%max_levels) = 0d0
@@ -52,7 +53,6 @@ module rhyme_tiling
       real(kind=8) :: t(0:tileid%max_levels) = 0d0
 
       type(tile_t), allocatable :: tiles(:, :COLON_J COLON_K)
-      real(kind=8), allocatable :: cells(:COLON_J COLON_K, :)
    end type tiling_t
 
    interface

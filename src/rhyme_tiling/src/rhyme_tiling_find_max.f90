@@ -15,28 +15,9 @@ module function rhyme_tiling_find_max(tiling, func) result(maximum)
 
    integer :: i, j, k, idx, ti, tj, tk, tile_number, level
    real(kind=8) :: this_maximum, maximum_tiles
-   type(tiling_t), pointer :: tiles(:, :, :)
 
    maximum = -huge(0d0)
    maximum_tiles = -huge(0d0)
-
-   !$OMP PARALLEL DO &
-   !$OMP& SHARED(tiling) &
-   !$OMP& PRIVATE(this_maximum) &
-   !$OMP& FIRSTPRIVATE(maximum) &
-   !$OMP& REDUCTION(max:maximum)
-   do k = 1, tiling%domain(3)
-   do j = 1, tiling%domain(2)
-   do i = 1, tiling%domain(1)
-      this_maximum = func(tiling%cells(i, j, k, :), tiling%dx(:, 0), tiling%dt(0))
-
-      if (this_maximum > maximum) then
-         maximum = this_maximum
-      end if
-   end do
-   end do
-   end do
-   !$OMP END PARALLEL DO
 
    !$OMP PARALLEL DO &
    !$OMP& SHARED(tiling) &

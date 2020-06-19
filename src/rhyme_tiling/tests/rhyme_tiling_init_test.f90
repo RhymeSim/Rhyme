@@ -10,7 +10,30 @@ logical function rhyme_tiling_init_test() result(failed)
    type(tiling_t) :: three_levels, uniform
    type(logger_t) :: logger
 
-   integer :: i
+#if NDIM == 1
+#define GRID_LOOP_J
+#define GRID_LOOP_K
+#define GRID_LOOP_J_END
+#define GRID_LOOP_K_END
+#define JDX
+#define KDX
+#elif NDIM == 2
+#define GRID_LOOP_J do j = 1, three_levels%grid(2)
+#define GRID_LOOP_K
+#define GRID_LOOP_J_END end do
+#define GRID_LOOP_K_END
+#define JDX , j
+#define KDX
+#elif NDIM == 3
+#define GRID_LOOP_J do j = 1, three_levels%grid(2)
+#define GRID_LOOP_K do k = 1, three_levels%grid(3)
+#define GRID_LOOP_J_END end do
+#define GRID_LOOP_K_END end do
+#define JDX , j
+#define KDX , k
+#endif
+
+   integer :: i JDX KDX
 
    tester = .describe."tiling_init"
 
@@ -22,14 +45,40 @@ logical function rhyme_tiling_init_test() result(failed)
    call tester%expect(three_levels%max_levels.toBe.3.hint.'3levels tiling max_levels')
 
    call tester%expect(allocated(three_levels%tiles) .toBe..true..hint.'3levels tiling tiles')
-   call tester%expect(size(three_levels%tiles) .toBe. (2**(NDIM*3)*product(three_levels%grid)) .hint.'3levels tiling tiles size')
-   call tester%expect(size(three_levels%tiles, dim=1) .toBe.2**(NDIM*3) .hint.'3levels tiling tiles size (1)')
+call tester%expect(size(three_levels%tiles) .toBe. ((1 + 2**(NDIM*3))*product(three_levels%grid)) .hint.'3levels tiling tiles size')
+   call tester%expect(size(three_levels%tiles, dim=1) .toBe. (1 + 2**(NDIM*3)) .hint.'3levels tiling tiles size (1)')
    call tester%expect(size(three_levels%tiles, dim=2) .toBe.three_levels%grid(1) .hint.'3levels tiling tiles size (1)')
 
-   call tester%expect(allocated(three_levels%cells) .toBe..true..hint.'3levels tiling cells')
-   call tester%expect(size(three_levels%cells) .toBe. (product(three_levels%domain)*NCMP) .hint.'3levels tiling cells size')
-   call tester%expect(size(three_levels%cells, dim=1) .toBe.three_levels%domain(1) .hint.'3levels tiling cells size')
-   call tester%expect(size(three_levels%cells, dim=NDIM + 1) .toBe.NCMP.hint.'3levels tiling cells size')
+   GRID_LOOP_K
+   GRID_LOOP_J
+   do i = 1, three_levels%grid(1)
+      call tester%expect( &
+         allocated(three_levels%tiles(0, i JDX KDX)%cells) &
+         .toBe..true. &
+         .hint.'3levels base cells allocation')
+      call tester%expect( &
+         size(three_levels%tiles(0, i JDX KDX)%cells) &
+         .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
+         .hint.'3levels base cells size')
+      call tester%expect( &
+         size(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         .toBe. ((2 + three_levels%tile_domain(1) + 2)) &
+         .hint.'3levels base cells size (1)')
+      call tester%expect( &
+         lbound(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         .toBe.-1 &
+         .hint.'3levels base cells lbound (1)')
+      call tester%expect( &
+         ubound(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         .toBe.three_levels%tile_domain(1) + 2 &
+         .hint.'3levels base cells ubound (1)')
+      call tester%expect( &
+         size(three_levels%tiles(0, i JDX KDX)%cells, dim=NDIM + 1) &
+         .toBe.NCMP &
+         .hint.'3levels base cells component size')
+   end do
+   GRID_LOOP_J_END
+   GRID_LOOP_K_END
 
    call tester%expect(three_levels%iteration.toBe.0.hint.'3levels tiling iteration')
    do i = 0, three_levels%max_levels
@@ -43,8 +92,18 @@ logical function rhyme_tiling_init_test() result(failed)
 
    call rhyme_tiling_init(uniform, logger)
 
-   call tester%expect(allocated(uniform%tiles) .toBe..false..hint.'uniform tiling tiles')
-   call tester%expect(allocated(uniform%cells) .toBe..true..hint.'uniform tiling cells')
+   call tester%expect(allocated(uniform%tiles) .toBe..true..hint.'uniform tiling tiles')
+
+   GRID_LOOP_K
+   GRID_LOOP_J
+   do i = 1, three_levels%grid(1)
+      call tester%expect( &
+         size(uniform%tiles(0, i JDX KDX)%cells) &
+         .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
+         .hint.'uniform tiling tiles')
+   end do
+   GRID_LOOP_J_END
+   GRID_LOOP_K_END
 
    failed = tester%failed()
 end function rhyme_tiling_init_test

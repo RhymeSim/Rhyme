@@ -19,6 +19,8 @@ logical function rhyme_tiling_test() result(failed)
    call tester%expect(tiling%grid.toBe.0.hint.'tiling grid')
    call tester%expect(tiling%domain.toBe.0.hint.'tiling domain')
    call tester%expect(tiling%tile_domain.toBe.0.hint.'tiling tile_domain')
+   call tester%expect(tiling%ref_factor.toBe.2.hint.'tiling refinement factor')
+
    call tester%expect(tiling%lengths.toBe.0d0.hint.'tiling lengths')
    do i = 1, NDIM
       call tester%expect(tiling%dx(i, :) .toBe.0d0.hint.'tiling dx')
@@ -27,7 +29,6 @@ logical function rhyme_tiling_test() result(failed)
    call tester%expect(tiling%t.toBe.0d0.hint.'tiling t')
 
    call tester%expect(allocated(tiling%tiles) .toBe..false..hint.'tiling tiles')
-   call tester%expect(allocated(tiling%cells) .toBe..false..hint.'tiling cells')
 
    failed = tester%failed()
 end function rhyme_tiling_test
