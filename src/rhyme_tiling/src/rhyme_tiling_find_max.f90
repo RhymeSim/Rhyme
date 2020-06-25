@@ -26,7 +26,7 @@ module function rhyme_tiling_find_max(tiling, func) result(maximum)
    !$OMP& REDUCTION(max:maximum_tiles)
    do idx = 1, product(tiling%grid)
       ti = mod(idx, tiling%grid(1)) + 1
-      tj = mod(idx/tiling%grid(1), tiling%grid(3)) + 1
+      tj = mod(idx/tiling%grid(1), tiling%grid(2)) + 1
       tk = idx/product(tiling%grid(1:2)) + 1
 
       do tile_number = 1, 2**(NDIM*tiling%max_levels)

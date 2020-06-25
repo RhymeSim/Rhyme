@@ -60,6 +60,16 @@ module rhyme_tiling
          type(tiling_t), intent(inout) :: tiling
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_tiling_init
+
+      pure module function rhyme_tiling_total_ntiles(level, base) result(ntiles)
+         integer, intent(in) :: level, base
+         integer :: ntiles
+      end function rhyme_tiling_total_ntiles
+
+      pure module function rhyme_tiling_to_coordinate(i, grid) result(coor)
+         integer, intent(in) :: i, grid(NDIM)
+         integer :: coor(NDIM)
+      end function rhyme_tiling_to_coordinate
    end interface
 
 contains

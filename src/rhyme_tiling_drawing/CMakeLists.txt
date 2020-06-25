@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 enable_language(Fortran)
 
-project(rhyme_tiling)
+project(rhyme_tiling_drawing)
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(CMAKE_Fortran_FLAGS "-stand f08")
@@ -9,18 +9,11 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-std=f2008")
 endif()
 
-set(deps rhyme_logger)
+set(deps rhyme_tiling rhyme_logger)
 
 set(internal_deps)
 
-set(srcs
-    src/rhyme_tiling_find_max.f90
-    src/rhyme_tiling_add_tile.f90
-    src/rhyme_tiling_find_tile.f90
-    src/rhyme_tiling_init.f90
-    src/rhyme_tiling_to_coordinate.f90
-    src/rhyme_tiling_total_ntiles.f90
-    src/rhyme_tiling.f90)
+set(srcs src/rhyme_tiling_drawing_init.f90 src/rhyme_tiling_drawing.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

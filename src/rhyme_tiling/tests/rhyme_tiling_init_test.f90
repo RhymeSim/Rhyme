@@ -34,6 +34,7 @@ logical function rhyme_tiling_init_test() result(failed)
 #endif
 
    integer :: i JDX KDX
+   integer :: nblocks
 
    tester = .describe."tiling_init"
 
@@ -44,36 +45,44 @@ logical function rhyme_tiling_init_test() result(failed)
 
    call tester%expect(three_levels%max_levels.toBe.3.hint.'3levels tiling max_levels')
 
-   call tester%expect(allocated(three_levels%tiles) .toBe..true..hint.'3levels tiling tiles')
-call tester%expect(size(three_levels%tiles) .toBe. ((1 + 2**(NDIM*3))*product(three_levels%grid)) .hint.'3levels tiling tiles size')
-   call tester%expect(size(three_levels%tiles, dim=1) .toBe. (1 + 2**(NDIM*3)) .hint.'3levels tiling tiles size (1)')
+   call tester%expect( &
+      allocated(three_levels%tiles) .toBe..true. &
+      .hint.'3levels tiling tiles')
+
+   nblocks = 2**(0*NDIM) + 2**(1*NDIM) + 2**(2*NDIM) + 2**(3*NDIM)
+   call tester%expect( &
+      size(three_levels%tiles) .toBe.nblocks*product(three_levels%grid) &
+      .hint.'3levels tiling tiles size')
+
+   call tester%expect( &
+      size(three_levels%tiles, dim=1) .toBe.nblocks.hint.'3levels tiling tiles size (1)')
    call tester%expect(size(three_levels%tiles, dim=2) .toBe.three_levels%grid(1) .hint.'3levels tiling tiles size (1)')
 
    GRID_LOOP_K
    GRID_LOOP_J
    do i = 1, three_levels%grid(1)
       call tester%expect( &
-         allocated(three_levels%tiles(0, i JDX KDX)%cells) &
+         allocated(three_levels%tiles(1, i JDX KDX)%cells) &
          .toBe..true. &
          .hint.'3levels base cells allocation')
       call tester%expect( &
-         size(three_levels%tiles(0, i JDX KDX)%cells) &
+         size(three_levels%tiles(1, i JDX KDX)%cells) &
          .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
          .hint.'3levels base cells size')
       call tester%expect( &
-         size(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         size(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
          .toBe. ((2 + three_levels%tile_domain(1) + 2)) &
          .hint.'3levels base cells size (1)')
       call tester%expect( &
-         lbound(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         lbound(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
          .toBe.-1 &
          .hint.'3levels base cells lbound (1)')
       call tester%expect( &
-         ubound(three_levels%tiles(0, i JDX KDX)%cells, dim=1) &
+         ubound(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
          .toBe.three_levels%tile_domain(1) + 2 &
          .hint.'3levels base cells ubound (1)')
       call tester%expect( &
-         size(three_levels%tiles(0, i JDX KDX)%cells, dim=NDIM + 1) &
+         size(three_levels%tiles(1, i JDX KDX)%cells, dim=NDIM + 1) &
          .toBe.NCMP &
          .hint.'3levels base cells component size')
    end do
@@ -98,7 +107,7 @@ call tester%expect(size(three_levels%tiles) .toBe. ((1 + 2**(NDIM*3))*product(th
    GRID_LOOP_J
    do i = 1, three_levels%grid(1)
       call tester%expect( &
-         size(uniform%tiles(0, i JDX KDX)%cells) &
+         size(uniform%tiles(1, i JDX KDX)%cells) &
          .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
          .hint.'uniform tiling tiles')
    end do

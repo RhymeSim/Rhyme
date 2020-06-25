@@ -42,6 +42,7 @@ module subroutine rhyme_tiling_init(tiling, logger)
 #endif
 
    integer :: i JDX KDX
+   integer :: ntiles
    character(len=32) :: level_label
 
    call logger%begin_section('tiling')
@@ -66,6 +67,9 @@ module subroutine rhyme_tiling_init(tiling, logger)
       return
    end if
 
+   tiling%tile_domain = tiling%ref_factor*tiling%domain/tiling%grid
+   call logger%log('tiling tile domain', '', '=', tiling%tile_domain)
+
    if (any(mod(tiling%tile_domain, tiling%ref_factor) /= 0)) then
       call logger%err('Tile domain must be dividable by refinement factor!')
       call logger%err('tiling tile domain', '', '=', tiling%tile_domain)
@@ -73,24 +77,20 @@ module subroutine rhyme_tiling_init(tiling, logger)
       return
    end if
 
-   tiling%tile_domain = 2*tiling%domain/tiling%grid
-   call logger%log('tiling tile domain', '', '=', tiling%tile_domain)
-
    if (tiling%max_levels > -1) then
-      if (tiling%max_levels == 0) then
-         allocate (tiling%tiles(0:0, tiling%grid(1) GRID_J GRID_K))
-      else
-         allocate (tiling%tiles(0:2**(NDIM*tiling%max_levels), tiling%grid(1) GRID_J GRID_K))
-      end if
+      ntiles = rhyme_tiling_total_ntiles(tiling%max_levels, tiling%ref_factor)
+      call logger%log('total number of tiles', '', '=', [ntiles])
+      allocate (tiling%tiles(ntiles, tiling%grid(1) GRID_J GRID_K))
    else
       call logger%err('Maximum number of levels must be greater than or equal to 0')
    end if
 
+   call logger%log('Allocating zeroth level cells!')
    GRID_LOOP_K
    GRID_LOOP_J
    do i = 1, tiling%grid(1)
       allocate ( &
-         tiling%tiles(0, i JDX KDX)%cells( &
+         tiling%tiles(1, i JDX KDX)%cells( &
          -1:tiling%tile_domain(1) + 2 TILE_DOMAIN_J TILE_DOMAIN_K, NCMP &
          ))
    end do
