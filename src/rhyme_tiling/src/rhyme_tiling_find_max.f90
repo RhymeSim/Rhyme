@@ -36,9 +36,9 @@ module function rhyme_tiling_find_max(tiling, func) result(maximum)
 
          level = int(log(real(tile_number))/log(2e0)/NDIM) + 1
 
-         do k = 1, tiling%tile_domain(3)
-         do j = 1, tiling%tile_domain(2)
-         do i = 1, tiling%tile_domain(1)
+         do k = 1, tiling%grid_domain(3)
+         do j = 1, tiling%grid_domain(2)
+         do i = 1, tiling%grid_domain(1)
             this_maximum = func(tiling%tiles(tile_number, ti, tj, tk)%cells(i, j, k, :), tiling%dx(:, level), tiling%dt(level))
 
             if (this_maximum > maximum_tiles) then

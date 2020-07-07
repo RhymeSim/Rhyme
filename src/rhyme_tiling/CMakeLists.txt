@@ -19,6 +19,7 @@ set(srcs
     src/rhyme_tiling_find_tile.f90
     src/rhyme_tiling_init.f90
     src/rhyme_tiling_to_coordinate.f90
+    src/rhyme_tiling_level_tile_ids.f90
     src/rhyme_tiling_total_ntiles.f90
     src/rhyme_tiling.f90)
 

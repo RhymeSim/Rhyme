@@ -9,8 +9,8 @@ module subroutine rhyme_tiling_init(tiling, logger)
 #if NDIM == 1
 #define GRID_J
 #define GRID_K
-#define TILE_DOMAIN_J
-#define TILE_DOMAIN_K
+#define GRID_DOMAIN_J
+#define GRID_DOMAIN_K
 #define GRID_LOOP_J
 #define GRID_LOOP_K
 #define GRID_LOOP_J_END
@@ -20,8 +20,8 @@ module subroutine rhyme_tiling_init(tiling, logger)
 #elif NDIM == 2
 #define GRID_J , tiling%grid(2)
 #define GRID_K
-#define TILE_DOMAIN_J , -1:tiling%tile_domain(2) + 2
-#define TILE_DOMAIN_K
+#define GRID_DOMAIN_J , -1:tiling%grid_domain(2) + 2
+#define GRID_DOMAIN_K
 #define GRID_LOOP_J do j = 1, tiling%grid(2)
 #define GRID_LOOP_K
 #define GRID_LOOP_J_END end do
@@ -31,8 +31,8 @@ module subroutine rhyme_tiling_init(tiling, logger)
 #elif NDIM == 3
 #define GRID_J , tiling%grid(2)
 #define GRID_K , tiling%grid(3)
-#define TILE_DOMAIN_J , -1:tiling%tile_domain(2) + 2
-#define TILE_DOMAIN_K , -1:tiling%tile_domain(3) + 2
+#define GRID_DOMAIN_J , -1:tiling%grid_domain(2) + 2
+#define GRID_DOMAIN_K , -1:tiling%grid_domain(3) + 2
 #define GRID_LOOP_J do j = 1, tiling%grid(2)
 #define GRID_LOOP_K do k = 1, tiling%grid(3)
 #define GRID_LOOP_J_END end do
@@ -67,12 +67,12 @@ module subroutine rhyme_tiling_init(tiling, logger)
       return
    end if
 
-   tiling%tile_domain = tiling%ref_factor*tiling%domain/tiling%grid
-   call logger%log('tiling tile domain', '', '=', tiling%tile_domain)
+   tiling%grid_domain = tiling%ref_factor*tiling%domain/tiling%grid
+   call logger%log('tiling tile domain', '', '=', tiling%grid_domain)
 
-   if (any(mod(tiling%tile_domain, tiling%ref_factor) /= 0)) then
+   if (any(mod(tiling%grid_domain, tiling%ref_factor) /= 0)) then
       call logger%err('Tile domain must be dividable by refinement factor!')
-      call logger%err('tiling tile domain', '', '=', tiling%tile_domain)
+      call logger%err('tiling tile domain', '', '=', tiling%grid_domain)
       call logger%err('refinement factor', '', '=', [tiling%ref_factor])
       return
    end if
@@ -91,7 +91,7 @@ module subroutine rhyme_tiling_init(tiling, logger)
    do i = 1, tiling%grid(1)
       allocate ( &
          tiling%tiles(1, i JDX KDX)%cells( &
-         -1:tiling%tile_domain(1) + 2 TILE_DOMAIN_J TILE_DOMAIN_K, NCMP &
+         -1:tiling%grid_domain(1) + 2 GRID_DOMAIN_J GRID_DOMAIN_K, NCMP &
          ))
    end do
    GRID_LOOP_J_END

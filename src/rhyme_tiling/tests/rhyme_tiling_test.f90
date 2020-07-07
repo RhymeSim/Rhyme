@@ -18,7 +18,7 @@ logical function rhyme_tiling_test() result(failed)
    call tester%expect(tiling%max_levels.toBe.0.hint.'tiling max levels')
    call tester%expect(tiling%grid.toBe.0.hint.'tiling grid')
    call tester%expect(tiling%domain.toBe.0.hint.'tiling domain')
-   call tester%expect(tiling%tile_domain.toBe.0.hint.'tiling tile_domain')
+   call tester%expect(tiling%grid_domain.toBe.0.hint.'tiling grid_domain')
    call tester%expect(tiling%ref_factor.toBe.2.hint.'tiling refinement factor')
 
    call tester%expect(tiling%lengths.toBe.0d0.hint.'tiling lengths')

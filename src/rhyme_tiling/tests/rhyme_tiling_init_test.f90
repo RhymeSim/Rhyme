@@ -67,11 +67,11 @@ logical function rhyme_tiling_init_test() result(failed)
          .hint.'3levels base cells allocation')
       call tester%expect( &
          size(three_levels%tiles(1, i JDX KDX)%cells) &
-         .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
+         .toBe.product((2 + three_levels%grid_domain + 2))*NCMP &
          .hint.'3levels base cells size')
       call tester%expect( &
          size(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
-         .toBe. ((2 + three_levels%tile_domain(1) + 2)) &
+         .toBe. ((2 + three_levels%grid_domain(1) + 2)) &
          .hint.'3levels base cells size (1)')
       call tester%expect( &
          lbound(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
@@ -79,7 +79,7 @@ logical function rhyme_tiling_init_test() result(failed)
          .hint.'3levels base cells lbound (1)')
       call tester%expect( &
          ubound(three_levels%tiles(1, i JDX KDX)%cells, dim=1) &
-         .toBe.three_levels%tile_domain(1) + 2 &
+         .toBe.three_levels%grid_domain(1) + 2 &
          .hint.'3levels base cells ubound (1)')
       call tester%expect( &
          size(three_levels%tiles(1, i JDX KDX)%cells, dim=NDIM + 1) &
@@ -108,7 +108,7 @@ logical function rhyme_tiling_init_test() result(failed)
    do i = 1, three_levels%grid(1)
       call tester%expect( &
          size(uniform%tiles(1, i JDX KDX)%cells) &
-         .toBe.product((2 + three_levels%tile_domain + 2))*NCMP &
+         .toBe.product((2 + three_levels%grid_domain + 2))*NCMP &
          .hint.'uniform tiling tiles')
    end do
    GRID_LOOP_J_END

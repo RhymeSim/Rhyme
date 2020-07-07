@@ -17,7 +17,5 @@ logical function rhyme_tiling_drawing_init_test() result(failed)
 
    call rhyme_tiling_drawing_init(draw, logger)
 
-   call tester%expect(.false..toBe..true..hint.'Placeholder test')
-
    failed = tester%failed()
 end function rhyme_tiling_drawing_init_test

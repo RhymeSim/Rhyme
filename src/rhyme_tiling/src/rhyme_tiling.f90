@@ -34,6 +34,7 @@ module rhyme_tiling
    type(indices_t), parameter :: tileid = indices_t()
 
    type, private :: tile_t
+      real(kind=8) :: left_corner(NDIM), right_corner(NDIM)
       real(kind=8), allocatable :: cells(:COLON_J COLON_K, :)
    end type tile_t
 
@@ -42,7 +43,7 @@ module rhyme_tiling
 
       integer :: grid(NDIM) = 0
       integer :: domain(NDIM) = 0
-      integer :: tile_domain(NDIM) = 0
+      integer :: grid_domain(NDIM) = 0
       integer :: ref_factor = 2  ! Refinement factor
 
       real(kind=8) :: lengths(NDIM) = 0d0
@@ -70,6 +71,11 @@ module rhyme_tiling
          integer, intent(in) :: i, grid(NDIM)
          integer :: coor(NDIM)
       end function rhyme_tiling_to_coordinate
+
+      pure module function rhyme_tiling_level_tile_ids(base, level) result(ids)
+         integer, intent(in) :: base, level
+         integer :: ids(base**(NDIM*level))
+      end function rhyme_tiling_level_tile_ids
    end interface
 
 contains
