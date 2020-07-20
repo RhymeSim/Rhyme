@@ -82,15 +82,17 @@ contains
       real(kind=8), dimension(cid%rho:cid%p) :: d_term
       real(kind=8) :: x_Rs
 #endif
-      real(kind=8), dimension(cid%rho:cid%p) :: h_term, w, w_noise
+      real(kind=8), dimension(cid%rho:cid%p) :: h_term, w, w_noise, w_orig
       real(kind=8) :: kx
       real(kind=8) :: rnd(2), noise
 
       harmonic_enabled = .false.
       h_term = 0d0
+      w = 0d0
 
       noise = 0d0
-      call conv_cons_to_prim(u0, w_noise)
+      w_noise = 0d0
+      call conv_cons_to_prim(u0, w_orig)
 
 #if NDIM > 1
       sym_decaying_enabled = .false.
@@ -144,15 +146,18 @@ contains
          case (drid%wgn)
             select case (p%wgn%method)
             case (drid%box_muller)
-               call random_number(rnd)
+               if (w_orig(p%wgn%variable) > p%wgn%range(1) &
+                   .and. w_orig(p%wgn%variable) < p%wgn%range(2)) then
+                  call random_number(rnd)
 
-               noise = p%wgn%sd*sqrt(-2d0*log(rnd(1)))*cos(2*pi*rnd(2))
+                  noise = p%wgn%sd*sqrt(-2d0*log(rnd(1)))*cos(2*pi*rnd(2)) + p%wgn%mean
 
-               if (abs(noise) >= p%wgn%cut_percent/1d2) then
-                  noise = p%wgn%cut_percent/1d2*sign(noise, 1d0)
+                  if (abs(noise) >= p%wgn%cut_percent/1d2) then
+                     noise = sign(p%wgn%cut_percent/1d2, noise)
+                  end if
+
+                  w_noise(p%wgn%variable) = w_orig(p%wgn%variable)*noise
                end if
-
-               w_noise(p%wgn%variable) = w_noise(p%wgn%variable)*noise
             case default
                call logger%err('Unknonw method!', '', '', [p%wgn%method])
             end select
