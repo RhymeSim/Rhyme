@@ -110,6 +110,7 @@ shape_filling = .125d0 0d0 0d0 .1d0 1d4 1d-2 1d-3 1d-4 1d0 0d0 0d0 1d0 1d5 1d-3 
 perturb = harmonic cartesian x 0.05 32 0d0 0d0 0d0 1d0
 perturb = symmetric_decaying cartesian y 1d0 56 2 0d0 0d0 0d0 1d0
 perturb = symmetric_decaying cartesian y 1d0 72 8 0d0 0d0 0d0 1d0
+perturb = wgn box_muller 2345 rho 0d0 1d2 1d0 0d0 30
 
 
 # **Chombo Output**

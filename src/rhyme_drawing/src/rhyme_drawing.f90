@@ -23,6 +23,7 @@ module rhyme_drawing
 #endif
       integer :: linear = 41, cubic = 42, ramp = 43 ! transition types
       integer :: harmonic = 61
+      integer :: wgn = 63 ! White Gaussian Noise
 #if NDIM > 1
       integer :: symmetric_decaying = 62 ! perturbation types
 #endif
@@ -34,6 +35,7 @@ module rhyme_drawing
       integer :: z = samrid%z
 #endif
       integer :: cartesian = 101 ! coordinate types
+      integer :: box_muller = 1001 ! White Gaussian Noise Method
    end type drawing_indices_t
 
    type(drawing_indices_t), parameter :: drid = drawing_indices_t()
@@ -49,6 +51,16 @@ module rhyme_drawing
       real(kind=8) :: base(cid%rho:cid%p)
    end type perturbation_harmonic_t
 
+   type perturbation_wgn_t
+     integer :: method = drid%box_muller
+     integer :: seed = 1234
+     integer :: variable = drid%unset
+     real(kind=8) :: range(2) = [0d0, 0d0]
+     real(kind=8) :: sd = 0d0 ! Standard Deviation
+     real(kind=8) :: mean = 0d0
+     real(kind=8) :: cut_percent = 100
+   end type perturbation_wgn_t
+
 #if NDIM > 1
    type perturbation_symmetric_decaying_t
       real(kind=8) :: A = 1.d0, pos = 0.d0, sigma = 1.d0
@@ -61,6 +73,7 @@ module rhyme_drawing
       integer :: coor_type = drid%unset
       integer :: axis = drid%unset
       type(perturbation_harmonic_t) :: harmonic
+      type(perturbation_wgn_t) :: wgn
 #if NDIM > 1
       type(perturbation_symmetric_decaying_t) :: sym_decaying
 #endif

@@ -45,6 +45,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    character(len=1024), parameter :: param_file = PARAM_FILE_NAME
    type(shape_t), pointer :: shape
+   type(perturbation_t), pointer :: perturb
 
    tester = .describe."rhyme_param_parser_load_params"
 
@@ -219,35 +220,49 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 #endif
 
    ! Perturbation
-   call tester%expect(draw%perturbs%type.toBe.drid%harmonic.hint.'harmonic')
-   call tester%expect(draw%perturbs%coor_type.toBe.drid%cartesian)
-   call tester%expect(draw%perturbs%axis.toBe.drid%x)
-   call tester%expect(draw%perturbs%harmonic%A.toBe..05d0)
-   call tester%expect(draw%perturbs%harmonic%lambda.toBe.32.0)
-   call tester%expect(draw%perturbs%harmonic%base(cid%rho) .toBe.0d0)
-   call tester%expect(draw%perturbs%harmonic%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
-   call tester%expect(draw%perturbs%harmonic%base(cid%p) .toBe.1d0)
+   perturb => draw%perturbs
+   call tester%expect(perturb%type.toBe.drid%harmonic.hint.'harmonic')
+   call tester%expect(perturb%coor_type.toBe.drid%cartesian)
+   call tester%expect(perturb%axis.toBe.drid%x)
+   call tester%expect(perturb%harmonic%A.toBe..05d0)
+   call tester%expect(perturb%harmonic%lambda.toBe.32.0)
+   call tester%expect(perturb%harmonic%base(cid%rho) .toBe.0d0)
+   call tester%expect(perturb%harmonic%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
+   call tester%expect(perturb%harmonic%base(cid%p) .toBe.1d0)
 
 #if NDIM > 1
-   call tester%expect(draw%perturbs%next%type.toBe.drid%symmetric_decaying)
-   call tester%expect(draw%perturbs%next%coor_type.toBe.drid%cartesian)
-   call tester%expect(draw%perturbs%next%axis.toBe.drid%y)
-   call tester%expect(draw%perturbs%next%sym_decaying%A.toBe.1d0)
-   call tester%expect(draw%perturbs%next%sym_decaying%pos.toBe.56.0)
-   call tester%expect(draw%perturbs%next%sym_decaying%sigma.toBe.2.0)
-   call tester%expect(draw%perturbs%next%sym_decaying%base(cid%rho) .toBe.0d0)
-   call tester%expect(draw%perturbs%next%sym_decaying%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
-   call tester%expect(draw%perturbs%next%sym_decaying%base(cid%p) .toBe.1d0)
-   call tester%expect(draw%perturbs%next%next%type.toBe.drid%symmetric_decaying)
-   call tester%expect(draw%perturbs%next%next%coor_type.toBe.drid%cartesian)
-   call tester%expect(draw%perturbs%next%next%axis.toBe.drid%y)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%A.toBe.1d0)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%pos.toBe.72.0)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%sigma.toBe.8.0)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%base(cid%rho) .toBe.0d0)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
-   call tester%expect(draw%perturbs%next%next%sym_decaying%base(cid%p) .toBe.1d0)
+  perturb => perturb%next
+   call tester%expect(perturb%type.toBe.drid%symmetric_decaying)
+   call tester%expect(perturb%coor_type.toBe.drid%cartesian)
+   call tester%expect(perturb%axis.toBe.drid%y)
+   call tester%expect(perturb%sym_decaying%A.toBe.1d0)
+   call tester%expect(perturb%sym_decaying%pos.toBe.56.0)
+   call tester%expect(perturb%sym_decaying%sigma.toBe.2.0)
+   call tester%expect(perturb%sym_decaying%base(cid%rho) .toBe.0d0)
+   call tester%expect(perturb%sym_decaying%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
+   call tester%expect(perturb%sym_decaying%base(cid%p) .toBe.1d0)
+
+   perturb => perturb%next
+   call tester%expect(perturb%type.toBe.drid%symmetric_decaying)
+   call tester%expect(perturb%coor_type.toBe.drid%cartesian)
+   call tester%expect(perturb%axis.toBe.drid%y)
+   call tester%expect(perturb%sym_decaying%A.toBe.1d0)
+   call tester%expect(perturb%sym_decaying%pos.toBe.72.0)
+   call tester%expect(perturb%sym_decaying%sigma.toBe.8.0)
+   call tester%expect(perturb%sym_decaying%base(cid%rho) .toBe.0d0)
+   call tester%expect(perturb%sym_decaying%base(cid%u:cid%u + NDIM - 1) .toBe.0d0)
+   call tester%expect(perturb%sym_decaying%base(cid%p) .toBe.1d0)
 #endif
+
+   perturb => perturb%next
+   call tester%expect(perturb%type.toBe.drid%wgn.hint.'wgn type')
+   call tester%expect(perturb%wgn%method.toBe.drid%box_muller.hint.'wgn method')
+   call tester%expect(perturb%wgn%seed.toBe.2345.hint.'wgn seed')
+   call tester%expect(perturb%wgn%variable.toBe.cid%rho.hint.'wgn variable')
+   call tester%expect(perturb%wgn%range.toBe.[0d0, 1d2].hint.'wgn range')
+   call tester%expect(perturb%wgn%sd.toBe.1d0.hint.'wgn standard deviation')
+   call tester%expect(perturb%wgn%mean.toBe.0d0.hint.'wgn mean')
+   call tester%expect(perturb%wgn%cut_percent.toBe.30.hint.'wgn cut (percent)')
 
    ! Iterative Riemann Solver
    call tester%expect(irs%w_vacuum(cid%p) .toBe.1.23d0)

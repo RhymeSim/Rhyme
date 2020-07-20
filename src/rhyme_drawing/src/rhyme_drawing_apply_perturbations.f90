@@ -34,6 +34,16 @@ module subroutine rhyme_drawing_apply_perturbations(samr, perturbs, logger)
 
    integer :: l, b, i JDX KDX
    real(kind=8) :: x0(NDIM), p1(cid%rho:cid%e_tot)
+   type(perturbation_t), pointer :: p
+
+   p => perturbs
+   do while (associated(p))
+      if (p%type == drid%wgn) then
+         call random_seed(p%wgn%seed)
+      end if
+
+      p => p%next
+   end do
 
    do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -42,7 +52,7 @@ module subroutine rhyme_drawing_apply_perturbations(samr, perturbs, logger)
          LOOP_J
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
             x0 = ([i JDX KDX] - .5d0 + samr%levels(l)%boxes(b)%left_edge - 1)/2**l
-            p1 = perturbed_state(x0)
+            p1 = perturbed_state(x0, samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot))
 
             samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) = &
                samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:cid%e_tot) + p1
@@ -55,13 +65,14 @@ module subroutine rhyme_drawing_apply_perturbations(samr, perturbs, logger)
 
 contains
 
-   function perturbed_state(x) result(u)
+   function perturbed_state(x, u0) result(u)
       implicit none
 
       real(kind=8), intent(in) :: x(NDIM)
+      real(kind=8), intent(in) :: u0(cid%rho:cid%e_tot)
       real(kind=8) :: u(cid%rho:cid%e_tot)
 
-      real(kind=8), parameter :: pi = 3.1415926535897932_8
+      real(kind=8), parameter :: pi = 4.d0*datan(1d0)
 
       type(perturbation_t), pointer :: p
 
@@ -71,15 +82,19 @@ contains
       real(kind=8), dimension(cid%rho:cid%p) :: d_term
       real(kind=8) :: x_Rs
 #endif
-      real(kind=8), dimension(cid%rho:cid%p) :: h_term, w
+      real(kind=8), dimension(cid%rho:cid%p) :: h_term, w, w_noise
       real(kind=8) :: kx
+      real(kind=8) :: rnd(2), noise
 
       harmonic_enabled = .false.
-      h_term = 0.d0
+      h_term = 0d0
+
+      noise = 0d0
+      call conv_cons_to_prim(u0, w_noise)
 
 #if NDIM > 1
       sym_decaying_enabled = .false.
-      d_term = 0.d0
+      d_term = 0d0
 #endif
 
       p => perturbs
@@ -126,6 +141,21 @@ contains
                      -x_Rs**2/p%sym_decaying%sigma &
                      )*p%sym_decaying%base
 #endif
+         case (drid%wgn)
+            select case (p%wgn%method)
+            case (drid%box_muller)
+               call random_number(rnd)
+
+               noise = p%wgn%sd*sqrt(-2d0*log(rnd(1)))*cos(2*pi*rnd(2))
+
+               if (abs(noise) >= p%wgn%cut_percent/1d2) then
+                  noise = p%wgn%cut_percent/1d2*sign(noise, 1d0)
+               end if
+
+               w_noise(p%wgn%variable) = w_noise(p%wgn%variable)*noise
+            case default
+               call logger%err('Unknonw method!', '', '', [p%wgn%method])
+            end select
          end select
 
          p => p%next
@@ -143,7 +173,7 @@ contains
 #endif
       end if
 
-      call conv_prim_to_cons(w, u)
+      call conv_prim_to_cons(w + w_noise, u)
    end function perturbed_state
 end subroutine rhyme_drawing_apply_perturbations
 end submodule rhyme_drawing_apply_perturbations_submodule
