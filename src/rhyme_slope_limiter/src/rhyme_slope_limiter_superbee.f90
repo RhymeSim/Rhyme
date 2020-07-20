@@ -19,9 +19,8 @@ pure module subroutine rhyme_slope_limiter_superbee(sl, ul, u, ur, delta)
 
    do i = cid%rho, cid%e_tot
       if (r(i) > 1.d0) then
-         delta(i) = min( &
-                    r(i), rhyme_slope_limiter_xi_R(sl, r(i)), 2.d0 &
-                    )*d(i)
+         delta(i) = &
+            min(r(i), rhyme_slope_limiter_xi_R(sl, r(i)), 2.d0)*d(i)
       else if (r(i) > .5d0) then
          delta(i) = d(i)
       else if (r(i) > 0.d0) then

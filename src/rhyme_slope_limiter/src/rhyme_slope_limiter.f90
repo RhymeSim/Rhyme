@@ -72,7 +72,7 @@ contains
 
          denom = ur(i) - u(i)
 
-         if (abs(denom) < epsilon(0.d0)) then
+         if (abs(denom) < tiny(0.d0)) then
             r(i) = 0.d0
             cycle
          end if
