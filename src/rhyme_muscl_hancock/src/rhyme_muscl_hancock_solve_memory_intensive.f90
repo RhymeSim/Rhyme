@@ -52,7 +52,7 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
    !$OMP PARALLEL DO &
    !$OMP& SHARED(box, ws) &
    !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
-   !$OMP& PRIVATE(delta) &
+   !$OMP& PRIVATE(delta)
    LOOP_K
    LOOP_J
    do i = lb(1), ub(1)
@@ -103,7 +103,7 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
    !$OMP PARALLEL DO &
    !$OMP& SHARED(box, ws) &
    !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
-   !$OMP& PRIVATE(evolved_state) &
+   !$OMP& PRIVATE(evolved_state)
    LOOP_K
    LOOP_J
    do i = lb(1), ub(1)
@@ -144,7 +144,7 @@ module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
 
    !$OMP PARALLEL DO &
    !$OMP& SHARED(box, ws) &
-   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
+   !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub)
    LOOP_K
    LOOP_J
    do i = 1, box%dims(1)

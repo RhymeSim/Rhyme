@@ -55,7 +55,7 @@ module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
    !$OMP PARALLEL DO &
    !$OMP& SHARED(box, ws) &
    !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b) &
-   !$OMP& PRIVATE(idx, axis, ub, delta, half_step_left, half_step_right, edge_state, flux, df) &
+   !$OMP& PRIVATE(idx, axis, ub, delta, half_step_left, half_step_right, edge_state, flux, df)
    LOOP_K
    LOOP_J
    do i = 1, box%dims(1)
