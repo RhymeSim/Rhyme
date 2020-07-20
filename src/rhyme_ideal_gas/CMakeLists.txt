@@ -16,6 +16,7 @@ set(internal_deps)
 set(srcs
     src/rhyme_ideal_gas_primitive_vars_to_conserved.f90
     src/rhyme_ideal_gas_primitive_to_conserved.f90
+    src/rhyme_ideal_gas_conserved_to_primitive.f90
     src/rhyme_ideal_gas_flux.f90
     src/rhyme_ideal_gas_specific_internal_energy.f90
     src/rhyme_ideal_gas_pressure.f90

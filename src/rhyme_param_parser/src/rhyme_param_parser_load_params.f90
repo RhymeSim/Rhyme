@@ -23,12 +23,13 @@ module subroutine load_params( &
    type(logger_t), intent(inout) :: logger
 
    type(config_t) :: config
-   type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch, report_switch
+   type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch, report_switch, prim_var_switch
    type(config_switch_t) :: ic_types, ic_snapshot_types
    type(config_switch_t) :: bc_types
    type(config_switch_t) :: gas_types
    type(config_switch_t) :: canvas_types, shape_types, filling_types, filling_modes
-   type(config_switch_t) :: perturb_types, coord_types, perturb_domain_types
+   type(config_switch_t) :: perturb_types, perturb_method_switch
+   type(config_switch_t) :: coord_types, perturb_domain_types
    type(config_switch_t) :: ionization_cases, uvb_models
    type(config_switch_t) :: limiter_types
    type(config_switch_t) :: solver_types
@@ -61,6 +62,16 @@ module subroutine load_params( &
    call colormap_switch%add('viridis', csid%viridis)
    call colormap_switch%add('magma_grey', csid%magma_grey)
    call colormap_switch%add('smooth_rainbow', csid%smooth_rainbow)
+
+   call prim_var_switch%add('rho', cid%rho)
+   call prim_var_switch%add('u', cid%u)
+#if NDIM > 1
+   call prim_var_switch%add('v', cid%v)
+#endif
+#if NDIM > 2
+   call prim_var_switch%add('w', cid%w)
+#endif
+   call prim_var_switch%add('p', cid%p)
 
    ! Logging
    call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
@@ -285,9 +296,12 @@ module subroutine load_params( &
 
    ! Perturbations
    call perturb_types%add('harmonic', drid%harmonic)
+   call perturb_types%add('wgn', drid%wgn)
 #if NDIM > 1
    call perturb_types%add('symmetric_decaying', drid%symmetric_decaying)
 #endif
+
+  call perturb_method_switch%add('Box-Muller', drid%box_muller)
 
    call coord_types%add('cartesian', drid%cartesian)
 
@@ -305,17 +319,27 @@ module subroutine load_params( &
       call config%read('perturb'.at.1.occur.i, perturb_type, logger, perturb_types)
       perturb => draw%new_perturb(perturb_type)
 
-      call config%read('perturb'.at.2.occur.i.hint.'coordinate', perturb%coor_type, logger, coord_types)
-      call config%read('perturb'.at.3.occur.i.hint.'domain', perturb%axis, logger, perturb_domain_types)
-
       select case (perturb_type)
       case (drid%harmonic)
+         call config%read('perturb'.at.2.occur.i.hint.'coordinate', perturb%coor_type, logger, coord_types)
+         call config%read('perturb'.at.3.occur.i.hint.'domain', perturb%axis, logger, perturb_domain_types)
          call config%read('perturb'.at.4.occur.i.hint.'A', perturb%harmonic%A, logger)
          call config%read('perturb'.at.5.occur.i.hint.'lambda', perturb%harmonic%lambda, logger)
          call config%read('perturb'.at.6.occur.i.hint.'state', perturb%harmonic%base(cid%rho:cid%p), logger)
 
+      case (drid%wgn)
+         call config%read('perturb'.at.2.occur.i.hint.'method', perturb%wgn%method, logger, perturb_method_switch)
+         call config%read('perturb'.at.3.occur.i.hint.'seed', perturb%wgn%seed, logger)
+         call config%read('perturb'.at.4.occur.i.hint.'variable', perturb%wgn%variable, logger, prim_var_switch)
+         call config%read_array('perturb'.at.5.occur.i.hint.'range', perturb%wgn%range, logger)
+         call config%read('perturb'.at.7.occur.i.hint.'standard deviation', perturb%wgn%sd, logger)
+         call config%read('perturb'.at.8.occur.i.hint.'mean', perturb%wgn%mean, logger)
+         call config%read('perturb'.at.9.occur.i.hint.'cut [percent]', perturb%wgn%cut_percent, logger)
+
 #if NDIM > 1
       case (drid%symmetric_decaying)
+         call config%read('perturb'.at.2.occur.i.hint.'coordinate', perturb%coor_type, logger, coord_types)
+         call config%read('perturb'.at.3.occur.i.hint.'domain', perturb%axis, logger, perturb_domain_types)
          call config%read('perturb'.at.4.occur.i.hint.'A', perturb%sym_decaying%A, logger)
          call config%read('perturb'.at.5.occur.i.hint.'position', perturb%sym_decaying%pos, logger)
          call config%read('perturb'.at.6.occur.i.hint.'sigma', perturb%sym_decaying%sigma, logger)

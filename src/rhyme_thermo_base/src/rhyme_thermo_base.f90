@@ -69,6 +69,11 @@ module rhyme_thermo_base
          real(kind=8), intent(in) :: u(cid%rho:cid%e_tot)
          real(kind=8) :: sp_int_e
       end function rhyme_thermo_base_specific_internal_energy
+
+      pure module subroutine rhyme_thermo_base_conserved_to_primitive(u, w)
+         real(kind=8), intent(in) :: u(cid%rho:cid%p)
+         real(kind=8), intent(out) :: w(cid%rho:cid%e_tot)
+      end subroutine rhyme_thermo_base_conserved_to_primitive
    end interface
 
    interface calc_t_mu
@@ -86,6 +91,10 @@ module rhyme_thermo_base
    interface calc_flux
       module procedure :: rhyme_thermo_base_flux
    end interface calc_flux
+
+   interface conv_cons_to_prim
+      module procedure :: rhyme_thermo_base_conserved_to_primitive
+   end interface conv_cons_to_prim
 
    interface conv_prim_to_cons
       module procedure :: rhyme_thermo_base_primitive_to_conserved

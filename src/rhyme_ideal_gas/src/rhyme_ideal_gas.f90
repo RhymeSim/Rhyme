@@ -44,5 +44,10 @@ module rhyme_ideal_gas
          real(kind=8), intent(in) :: gamma, rho, v(NDIM), p
          real(kind=8), intent(out) :: u(cid%rho:cid%e_tot)
       end subroutine rhyme_ideal_gas_primitive_vars_to_conserved
+
+      pure module subroutine rhyme_ideal_gas_conserved_to_primitive(gamma, u, w)
+         real(kind=8), intent(in) :: gamma, u(cid%rho:cid%e_tot)
+         real(kind=8), intent(out) :: w(cid%rho:cid%p)
+      end subroutine rhyme_ideal_gas_conserved_to_primitive
    end interface
 end module rhyme_ideal_gas

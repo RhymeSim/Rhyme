@@ -17,6 +17,7 @@ set(srcs
     src/rhyme_thermo_base_specific_internal_energy.f90
     src/rhyme_thermo_base_primitive_vars_to_conserved.f90
     src/rhyme_thermo_base_primitive_to_conserved.f90
+    src/rhyme_thermo_base_conserved_to_primitive.f90
     src/rhyme_thermo_base_flux.f90
     src/rhyme_thermo_base_pressure.f90
     src/rhyme_thermo_base_speed_of_sound.f90
