@@ -100,7 +100,7 @@ shape = sphere 3d0 2.34d0 2.34d-1 'unit'
 shape_filling = uniform absolute 1d0 0d0 1d0 1d4 1d-2 1d-3 1d-4 2d0 3d0 4d0 1d5 1d-3 1d-3 1d-5
 
 perturb = harmonic cartesian x 0.05 32 0d0 0d0 1d0
-perturb = wgn box_muller rho 1d0 0d0 30
+perturb = wgn box_muller 2345 rho 0d0 1d2 1d0 0d0 30
 
 
 # **Chombo Output**
