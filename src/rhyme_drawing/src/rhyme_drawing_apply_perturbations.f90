@@ -32,14 +32,17 @@ module subroutine rhyme_drawing_apply_perturbations(samr, perturbs, logger)
 #define LOOP_K_END end do
 #endif
 
-   integer :: l, b, i JDX KDX
+   integer :: l, b, i JDX KDX, seed_size, seeds(33)
    real(kind=8) :: x0(NDIM), p1(cid%rho:cid%e_tot)
    type(perturbation_t), pointer :: p
 
    p => perturbs
    do while (associated(p))
       if (p%type == drid%wgn) then
-         call random_seed(p%wgn%seed)
+         seed_size = size(seeds)
+         seeds = p%wgn%seed
+         call random_seed(size=seed_size)
+         call random_seed(put=seeds)
       end if
 
       p => p%next
