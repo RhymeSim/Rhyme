@@ -19,9 +19,9 @@ module subroutine rhyme_chombo_filename_generator(chombo, filename)
    end if
 
    if (chombo%iteration .eq. chid%unset) then
-      write (itr_str, "(I0.5)") 0
+      write (itr_str, "(I0.6)") 0
    else
-      write (itr_str, "(I0.5)") chombo%iteration
+      write (itr_str, "(I0.6)") chombo%iteration
    end if
 
    filename = trim(filename)//trim(itr_str)//".chombo.h5"

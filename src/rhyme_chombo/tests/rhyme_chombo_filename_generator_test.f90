@@ -18,11 +18,11 @@ logical function rhyme_chombo_filename_generator_test() result(failed)
    ch%iteration = 12
 
    call rhyme_chombo_filename_generator(ch, filename)
-   call ch_tester%expect(filename.toBe.'./prefix/nickname-00012.chombo.h5')
+   call ch_tester%expect(filename.toBe.'./prefix/nickname-000012.chombo.h5')
 
    ch_empty%iteration = 23
    call rhyme_chombo_filename_generator(ch_empty, filename)
-   call ch_tester%expect(filename.toBe.'00023.chombo.h5')
+   call ch_tester%expect(filename.toBe.'000023.chombo.h5')
 
    failed = ch_tester%failed()
 end function rhyme_chombo_filename_generator_test
