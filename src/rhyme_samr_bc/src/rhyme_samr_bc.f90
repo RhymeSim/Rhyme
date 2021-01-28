@@ -7,7 +7,7 @@ module rhyme_samr_bc
 
    type, private :: samr_bc_indices_t
       integer :: unset = -1
-      integer :: reflective = 1, outflow = 2, periodic = 3
+      integer :: reflective = 1, outflow = 2, periodic = 3, inflow = 4
       integer :: left = samrid%left, right = samrid%right
 #if NDIM > 1
       integer :: bottom = samrid%bottom, top = samrid%top
@@ -21,6 +21,7 @@ module rhyme_samr_bc
 
    type samr_bc_t
       integer :: types(2*NDIM) = bcid%reflective
+      real(kind=8) :: inflows(NCMP, 2*NDIM) = 0d0
    end type samr_bc_t
 
    interface

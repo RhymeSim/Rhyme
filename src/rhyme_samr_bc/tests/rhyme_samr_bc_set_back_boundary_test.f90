@@ -64,6 +64,24 @@ logical function rhyme_samr_bc_set_back_boundary_test() result(failed)
       call bc_tester%expect((b%cells(IDX, -1, uid)) .toBe. (b%cells(IDX, d(3) - 1, uid)))
    end do
 
+   ! Inflow
+   bc%types(bcid%back) = bcid%inflow
+   bc%inflows(cid%rho, bcid%back) = 1.23d0
+   bc%inflows(cid%rho_u:cid%rho_u + NDIM - 1, bcid%back) = 2.34d0
+   bc%inflows(cid%e_tot, bcid%back) = 3.45d0
+   bc%inflows(cid%e_tot + 1:NCMP, bcid%back) = 4.56d0
+
+   call rhyme_samr_bc_set_back_boundary(bc, samr%levels(0)%boxes(1))
+   b = samr%levels(0)%boxes(1)
+
+   call bc_tester%expect((b%cells(IDX, 0, cid%rho:cid%rho)) .toBe.1.23d0)
+   call bc_tester%expect((b%cells(IDX, 0, cid%rho_u:cid%rho_u + NDIM - 1)) .toBe.2.34d0)
+   call bc_tester%expect((b%cells(IDX, 0, cid%e_tot:cid%e_tot)) .toBe.3.45d0)
+   call bc_tester%expect((b%cells(IDX, 0, cid%e_tot + 1:NCMP)) .toBe.4.56d0)
+   call bc_tester%expect((b%cells(IDX, -1, cid%rho:cid%rho)) .toBe.1.23d0)
+   call bc_tester%expect((b%cells(IDX, -1, cid%rho_u:cid%rho_u + NDIM - 1)) .toBe.2.34d0)
+   call bc_tester%expect((b%cells(IDX, -1, cid%e_tot:cid%e_tot)) .toBe.3.45d0)
+   call bc_tester%expect((b%cells(IDX, -1, cid%e_tot + 1:NCMP)) .toBe.4.56d0)
 #endif
 
    failed = bc_tester%failed()

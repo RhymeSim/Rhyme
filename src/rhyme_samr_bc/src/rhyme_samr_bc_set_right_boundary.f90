@@ -70,6 +70,13 @@ pure module subroutine rhyme_samr_bc_set_right_boundary(bc, box)
       box%cells(box%dims(1) + 2 JDX KDX, cid%rho:cid%e_tot) = box%cells(2 JDX KDX, cid%rho:cid%e_tot)
       LOOP_J_END
       LOOP_K_END
+   case (bcid%inflow)
+      LOOP_K
+      LOOP_J
+      box%cells(box%dims(1) + 1 JDX KDX, cid%rho:NCMP) = bc%inflows(cid%rho:NCMP, bcid%right)
+      box%cells(box%dims(1) + 2 JDX KDX, cid%rho:NCMP) = bc%inflows(cid%rho:NCMP, bcid%right)
+      LOOP_J_END
+      LOOP_K_END
    end select
 end subroutine rhyme_samr_bc_set_right_boundary
 end submodule set_right_boundary_smod

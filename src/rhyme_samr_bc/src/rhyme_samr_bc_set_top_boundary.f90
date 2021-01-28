@@ -61,6 +61,15 @@ pure module subroutine rhyme_samr_bc_set_top_boundary(bc, box)
          end do
          LOOP_K_END
       end do
+   case (bcid%inflow)
+      do uid = cid%rho, NCMP
+         LOOP_K
+         do i = 1, box%dims(1)
+            box%cells(i, box%dims(2) + 1 KDX, uid) = bc%inflows(uid, bcid%top)
+            box%cells(i, box%dims(2) + 2 KDX, uid) = bc%inflows(uid, bcid%top)
+         end do
+         LOOP_K_END
+      end do
    end select
 #endif
 

@@ -151,16 +151,35 @@ module subroutine load_params( &
    call bc_types%add('reflective', bcid%reflective)
    call bc_types%add('outflow', bcid%outflow)
    call bc_types%add('periodic', bcid%periodic)
+   call bc_types%add('inflow', bcid%inflow)
 
    call config%read('left_bc'.at.1, bc%types(bcid%left), logger, bc_types)
+   if (bc%types(bcid%left) == bcid%inflow) then
+      call config%read_array('left_bc'.at.2, bc%inflows(:, bcid%left), logger)
+   end if
    call config%read('right_bc'.at.1, bc%types(bcid%right), logger, bc_types)
+   if (bc%types(bcid%right) == bcid%inflow) then
+      call config%read_array('right_bc'.at.2, bc%inflows(:, bcid%right), logger)
+   end if
 #if NDIM > 1
    call config%read('bottom_bc'.at.1, bc%types(bcid%bottom), logger, bc_types)
+   if (bc%types(bcid%bottom) == bcid%inflow) then
+      call config%read_array('bottom_bc'.at.2, bc%inflows(:, bcid%bottom), logger)
+   end if
    call config%read('top_bc'.at.1, bc%types(bcid%top), logger, bc_types)
+   if (bc%types(bcid%top) == bcid%inflow) then
+      call config%read_array('top_bc'.at.2, bc%inflows(:, bcid%top), logger)
+   end if
 #endif
 #if NDIM > 2
    call config%read('back_bc'.at.1, bc%types(bcid%back), logger, bc_types)
+   if (bc%types(bcid%back) == bcid%inflow) then
+      call config%read_array('back_bc'.at.2, bc%inflows(:, bcid%back), logger)
+   end if
    call config%read('front_bc'.at.1, bc%types(bcid%front), logger, bc_types)
+   if (bc%types(bcid%front) == bcid%inflow) then
+      call config%read_array('front_bc'.at.2, bc%inflows(:, bcid%front), logger)
+   end if
 #endif
 
    ! chemistry
@@ -301,7 +320,7 @@ module subroutine load_params( &
    call perturb_types%add('symmetric_decaying', drid%symmetric_decaying)
 #endif
 
-  call perturb_method_switch%add('Box-Muller', drid%box_muller)
+   call perturb_method_switch%add('Box-Muller', drid%box_muller)
 
    call coord_types%add('cartesian', drid%cartesian)
 

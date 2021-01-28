@@ -78,6 +78,15 @@ pure module subroutine rhyme_samr_bc_set_left_boundary(bc, box)
          LOOP_J_END
          LOOP_K_END
       end do
+   case (bcid%inflow)
+      do uid = cid%rho, NCMP
+         LOOP_K
+         LOOP_J
+         box%cells(0 JDX KDX, uid) = bc%inflows(uid, bcid%left)
+         box%cells(-1 JDX KDX, uid) = bc%inflows(uid, bcid%left)
+         LOOP_J_END
+         LOOP_K_END
+      end do
    end select
 
 end subroutine rhyme_samr_bc_set_left_boundary

@@ -45,6 +45,15 @@ pure module subroutine rhyme_samr_bc_set_front_boundary(bc, box)
             end do
          end do
       end do
+   case (bcid%inflow)
+      do uid = cid%rho, NCMP
+         do j = 1, box%dims(2)
+            do i = 1, box%dims(1)
+               box%cells(i, j, box%dims(3) + 1, uid) = bc%inflows(uid, bcid%front)
+               box%cells(i, j, box%dims(3) + 2, uid) = bc%inflows(uid, bcid%front)
+            end do
+         end do
+      end do
    end select
 #endif
 

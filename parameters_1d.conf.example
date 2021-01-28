@@ -36,7 +36,7 @@ time_unit = "s"
 
 # **Boundary Condition**
 left_bc = reflective
-right_bc = outflow
+right_bc = inflow 1.23d0 2.34d0 3.45d0 4.56d0 5.67d0 6.78d0 7.89d0
 
 
 # **Thermodynamics**
