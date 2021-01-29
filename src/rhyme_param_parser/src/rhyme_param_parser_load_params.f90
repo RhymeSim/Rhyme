@@ -159,12 +159,14 @@ module subroutine load_params( &
       call config%read_array('left_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%left))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%left) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('left_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%left))
    end if
    call config%read('right_bc'.at.1, bc%types(bcid%right), logger, bc_types)
    if (bc%types(bcid%right) == bcid%inflow) then
       call config%read_array('right_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%right))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%right) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('right_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%right))
    end if
 #if NDIM > 1
    call config%read('bottom_bc'.at.1, bc%types(bcid%bottom), logger, bc_types)
@@ -172,12 +174,14 @@ module subroutine load_params( &
       call config%read_array('bottom_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%bottom))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%bottom) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('bottom_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%bottom))
    end if
    call config%read('top_bc'.at.1, bc%types(bcid%top), logger, bc_types)
    if (bc%types(bcid%top) == bcid%inflow) then
       call config%read_array('top_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%top))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%top) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('top_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%top))
    end if
 #endif
 #if NDIM > 2
@@ -186,12 +190,14 @@ module subroutine load_params( &
       call config%read_array('back_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%back))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%back) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('back_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%back))
    end if
    call config%read('front_bc'.at.1, bc%types(bcid%front), logger, bc_types)
    if (bc%types(bcid%front) == bcid%inflow) then
       call config%read_array('front_bc'.at.2, primitive(1:NCMP), logger)
       call conv_prim_to_cons(primitive(cid%rho:cid%e_tot), bc%inflows(cid%rho:cid%e_tot, bcid%front))
       bc%inflows(cid%e_tot + 1:NCMP, bcid%front) = primitive(cid%e_tot + 1:NCMP)
+      call logger%log('front_bc', '[conserved]', '=', bc%inflows(1:NCMP, bcid%front))
    end if
 #endif
 

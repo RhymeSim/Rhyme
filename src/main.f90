@@ -118,14 +118,22 @@ program rhyme
       call logger%begin_section('hydro')
       do l = samr%nlevels - 1, 0, -1
          do b = 1, samr%levels(l)%nboxes
-            call rhyme_muscl_hancock_solve(mh, samr%levels(l)%boxes(b), &
-                                           samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger)
+            call rhyme_muscl_hancock_solve( &
+               mh, samr%levels(l)%boxes(b), &
+               samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger)
          end do
       end do
+
       call logger%end_section(print_duration=.true.)  ! hydro
 
       samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
+
+      if (mod(samr%levels(0)%iteration, report%every) == 0) then
+         call logger%begin_section('initial_report')
+         call report%publish(samr, logger)
+         call logger%end_section(print_duration=.true.)  ! initial_report
+      end if
 
       call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
    end do

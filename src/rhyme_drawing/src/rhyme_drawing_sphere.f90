@@ -56,7 +56,11 @@ module subroutine rhyme_drawing_sphere(samr, ic, shape, logger, ie, units, chemi
    call logger%log('r', '[px]', '=', [r_px])
    call logger%log('sigma', '[px]', '=', [sigma_px])
    call logger%log('color1', '', '=', shape%fill%colors(:, 1))
+   call conv_prim_to_cons(shape%fill%colors(:, 1), color)
+   call logger%log('color1', '[conserved]', '=', color(cid%rho:cid%e_tot))
    call logger%log('color2', '', '=', shape%fill%colors(:, 2))
+   call conv_prim_to_cons(shape%fill%colors(:, 2), color)
+   call logger%log('color2', '[conserved]', '=', color(cid%rho:cid%e_tot))
 
    select case (shape%fill%modes(1))
    case (drid%add)
