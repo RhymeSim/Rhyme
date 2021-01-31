@@ -13,7 +13,8 @@ logical function rhyme_samr_bc_test() result(failed)
    call bc_tester%expect(bc%types.toBe.bcid%reflective)
 
    do i = 1, 2*NDIM
-      call bc_tester%expect(bc%inflows(:, 1) .toBe.0d0)
+      call bc_tester%expect(bc%prim_inflows(:, 1) .toBe.0d0)
+      call bc_tester%expect(bc%cons_inflows(:, 1) .toBe.0d0)
    end do
 
    call bc_tester%expect(bcid%reflective.toBe.1)

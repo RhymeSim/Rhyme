@@ -35,6 +35,9 @@ logical function rhyme_drawing_init_test() result(failed)
    logger = logger_factory_generate('unicode-plotting')
    draw = drawing_factory_generate('sphere-SI')
 
+   thermo = thermo_base_factory_generate('diatomic')
+   call rhyme_thermo_base_init(thermo, units, logger)
+
    do i = 1, NDIM
       draw%shapes%sphere%origin(i) = ic%box_lengths(i)%v/2
    end do

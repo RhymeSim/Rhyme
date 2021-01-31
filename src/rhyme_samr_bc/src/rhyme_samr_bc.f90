@@ -1,5 +1,6 @@
 module rhyme_samr_bc
    use rhyme_units
+   use rhyme_thermo_base
    use rhyme_samr
    use rhyme_logger
 
@@ -15,18 +16,21 @@ module rhyme_samr_bc
 #if NDIM > 2
       integer :: back = samrid%back, front = samrid%front
 #endif
+      character(len=8) :: side_names(6) = samrid%side_names
    end type samr_bc_indices_t
 
    type(samr_bc_indices_t), parameter :: bcid = samr_bc_indices_t()
 
    type samr_bc_t
       integer :: types(2*NDIM) = bcid%reflective
-      real(kind=8) :: inflows(NCMP, 2*NDIM) = 0d0
+      real(kind=8) :: prim_inflows(NCMP, 2*NDIM) = 0d0
+      real(kind=8) :: cons_inflows(NCMP, 2*NDIM) = 0d0
    end type samr_bc_t
 
    interface
-      module subroutine rhyme_samr_bc_init(bc, samr, logger)
+      module subroutine rhyme_samr_bc_init(bc, thermo, samr, logger)
          type(samr_bc_t), intent(inout) :: bc
+         type(thermo_base_t), intent(in) :: thermo
          type(samr_t), intent(inout) :: samr
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_samr_bc_init

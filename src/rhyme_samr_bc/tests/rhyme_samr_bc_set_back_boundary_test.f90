@@ -66,10 +66,10 @@ logical function rhyme_samr_bc_set_back_boundary_test() result(failed)
 
    ! Inflow
    bc%types(bcid%back) = bcid%inflow
-   bc%inflows(cid%rho, bcid%back) = 1.23d0
-   bc%inflows(cid%rho_u:cid%rho_u + NDIM - 1, bcid%back) = 2.34d0
-   bc%inflows(cid%e_tot, bcid%back) = 3.45d0
-   bc%inflows(cid%e_tot + 1:NCMP, bcid%back) = 4.56d0
+   bc%cons_inflows(cid%rho, bcid%back) = 1.23d0
+   bc%cons_inflows(cid%rho_u:cid%rho_u + NDIM - 1, bcid%back) = 2.34d0
+   bc%cons_inflows(cid%e_tot, bcid%back) = 3.45d0
+   bc%cons_inflows(cid%e_tot + 1:NCMP, bcid%back) = 4.56d0
 
    call rhyme_samr_bc_set_back_boundary(bc, samr%levels(0)%boxes(1))
    b = samr%levels(0)%boxes(1)

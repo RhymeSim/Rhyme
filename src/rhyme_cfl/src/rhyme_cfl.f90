@@ -9,6 +9,13 @@ module rhyme_cfl
    end type cfl_t
 
    interface
+      module subroutine rhyme_cfl_init(cfl, thermo, samr, logger)
+         type(cfl_t), intent(inout) :: cfl
+         type(thermo_base_t), intent(in) :: thermo
+         type(samr_t), intent(in) :: samr
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_cfl_init
+
       pure module function rhyme_cfl_time_step(c, samr) result(dt)
          real(kind=8), intent(in) :: c
          type(samr_t), intent(in) :: samr

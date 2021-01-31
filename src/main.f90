@@ -1,4 +1,6 @@
 program rhyme
+   use, intrinsic :: IEEE_ARITHMETIC
+
    use rhyme_nombre
    use rhyme_chemistry
    use rhyme_units
@@ -75,7 +77,7 @@ program rhyme
    call rhyme_initial_condition_init(ic, samr, units, logger)
    call rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
-   call rhyme_samr_bc_init(bc, samr, logger)
+   call rhyme_samr_bc_init(bc, thermo, samr, logger)
    call rhyme_irs_init(irs, logger)
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
    call rhyme_chombo_init(chombo, samr, logger)
@@ -109,7 +111,7 @@ program rhyme
       ! Update ghost cells of boxes
 
       ! Store a snapshot if necessary
-      if (modulo(samr%levels(0)%iteration, 1) .eq. 0) then
+      if (modulo(samr%levels(0)%iteration, 10) .eq. 0) then
          call logger%begin_section('save-chombo')
          call rhyme_chombo_write_samr(chombo, units, samr)
          call logger%end_section(print_duration=.true.)  ! save-chombo
@@ -125,6 +127,21 @@ program rhyme
       end do
 
       call logger%end_section(print_duration=.true.)  ! hydro
+
+      call logger%begin_section('sanity_check')
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells))) then
+         call rhyme_chombo_write_samr(chombo, units, samr)
+         call logger%err('NaN found in cells! Please the stored snapshot!')
+      end if
+      if (any(samr%levels(0)%boxes(1)%cells(:, :, :, cid%rho) < 0d0)) then
+         call rhyme_chombo_write_samr(chombo, units, samr)
+         call logger%err('Negative density(ies) found in cells! Please the stored snapshot!')
+      end if
+      if (any(samr%levels(0)%boxes(1)%cells(:, :, :, cid%e_tot) < 0d0)) then
+         call rhyme_chombo_write_samr(chombo, units, samr)
+         call logger%err('Negative density(ies) found in cells! Please the stored snapshot!')
+      end if
+      call logger%end_section(print_duration=.true.)
 
       samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1

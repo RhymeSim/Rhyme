@@ -46,7 +46,6 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    character(len=1024), parameter :: param_file = PARAM_FILE_NAME
    type(shape_t), pointer :: shape
    type(perturbation_t), pointer :: perturb
-   real(kind=8) :: primitive(NCMP), conserved(NCMP)
 
    tester = .describe."rhyme_param_parser_load_params"
 
@@ -86,28 +85,27 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    ! Boundary Condition
    call tester%expect(bc%types(bcid%left) .toBe.1)
-   call tester%expect(bc%inflows(:, bcid%left) .toBe.0d0)
+   call tester%expect(bc%prim_inflows(:, bcid%left) .toBe.0d0)
+
    call tester%expect(bc%types(bcid%right) .toBe.bcid%inflow)
-   call logger%warn('bc inflows', 'right', '=', bc%inflows(:, bcid%right))
 #if NDIM == 1
-   primitive = [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0]
-   call conv_prim_to_cons(primitive, conserved)
-   conserved(cid%e_tot + 1:NCMP) = primitive(cid%e_tot + 1:NCMP)
-   call tester%expect(bc%inflows(:, bcid%right) .toBe.conserved)
+   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0])
 #endif
 #if NDIM == 2
-   primitive = [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0]
-   call conv_prim_to_cons(primitive, conserved)
-   conserved(cid%e_tot + 1:NCMP) = primitive(cid%e_tot + 1:NCMP)
-   call tester%expect(bc%inflows(:, bcid%right) .toBe.conserved)
+   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0])
+   call tester%expect(bc%prim_inflows(:, bcid%bottom) .toBe.0d0)
+   call tester%expect(bc%prim_inflows(:, bcid%top) .toBe.0d0)
+
    call tester%expect(bc%types(bcid%bottom) .toBe.3)
    call tester%expect(bc%types(bcid%top) .toBe.1)
 #endif
 #if NDIM == 3
-   primitive = [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0, 9.01d0]
-   call conv_prim_to_cons(primitive, conserved)
-   conserved(cid%e_tot + 1:NCMP) = primitive(cid%e_tot + 1:NCMP)
-   call tester%expect(bc%inflows(:, bcid%right) .toBe.conserved)
+   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0, 9.01d0])
+   call tester%expect(bc%prim_inflows(:, bcid%bottom) .toBe.0d0)
+   call tester%expect(bc%prim_inflows(:, bcid%top) .toBe.0d0)
+   call tester%expect(bc%prim_inflows(:, bcid%back) .toBe.0d0)
+   call tester%expect(bc%prim_inflows(:, bcid%front) .toBe.0d0)
+
    call tester%expect(bc%types(bcid%bottom) .toBe.3)
    call tester%expect(bc%types(bcid%top) .toBe.1)
    call tester%expect(bc%types(bcid%back) .toBe.2)

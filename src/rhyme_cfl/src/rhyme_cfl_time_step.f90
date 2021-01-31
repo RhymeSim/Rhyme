@@ -54,7 +54,7 @@ contains
 
       real(kind=8), intent(in) :: u(cid%rho:cid%e_tot)
 
-      v = sqrt(sum(u(cid%rho_u:cid%rho_u + NDIM - 1)**2)/u(cid%rho)**2) &
+      v = sqrt(sum(u(cid%rho_u:cid%rho_u + NDIM - 1)**2))/u(cid%rho) &
           + calc_cs(u)
    end function calc_u
 end function rhyme_cfl_time_step

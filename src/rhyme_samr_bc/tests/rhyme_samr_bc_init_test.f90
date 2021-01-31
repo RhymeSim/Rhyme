@@ -1,5 +1,6 @@
 logical function rhyme_samr_bc_init_test() result(failed)
    use rhyme_samr_bc_factory
+   use rhyme_thermo_base_factory
    use rhyme_samr_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -9,6 +10,7 @@ logical function rhyme_samr_bc_init_test() result(failed)
    type(assertion_t) :: bc_tester
 
    type(samr_bc_t) :: bc
+   type(thermo_base_t) :: thermo
    type(samr_t) :: samr
    type(logger_t) :: logger
    type(samr_box_t) :: box
@@ -16,10 +18,12 @@ logical function rhyme_samr_bc_init_test() result(failed)
    bc_tester = .describe."samr_bc_init"
 
    bc%types = bc_factory%types()
+   thermo = thermo_base_factory_generate('monatomic')
    samr = samr_factory%generate()
+
    logger = logger_factory_generate('default')
 
-   call rhyme_samr_bc_init(bc, samr, logger)
+   call rhyme_samr_bc_init(bc, thermo, samr, logger)
 
    box = samr%levels(0)%boxes(1)
 

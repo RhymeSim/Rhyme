@@ -1,12 +1,13 @@
 submodule(rhyme_samr_bc) init_smod
 contains
-module subroutine rhyme_samr_bc_init(bc, samr, logger)
+module subroutine rhyme_samr_bc_init(bc, thermo, samr, logger)
    ! NB: Only boxes residing at level 0 are being handeled here. If the ghost
    !     region of higher level boxes overlap the boundaries, their values
    !     will be set based on level 0 boxes later on
    implicit none
 
    type(samr_bc_t), intent(inout) :: bc
+   type(thermo_base_t), intent(in) :: thermo
    type(samr_t), intent(inout) :: samr
    type(logger_t), intent(inout) :: logger
 
@@ -46,6 +47,16 @@ module subroutine rhyme_samr_bc_init(bc, samr, logger)
    integer :: l, b, i JDX KDX, uid, lb(NDIM), ub(NDIM), di(NDIM)
 
    call logger%begin_section('samr_bc')
+
+   call logger%log('state_of_matter', '', '=', [thid%som_names(thermo%state_of_matter)])
+
+   do i = 1, 2*NDIM
+     if (bc%types(i) == bcid%inflow) then
+       call conv_prim_to_cons(bc%prim_inflows(cid%rho:cid%p, i), bc%cons_inflows(cid%rho:cid%e_tot, i))
+       bc%cons_inflows(cid%e_tot+1:NCMP, i) = bc%prim_inflows(cid%e_tot+1:NCMP, i)
+       call logger%log('inflow (conserved)', bcid%side_names(i), '=', bc%cons_inflows(1:NCMP, i))
+     end if
+   end do
 
    do l = 0, 0 ! Only level 0 boxes are responsible for boundaries
       do b = 1, samr%levels(l)%nboxes

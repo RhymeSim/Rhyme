@@ -25,6 +25,8 @@ module rhyme_samr
       integer :: unset = -10
       integer :: max_nlevels = 23
       integer :: x = 1, left = 1, right = 2 IDS_J IDS_K
+      character(len=8) :: side_names(6) = [ &
+        'left  ', 'right ', 'bottom', 'top   ', 'back  ', 'front ']
    end type samr_indices_t
 
    type(samr_indices_t), parameter :: samrid = samr_indices_t()

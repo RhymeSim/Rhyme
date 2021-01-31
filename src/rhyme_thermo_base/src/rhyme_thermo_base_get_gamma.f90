@@ -15,7 +15,7 @@ pure module function rhyme_thermo_base_get_gamma() result(g)
    case (thid%polyatomic)
       g = ig_gamma(thid%polyatomic)
    case default
-      g = 0.d0
+      g = -huge(0d0)
    end select
 end function rhyme_thermo_base_get_gamma
 end submodule get_gamma_smod

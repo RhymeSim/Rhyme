@@ -11,6 +11,8 @@ module rhyme_thermo_base
       integer :: monatomic = 1
       integer :: diatomic = 2
       integer :: polyatomic = 3
+      character(len=16) :: som_names(3) = [ &
+        'monatomic ', 'diatomic  ', 'polyatomic']
    end type thermo_base_indices_t
 
    type(thermo_base_indices_t), parameter :: thid = thermo_base_indices_t()
@@ -123,7 +125,7 @@ contains
       call logger%begin_section('thermo_base')
 
       rhyme_thermo_base_state_of_matter = thermo%state_of_matter
-      call logger%log('', 'state_of_matter', '=', [rhyme_thermo_base_state_of_matter])
+      call logger%log('', 'state_of_matter', '=', [thid%som_names(rhyme_thermo_base_state_of_matter)])
 
       rhyme_thermo_base_kb_amu = units%kb%v/units%amu%v
       call logger%log('', 'kB / 1 amu', '=', [rhyme_thermo_base_kb_amu])

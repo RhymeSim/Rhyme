@@ -65,8 +65,8 @@ pure module subroutine rhyme_samr_bc_set_bottom_boundary(bc, box)
       do uid = cid%rho, NCMP
          LOOP_K
          do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, uid) = bc%inflows(uid, bcid%bottom)
-            box%cells(i, -1 KDX, uid) = bc%inflows(uid, bcid%bottom)
+            box%cells(i, 0 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
+            box%cells(i, -1 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
          end do
          LOOP_K_END
       end do

@@ -1,7 +1,7 @@
 project(rhyme_samr_bc_tests)
 set(test_subject rhyme_samr_bc)
 
-set(factories rhyme_samr rhyme_logger)
+set(factories rhyme_thermo_base rhyme_samr rhyme_logger)
 
 set(test_deps rhyme_assertion)
 
