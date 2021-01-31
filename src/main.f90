@@ -84,6 +84,8 @@ program rhyme
 
    call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
 
+   call rhyme_cfl_init(cfl, thermo, samr, logger)
+
    call logger%end_section  ! init
 
    call logger%begin_section('saving-IC')

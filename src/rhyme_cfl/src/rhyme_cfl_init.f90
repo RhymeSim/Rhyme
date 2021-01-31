@@ -72,7 +72,7 @@ contains
          labels=['cs ', 'rho'], resolution=[80, 40])
 
       call logger%log('sound speed', '', '=', [min_cs, max_cs])
-      call logger%log('density', '[cm^-3]', '=', [min_rho, max_rho])
+      call logger%log('density', '', '=', [min_rho, max_rho])
 
       deallocate (cs, rho)
       call logger%end_section
