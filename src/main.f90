@@ -42,7 +42,7 @@ program rhyme
    type(report_t) :: report
    type(logger_t) :: logger
 
-   integer :: l, b
+   integer :: l, b, dims(NDIM)
    character(len=1024) :: exe_filename, param_file
 
    ! TODO: use getopt to read flag-based additional command line arguments
@@ -130,18 +130,33 @@ program rhyme
 
       call logger%end_section(print_duration=.true.)  ! hydro
 
+#if NDIM==1
+#define JRANGE
+#define KRANGE
+#endif
+#if NDIM==2
+#define JRANGE , 1:dims(2)
+#define KRANGE
+#endif
+#if NDIM==3
+#define JRANGE , 1:dims(2)
+#define KRANGE , 1:dims(3)
+#endif
+
       call logger%begin_section('sanity_check')
+      dims = samr%levels(0)%boxes(1)%dims
+
       if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells))) then
          call rhyme_chombo_write_samr(chombo, units, samr)
          call logger%err('NaN found in cells! Please the stored snapshot!')
       end if
-      if (any(samr%levels(0)%boxes(1)%cells(:, :, :, cid%rho) < 0d0)) then
-         call rhyme_chombo_write_samr(chombo, units, samr)
-         call logger%err('Negative density(ies) found in cells! Please the stored snapshot!')
+      if (any(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho) < 0d0)) then
+         call logger%err('Negative density!')
       end if
-      if (any(samr%levels(0)%boxes(1)%cells(:, :, :, cid%e_tot) < 0d0)) then
-         call rhyme_chombo_write_samr(chombo, units, samr)
-         call logger%err('Negative density(ies) found in cells! Please the stored snapshot!')
+      if (any(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%e_tot) < 0d0)) then
+         call logger%err( &
+            'Negative e_tot!', '', '@', &
+            minloc(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%e_tot)))
       end if
       call logger%end_section(print_duration=.true.)
 

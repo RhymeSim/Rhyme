@@ -1,124 +1,124 @@
 submodule(rhyme_plotter) canvas_draw_histogram_smod
 contains
-module subroutine rhyme_plotter_canvas_draw_histogram( &
-   canvas, hist, xaxis, yaxis, color)
-   implicit none
-
-   class(plotter_canvas_t), intent(inout) :: canvas
-   type(plotter_histogram_t), intent(in) :: hist
-   integer, intent(in), optional :: xaxis, yaxis
-   character(len=*), intent(in), optional :: color
-
-   integer :: xa, ya
-   integer :: xpx
-   real(kind=8) :: ypx
-   integer :: i, j, tip_px
-   real(kind=8), dimension(max_nbins) :: counts, centers
-   character(len=1, kind=ucs4) :: tip_char_bw
-   character(len=17, kind=ucs4) :: tip_char_clr
-
-   centers = hist%bin_centers
-   counts = hist%counts
-
-   if (present(xaxis)) then
-      xa = xaxis
-   else
-      xa = plid%bottom
-   end if
-
-   if (present(yaxis)) then
-      ya = yaxis
-   else
-      ya = plid%left
-   end if
-
-   do i = 1, hist%nbins
-      if (counts(i) < canvas%axes(ya)%min) cycle
-      if (centers(i) < canvas%axes(xa)%min .or. centers(i) > canvas%axes(xa)%max) cycle
-
-      xpx = floor(get_pixel(centers(i), canvas, xa, canvas%x)) + 1
-      ypx = min(get_pixel(counts(i), canvas, ya, canvas%y), real(canvas%y, kind=8))
-
-      if (ypx > 0) then
-         tip_px = canvas%y - floor(ypx)
-
-         do j = canvas%y, tip_px + 1, -1
-            if (present(color)) then
-               write (canvas%grid(xpx, j, plid%clr), csid%char_color_fmt) &
-                  color, char(int(z'2588'), ucs4), tc%nc
-            else
-               canvas%grid(xpx, j, plid%clr) = char(int(z'2588'), ucs4)
-            end if
-            canvas%grid(xpx, j, plid%bw) = char(int(z'2588'), ucs4)
-         end do
-
-         tip_char_bw = get_tip_char(ypx)
-
-         if (present(color)) then
-            write (tip_char_clr, csid%char_color_fmt) color, tip_char_bw, tc%nc
-         else
-            tip_char_clr = tip_char_bw
-         end if
-
-         canvas%grid(xpx, tip_px, plid%clr) = tip_char_clr
-         canvas%grid(xpx, tip_px, plid%bw) = tip_char_bw
-      end if
-   end do
-
-   call canvas%add_corner(xa, ya)
-
-contains
-   real(kind=8) pure function get_pixel(pos, cnvs, axis, length) result(px)
+   module subroutine rhyme_plotter_canvas_draw_histogram( &
+      canvas, hist, xaxis, yaxis, color)
       implicit none
 
-      real(kind=8), intent(in) :: pos
-      class(plotter_canvas_t), intent(in) :: cnvs
-      integer, intent(in) :: axis, length
+      class(plotter_canvas_t), intent(inout) :: canvas
+      type(plotter_histogram_t), intent(in) :: hist
+      integer, intent(in), optional :: xaxis, yaxis
+      character(len=*), intent(in), optional :: color
 
-      select case (cnvs%axes(axis)%scale)
-      case (plid%linear)
-         px = (pos - cnvs%axes(axis)%min) &
-              /(cnvs%axes(axis)%max - cnvs%axes(axis)%min) &
-              *length
-      case (plid%log)
-         if (pos > 0 .and. cnvs%axes(axis)%min*cnvs%axes(axis)%max > 0) then
-            px = log10(pos/cnvs%axes(axis)%min) &
-                 /log10(cnvs%axes(axis)%max/cnvs%axes(axis)%min) &
-                 *length
-         else
-            px = 0
-         end if
-      case default
-         px = 0
-      end select
-   end function get_pixel
+      integer :: xa, ya
+      integer :: xpx
+      real(kind=8) :: ypx
+      integer :: i, j, tip_px
+      real(kind=8), dimension(max_nbins) :: counts, centers
+      character(len=1, kind=ucs4) :: tip_char_bw
+      character(len=17, kind=ucs4) :: tip_char_clr
 
-   character(len=1, kind=ucs4) pure function get_tip_char(h) result(tip_char)
-      implicit none
+      centers = hist%bin_centers
+      counts = hist%counts
 
-      real(kind=8), intent(in) :: h
-
-      real(kind=8) :: diff
-
-      diff = h - floor(h)
-
-      if (diff < .125d0) then
-         tip_char = char(int(z'2581'), ucs4)
-      else if (diff < .250d0) then
-         tip_char = char(int(z'2582'), ucs4)
-      else if (diff < .375d0) then
-         tip_char = char(int(z'2583'), ucs4)
-      else if (diff < .500d0) then
-         tip_char = char(int(z'2584'), ucs4)
-      else if (diff < .620d0) then
-         tip_char = char(int(z'2585'), ucs4)
-      else if (diff < .750d0) then
-         tip_char = char(int(z'2586'), ucs4)
-      else if (diff < .875d0) then
-         tip_char = char(int(z'2587'), ucs4)
+      if (present(xaxis)) then
+         xa = xaxis
       else
-         tip_char = char(int(z'2588'), ucs4)
+         xa = plid%bottom
       end if
-   end function get_tip_char
-end subroutine rhyme_plotter_canvas_draw_histogram
+
+      if (present(yaxis)) then
+         ya = yaxis
+      else
+         ya = plid%left
+      end if
+
+      do i = 1, hist%nbins
+         if (counts(i) < canvas%axes(ya)%min) cycle
+         if (centers(i) < canvas%axes(xa)%min .or. centers(i) > canvas%axes(xa)%max) cycle
+
+         xpx = floor(get_pixel(centers(i), canvas, xa, canvas%x)) + 1
+         ypx = min(get_pixel(counts(i), canvas, ya, canvas%y), real(canvas%y, kind=8))
+
+         if (ypx > 0) then
+            tip_px = canvas%y - floor(ypx)
+
+            do j = canvas%y, tip_px + 1, -1
+               if (present(color)) then
+                  write (canvas%grid(xpx, j, plid%clr), csid%char_color_fmt) &
+                     color, char(int(z'2588'), ucs4), tc%nc
+               else
+                  canvas%grid(xpx, j, plid%clr) = char(int(z'2588'), ucs4)
+               end if
+               canvas%grid(xpx, j, plid%bw) = char(int(z'2588'), ucs4)
+            end do
+
+            tip_char_bw = get_tip_char(ypx)
+
+            if (present(color)) then
+               write (tip_char_clr, csid%char_color_fmt) color, tip_char_bw, tc%nc
+            else
+               tip_char_clr = tip_char_bw
+            end if
+
+            canvas%grid(xpx, tip_px, plid%clr) = tip_char_clr
+            canvas%grid(xpx, tip_px, plid%bw) = tip_char_bw
+         end if
+      end do
+
+      call canvas%add_corner(xa, ya)
+
+   contains
+      real(kind=8) pure function get_pixel(pos, cnvs, axis, length) result(px)
+         implicit none
+
+         real(kind=8), intent(in) :: pos
+         class(plotter_canvas_t), intent(in) :: cnvs
+         integer, intent(in) :: axis, length
+
+         select case (cnvs%axes(axis)%scale)
+         case (plid%linear)
+            px = (pos - cnvs%axes(axis)%min) &
+                 /(cnvs%axes(axis)%max - cnvs%axes(axis)%min) &
+                 *length
+         case (plid%log)
+            if (pos > 0 .and. cnvs%axes(axis)%min*cnvs%axes(axis)%max > 0) then
+               px = log10(pos/cnvs%axes(axis)%min) &
+                    /log10(cnvs%axes(axis)%max/cnvs%axes(axis)%min) &
+                    *length
+            else
+               px = 0
+            end if
+         case default
+            px = 0
+         end select
+      end function get_pixel
+
+      character(len=1, kind=ucs4) pure function get_tip_char(h) result(tip_char)
+         implicit none
+
+         real(kind=8), intent(in) :: h
+
+         real(kind=8) :: diff
+
+         diff = h - floor(h)
+
+         if (diff < .125d0) then
+            tip_char = char(int(z'2581'), ucs4)
+         else if (diff < .250d0) then
+            tip_char = char(int(z'2582'), ucs4)
+         else if (diff < .375d0) then
+            tip_char = char(int(z'2583'), ucs4)
+         else if (diff < .500d0) then
+            tip_char = char(int(z'2584'), ucs4)
+         else if (diff < .620d0) then
+            tip_char = char(int(z'2585'), ucs4)
+         else if (diff < .750d0) then
+            tip_char = char(int(z'2586'), ucs4)
+         else if (diff < .875d0) then
+            tip_char = char(int(z'2587'), ucs4)
+         else
+            tip_char = char(int(z'2588'), ucs4)
+         end if
+      end function get_tip_char
+   end subroutine rhyme_plotter_canvas_draw_histogram
 end submodule canvas_draw_histogram_smod

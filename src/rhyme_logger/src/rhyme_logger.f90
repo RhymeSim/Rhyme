@@ -109,7 +109,7 @@ module rhyme_logger
 
       module subroutine rhyme_logger_plot_histogram( &
          logger, values, nbins, bin_scale, domain, normalized, labels, &
-         axes_scales, resolution)
+         axes_scales, resolution, mask)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: values(:)
          integer, intent(in), optional :: nbins, bin_scale
@@ -118,12 +118,13 @@ module rhyme_logger
          character(len=*), intent(in), optional :: labels(2)
          integer, intent(in), optional :: axes_scales(2)
          integer, intent(in), optional :: resolution(2)
+         integer, intent(in), optional :: mask
       end subroutine rhyme_logger_plot_histogram
 
       module subroutine rhyme_logger_plot_2d_histogram( &
          logger, xvalues, yvalues, nbins, bin_scales, xdomain, ydomain, &
          normalized, labels, cs_range, cs_scale, colorscheme, axes_scales, &
-         resolution)
+         resolution, mask)
          class(logger_t), intent(inout) :: logger
          real(kind=8), intent(in) :: xvalues(:), yvalues(:)
          integer, intent(in), optional :: nbins(2), bin_scales(2)
@@ -135,6 +136,7 @@ module rhyme_logger
          type(colorscheme_t), intent(in), optional :: colorscheme
          integer, intent(in), optional :: axes_scales(2)
          integer, intent(in), optional :: resolution(2)
+         integer, intent(in), optional :: mask(2)
       end subroutine rhyme_logger_plot_2d_histogram
 
       module subroutine rhyme_logger_plot_2d_histogram_3d( &

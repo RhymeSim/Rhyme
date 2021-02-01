@@ -18,6 +18,8 @@ module rhyme_plotter
       integer :: log = 100, linear = 101
       integer :: black_and_white = 1, bw = 1
       integer :: colored = 2, clr = 2
+      integer :: no_mask = 1000, gtr_zero = 1001, less_zero = 1002, &
+                 gtr_eq_zero = 1003, less_eq_zero = 1004
    end type rhyme_plotter_indices
 
    type(rhyme_plotter_indices), parameter :: plid = rhyme_plotter_indices()
@@ -52,13 +54,13 @@ module rhyme_plotter
    end type plotter_canvas_t
 
    type plotter_histogram_t
-      integer :: nbins, scale
+      integer :: nbins, scale, n_masked = 0
       real(kind=8) :: min, max, dx, base
       real(kind=8), dimension(max_nbins) :: counts, bin_centers
    end type plotter_histogram_t
 
    type plotter_histogram_axis_t
-      integer :: nbins = 0, scale = plid%linear
+      integer :: nbins = 0, scale = plid%linear, n_masked = 0
       real(kind=8) :: min = 0, max = 0
    end type plotter_histogram_axis_t
 
@@ -149,47 +151,94 @@ module rhyme_plotter
          class(plotter_canvas_t), intent(inout) :: canvas
       end subroutine rhyme_plotter_canvas_clear
 
-      pure module function rhyme_plotter_histogram_1d(d, nbins, &
-                                                      scale, minmax, base, normalized) result(hist)
+      pure module function rhyme_plotter_histogram_1d( &
+         d, nbins, scale, minmax, base, normalized, mask) result(hist)
          real(kind=8), intent(in) :: d(:)
          integer, intent(in) :: nbins
          integer, intent(in) :: scale
          real(kind=8), intent(in), optional :: minmax(2)
          real(kind=8), intent(in), optional :: base
          logical, intent(in), optional :: normalized
+         integer, intent(in), optional :: mask
          type(plotter_histogram_t) :: hist
       end function rhyme_plotter_histogram_1d
 
-      pure module function rhyme_plotter_histogram_2d(d, nbins, &
-                                                      scale, minmax, base, normalized) result(hist)
+      pure module function rhyme_plotter_histogram_2d( &
+         d, nbins, scale, minmax, base, normalized, mask) result(hist)
          real(kind=8), intent(in) :: d(:, :)
          integer, intent(in) :: nbins
          integer, intent(in) :: scale
          real(kind=8), intent(in), optional :: minmax(2)
          real(kind=8), intent(in), optional :: base
          logical, intent(in), optional :: normalized
+         integer, intent(in), optional :: mask
          type(plotter_histogram_t) :: hist
       end function rhyme_plotter_histogram_2d
 
-      pure module function rhyme_plotter_histogram_3d(d, nbins, &
-                                                      scale, minmax, base, normalized) result(hist)
+      pure module function rhyme_plotter_histogram_3d( &
+         d, nbins, scale, minmax, base, normalized, mask) result(hist)
          real(kind=8), intent(in) :: d(:, :, :)
          integer, intent(in) :: nbins
          integer, intent(in) :: scale
          real(kind=8), intent(in), optional :: minmax(2)
          real(kind=8), intent(in), optional :: base
          logical, intent(in), optional :: normalized
+         integer, intent(in), optional :: mask
          type(plotter_histogram_t) :: hist
       end function rhyme_plotter_histogram_3d
 
       pure module function rhyme_plotter_two_d_histogram( &
-         x, y, xbins, ybins, xscale, yscale, xminmax, yminmax, normalized) result(hist2d)
+         x, y, xbins, ybins, xscale, yscale, xminmax, yminmax, &
+         normalized, mask) result(hist2d)
          real(kind=8), intent(in) :: x(:), y(:)
          integer, intent(in) :: xbins, ybins, xscale, yscale
          real(kind=8), intent(in), optional :: xminmax(2), yminmax(2)
          logical, intent(in), optional :: normalized
+         integer, intent(in), optional :: mask(2)
          type(plotter_2d_histogram_t) :: hist2d
       end function rhyme_plotter_two_d_histogram
+
+      pure module function rhyme_plotter_is_masked_scalar_r8(x, mask) result(masked)
+         real(kind=8), intent(in) :: x
+         integer, intent(in) :: mask
+         logical :: masked
+      end function rhyme_plotter_is_masked_scalar_r8
+
+      pure module function rhyme_plotter_masked_max_1d_array_r8(arr, mask) result(maximum)
+         real(kind=8), intent(in) :: arr(:)
+         integer, intent(in) :: mask
+         real(kind=8) :: maximum
+      end function rhyme_plotter_masked_max_1d_array_r8
+
+      pure module function rhyme_plotter_masked_max_2d_array_r8(arr, mask) result(maximum)
+         real(kind=8), intent(in) :: arr(:, :)
+         integer, intent(in) :: mask
+         real(kind=8) :: maximum
+      end function rhyme_plotter_masked_max_2d_array_r8
+
+      pure module function rhyme_plotter_masked_max_3d_array_r8(arr, mask) result(maximum)
+         real(kind=8), intent(in) :: arr(:, :, :)
+         integer, intent(in) :: mask
+         real(kind=8) :: maximum
+      end function rhyme_plotter_masked_max_3d_array_r8
+
+      pure module function rhyme_plotter_masked_min_1d_array_r8(arr, mask) result(minimum)
+         real(kind=8), intent(in) :: arr(:)
+         integer, intent(in) :: mask
+         real(kind=8) :: minimum
+      end function rhyme_plotter_masked_min_1d_array_r8
+
+      pure module function rhyme_plotter_masked_min_2d_array_r8(arr, mask) result(minimum)
+         real(kind=8), intent(in) :: arr(:, :)
+         integer, intent(in) :: mask
+         real(kind=8) :: minimum
+      end function rhyme_plotter_masked_min_2d_array_r8
+
+      pure module function rhyme_plotter_masked_min_3d_array_r8(arr, mask) result(minimum)
+         real(kind=8), intent(in) :: arr(:, :, :)
+         integer, intent(in) :: mask
+         real(kind=8) :: minimum
+      end function rhyme_plotter_masked_min_3d_array_r8
    end interface
 
    interface rhyme_plotter_histogram
@@ -197,4 +246,20 @@ module rhyme_plotter
       procedure rhyme_plotter_histogram_2d
       procedure rhyme_plotter_histogram_3d
    end interface rhyme_plotter_histogram
+
+   interface rhyme_plotter_masked_max
+      procedure rhyme_plotter_masked_max_1d_array_r8
+      procedure rhyme_plotter_masked_max_2d_array_r8
+      procedure rhyme_plotter_masked_max_3d_array_r8
+   end interface rhyme_plotter_masked_max
+
+   interface rhyme_plotter_masked_min
+      procedure rhyme_plotter_masked_min_1d_array_r8
+      procedure rhyme_plotter_masked_min_2d_array_r8
+      procedure rhyme_plotter_masked_min_3d_array_r8
+   end interface rhyme_plotter_masked_min
+
+   interface rhyme_plotter_is_masked
+      procedure rhyme_plotter_is_masked_scalar_r8
+   end interface rhyme_plotter_is_masked
 end module rhyme_plotter

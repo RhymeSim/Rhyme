@@ -14,6 +14,9 @@ set(deps)
 set(internal_deps rhyme_color)
 
 set(srcs
+    src/rhyme_plotter_masked_max_array.f90
+    src/rhyme_plotter_masked_min_array.f90
+    src/rhyme_plotter_is_masked_scalar.f90
     src/rhyme_plotter_2d_histogram.f90
     src/rhyme_plotter_histogram.f90
     src/rhyme_plotter_canvas_draw_image.f90
