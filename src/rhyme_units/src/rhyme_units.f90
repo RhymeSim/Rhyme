@@ -73,6 +73,7 @@ module rhyme_units
       type(nombre_unit_t), pointer :: velocity => null()
       type(nombre_unit_t), pointer :: pressure => null()
       type(nombre_unit_t), pointer :: temperature => null()
+      type(nombre_unit_t), pointer :: energy => null()
 
       ! TODO: component units
 

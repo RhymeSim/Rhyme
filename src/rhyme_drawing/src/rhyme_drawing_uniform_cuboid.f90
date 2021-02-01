@@ -31,7 +31,6 @@ module subroutine rhyme_drawing_uniform_cuboid(samr, shape, logger)
 #endif
 
    integer :: l, b, i JDX KDX, d
-   real(kind=8) :: color(cid%rho:NCMP)
    real(kind=8) :: dist_vec_px(NDIM), dist_px, r_px, sigma_px, fac
    real(kind=8) :: center(NDIM), half_lengths(NDIM), norm(NDIM)
 
