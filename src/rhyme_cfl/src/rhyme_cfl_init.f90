@@ -66,10 +66,12 @@ contains
       min_rho = minval(rho, rho > epsilon(0d0))
       max_rho = maxval(rho)
 
-      call logger%histogram( &
-         cs, rho, xdomain=[min_cs, max_cs], ydomain=[min_rho, max_rho], &
-         cs_scale=plid%log, normalized=.true., &
-         labels=['cs ', 'rho'], resolution=[80, 40])
+      if (max_cs > min_cs .and. max_rho > min_rho) then
+         call logger%histogram( &
+            cs, rho, xdomain=[min_cs, max_cs], ydomain=[min_rho, max_rho], &
+            cs_scale=plid%log, normalized=.true., &
+            labels=['cs ', 'rho'], resolution=[80, 40])
+      end if
 
       call logger%log('sound speed', '', '=', [min_cs, max_cs])
       call logger%log('density', '', '=', [min_rho, max_rho])
