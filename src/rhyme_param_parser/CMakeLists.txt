@@ -25,6 +25,7 @@ set(deps
     rhyme_chombo
     rhyme_initial_condition
     rhyme_report
+    rhyme_sanity_check
     rhyme_logger)
 
 set(internal_deps)

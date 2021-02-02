@@ -20,6 +20,7 @@ contains
          sc%vz_unit_str = 'm / s'
          sc%e_tot_unit_str = 'kg * m^2 / s^2'
          sc%temp_unit_str = 'K'
+         sc%abs_v_unit_str = 'm / s'
       case default
          print *, 'Unknown sanity_check factory type!', factory_type
       end select

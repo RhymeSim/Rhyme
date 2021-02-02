@@ -15,6 +15,24 @@ report_histogram = e_tot
 report_frequency = 100  # steps
 
 
+# Sanity Check
+sanity_check = enable
+sanity_check_frequency = 10
+sanity_check_rho = enable 0d0 1d1 "kg / m^3"
+sanity_check_vx = enable -1d1 1d1 "m / s"
+sanity_check_vy = enable -1d1 1d1 "m / s"
+sanity_check_vz = enable -1d1 1d1 "m / s"
+sanity_check_e_tot = enable -1d1 1d1 "kg / m^3 * m^2 / s^2"
+sanity_check_temp = enable 100 1d8 "K"
+sanity_check_ntr_frac_0 = enable 0 1
+sanity_check_ntr_frac_1 = enable 0 1
+sanity_check_ntr_frac_2 = enable 0 1
+sanity_check_abs_v = enable 0 1d2 "m / s"
+sanity_check_Mach = enable 0 1d1
+sanity_check_total_mass = enable
+sanity_check_total_energy = enable
+
+
 # **Initial Condition**
 ic_type = simple
 

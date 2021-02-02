@@ -67,19 +67,20 @@ module rhyme_units
       integer :: hydro = unid%none
       integer :: rt = unid%none
       character(len=1024) :: rho_str, length_str, time_str
-      type(nombre_unit_t), pointer :: rho => null()
-      type(nombre_unit_t), pointer :: length => null()
-      type(nombre_unit_t), pointer :: time => null()
-      type(nombre_unit_t), pointer :: velocity => null()
-      type(nombre_unit_t), pointer :: pressure => null()
-      type(nombre_unit_t), pointer :: temperature => null()
-      type(nombre_unit_t), pointer :: energy => null()
-
-      ! TODO: component units
 
       type(nombre_t) :: r ! Gas constant, R
       type(nombre_t) :: kb ! Boltzmann constant, k_B
       type(nombre_t) :: amu ! 1 atomic mass unit (amu)
+
+      type(nombre_unit_t), pointer :: rho => null()
+      type(nombre_unit_t), pointer :: length => null()
+      type(nombre_unit_t), pointer :: time => null()
+      type(nombre_unit_t), pointer :: velocity => null()
+      type(nombre_unit_t), pointer :: energy => null()
+      type(nombre_unit_t), pointer :: pressure => null()
+      type(nombre_unit_t), pointer :: temperature => null()
+
+      ! TODO: component units
    end type units_t
 
    interface

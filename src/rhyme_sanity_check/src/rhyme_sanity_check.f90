@@ -9,7 +9,7 @@ module rhyme_sanity_check
    type, private :: indices_t
       integer :: rho = 1, vx = 2, vy = 3, vz = 4, e_tot = 5, temp = 6, &
                  ntr_frac_0 = 7, ntr_frac_1 = 8, ntr_frac_2 = 9, total_mass = 10, &
-                 total_energy = 11, abs_v = 12, cs = 13
+                 total_energy = 11, abs_v = 12, mach = 13
    end type indices_t
 
    type(indices_t), parameter :: scid = indices_t()
@@ -47,6 +47,12 @@ module rhyme_sanity_check
       real(kind=8) :: ntr_frac_0_range(2) = [0d0, 1d0]
       real(kind=8) :: ntr_frac_1_range(2) = [0d0, 1d0]
       real(kind=8) :: ntr_frac_2_range(2) = [0d0, 1d0]
+
+      real(kind=8) :: abs_v_range(2) = [0d0, huge(0d0)]
+      character(len=128) :: abs_v_unit_str = ''
+      type(nombre_unit_t), pointer :: abs_v_unit => null()
+
+      real(kind=8) :: mach_range(2) = [0d0, huge(0d0)]
    contains
       procedure :: rhyme_sanity_check_write_formatted
       generic :: write (formatted) => rhyme_sanity_check_write_formatted

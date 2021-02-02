@@ -36,6 +36,7 @@ endif()
 
 set(deps
     rhyme_logger
+    rhyme_sanity_check
     rhyme_report
     rhyme_nombre
     rhyme_units

@@ -28,11 +28,11 @@ contains
       units%pressure => units%rho*units%length**2/units%time**2
       call logger%log('', 'pressure:', '[ '//trim(.printchain.units%pressure)//' ]')
 
-      units%energy => units%rho*units%velocity**2
-      call logger%log('', 'energy:', '[ '//trim(.printchain.units%energy)//' ]')
-
       units%temperature => 1*kelvin
       call logger%log('', 'temperature:', '[ '//trim(.printchain.units%temperature)//' ]')
+
+      units%energy => units%rho*units%velocity**2
+      ! call logger%log('', 'energy:', '[ '//trim(.printchain.units%energy)//' ]')
 
       kb_unit => .parse.kb_unit_str
 

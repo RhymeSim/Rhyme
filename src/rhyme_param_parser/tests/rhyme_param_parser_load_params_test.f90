@@ -41,6 +41,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(muscl_hancock_t) :: mh
    type(chombo_t) :: chombo
    type(report_t) :: report
+   type(sanity_check_t) :: sc
    type(logger_t) :: logger
 
    character(len=1024), parameter :: param_file = PARAM_FILE_NAME
@@ -53,7 +54,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, &
-      uvb, ie, draw, irs, sl, mh, chombo, report, logger)
+      uvb, ie, draw, irs, sl, mh, chombo, report, sc, logger)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
@@ -73,6 +74,53 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(report%histograms%next%type.toBe.repid%e_tot.hint.'Report histograms e_tot')
    call tester%expect(associated(report%histograms%next%next) .toBe..false..hint.'Report histograms last')
 
+   ! Sanity Check
+   call tester%expect(sc%enabled.toBe..true..hint.'SC enabled')
+   call tester%expect(sc%every.toBe.10.hint.'SC every')
+
+   call tester%expect(sc%properties(scid%rho) .toBe..true..hint.'SC rho enable')
+   call tester%expect(sc%rho_range.toBe. [0d0, 1d1] .hint.'SC rho range')
+   call tester%expect(sc%rho_unit_str.toBe."kg / m^3".hint.'SC rho unit string')
+
+   call tester%expect(sc%properties(scid%vx) .toBe..true..hint.'SC vx enable')
+   call tester%expect(sc%vx_range.toBe. [-1d1, 1d1] .hint.'SC vx range')
+   call tester%expect(sc%vx_unit_str.toBe."m / s".hint.'SC vx unit string')
+
+   call tester%expect(sc%properties(scid%vy) .toBe..true..hint.'SC vy enable')
+   call tester%expect(sc%vy_range.toBe. [-1d1, 1d1] .hint.'SC vy range')
+   call tester%expect(sc%vy_unit_str.toBe."m / s".hint.'SC vy unit string')
+
+   call tester%expect(sc%properties(scid%vz) .toBe..true..hint.'SC vz enable')
+   call tester%expect(sc%vz_range.toBe. [-1d1, 1d1] .hint.'SC vz range')
+   call tester%expect(sc%vz_unit_str.toBe."m / s".hint.'SC vz unit string')
+
+   call tester%expect(sc%properties(scid%e_tot) .toBe..true..hint.'SC e_tot enable')
+   call tester%expect(sc%e_tot_range.toBe. [-1d1, 1d1] .hint.'SC e_tot range')
+   call tester%expect(sc%e_tot_unit_str.toBe."kg / m^3 * m^2 / s^2".hint.'SC e_tot unit string')
+
+   call tester%expect(sc%properties(scid%temp) .toBe..true..hint.'SC temp enable')
+   call tester%expect(sc%temp_range.toBe. [1d2, 1d8] .hint.'SC temp range')
+   call tester%expect(sc%temp_unit_str.toBe."K".hint.'SC temp unit string')
+
+   call tester%expect(sc%properties(scid%ntr_frac_0) .toBe..true..hint.'SC ntr_frac_0 enable')
+   call tester%expect(sc%ntr_frac_0_range.toBe. [0d0, 1d0] .hint.'SC ntr_frac_0 range')
+
+   call tester%expect(sc%properties(scid%ntr_frac_1) .toBe..true..hint.'SC ntr_frac_1 enable')
+   call tester%expect(sc%ntr_frac_1_range.toBe. [0d0, 1d0] .hint.'SC ntr_frac_1 range')
+
+   call tester%expect(sc%properties(scid%ntr_frac_2) .toBe..true..hint.'SC ntr_frac_2 enable')
+   call tester%expect(sc%ntr_frac_2_range.toBe. [0d0, 1d0] .hint.'SC ntr_frac_2 range')
+
+   call tester%expect(sc%properties(scid%abs_v) .toBe..true..hint.'SC abs_v enable')
+   call tester%expect(sc%abs_v_range.toBe. [0d0, 1d2] .hint.'SC abs_v range')
+   call tester%expect(sc%abs_v_unit_str.toBe."m / s".hint.'SC abs_v unit string')
+
+   call tester%expect(sc%properties(scid%mach) .toBe..true..hint.'SC Mach enable')
+   call tester%expect(sc%mach_range.toBe. [0d0, 1d1] .hint.'SC Mach range')
+
+   call tester%expect(sc%properties(scid%total_mass) .toBe..true..hint.'SC total_mass enable')
+   call tester%expect(sc%properties(scid%total_energy) .toBe..true..hint.'SC total_energy enable')
+
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')
    call tester%expect(ic%base_grid.toBe.128.hint.'IC grid')
@@ -89,10 +137,10 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call tester%expect(bc%types(bcid%right) .toBe.bcid%inflow)
 #if NDIM == 1
-   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0])
+   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe. [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0])
 #endif
 #if NDIM == 2
-   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0])
+   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe. [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0])
    call tester%expect(bc%prim_inflows(:, bcid%bottom) .toBe.0d0)
    call tester%expect(bc%prim_inflows(:, bcid%top) .toBe.0d0)
 
@@ -100,7 +148,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(bc%types(bcid%top) .toBe.1)
 #endif
 #if NDIM == 3
-   call tester%expect(bc%prim_inflows(:, bcid%right) .toBe.[1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0, 9.01d0])
+  call tester%expect(bc%prim_inflows(:, bcid%right) .toBe. [1.23d0, 2.34d0, 3.45d0, 4.56d0, 5.67d0, 6.78d0, 7.89d0, 8.90d0, 9.01d0])
    call tester%expect(bc%prim_inflows(:, bcid%bottom) .toBe.0d0)
    call tester%expect(bc%prim_inflows(:, bcid%top) .toBe.0d0)
    call tester%expect(bc%prim_inflows(:, bcid%back) .toBe.0d0)

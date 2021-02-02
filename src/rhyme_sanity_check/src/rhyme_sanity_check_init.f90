@@ -15,6 +15,7 @@ contains
       sc%vz_unit => .parse.sc%vz_unit_str
       sc%e_tot_unit => .parse.sc%e_tot_unit_str
       sc%temp_unit => .parse.sc%temp_unit_str
+      sc%abs_v_unit => .parse.sc%abs_v_unit_str
 
       if (sc%properties(scid%rho)) then
          sc%rho_range(1) = rhyme_nombre_get_value(((sc%rho_range(1) .u.sc%rho_unit) .to.units%rho))
@@ -62,6 +63,12 @@ contains
 
       if (sc%properties(scid%ntr_frac_2)) then
          call logger%log('ntr_frac_2', '[]', '=', sc%ntr_frac_2_range)
+      end if
+
+      if (sc%properties(scid%abs_v)) then
+         sc%abs_v_range(1) = rhyme_nombre_get_value(((sc%abs_v_range(1) .u.sc%abs_v_unit) .to.units%velocity))
+         sc%abs_v_range(2) = rhyme_nombre_get_value(((sc%abs_v_range(2) .u.sc%abs_v_unit) .to.units%velocity))
+         call logger%log('|v|', '[ '//trim(.printchain.units%velocity)//' ]', '=', sc%abs_v_range)
       end if
 
       call logger%end_section

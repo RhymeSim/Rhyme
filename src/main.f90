@@ -19,6 +19,7 @@ program rhyme
    use rhyme_chombo
    use rhyme_initial_condition
    use rhyme_uv_background
+   use rhyme_sanity_check
    use rhyme_report
    use rhyme_logger
 
@@ -40,6 +41,7 @@ program rhyme
    type(initial_condition_t) :: ic
    type(uv_background_t) :: uvb
    type(report_t) :: report
+   type(sanity_check_t) :: sc
    type(logger_t) :: logger
 
    integer :: l, b, dims(NDIM)
@@ -63,7 +65,7 @@ program rhyme
    ! Reading parameters and converting them to code units
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, report, logger)
+      ie, draw, irs, sl, mh, chombo, report, sc, logger)
 
    call logger%begin_section('init')
 

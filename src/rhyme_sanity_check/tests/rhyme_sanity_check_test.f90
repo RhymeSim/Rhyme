@@ -24,7 +24,7 @@ logical function rhyme_sanity_check_test() result(failed)
    call tester%expect(scid%total_mass.toBe.10.hint.'total_mass id')
    call tester%expect(scid%total_energy.toBe.11.hint.'total_energy id')
    call tester%expect(scid%abs_v.toBe.12.hint.'|v| id')
-   call tester%expect(scid%cs.toBe.13.hint.'cs id')
+   call tester%expect(scid%mach.toBe.13.hint.'Mach id')
 
    failed = tester%failed()
 end function rhyme_sanity_check_test
