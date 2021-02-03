@@ -82,11 +82,10 @@ contains
             call update_info(i JDX KDX, v, sc%abs_v_range, sc%abs_v_info)
          end if
          if (sc%properties(scid%mach)) then
-            v = calc_cs(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_u:cid%e_tot)) &
-                /( &
+            v = ( &
                 sqrt(sum(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_u:cid%rho_u + NDIM - 1)**2)) &
                 /samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho) &
-                )
+                )/calc_cs(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_u:cid%e_tot))
             call update_info(i JDX KDX, v, sc%mach_range, sc%mach_info)
          end if
       end do
