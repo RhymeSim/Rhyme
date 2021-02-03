@@ -7,47 +7,69 @@ contains
       type(logger_t), intent(inout) :: logger
 
       if (sc%properties(scid%rho)) then
-         call log_property('rho', sc%rho_info)
+         call logger%begin_section('rho')
+         call log_property(sc%rho_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%vx)) then
-         call log_property('vx', sc%vx_info)
+         call logger%begin_section('vx')
+         call log_property(sc%vx_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%vy)) then
-         call log_property('vy', sc%vy_info)
+         call logger%begin_section('vy')
+         call log_property(sc%vy_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%vz)) then
-         call log_property('vz', sc%vz_info)
+         call logger%begin_section('vz')
+         call log_property(sc%vz_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%e_tot)) then
-         call log_property('e_tot', sc%e_tot_info)
+         call logger%begin_section('e_tot')
+         call log_property(sc%e_tot_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%temp)) then
-         call log_property('temp', sc%temp_info)
+         call logger%begin_section('temp')
+         call log_property(sc%temp_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%ntr_frac_0)) then
-         call log_property('ntr_frac_0', sc%ntr_frac_0_info)
+         call logger%begin_section('ntr_frac_0')
+         call log_property(sc%ntr_frac_0_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%ntr_frac_1)) then
-         call log_property('ntr_frac_1', sc%ntr_frac_1_info)
+         call logger%begin_section('ntr_frac_1')
+         call log_property(sc%ntr_frac_1_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%ntr_frac_2)) then
-         call log_property('ntr_frac_2', sc%ntr_frac_2_info)
+         call logger%begin_section('ntr_frac_2')
+         call log_property(sc%ntr_frac_2_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%abs_v)) then
-         call log_property('|v|', sc%abs_v_info)
+         call logger%begin_section('|v|')
+         call log_property(sc%abs_v_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%mach)) then
-         call log_property('Mach number', sc%mach_info)
+         call logger%begin_section('Mach_number')
+         call log_property(sc%mach_info)
+         call logger%end_section
       end if
 
       if (sc%properties(scid%total_energy)) then
@@ -59,20 +81,23 @@ contains
       end if
 
    contains
-      subroutine log_property(tag, info)
-         character(len=*), intent(in) :: tag
+      subroutine log_property(info)
          type(sanity_check_info_t), intent(in) :: info
 
+         character(len=128) :: str1, str2
+
          if (info%nbelow(2) > 0) then
-            call logger%warn(tag, '(# below)', '=', [info%nbelow(2)])
-            call logger%warn('minimum '//trim(tag), info%vbelow(2), '@', info%cbelow(2, :))
-            call logger%warn('minimum '//trim(tag)//' (prev. check)', info%vbelow(1), '@', info%cbelow(1, :))
+            write (str1, *) trim(.toString.info%vbelow(2)), ' @ ', trim(.toString.info%cbelow(2, :))
+            write (str2, *) trim(.toString.info%vbelow(1)), ' @ ', trim(.toString.info%cbelow(1, :))
+            call logger%warn('Number of cells below the limit', '', '=', [info%nbelow(2)])
+            call logger%warn('Min:', str1, '=PrevCheck=>', [str2])
          end if
-         !
+
          if (info%nabove(2) > 0) then
-            call logger%warn(tag, '(# above)', '=', [info%nabove(2)])
-            call logger%warn('maximum '//trim(tag), info%vabove(2), '@', info%cabove(2, :))
-            call logger%warn('maximum '//trim(tag)//' (prev. check)', info%vabove(1), '@', info%cabove(1, :))
+            write (str1, *) trim(.toString.info%vabove(2)), ' @ ', trim(.toString.info%cabove(2, :))
+            write (str2, *) trim(.toString.info%vabove(1)), ' @ ', trim(.toString.info%cabove(1, :))
+            call logger%warn('Number of cells above the limit', '', '=', [info%nabove(2)])
+            call logger%warn('Min:', str1, '=PrevCheck=>', [str2])
          end if
       end subroutine log_property
 
