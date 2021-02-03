@@ -28,7 +28,7 @@ contains
 #define LOOP_J_END end do
 #define LOOP_K
 #define LOOP_K_END
-#define IDX i + samr%levels(0)%boxes(1)%dims(1) * j
+#define IDX i + samr%levels(0)%boxes(1)%dims(1) * (j - 1)
 #endif
 
 #if NDIM == 3
@@ -38,7 +38,7 @@ contains
 #define LOOP_J_END end do
 #define LOOP_K do k = 1, samr%levels(0)%boxes(1)%dims(3)
 #define LOOP_K_END end do
-#define IDX i + samr%levels(0)%boxes(1)%dims(1) * (j - 1) + samr%levels(0)%boxes(1)%dims(2) * (k - 1)
+#define IDX i + samr%levels(0)%boxes(1)%dims(1) * (j - 1) + product(samr%levels(0)%boxes(1)%dims(1:2)) * (k - 1)
 #endif
 
       integer :: i JDX KDX, i_1d
@@ -61,9 +61,9 @@ contains
       LOOP_J_END
       LOOP_K_END
 
-      min_cs = minval(cs, cs > epsilon(0d0))
+      min_cs = minval(cs)
       max_cs = maxval(cs)
-      min_rho = minval(rho, rho > epsilon(0d0))
+      min_rho = minval(rho)
       max_rho = maxval(rho)
 
       if (max_cs > min_cs .and. max_rho > min_rho) then

@@ -31,9 +31,51 @@ contains
       dims = samr%levels(0)%boxes(1)%dims
 
       ! General checks
-      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells))) then
-         call logger%warn('NaN found in cells!')
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho)))) then
+         call logger%warn('NaN found in densities!')
       end if
+
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho_u)))) then
+         call logger%warn('NaN found in x-momentum!')
+      end if
+
+#if NDIM > 1
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho_v)))) then
+         call logger%warn('NaN found in y-momentum!')
+      end if
+#endif
+
+#if NDIM > 2
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho_w)))) then
+         call logger%warn('NaN found in z-momentum!')
+      end if
+#endif
+
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%e_tot)))) then
+         call logger%warn('NaN found in e_tot!')
+      end if
+
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%temp)))) then
+         call logger%warn('NaN found in temperatures!')
+      end if
+
+#if NSPE > 0
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%ntr_frac_0)))) then
+         call logger%warn('NaN found in fHI!')
+      end if
+#endif
+
+#if NSPE > 1
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%ntr_frac_1)))) then
+         call logger%warn('NaN found in fHeI!')
+      end if
+#endif
+
+#if NSPE > 2
+      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%ntr_frac_2)))) then
+         call logger%warn('NaN found in fHeII!')
+      end if
+#endif
 
       if (any(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho) < 0d0)) then
          pos = minloc(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho))
