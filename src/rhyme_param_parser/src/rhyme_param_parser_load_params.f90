@@ -193,7 +193,14 @@ contains
          end if
 
          call config%read('sanity_check_total_mass'.at.1, sc%properties(scid%total_mass), logger, on_off_switch)
+         if (sc%properties(scid%total_mass)) then
+            call config%read('sanity_check_total_mass'.at.2, sc%total_mass_range, logger)
+         end if
+
          call config%read('sanity_check_total_energy'.at.1, sc%properties(scid%total_energy), logger, on_off_switch)
+         if (sc%properties(scid%total_energy)) then
+            call config%read('sanity_check_total_energy'.at.2, sc%total_energy_range, logger)
+         end if
       end if
 
       ! Initial Condition

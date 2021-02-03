@@ -1,6 +1,4 @@
 program rhyme
-   use, intrinsic :: IEEE_ARITHMETIC
-
    use rhyme_nombre
    use rhyme_chemistry
    use rhyme_units
@@ -44,7 +42,7 @@ program rhyme
    type(sanity_check_t) :: sc
    type(logger_t) :: logger
 
-   integer :: l, b, dims(NDIM)
+   integer :: l, b
    character(len=1024) :: exe_filename, param_file
 
    ! TODO: use getopt to read flag-based additional command line arguments
@@ -87,6 +85,7 @@ program rhyme
    call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
 
    call rhyme_cfl_init(cfl, thermo, samr, logger)
+   call rhyme_sanity_check_init(sc, units, thermo, samr, logger)
 
    call logger%end_section  ! init
 
@@ -129,38 +128,7 @@ program rhyme
                samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger)
          end do
       end do
-
       call logger%end_section(print_duration=.true.)  ! hydro
-
-#if NDIM==1
-#define JRANGE
-#define KRANGE
-#endif
-#if NDIM==2
-#define JRANGE , 1:dims(2)
-#define KRANGE
-#endif
-#if NDIM==3
-#define JRANGE , 1:dims(2)
-#define KRANGE , 1:dims(3)
-#endif
-
-      call logger%begin_section('sanity_check')
-      dims = samr%levels(0)%boxes(1)%dims
-
-      if (any(IEEE_IS_NAN(samr%levels(0)%boxes(1)%cells))) then
-         call rhyme_chombo_write_samr(chombo, units, samr)
-         call logger%err('NaN found in cells! Please the stored snapshot!')
-      end if
-      if (any(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%rho) < 0d0)) then
-         call logger%err('Negative density!')
-      end if
-      if (any(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%e_tot) < 0d0)) then
-         call logger%err( &
-            'Negative e_tot!', '', '@', &
-            minloc(samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, cid%e_tot)))
-      end if
-      call logger%end_section(print_duration=.true.)
 
       samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
@@ -169,6 +137,12 @@ program rhyme
          call logger%begin_section('initial_report')
          call report%publish(samr, logger)
          call logger%end_section(print_duration=.true.)  ! initial_report
+      end if
+
+      if (sc%enabled .and. mod(samr%levels(0)%iteration, sc%every) == 0) then
+         call logger%begin_section('sanity_check')
+         call rhyme_sanity_check_perform(sc, samr, logger)
+         call logger%end_section(print_duration=.true.)  ! sanity_check
       end if
 
       call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration

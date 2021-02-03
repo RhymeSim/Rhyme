@@ -119,7 +119,10 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(sc%mach_range.toBe. [0d0, 1d1] .hint.'SC Mach range')
 
    call tester%expect(sc%properties(scid%total_mass) .toBe..true..hint.'SC total_mass enable')
+   call tester%expect(sc%total_mass_range.toBe. [.9d0, 1.1d0] .hint.'SC total_mass range')
+
    call tester%expect(sc%properties(scid%total_energy) .toBe..true..hint.'SC total_energy enable')
+   call tester%expect(sc%total_energy_range.toBe. [.9d0, 1.1d0] .hint.'SC total_energy range')
 
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')

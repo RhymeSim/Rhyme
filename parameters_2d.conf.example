@@ -29,8 +29,8 @@ sanity_check_ntr_frac_1 = enable 0 1
 sanity_check_ntr_frac_2 = enable 0 1
 sanity_check_abs_v = enable 0 1d2 "m / s"
 sanity_check_Mach = enable 0 1d1
-sanity_check_total_mass = enable
-sanity_check_total_energy = enable
+sanity_check_total_mass = enable 0.9 1.1
+sanity_check_total_energy = enable 0.9 1.1
 
 
 # **Initial Condition**

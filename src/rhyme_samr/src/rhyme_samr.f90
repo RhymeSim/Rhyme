@@ -26,7 +26,7 @@ module rhyme_samr
       integer :: max_nlevels = 23
       integer :: x = 1, left = 1, right = 2 IDS_J IDS_K
       character(len=8) :: side_names(6) = [ &
-        'left  ', 'right ', 'bottom', 'top   ', 'back  ', 'front ']
+                          'left  ', 'right ', 'bottom', 'top   ', 'back  ', 'front ']
    end type samr_indices_t
 
    type(samr_indices_t), parameter :: samrid = samr_indices_t()
@@ -70,5 +70,15 @@ module rhyme_samr
          integer, intent(in) :: l, b, dims(NDIM)
          integer, intent(in) :: ledges(NDIM), redges(NDIM)
       end subroutine rhyme_samr_init_box
+
+      pure module function rhyme_samr_calc_total_energy(samr) result(total_energy)
+         type(samr_t), intent(in) :: samr
+         real(kind=8) :: total_energy
+      end function rhyme_samr_calc_total_energy
+
+      pure module function rhyme_samr_calc_total_mass(samr) result(total_mass)
+         type(samr_t), intent(in) :: samr
+         real(kind=8) :: total_mass
+      end function rhyme_samr_calc_total_mass
    end interface
 end module rhyme_samr
