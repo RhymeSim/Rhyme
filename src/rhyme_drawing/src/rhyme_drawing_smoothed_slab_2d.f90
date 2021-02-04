@@ -1,13 +1,13 @@
 submodule(rhyme_drawing) rhyme_drawing_smoothed_slab_2d_submodule
 contains
-module subroutine rhyme_drawing_smoothed_slab_2d(samr, shape, logger)
-   ! TODO: Add test
+   module subroutine rhyme_drawing_smoothed_slab_2d(samr, shape, logger)
+      ! TODO: Add test
 
-   implicit none
+      implicit none
 
-   type(samr_t), intent(inout) :: samr
-   type(shape_t), intent(in) :: shape
-   type(logger_t), intent(inout) :: logger
+      type(samr_t), intent(inout) :: samr
+      type(shape_t), intent(in) :: shape
+      type(logger_t), intent(inout) :: logger
 
 #if NDIM > 1
 
@@ -27,62 +27,62 @@ module subroutine rhyme_drawing_smoothed_slab_2d(samr, shape, logger)
 #define LOOP_K_END end do
 #endif
 
-   integer :: l, b, i JDX KDX
-   real(kind=8) :: x
+      integer :: l, b, i JDX KDX
+      real(kind=8) :: x
 
-   do l = 0, samr%nlevels - 1
-      do b = 1, samr%levels(l)%nboxes
-         LOOP_K
-         LOOP_J
-         do i = 1, samr%levels(l)%boxes(b)%dims(1)
-            select case (shape%slab_2d%axis)
-            case (drid%x)
-               x = real(i - .5d0 + samr%levels(l)%boxes(b)%left_edge(1) - 1)/2**l
+      do l = 0, samr%nlevels - 1
+         do b = 1, samr%levels(l)%nboxes
+            LOOP_K
+            LOOP_J
+            do i = 1, samr%levels(l)%boxes(b)%dims(1)
+               select case (shape%slab_2d%axis)
+               case (drid%x)
+                  x = real(i - .5d0 + samr%levels(l)%boxes(b)%left_edge(1) - 1)/2**l
 #if NDIM > 1
-            case (drid%y)
-               x = real(j - .5d0 + samr%levels(l)%boxes(b)%left_edge(2) - 1)/2**l
+               case (drid%y)
+                  x = real(j - .5d0 + samr%levels(l)%boxes(b)%left_edge(2) - 1)/2**l
 #endif
 #if NDIM > 2
-            case (drid%z)
-               x = real(k - .5d0 + samr%levels(l)%boxes(b)%left_edge(3) - 1)/2**l
+               case (drid%z)
+                  x = real(k - .5d0 + samr%levels(l)%boxes(b)%left_edge(3) - 1)/2**l
 #endif
-            case DEFAULT
-               call logger%err('Unknown slab direction', 'axis', '=', [shape%slab_2d%axis])
-               return
-            end select
+               case DEFAULT
+                  call logger%err('Unknown slab direction', 'axis', '=', [shape%slab_2d%axis])
+                  return
+               end select
 
-            samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:NCMP) = ramp_func(x, shape)
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho:NCMP) = ramp_func(x, shape)
+            end do
+            LOOP_J_END
+            LOOP_K_END
          end do
-         LOOP_J_END
-         LOOP_K_END
       end do
-   end do
 
-contains
+   contains
 
-   pure function ramp_func(x, shape) result(uu)
-      implicit none
+      pure function ramp_func(x, shape) result(uu)
+         implicit none
 
-      real(kind=8), intent(in) :: x
-      type(shape_t), intent(in) :: shape
-      real(kind=8) :: uu(cid%rho:NCMP)
+         real(kind=8), intent(in) :: x
+         type(shape_t), intent(in) :: shape
+         real(kind=8) :: uu(cid%rho:NCMP)
 
-      real(kind=8) :: factor, Rs, slab_center
-      real(kind=8) :: ww(cid%rho:NCMP)
+         real(kind=8) :: factor, Rs, slab_center
+         real(kind=8) :: ww(cid%rho:NCMP)
 
-      slab_center = (shape%slab_2d%pos(1) + shape%slab_2d%pos(2))/2.d0
-      Rs = abs(slab_center - shape%slab_2d%pos(1))
+         slab_center = (shape%slab_2d%pos(1) + shape%slab_2d%pos(2))/2.d0
+         Rs = abs(slab_center - shape%slab_2d%pos(1))
 
-      factor = (1 + tanh((Rs - (x - slab_center))/shape%slab_2d%sigma(1))) &
-               *(1 + tanh((Rs + (x - slab_center))/shape%slab_2d%sigma(2)))
+         factor = (1 + tanh((Rs - (x - slab_center))/shape%slab_2d%sigma(1))) &
+                  *(1 + tanh((Rs + (x - slab_center))/shape%slab_2d%sigma(2)))
 
-      ww = shape%fill%colors(cid%rho:NCMP, 1) + 0.25*( &
-           shape%fill%colors(cid%rho:NCMP, 2) - shape%fill%colors(cid%rho:NCMP, 1) &
-           )*factor
+         ww = shape%fill%colors(cid%rho:NCMP, 1) + 0.25*( &
+              shape%fill%colors(cid%rho:NCMP, 2) - shape%fill%colors(cid%rho:NCMP, 1) &
+              )*factor
 
-      call conv_prim_to_cons(ww(cid%rho:cid%p), uu(cid%rho:cid%e_tot))
-      uu(cid%e_tot + 1:NCMP) = ww(cid%e_tot + 1:NCMP)
-   end function ramp_func
+         call conv_prim_to_cons(ww(cid%rho:cid%p), uu(cid%rho:cid%e_tot))
+         uu(cid%e_tot + 1:NCMP) = ww(cid%e_tot + 1:NCMP)
+      end function ramp_func
 #endif
-end subroutine rhyme_drawing_smoothed_slab_2d
+   end subroutine rhyme_drawing_smoothed_slab_2d
 end submodule rhyme_drawing_smoothed_slab_2d_submodule

@@ -12,7 +12,7 @@ module rhyme_thermo_base
       integer :: diatomic = 2
       integer :: polyatomic = 3
       character(len=16) :: som_names(3) = [ &
-        'monatomic ', 'diatomic  ', 'polyatomic']
+                           'monatomic ', 'diatomic  ', 'polyatomic']
    end type thermo_base_indices_t
 
    type(thermo_base_indices_t), parameter :: thid = thermo_base_indices_t()

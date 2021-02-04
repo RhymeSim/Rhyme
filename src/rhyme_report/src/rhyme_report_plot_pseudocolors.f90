@@ -1,21 +1,21 @@
 submodule(rhyme_report) plot_pseudocolors
 contains
-module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
-   implicit none
+   module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
+      implicit none
 
-   class(report_t), intent(in) :: report
-   type(samr_t), intent(in) :: samr
-   type(logger_t), intent(inout) :: logger
+      class(report_t), intent(in) :: report
+      type(samr_t), intent(in) :: samr
+      type(logger_t), intent(inout) :: logger
 
-   type(report_pseudocolor_t), pointer :: pntr
+      type(report_pseudocolor_t), pointer :: pntr
 
-   integer :: dims(NDIM)
-   real(kind=8) :: box_lengths(NDIM)
+      integer :: dims(NDIM)
+      real(kind=8) :: box_lengths(NDIM)
 
-   if (.not. associated(report%pseudocolors)) return
+      if (.not. associated(report%pseudocolors)) return
 
-   dims = samr%levels(0)%boxes(1)%dims
-   box_lengths = samr%box_lengths
+      dims = samr%levels(0)%boxes(1)%dims
+      box_lengths = samr%box_lengths
 
 #if NDIM > 1
 
@@ -53,35 +53,35 @@ module subroutine rhyme_report_plot_pseudocolors(report, samr, logger)
 #define BLZ box_lengths(3)
 #endif
 
-   pntr => report%pseudocolors
+      pntr => report%pseudocolors
 
-   do while (associated(pntr))
-      call logger%log('pseudoplot '//trim(repid%labels(pntr%type)))
-      select case (logger%projection_axis)
-      case (lgid%x)
-         call logger%plot( &
-            samr%levels(0)%boxes(1)%cells(IDXX JDXX KDXX, pntr%type), &
-            [0d0, BLY], [0d0, BLZ], labels=['X', 'Y'], &
-            colorscheme=colorschemes(logger%colormap), &
-            auto_setup=.true., resolution=[RESY, RESZ])
-      case (lgid%y)
-         call logger%plot( &
-            samr%levels(0)%boxes(1)%cells(IDXY JDXY KDXY, pntr%type), &
-            [0d0, BLX], [0d0, BLZ], labels=['X', 'Y'], &
-            colorscheme=colorschemes(logger%colormap), &
-            auto_setup=.true., resolution=[RESX, RESZ])
-      case (lgid%z)
-         call logger%plot( &
-            samr%levels(0)%boxes(1)%cells(IDXZ JDXZ KDXZ, pntr%type), &
-            [0d0, BLX], [0d0, BLY], labels=['X', 'Y'], &
-            colorscheme=colorschemes(logger%colormap), &
-            auto_setup=.true., resolution=[RESX, RESY])
-      case default
-         call logger%err('Unknonw axis!', '', '', [logger%projection_axis])
-      end select
+      do while (associated(pntr))
+         call logger%log('pseudoplot '//trim(repid%labels(pntr%type)))
+         select case (logger%projection_axis)
+         case (lgid%x)
+            call logger%plot( &
+               samr%levels(0)%boxes(1)%cells(IDXX JDXX KDXX, pntr%type), &
+               [0d0, BLY], [0d0, BLZ], labels=['X', 'Y'], &
+               colorscheme=colorschemes(logger%colormap), &
+               auto_setup=.true., resolution=[RESY, RESZ])
+         case (lgid%y)
+            call logger%plot( &
+               samr%levels(0)%boxes(1)%cells(IDXY JDXY KDXY, pntr%type), &
+               [0d0, BLX], [0d0, BLZ], labels=['X', 'Y'], &
+               colorscheme=colorschemes(logger%colormap), &
+               auto_setup=.true., resolution=[RESX, RESZ])
+         case (lgid%z)
+            call logger%plot( &
+               samr%levels(0)%boxes(1)%cells(IDXZ JDXZ KDXZ, pntr%type), &
+               [0d0, BLX], [0d0, BLY], labels=['X', 'Y'], &
+               colorscheme=colorschemes(logger%colormap), &
+               auto_setup=.true., resolution=[RESX, RESY])
+         case default
+            call logger%err('Unknonw axis!', '', '', [logger%projection_axis])
+         end select
 
-      pntr => pntr%next
-   end do
+         pntr => pntr%next
+      end do
 #endif
-end subroutine rhyme_report_plot_pseudocolors
+   end subroutine rhyme_report_plot_pseudocolors
 end submodule plot_pseudocolors

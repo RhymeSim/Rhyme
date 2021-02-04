@@ -1,13 +1,13 @@
 submodule(rhyme_cfl) rhyme_cfl_time_step_smod
 contains
-pure module function rhyme_cfl_time_step(c, samr) result(dt)
-   use rhyme_ideal_gas
+   pure module function rhyme_cfl_time_step(c, samr) result(dt)
+      use rhyme_ideal_gas
 
-   implicit none
+      implicit none
 
-   real(kind=8), intent(in) :: c ! c: courant number
-   type(samr_t), intent(in) :: samr
-   real(kind=8) :: dt
+      real(kind=8), intent(in) :: c ! c: courant number
+      type(samr_t), intent(in) :: samr
+      real(kind=8) :: dt
 
 #if NDIM == 1
 #define LOOP_J
@@ -32,30 +32,30 @@ pure module function rhyme_cfl_time_step(c, samr) result(dt)
 #define KDX ,k
 #endif
 
-   integer :: i JDX KDX
-   real(kind=8) :: max_u, u
+      integer :: i JDX KDX
+      real(kind=8) :: max_u, u
 
-   max_u = 0.d0
+      max_u = 0.d0
 
-   LOOP_K
-   LOOP_J
-   do i = 1, samr%levels(0)%boxes(1)%dims(1)
-      u = calc_u(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho:cid%e_tot))
-      if (u > max_u) max_u = u
-   end do
-   LOOP_J_END
-   LOOP_K_END
+      LOOP_K
+      LOOP_J
+      do i = 1, samr%levels(0)%boxes(1)%dims(1)
+         u = calc_u(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho:cid%e_tot))
+         if (u > max_u) max_u = u
+      end do
+      LOOP_J_END
+      LOOP_K_END
 
-   dt = c*minval(samr%levels(0)%dx)/max_u
+      dt = c*minval(samr%levels(0)%dx)/max_u
 
-contains
-   pure real(kind=8) function calc_u(u) result(v)
-      implicit none
+   contains
+      pure real(kind=8) function calc_u(u) result(v)
+         implicit none
 
-      real(kind=8), intent(in) :: u(cid%rho:cid%e_tot)
+         real(kind=8), intent(in) :: u(cid%rho:cid%e_tot)
 
-      v = sqrt(sum(u(cid%rho_u:cid%rho_u + NDIM - 1)**2))/u(cid%rho) &
-          + calc_cs(u)
-   end function calc_u
-end function rhyme_cfl_time_step
+         v = sqrt(sum(u(cid%rho_u:cid%rho_u + NDIM - 1)**2))/u(cid%rho) &
+             + calc_cs(u)
+      end function calc_u
+   end function rhyme_cfl_time_step
 end submodule rhyme_cfl_time_step_smod

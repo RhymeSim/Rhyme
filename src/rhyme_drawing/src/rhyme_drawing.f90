@@ -52,13 +52,13 @@ module rhyme_drawing
    end type perturbation_harmonic_t
 
    type perturbation_wgn_t
-     integer :: method = drid%box_muller
-     integer :: seed = 1234
-     integer :: variable = drid%unset
-     real(kind=8) :: range(2) = [0d0, 0d0]
-     real(kind=8) :: sd = 0d0 ! Standard Deviation
-     real(kind=8) :: mean = 0d0
-     real(kind=8) :: cut_percent = 100
+      integer :: method = drid%box_muller
+      integer :: seed = 1234
+      integer :: variable = drid%unset
+      real(kind=8) :: range(2) = [0d0, 0d0]
+      real(kind=8) :: sd = 0d0 ! Standard Deviation
+      real(kind=8) :: mean = 0d0
+      real(kind=8) :: cut_percent = 100
    end type perturbation_wgn_t
 
 #if NDIM > 1

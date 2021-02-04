@@ -1,10 +1,10 @@
 submodule(rhyme_tiling_drawing) sphere_smod
 contains
-module subroutine rhyme_tiling_drawing_sphere(tiling, shape)
-   implicit none
+   module subroutine rhyme_tiling_drawing_sphere(tiling, shape)
+      implicit none
 
-   type(tiling_t), intent(inout) :: tiling
-   type(tiling_shape_t), intent(in) :: shape
+      type(tiling_t), intent(inout) :: tiling
+      type(tiling_shape_t), intent(in) :: shape
 
 #if NDIM == 1
 #define JDX
@@ -29,19 +29,19 @@ module subroutine rhyme_tiling_drawing_sphere(tiling, shape)
 #define LOOP_K_END end do
 #endif
 
-   integer :: grid_id, grid_coor(NDIM), tile_id
-   integer :: i JDX KDX
+      integer :: grid_id, grid_coor(NDIM), tile_id
+      integer :: i JDX KDX
 
-   do grid_id = 1, product(tiling%domain)
-      grid_coor = rhyme_tiling_to_coordinate(grid_id, tiling%domain)
+      do grid_id = 1, product(tiling%domain)
+         grid_coor = rhyme_tiling_to_coordinate(grid_id, tiling%domain)
 
-      LOOP_K
-      LOOP_J
-      do i = 1, tiling%domain(1)
+         LOOP_K
+         LOOP_J
+         do i = 1, tiling%domain(1)
+         end do
+         LOOP_J_END
+         LOOP_K_END
       end do
-      LOOP_J_END
-      LOOP_K_END
-   end do
 
-end subroutine rhyme_tiling_drawing_sphere
+   end subroutine rhyme_tiling_drawing_sphere
 end submodule sphere_smod

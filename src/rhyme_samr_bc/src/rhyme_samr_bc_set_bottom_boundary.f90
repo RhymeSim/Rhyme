@@ -1,18 +1,18 @@
 submodule(rhyme_samr_bc) set_bottom_boundary_smod
 contains
-pure module subroutine rhyme_samr_bc_set_bottom_boundary(bc, box)
-   ! NB: This subroutine has been written by assuming there is a single box
-   !     at level 0
-   implicit none
+   pure module subroutine rhyme_samr_bc_set_bottom_boundary(bc, box)
+      ! NB: This subroutine has been written by assuming there is a single box
+      !     at level 0
+      implicit none
 
-   type(samr_bc_t), intent(in) :: bc
-   type(samr_box_t), intent(inout) :: box
+      type(samr_bc_t), intent(in) :: bc
+      type(samr_box_t), intent(inout) :: box
 
 #if NDIM > 1
-   integer :: i, uid
+      integer :: i, uid
 
 #if NDIM > 2
-   integer :: k
+      integer :: k
 #endif
 
 #if NDIM == 2
@@ -27,51 +27,51 @@ pure module subroutine rhyme_samr_bc_set_bottom_boundary(bc, box)
 #define LOOP_K_END end do
 #endif
 
-   select case (bc%types(bcid%bottom))
-   case (bcid%reflective)
-      do uid = cid%rho, cid%e_tot
-         LOOP_K
-         do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, uid) = box%cells(i, 1 KDX, uid)
-            box%cells(i, -1 KDX, uid) = box%cells(i, 2 KDX, uid)
+      select case (bc%types(bcid%bottom))
+      case (bcid%reflective)
+         do uid = cid%rho, cid%e_tot
+            LOOP_K
+            do i = 1, box%dims(1)
+               box%cells(i, 0 KDX, uid) = box%cells(i, 1 KDX, uid)
+               box%cells(i, -1 KDX, uid) = box%cells(i, 2 KDX, uid)
+            end do
+            LOOP_K_END
+            LOOP_K
+            do i = 1, box%dims(1)
+               box%cells(i, 0 KDX, cid%rho_v) = -box%cells(i, 1 KDX, cid%rho_v)
+               box%cells(i, -1 KDX, cid%rho_v) = -box%cells(i, 2 KDX, cid%rho_v)
+            end do
+            LOOP_K_END
          end do
-         LOOP_K_END
-         LOOP_K
-         do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, cid%rho_v) = -box%cells(i, 1 KDX, cid%rho_v)
-            box%cells(i, -1 KDX, cid%rho_v) = -box%cells(i, 2 KDX, cid%rho_v)
+      case (bcid%outflow)
+         do uid = cid%rho, cid%e_tot
+            LOOP_K
+            do i = 1, box%dims(1)
+               box%cells(i, 0 KDX, uid) = box%cells(i, 1 KDX, uid)
+               box%cells(i, -1 KDX, uid) = box%cells(i, 2 KDX, uid)
+            end do
+            LOOP_K_END
          end do
-         LOOP_K_END
-      end do
-   case (bcid%outflow)
-      do uid = cid%rho, cid%e_tot
-         LOOP_K
-         do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, uid) = box%cells(i, 1 KDX, uid)
-            box%cells(i, -1 KDX, uid) = box%cells(i, 2 KDX, uid)
+      case (bcid%periodic)
+         do uid = cid%rho, cid%e_tot
+            LOOP_K
+            do i = 1, box%dims(1)
+               box%cells(i, 0 KDX, uid) = box%cells(i, box%dims(2) - 0 KDX, uid)
+               box%cells(i, -1 KDX, uid) = box%cells(i, box%dims(2) - 1 KDX, uid)
+            end do
+            LOOP_K_END
          end do
-         LOOP_K_END
-      end do
-   case (bcid%periodic)
-      do uid = cid%rho, cid%e_tot
-         LOOP_K
-         do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, uid) = box%cells(i, box%dims(2) - 0 KDX, uid)
-            box%cells(i, -1 KDX, uid) = box%cells(i, box%dims(2) - 1 KDX, uid)
+      case (bcid%inflow)
+         do uid = cid%rho, NCMP
+            LOOP_K
+            do i = 1, box%dims(1)
+               box%cells(i, 0 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
+               box%cells(i, -1 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
+            end do
+            LOOP_K_END
          end do
-         LOOP_K_END
-      end do
-   case (bcid%inflow)
-      do uid = cid%rho, NCMP
-         LOOP_K
-         do i = 1, box%dims(1)
-            box%cells(i, 0 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
-            box%cells(i, -1 KDX, uid) = bc%cons_inflows(uid, bcid%bottom)
-         end do
-         LOOP_K_END
-      end do
-   end select
+      end select
 #endif
 
-end subroutine rhyme_samr_bc_set_bottom_boundary
+   end subroutine rhyme_samr_bc_set_bottom_boundary
 end submodule set_bottom_boundary_smod

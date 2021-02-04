@@ -1,15 +1,15 @@
 submodule(rhyme_samr_bc) init_smod
 contains
-module subroutine rhyme_samr_bc_init(bc, thermo, samr, logger)
-   ! NB: Only boxes residing at level 0 are being handeled here. If the ghost
-   !     region of higher level boxes overlap the boundaries, their values
-   !     will be set based on level 0 boxes later on
-   implicit none
+   module subroutine rhyme_samr_bc_init(bc, thermo, samr, logger)
+      ! NB: Only boxes residing at level 0 are being handeled here. If the ghost
+      !     region of higher level boxes overlap the boundaries, their values
+      !     will be set based on level 0 boxes later on
+      implicit none
 
-   type(samr_bc_t), intent(inout) :: bc
-   type(thermo_base_t), intent(in) :: thermo
-   type(samr_t), intent(inout) :: samr
-   type(logger_t), intent(inout) :: logger
+      type(samr_bc_t), intent(inout) :: bc
+      type(thermo_base_t), intent(in) :: thermo
+      type(samr_t), intent(inout) :: samr
+      type(logger_t), intent(inout) :: logger
 
 #if NDIM == 1
 #define IFJ
@@ -44,48 +44,48 @@ module subroutine rhyme_samr_bc_init(bc, thermo, samr, logger)
 #define LOOP_K_END end do
 #endif
 
-   integer :: l, b, i JDX KDX, uid, lb(NDIM), ub(NDIM), di(NDIM)
+      integer :: l, b, i JDX KDX, uid, lb(NDIM), ub(NDIM), di(NDIM)
 
-   call logger%begin_section('samr_bc')
+      call logger%begin_section('samr_bc')
 
-   call logger%log('state_of_matter', '', '=', [thid%som_names(thermo%state_of_matter)])
+      call logger%log('state_of_matter', '', '=', [thid%som_names(thermo%state_of_matter)])
 
-   do i = 1, 2*NDIM
-     if (bc%types(i) == bcid%inflow) then
-       call conv_prim_to_cons(bc%prim_inflows(cid%rho:cid%p, i), bc%cons_inflows(cid%rho:cid%e_tot, i))
-       bc%cons_inflows(cid%e_tot+1:NCMP, i) = bc%prim_inflows(cid%e_tot+1:NCMP, i)
-       call logger%log('inflow (conserved)', bcid%side_names(i), '=', bc%cons_inflows(1:NCMP, i))
-     end if
-   end do
+      do i = 1, 2*NDIM
+         if (bc%types(i) == bcid%inflow) then
+            call conv_prim_to_cons(bc%prim_inflows(cid%rho:cid%p, i), bc%cons_inflows(cid%rho:cid%e_tot, i))
+            bc%cons_inflows(cid%e_tot + 1:NCMP, i) = bc%prim_inflows(cid%e_tot + 1:NCMP, i)
+            call logger%log('inflow (conserved)', bcid%side_names(i), '=', bc%cons_inflows(1:NCMP, i))
+         end if
+      end do
 
-   do l = 0, 0 ! Only level 0 boxes are responsible for boundaries
-      do b = 1, samr%levels(l)%nboxes
+      do l = 0, 0 ! Only level 0 boxes are responsible for boundaries
+         do b = 1, samr%levels(l)%nboxes
 
-         lb = lbound(samr%levels(l)%boxes(b)%flags)
-         ub = ubound(samr%levels(l)%boxes(b)%flags)
+            lb = lbound(samr%levels(l)%boxes(b)%flags)
+            ub = ubound(samr%levels(l)%boxes(b)%flags)
 
-         di = samr%levels(l)%boxes(b)%left_edge - 1
+            di = samr%levels(l)%boxes(b)%left_edge - 1
 
-         do uid = cid%rho, cid%e_tot
-            LOOP_K
-            LOOP_J
+            do uid = cid%rho, cid%e_tot
+               LOOP_K
+               LOOP_J
 
-            do i = lb(1), ub(1)
-               if (i + di(1) < 1 .or. i + di(1) > samr%levels(l)%boxes(b)%dims(1) &
-                   IFJ
-               IFK) then
-               samr%levels(l)%boxes(b)%flags(i JDX KDX) = samrid%ghost
-               samr%levels(l)%boxes(b)%cells(i JDX KDX, uid) = 0.d0
-               end if
+               do i = lb(1), ub(1)
+                  if (i + di(1) < 1 .or. i + di(1) > samr%levels(l)%boxes(b)%dims(1) &
+                      IFJ
+                  IFK) then
+                  samr%levels(l)%boxes(b)%flags(i JDX KDX) = samrid%ghost
+                  samr%levels(l)%boxes(b)%cells(i JDX KDX, uid) = 0.d0
+                  end if
+               end do
+
+               LOOP_J_END
+               LOOP_K_END
             end do
 
-            LOOP_J_END
-            LOOP_K_END
+         end do
          end do
 
-      end do
-      end do
-
-      call logger%end_section
-   end subroutine rhyme_samr_bc_init
-   end submodule init_smod
+         call logger%end_section
+         end subroutine rhyme_samr_bc_init
+      end submodule init_smod

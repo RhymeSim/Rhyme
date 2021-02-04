@@ -23,4 +23,4 @@ logical function rhyme_drawing_test() result(failed)
    call dr_tester%expect(drid%none.toBe.-2)
 
    failed = dr_tester%failed()
-endfunction rhyme_drawing_test
+end function rhyme_drawing_test
