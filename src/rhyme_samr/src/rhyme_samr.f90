@@ -4,18 +4,18 @@ module rhyme_samr
    implicit none
 
 #if NDIM == 1
-#define COLON_J
-#define COLON_K
+#define JCOLON
+#define KCOLON
 #define IDS_J
 #define IDS_K
 #elif NDIM == 2
-#define COLON_J ,:
-#define COLON_K
+#define JCOLON ,:
+#define KCOLON
 #define IDS_J , y = 2, bottom = 3, top = 4
 #define IDS_K
 #elif NDIM == 3
-#define COLON_J ,:
-#define COLON_K ,:
+#define JCOLON ,:
+#define KCOLON ,:
 #define IDS_J , y = 2, bottom = 3, top = 4
 #define IDS_K , z = 3, back = 5, front = 6
 #endif
@@ -37,8 +37,8 @@ module rhyme_samr
       integer :: number = samrid%unset
       integer :: left_edge(NDIM) = samrid%unset
       integer :: right_edge(NDIM) = samrid%unset
-      integer, allocatable :: flags(:COLON_J COLON_K)
-      real(kind=8), allocatable :: cells(:COLON_J COLON_K, :)
+      integer, allocatable :: flags(:JCOLON KCOLON)
+      real(kind=8), allocatable :: cells(:JCOLON KCOLON, :)
    end type samr_box_t
 
    type samr_level_t
@@ -80,5 +80,15 @@ module rhyme_samr
          type(samr_t), intent(in) :: samr
          real(kind=8) :: total_mass
       end function rhyme_samr_calc_total_mass
+
+      module function rhyme_samr_weighted_average_of_distances( &
+         samr, idx, pwr, coords, weights) result(center)
+         type(samr_t), intent(in) :: samr
+         integer, intent(in) :: idx
+         real(kind=8), intent(in) :: pwr
+         real(kind=8), dimension(:JCOLON KCOLON, :), intent(in) :: coords
+         real(kind=8), dimension(:JCOLON KCOLON), intent(inout) :: weights
+         real(kind=8), dimension(NDIM) :: center
+      end function rhyme_samr_weighted_average_of_distances
    end interface
 end module rhyme_samr

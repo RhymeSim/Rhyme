@@ -5,21 +5,21 @@ contains
       real(kind=8) :: total_mass
 
 #if NDIM == 1
-#define JDX
-#define KDX
+#define JCOLON
+#define KCOLON
 #endif
 #if NDIM == 2
-#define JDX , :
-#define KDX
+#define JCOLON , :
+#define KCOLON
 #endif
 #if NDIM == 3
-#define JDX , :
-#define KDX , :
+#define JCOLON , :
+#define KCOLON , :
 #endif
 
       total_mass = sum( &
-                   samr%levels(0)%boxes(1)%cells(:JDX KDX, cid%rho), &
-                   samr%levels(0)%boxes(1)%cells(:JDX KDX, cid%rho) > 0d0 &
+                   samr%levels(0)%boxes(1)%cells(:JCOLON KCOLON, cid%rho), &
+                   samr%levels(0)%boxes(1)%cells(:JCOLON KCOLON, cid%rho) > 0d0 &
                    )
 
       total_mass = total_mass*product(samr%box_lengths)

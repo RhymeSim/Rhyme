@@ -13,8 +13,10 @@ set(deps rhyme_hydro_base)
 
 set(internal_deps)
 
-set(srcs src/rhyme_samr.f90 src/rhyme_samr_calc_total_energy.f90
-         src/rhyme_samr_calc_total_mass.f90 src/rhyme_samr_init_box.f90)
+set(srcs
+    src/rhyme_samr.f90 src/rhyme_samr_weighted_average_of_distances.f90
+    src/rhyme_samr_calc_total_energy.f90 src/rhyme_samr_calc_total_mass.f90
+    src/rhyme_samr_init_box.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
