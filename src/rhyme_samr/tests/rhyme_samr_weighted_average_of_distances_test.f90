@@ -15,6 +15,8 @@ logical function rhyme_samr_weighted_average_of_distances_test() result(failed)
 #define LOOP_K
 #define LOOP_J_END
 #define LOOP_K_END
+#define JHALF
+#define KHALF
 #endif
 #if NDIM == 2
 #define JCOLON , :
@@ -27,6 +29,8 @@ logical function rhyme_samr_weighted_average_of_distances_test() result(failed)
 #define LOOP_K
 #define LOOP_J_END end do
 #define LOOP_K_END
+#define JHALF , dims(2) / 2
+#define KHALF
 #endif
 #if NDIM == 3
 #define JCOLON , :
@@ -39,6 +43,8 @@ logical function rhyme_samr_weighted_average_of_distances_test() result(failed)
 #define LOOP_K do k = 1, dims(3)
 #define LOOP_J_END end do
 #define LOOP_K_END end do
+#define JHALF , dims(2) / 2
+#define KHALF, dims(3) / 2
 #endif
 
    type(assertion_t) :: tester
@@ -69,6 +75,11 @@ logical function rhyme_samr_weighted_average_of_distances_test() result(failed)
    center = rhyme_samr_weighted_average_of_distances(samr, cid%rho, 2d0, coords, weights)
 
    call tester%expect(.notToBeNaN.center.hint.'center')
+
+   samr%levels(0)%boxes(1)%cells(:JCOLON KCOLON, cid%rho) = 0d0
+   center = rhyme_samr_weighted_average_of_distances(samr, cid%rho, 2d0, coords, weights)
+
+   call tester%expect(center.toBe.coords(dims(1)/2 JHALF KHALF, :) .hint.'zero average density')
 
    deallocate (coords, weights)
 

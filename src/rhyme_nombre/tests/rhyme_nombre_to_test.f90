@@ -21,11 +21,13 @@ logical function rhyme_nombre_to_test() result(failed)
    type(nombre_t) :: H_hz, J, m, cm
 
    real(kind=8) :: co, cn
-   integer :: i
+   integer :: i, seed = 1234
 
    tester = .describe."nombre_to"
 
    call rhyme_nombre_init
+
+   call random_seed(seed)
 
    do i = 1, 10
       call random_number(rnd)

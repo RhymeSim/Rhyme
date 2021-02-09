@@ -6,18 +6,24 @@ contains
 #define KCOLON
 #define JRANGE
 #define KRANGE
+#define JHALF
+#define KHALF
 #endif
 #if NDIM == 2
 #define JCOLON , :
 #define KCOLON
 #define JRANGE , 1:dims(2)
 #define KRANGE
+#define JHALF , dims(2) / 2
+#define KHALF
 #endif
 #if NDIM == 3
 #define JCOLON , :
 #define KCOLON , :
 #define JRANGE , 1:dims(2)
 #define KRANGE , 1:dims(3)
+#define JHALF , dims(2) / 2
+#define KHALF , dims(3) / 2
 #endif
 
    module function rhyme_samr_weighted_average_of_distances( &
@@ -36,6 +42,11 @@ contains
 
       weights = samr%levels(0)%boxes(1)%cells(1:dims(1) JRANGE KRANGE, idx)**pwr
       sum_weights = sum(weights)
+
+      if (abs(sum_weights) < tiny(0d0)) then
+         center = coords(dims(1)/2 JHALF KHALF, :)
+         return
+      end if
 
       center(1) = sum(coords(:JCOLON KCOLON, 1)*weights)/sum_weights
 #if NDIM > 1

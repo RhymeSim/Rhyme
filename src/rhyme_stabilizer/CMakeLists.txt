@@ -9,11 +9,14 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "-std=f2008")
 endif()
 
-set(deps rhyme_logger)
+set(deps rhyme_samr rhyme_units rhyme_logger)
 
 set(internal_deps)
 
-set(srcs src/rhyme_stabilizer_init.f90 src/rhyme_stabilizer.f90)
+set(srcs
+    src/rhyme_stabilizer_perform.f90 src/rhyme_stabilizer_shifting.f90
+    src/rhyme_stabilizer_displacement_vector.f90 src/rhyme_stabilizer_init.f90
+    src/rhyme_stabilizer.f90)
 
 set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)

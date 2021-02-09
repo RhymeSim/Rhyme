@@ -10,9 +10,29 @@ contains
 
       type(stabilizer_t) :: st
 
+      st = stabilizer_t()
+      st%enabled = .true.
+
       select case (factory_type)
-      case ('defulat')
-         st = stabilizer_t()
+      case ('linear-rho^2')
+         st%weight = cid%rho
+         st%weight_power = 2
+         st%extrapolation_type = stid%linear
+         st%max_displacement = 2
+         st%tolerance = 0d0
+         st%initialize_target = .true.
+         st%target_center = 1d1
+      case ('quadratic')
+         st%weight = cid%rho
+         st%weight_power = 2
+         st%extrapolation_type = stid%quadratic
+         st%max_displacement = 2
+         st%tolerance = 0d0
+         st%initialize_target = .true.
+         st%target_center = 1d1
+      case ('default')
+         st%extrapolation_type = stid%linear
+         st%max_displacement = 1
       case default
          print *, 'Unknown stabilizer factory type!', factory_type
       end select
