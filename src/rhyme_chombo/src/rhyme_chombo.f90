@@ -10,6 +10,7 @@ module rhyme_chombo
       integer :: unset = h5id%unset
       character(len=8) :: boxes_headers(6) = [ &
                           'lo_i', 'lo_j', 'lo_k', 'hi_i', 'hi_j', 'hi_k']
+      integer :: log = 100, linear = 101
    end type rhyme_chombo_indices_t
 
    type(rhyme_chombo_indices_t), parameter :: chid = rhyme_chombo_indices_t()
@@ -26,6 +27,20 @@ module rhyme_chombo
       character(len=1024) :: prefix = ''
       character(len=1024) :: nickname = ''
    end type
+
+   type chombo_output_rule_t
+      real(kind=8) :: range(2) = 0d0
+      integer :: noutputs = 0, type = chid%unset
+      type(chombo_output_rule_t), pointer :: next => null()
+   end type chombo_output_rule_t
+
+   type chombo_output_t
+      integer :: every = -1
+      real(kind=8), allocatable :: output_times(:)
+      type(chombo_output_rule_t), pointer :: rules => null()
+   contains
+      procedure :: new => rhyme_chombo_output_new_rule
+   end type chombo_output_t
 
    type, private :: chombo_workspace_t
       real(kind=4), allocatable :: data(:)
@@ -67,6 +82,16 @@ module rhyme_chombo
          type(units_t), intent(in) :: units
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_samr_with_nickname
+
+      module subroutine rhyme_chombo_output_new_rule(this, rule_type)
+         class(chombo_output_t), intent(inout) :: this
+         integer, intent(in) :: rule_type
+      end subroutine rhyme_chombo_output_new_rule
+
+      module subroutine rhyme_chombo_output_init(this, logger)
+         type(chombo_output_t), intent(inout) :: this
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_chombo_output_init
    end interface
 
 contains

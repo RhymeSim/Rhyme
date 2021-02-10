@@ -14,6 +14,8 @@ set(deps rhyme_units rhyme_samr rhyme_logger)
 set(internal_deps rhyme_hdf5_util)
 
 set(srcs
+    src/rhyme_chombo_output_init.f90
+    src/rhyme_chombo_output_new_rule.f90
     src/rhyme_chombo_write_samr_with_nickname.f90
     src/rhyme_chombo_write_samr.f90
     src/rhyme_chombo_write_level_data.f90

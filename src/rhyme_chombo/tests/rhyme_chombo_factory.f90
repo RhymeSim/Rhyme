@@ -23,4 +23,23 @@ contains
       end if
 
    end function chombo_factory_generate
+
+   function chombo_factory_generate_output(output_type) result(ch_output)
+      implicit none
+
+      character(len=*), intent(in) :: output_type
+      type(chombo_output_t) :: ch_output
+
+      if (output_type == 'log') then
+         allocate (ch_output%rules)
+         ch_output%rules%type = chid%log
+         ch_output%rules%range = [0d0, 1d0]
+         ch_output%rules%noutputs = 11
+
+         allocate (ch_output%rules%next)
+         ch_output%rules%next%type = chid%log
+      else
+         print *, 'Unknown chombo output type!', output_type
+      end if
+   end function chombo_factory_generate_output
 end module rhyme_chombo_factory
