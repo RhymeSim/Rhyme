@@ -88,6 +88,7 @@ program rhyme
 
    call rhyme_cfl_init(cfl, thermo, samr, logger)
    call rhyme_sanity_check_init(sc, units, thermo, samr, logger)
+   call rhyme_stabilizer_init(st, samr, logger)
 
    call logger%end_section  ! init
 

@@ -11,6 +11,6 @@ contains
          rhyme_samr_weighted_average_of_distances( &
          samr, st%weight, st%weight_power, rhyme_stabilizer_coords, rhyme_stabilizer_weights)
 
-      vec = current_center - st%target_center
+      vec = st%target_center - current_center
    end function rhyme_stabilizer_displacement_vector
 end submodule displacement_vector_smod
