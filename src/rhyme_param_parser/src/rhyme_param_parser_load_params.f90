@@ -2,7 +2,7 @@ submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
    module subroutine load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, report, sc, logger)
+      ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
       implicit none
 
       character(len=1024), intent(in) :: param_file
@@ -19,12 +19,13 @@ contains
       type(slope_limiter_t), intent(inout) :: sl
       type(muscl_hancock_t), intent(inout) :: mh
       type(chombo_t), intent(inout) :: chombo
+      type(stabilizer_t), intent(inout) :: st
       type(report_t), intent(inout) :: report
       type(sanity_check_t), intent(inout) :: sc
       type(logger_t), intent(inout) :: logger
 
       type(config_t) :: config
-      type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch, report_switch, prim_var_switch
+      type(config_switch_t) :: on_off_switch, axis_switch, colormap_switch, report_switch, prim_var_switch, cons_var_switch
       type(config_switch_t) :: ic_types, ic_snapshot_types
       type(config_switch_t) :: bc_types
       type(config_switch_t) :: gas_types
@@ -65,14 +66,19 @@ contains
       call colormap_switch%add('smooth_rainbow', csid%smooth_rainbow)
 
       call prim_var_switch%add('rho', cid%rho)
+      call cons_var_switch%add('rho', cid%rho)
       call prim_var_switch%add('u', cid%u)
+      call cons_var_switch%add('rho_u', cid%rho_u)
 #if NDIM > 1
       call prim_var_switch%add('v', cid%v)
+      call cons_var_switch%add('rho_v', cid%rho_v)
 #endif
 #if NDIM > 2
       call prim_var_switch%add('w', cid%w)
+      call cons_var_switch%add('rho_w', cid%rho_w)
 #endif
       call prim_var_switch%add('p', cid%p)
+      call cons_var_switch%add('e_tot', cid%e_tot)
 
       ! Logging
       call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
@@ -201,6 +207,20 @@ contains
          if (sc%properties(scid%total_energy)) then
             call config%read('sanity_check_total_energy'.at.2, sc%total_energy_range, logger)
          end if
+      end if
+
+      ! Stabilizer
+      call config%read('stabilizer'.at.1, st%enabled, logger, on_off_switch)
+      if (st%enabled) then
+         call config%read('stabilizer_weight'.at.1, st%weight, logger, cons_var_switch)
+         call config%read('stabilizer_weight_power'.at.1, st%weight_power, logger)
+         call config%read('stabilizer_initialize_center'.at.1, st%initialize_target, logger, on_off_switch)
+         if (.not. st%initialize_target) then
+            call config%read_array('stabilizer_initialize_center'.at.2, st%target_center, logger)
+         end if
+         call config%read('stabilizer_tolerance'.at.1, st%tolerance, logger)
+         call config%read('stabilizer_min_time_interval'.at.1, st%min_interval, logger)
+         call config%read('stabilizer_start_at'.at.1, st%next_timestep, logger)
       end if
 
       ! Initial Condition

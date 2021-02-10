@@ -40,6 +40,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(slope_limiter_t) :: sl
    type(muscl_hancock_t) :: mh
    type(chombo_t) :: chombo
+   type(stabilizer_t) :: st
    type(report_t) :: report
    type(sanity_check_t) :: sc
    type(logger_t) :: logger
@@ -54,7 +55,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, &
-      uvb, ie, draw, irs, sl, mh, chombo, report, sc, logger)
+      uvb, ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
@@ -123,6 +124,16 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call tester%expect(sc%properties(scid%total_energy) .toBe..true..hint.'SC total_energy enable')
    call tester%expect(sc%total_energy_range.toBe. [.9d0, 1.1d0] .hint.'SC total_energy range')
+
+   ! Stabilizer
+   call tester%expect(st%enabled.toBe..true..hint.'stabilizaer enabled')
+   call tester%expect(st%weight.toBe.cid%rho.hint.'stabilizaer weight')
+   call tester%expect(st%weight_power.toBe.2.hint.'stabilizaer weight power')
+   call tester%expect(st%initialize_target.toBe..false..hint.'stabilizaer init target')
+   call tester%expect(st%target_center.toBe.64d0.hint.'stabilizaer target center')
+   call tester%expect(st%tolerance.toBe.16d0.hint.'stabilizaer tolerance')
+   call tester%expect(st%min_interval.toBe.10.hint.'stabilizaer minimum interval')
+   call tester%expect(st%next_timestep.toBe.-1.hint.'stabilizaer next timestep')
 
    ! Structured AMR
    call tester%expect(ic%type.toBe.icid%simple.hint.'IC type')

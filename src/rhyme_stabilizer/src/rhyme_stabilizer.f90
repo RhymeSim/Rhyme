@@ -43,10 +43,10 @@ module rhyme_stabilizer
       integer :: max_displacement = 1 ! Pixel
       real(kind=8) :: tolerance = 1d1 ! Pixel
 
-      integer :: max_frequency = 1 ! time steps
+      integer :: min_interval = 1 ! time steps
       integer :: next_timestep = 0
 
-      logical :: initialize_target = .true.
+      logical :: initialize_target = .false.
       real(kind=8) :: target_center(NDIM) = 0d0
    contains
       procedure :: rhyme_stabilizer_write_formatted
@@ -73,7 +73,7 @@ module rhyme_stabilizer
       end subroutine rhyme_stabilizer_shifting
 
       module subroutine rhyme_stabilizer_perform(st, samr, logger)
-         type(stabilizer_t), intent(in) :: st
+         type(stabilizer_t), intent(inout) :: st
          type(samr_t), intent(inout) :: samr
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_stabilizer_perform

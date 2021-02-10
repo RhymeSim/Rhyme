@@ -32,7 +32,5 @@ logical function rhyme_sanity_check_fill_test() result(failed)
    call rhyme_sanity_check_init(sc, units, thermo, samr, logger)
    call rhyme_sanity_check_fill(sc, samr)
 
-   call tester%expect(.true..toBe..false.)
-
    failed = tester%failed()
 end function rhyme_sanity_check_fill_test

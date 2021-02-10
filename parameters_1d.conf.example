@@ -121,6 +121,16 @@ perturb = harmonic cartesian x 0.05 32 0d0 0d0 1d0
 perturb = wgn box_muller 2345 rho 0d0 1d2 1d0 0d0 30
 
 
+# **Stabilizer**
+stabilizer = enable
+stabilizer_weight = rho
+stabilizer_weight_power = 2
+stabilizer_initialize_center = disable 64 64 64  # px
+stabilizer_tolerance = 16 # px
+stabilizer_min_time_interval = 10 # time steps
+stabilizer_start_at = -1 # time step
+
+
 # **Chombo Output**
 prefix = './prefix'
 nickname = 'hydro-simulation'

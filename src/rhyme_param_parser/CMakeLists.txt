@@ -23,6 +23,7 @@ set(deps
     rhyme_slope_limiter
     rhyme_muscl_hancock
     rhyme_chombo
+    rhyme_stabilizer
     rhyme_initial_condition
     rhyme_report
     rhyme_sanity_check

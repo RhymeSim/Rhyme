@@ -1,7 +1,7 @@
 submodule(rhyme_stabilizer) perform_smod
 contains
    module subroutine rhyme_stabilizer_perform(st, samr, logger)
-      type(stabilizer_t), intent(in) :: st
+      type(stabilizer_t), intent(inout) :: st
       type(samr_t), intent(inout) :: samr
       type(logger_t), intent(inout) :: logger
 
@@ -49,5 +49,6 @@ contains
 
       call rhyme_stabilizer_shifting(st, samr, shift_vec)
 
+      st%next_timestep = samr%levels(0)%iteration + st%min_interval
    end subroutine rhyme_stabilizer_perform
 end submodule perform_smod

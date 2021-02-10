@@ -32,7 +32,5 @@ logical function rhyme_sanity_check_perform_test() result(failed)
    call rhyme_sanity_check_init(sc, units, thermo, samr, logger)
    call rhyme_sanity_check_perform(sc, samr, logger)
 
-   call tester%expect(.true..toBe..false.)
-
    failed = tester%failed()
 end function rhyme_sanity_check_perform_test

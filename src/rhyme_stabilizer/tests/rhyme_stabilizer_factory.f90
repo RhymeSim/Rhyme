@@ -31,8 +31,13 @@ contains
          st%initialize_target = .true.
          st%target_center = 1d1
       case ('default')
+         st%weight = cid%rho
+         st%weight_power = 2
          st%extrapolation_type = stid%linear
-         st%max_displacement = 1
+         st%max_displacement = 2
+         st%tolerance = 0d0
+         st%initialize_target = .true.
+         st%target_center = 1d1
       case default
          print *, 'Unknown stabilizer factory type!', factory_type
       end select

@@ -45,6 +45,12 @@ program rhyme
    integer :: l, b
    character(len=1024) :: exe_filename, param_file
 
+#if NDIM == 3
+   integer :: i, j, k, uid, dims(3)
+   real(kind=8) :: x, y, z, r, box_diag, sum_rho2
+   real(kind=8), allocatable :: cell_positions(:, :, :, :), rho2(:, :, :)
+#endif
+
    ! TODO: use getopt to read flag-based additional command line arguments
    call get_command_argument(0, exe_filename)
    call get_command_argument(1, param_file)
@@ -97,6 +103,22 @@ program rhyme
    call report%publish(samr, logger)
    call logger%end_section  ! initial_report
 
+#if NDIM == 3
+   dims = samr%levels(0)%boxes(1)%dims
+   allocate (cell_positions(dims(1), dims(2), dims(2), 3))
+   allocate (rho2(dims(1), dims(2), dims(2)))
+
+   box_diag = sqrt(real(sum(samr%levels(0)%boxes(1)%dims**2), kind=8))
+
+   do k = 1, dims(3)
+   do j = 1, dims(2)
+   do i = 1, dims(1)
+      cell_positions(i, j, k, :) = [i, j, k]
+   end do
+   end do
+   end do
+#endif
+
    ! Main loop
    do while (.true.)
       call logger%begin_section(samr%levels(0)%iteration)
@@ -134,9 +156,9 @@ program rhyme
       samr%levels(0)%iteration = samr%levels(0)%iteration + 1
 
       if (mod(samr%levels(0)%iteration, report%every) == 0) then
-         call logger%begin_section('initial_report')
+         call logger%begin_section('report')
          call report%publish(samr, logger)
-         call logger%end_section(print_duration=.true.)  ! initial_report
+         call logger%end_section(print_duration=.true.)  ! report
       end if
 
       if (sc%enabled .and. mod(samr%levels(0)%iteration, sc%every) == 0) then
@@ -144,6 +166,52 @@ program rhyme
          call rhyme_sanity_check_perform(sc, samr, logger)
          call logger%end_section(print_duration=.true.)  ! sanity_check
       end if
+
+#if NDIM == 3
+      call logger%begin_section('motion_detector')
+      rho2 = samr%levels(0)%boxes(1)%cells(1:dims(1), 1:dims(2), 1:dims(3), cid%rho)**2
+      sum_rho2 = sum(rho2)
+      x = sum(cell_positions(:, :, :, 1)*rho2)/sum_rho2
+      y = sum(cell_positions(:, :, :, 2)*rho2)/sum_rho2
+      z = sum(cell_positions(:, :, :, 3)*rho2)/sum_rho2
+
+      call logger%log('Density-squared-weighted avg. of distances', '[px]', '=', [x, y, z])
+
+      r = sqrt(x**2 + y**2 + z**2)
+
+      call logger%log('Distance from the origin', '[px, / l_diag]', '=', [r, r/box_diag])
+
+      if (r > .075*box_diag) then
+         call logger%warn('Shifting the viewport ')
+
+         do uid = cid%rho, NCMP
+         do k = 1, dims(3)
+         do j = 1, dims(2)
+         do i = 1, dims(1)
+            samr%levels(0)%boxes(1)%cells(i, j, k, uid) = samr%levels(0)%boxes(1)%cells(i + 1, j + 1, k + 1, uid)
+         end do
+         end do
+         end do
+         end do
+
+         do i = 1, dims(1)
+            samr%levels(0)%boxes(1)%cells(i, dims(2), dims(3), :) = &
+               samr%levels(0)%boxes(1)%cells(i - 1, dims(2) - 1, dims(3) - 1, :)
+         end do
+
+         do j = 1, dims(2)
+            samr%levels(0)%boxes(1)%cells(dims(1), j, dims(3), :) = &
+               samr%levels(0)%boxes(1)%cells(dims(1) - 1, j - 1, dims(3) - 1, :)
+         end do
+
+         do k = 1, dims(3)
+            samr%levels(0)%boxes(1)%cells(dims(1), dims(2), k, :) = &
+               samr%levels(0)%boxes(1)%cells(dims(1) - 1, dims(2) - 1, k - 1, :)
+         end do
+      end if
+
+      call logger%end_section(print_duration=.true.) ! motion_detector
+#endif
 
       call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
    end do
