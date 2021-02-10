@@ -1,7 +1,7 @@
 submodule(rhyme_chombo) output_new_rule_smod
 contains
 
-   module subroutine rhyme_chombo_output_new_rule(this, rule_type)
+   module function rhyme_chombo_output_new_rule(this, rule_type) result(rule)
       implicit none
 
       class(chombo_output_t), intent(inout) :: this
@@ -24,5 +24,5 @@ contains
       end if
 
       rule%type = rule_type
-   end subroutine rhyme_chombo_output_new_rule
+   end function rhyme_chombo_output_new_rule
 end submodule output_new_rule_smod

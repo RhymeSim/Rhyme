@@ -39,7 +39,7 @@ module rhyme_chombo
       real(kind=8), allocatable :: output_times(:)
       type(chombo_output_rule_t), pointer :: rules => null()
    contains
-      procedure :: new => rhyme_chombo_output_new_rule
+      procedure :: new_rule => rhyme_chombo_output_new_rule
    end type chombo_output_t
 
    type, private :: chombo_workspace_t
@@ -83,10 +83,11 @@ module rhyme_chombo
          type(samr_t), intent(in) :: samr
       end subroutine rhyme_chombo_write_samr_with_nickname
 
-      module subroutine rhyme_chombo_output_new_rule(this, rule_type)
+      module function rhyme_chombo_output_new_rule(this, rule_type) result(rule)
          class(chombo_output_t), intent(inout) :: this
          integer, intent(in) :: rule_type
-      end subroutine rhyme_chombo_output_new_rule
+         type(chombo_output_rule_t), pointer :: rule
+      end function rhyme_chombo_output_new_rule
 
       module subroutine rhyme_chombo_output_init(this, logger)
          type(chombo_output_t), intent(inout) :: this

@@ -50,7 +50,7 @@ module rhyme_param_parser
    interface
       module subroutine load_params( &
          param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-         ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
+         ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
          character(len=1024), intent(in) :: param_file
          type(chemistry_t), intent(inout) :: chemistry
          type(units_t), intent(inout) :: units
@@ -65,6 +65,7 @@ module rhyme_param_parser
          type(slope_limiter_t), intent(inout) :: sl
          type(muscl_hancock_t), intent(inout) :: mh
          type(chombo_t), intent(inout) :: chombo
+         type(chombo_output_t), intent(inout) :: outputs
          type(stabilizer_t), intent(inout) :: st
          type(report_t), intent(inout) :: report
          type(sanity_check_t), intent(inout) :: sc

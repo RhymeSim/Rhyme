@@ -142,5 +142,8 @@ stabilizer_start_at = -1 # time step
 
 
 # **Chombo Output**
-prefix = './prefix'
-nickname = 'hydro-simulation'
+chombo_prefix = './prefix'
+chombo_nickname = 'hydro-simulation'
+chombo_output_every = 100
+chombo_output_rule = log 1d-4 1d0 5
+chombo_output_rule = linear 1.5d0 10d0 20

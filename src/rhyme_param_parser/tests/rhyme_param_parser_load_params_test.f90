@@ -40,6 +40,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(slope_limiter_t) :: sl
    type(muscl_hancock_t) :: mh
    type(chombo_t) :: chombo
+   type(chombo_output_t) :: outputs
    type(stabilizer_t) :: st
    type(report_t) :: report
    type(sanity_check_t) :: sc
@@ -55,7 +56,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, &
-      uvb, ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
+      uvb, ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
@@ -359,6 +360,14 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    ! Chombo
    call tester%expect(trim(chombo%prefix) .toBe."./prefix")
    call tester%expect(trim(chombo%nickname) .toBe."hydro-simulation")
+
+   call tester%expect(outputs%every.toBe.100.hint.'Output every')
+   call tester%expect(outputs%rules%type.toBe.chid%log.hint.'rule1 type')
+   call tester%expect(outputs%rules%range.toBe. [1d-4, 1d0] .hint.'rule1 range')
+   call tester%expect(outputs%rules%noutputs.toBe.5.hint.'rule1 noutputs')
+   call tester%expect(outputs%rules%next%type.toBe.chid%linear.hint.'rule2 type')
+   call tester%expect(outputs%rules%next%range.toBe. [1.5d0, 1d1] .hint.'rule2 range')
+   call tester%expect(outputs%rules%next%noutputs.toBe.20.hint.'rule2 noutputs')
 
    failed = tester%failed()
 end function rhyme_param_parser_load_params_test

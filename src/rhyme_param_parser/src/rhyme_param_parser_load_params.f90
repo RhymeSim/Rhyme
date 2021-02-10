@@ -2,7 +2,7 @@ submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
    module subroutine load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
+      ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
       implicit none
 
       character(len=1024), intent(in) :: param_file
@@ -19,6 +19,7 @@ contains
       type(slope_limiter_t), intent(inout) :: sl
       type(muscl_hancock_t), intent(inout) :: mh
       type(chombo_t), intent(inout) :: chombo
+      type(chombo_output_t), intent(inout) :: outputs
       type(stabilizer_t), intent(inout) :: st
       type(report_t), intent(inout) :: report
       type(sanity_check_t), intent(inout) :: sc
@@ -29,7 +30,7 @@ contains
       type(config_switch_t) :: ic_types, ic_snapshot_types
       type(config_switch_t) :: bc_types
       type(config_switch_t) :: gas_types
-      type(config_switch_t) :: canvas_types, shape_types, filling_types, filling_modes
+      type(config_switch_t) :: canvas_types, shape_types, output_rule_types, filling_types, filling_modes
       type(config_switch_t) :: perturb_types, perturb_method_switch
       type(config_switch_t) :: coord_types, perturb_domain_types
       type(config_switch_t) :: ionization_cases, uvb_models
@@ -38,9 +39,10 @@ contains
 
       type(shape_t), pointer :: shape
       type(perturbation_t), pointer :: perturb
+      type(chombo_output_rule_t), pointer :: rule
       integer :: report_type
 
-      integer :: shape_type, perturb_type, n_occur, i
+      integer :: shape_type, perturb_type, n_occur, output_rule_type, i
 
       call logger%begin_section('params')
 
@@ -497,8 +499,21 @@ contains
       call config%read('solver_type'.at.1, mh%solver_type, logger, solver_types)
 
       ! Chombo
-      call config%read('prefix'.at.1, chombo%prefix, logger)
-      call config%read('nickname'.at.1, chombo%nickname, logger)
+      call config%read('chombo_prefix'.at.1, chombo%prefix, logger)
+      call config%read('chombo_nickname'.at.1, chombo%nickname, logger)
+
+      call output_rule_types%add('log', chid%log)
+      call output_rule_types%add('linear', chid%linear)
+
+      call config%read('chombo_output_every'.at.1, outputs%every, logger)
+      n_occur = config%occur('chombo_output_rule')
+      do i = 1, n_occur
+         call config%read('chombo_output_rule'.at.1.occur.i, output_rule_type, logger, output_rule_types)
+         rule => outputs%new_rule(output_rule_type)
+
+         call config%read_array('chombo_output_rule'.at.2.occur.i, rule%range, logger)
+         call config%read('chombo_output_rule'.at.4.occur.i, rule%noutputs, logger)
+      end do
 
       call logger%end_section
    end subroutine load_params

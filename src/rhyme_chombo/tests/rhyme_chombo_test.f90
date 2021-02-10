@@ -18,5 +18,10 @@ logical function rhyme_chombo_test() result(failed)
    call ch_tester%expect(int(ch%level_ids) .toBe.chid%unset)
    call ch_tester%expect(ch%file%initialized.toBe..false.)
 
+   call ch_tester%expect(chid%boxes_headers.toBe. ['lo_i', 'lo_j', 'lo_k', 'hi_i', 'hi_j', 'hi_k'])
+   call ch_tester%expect(chid%unset.toBe.h5id%unset)
+   call ch_tester%expect(chid%log.toBe.100)
+   call ch_tester%expect(chid%linear.toBe.101)
+
    failed = ch_tester%failed()
 end function rhyme_chombo_test
