@@ -15,6 +15,7 @@ program rhyme
    use rhyme_muscl_hancock
    use rhyme_param_parser
    use rhyme_chombo
+   use rhyme_stabilizer
    use rhyme_initial_condition
    use rhyme_uv_background
    use rhyme_sanity_check
@@ -36,6 +37,7 @@ program rhyme
    type(muscl_hancock_t) :: mh
    type(mh_workspace_t) :: mhws
    type(chombo_t) :: chombo
+   type(stabilizer_t) :: st
    type(initial_condition_t) :: ic
    type(uv_background_t) :: uvb
    type(report_t) :: report
@@ -44,12 +46,6 @@ program rhyme
 
    integer :: l, b
    character(len=1024) :: exe_filename, param_file
-
-#if NDIM == 3
-   integer :: i, j, k, uid, dims(3)
-   real(kind=8) :: x, y, z, r, box_diag, sum_rho2
-   real(kind=8), allocatable :: cell_positions(:, :, :, :), rho2(:, :, :)
-#endif
 
    ! TODO: use getopt to read flag-based additional command line arguments
    call get_command_argument(0, exe_filename)
@@ -69,7 +65,7 @@ program rhyme
    ! Reading parameters and converting them to code units
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, report, sc, logger)
+      ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
 
    call logger%begin_section('init')
 
@@ -102,22 +98,6 @@ program rhyme
    call logger%begin_section('initial_report')
    call report%publish(samr, logger)
    call logger%end_section  ! initial_report
-
-#if NDIM == 3
-   dims = samr%levels(0)%boxes(1)%dims
-   allocate (cell_positions(dims(1), dims(2), dims(2), 3))
-   allocate (rho2(dims(1), dims(2), dims(2)))
-
-   box_diag = sqrt(real(sum(samr%levels(0)%boxes(1)%dims**2), kind=8))
-
-   do k = 1, dims(3)
-   do j = 1, dims(2)
-   do i = 1, dims(1)
-      cell_positions(i, j, k, :) = [i, j, k]
-   end do
-   end do
-   end do
-#endif
 
    ! Main loop
    do while (.true.)
@@ -167,51 +147,11 @@ program rhyme
          call logger%end_section(print_duration=.true.)  ! sanity_check
       end if
 
-#if NDIM == 3
-      call logger%begin_section('motion_detector')
-      rho2 = samr%levels(0)%boxes(1)%cells(1:dims(1), 1:dims(2), 1:dims(3), cid%rho)**2
-      sum_rho2 = sum(rho2)
-      x = sum(cell_positions(:, :, :, 1)*rho2)/sum_rho2
-      y = sum(cell_positions(:, :, :, 2)*rho2)/sum_rho2
-      z = sum(cell_positions(:, :, :, 3)*rho2)/sum_rho2
-
-      call logger%log('Density-squared-weighted avg. of distances', '[px]', '=', [x, y, z])
-
-      r = sqrt(x**2 + y**2 + z**2)
-
-      call logger%log('Distance from the origin', '[px, / l_diag]', '=', [r, r/box_diag])
-
-      if (r > .075*box_diag) then
-         call logger%warn('Shifting the viewport ')
-
-         do uid = cid%rho, NCMP
-         do k = 1, dims(3)
-         do j = 1, dims(2)
-         do i = 1, dims(1)
-            samr%levels(0)%boxes(1)%cells(i, j, k, uid) = samr%levels(0)%boxes(1)%cells(i + 1, j + 1, k + 1, uid)
-         end do
-         end do
-         end do
-         end do
-
-         do i = 1, dims(1)
-            samr%levels(0)%boxes(1)%cells(i, dims(2), dims(3), :) = &
-               samr%levels(0)%boxes(1)%cells(i - 1, dims(2) - 1, dims(3) - 1, :)
-         end do
-
-         do j = 1, dims(2)
-            samr%levels(0)%boxes(1)%cells(dims(1), j, dims(3), :) = &
-               samr%levels(0)%boxes(1)%cells(dims(1) - 1, j - 1, dims(3) - 1, :)
-         end do
-
-         do k = 1, dims(3)
-            samr%levels(0)%boxes(1)%cells(dims(1), dims(2), k, :) = &
-               samr%levels(0)%boxes(1)%cells(dims(1) - 1, dims(2) - 1, k - 1, :)
-         end do
+      if (st%enabled) then
+         call logger%begin_section('stabilizer')
+         call rhyme_stabilizer_perform(st, samr, logger)
+         call logger%end_section ! stabilizer
       end if
-
-      call logger%end_section(print_duration=.true.) ! motion_detector
-#endif
 
       call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
    end do

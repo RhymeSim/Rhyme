@@ -50,5 +50,6 @@ contains
       call rhyme_stabilizer_shifting(st, samr, shift_vec)
 
       st%next_timestep = samr%levels(0)%iteration + st%min_interval
+      call logger%log('next check', '[iteration]', ':', [st%next_timestep])
    end subroutine rhyme_stabilizer_perform
 end submodule perform_smod
