@@ -37,6 +37,7 @@ program rhyme
    type(muscl_hancock_t) :: mh
    type(mh_workspace_t) :: mhws
    type(chombo_t) :: chombo
+   type(chombo_output_t) :: outputs
    type(stabilizer_t) :: st
    type(initial_condition_t) :: ic
    type(uv_background_t) :: uvb
@@ -65,7 +66,7 @@ program rhyme
    ! Reading parameters and converting them to code units
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, st, report, sc, logger)
+      ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
 
    call logger%begin_section('init')
 
@@ -83,6 +84,7 @@ program rhyme
    call rhyme_irs_init(irs, logger)
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
    call rhyme_chombo_init(chombo, samr, logger)
+   call rhyme_chombo_output_init(outputs, units, logger)
 
    call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
 
@@ -117,7 +119,7 @@ program rhyme
       ! Update ghost cells of boxes
 
       ! Store a snapshot if necessary
-      if (modulo(samr%levels(0)%iteration, 10) .eq. 0) then
+      if (outputs%should_be_saved(samr%levels(0)%iteration, samr%levels(0)%t)) then
          call logger%begin_section('save-chombo')
          call rhyme_chombo_write_samr(chombo, units, samr)
          call logger%end_section(print_duration=.true.)  ! save-chombo

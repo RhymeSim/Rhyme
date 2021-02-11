@@ -36,10 +36,12 @@ module rhyme_chombo
 
    type chombo_output_t
       integer :: every = -1
-      real(kind=8), allocatable :: output_times(:)
+      real(kind=8), allocatable :: times(:)
+      logical, allocatable :: saved(:)
       type(chombo_output_rule_t), pointer :: rules => null()
    contains
       procedure :: new_rule => rhyme_chombo_output_new_rule
+      procedure :: should_be_saved => rhyme_chombo_output_should_be_saved
    end type chombo_output_t
 
    type, private :: chombo_workspace_t
@@ -89,10 +91,19 @@ module rhyme_chombo
          type(chombo_output_rule_t), pointer :: rule
       end function rhyme_chombo_output_new_rule
 
-      module subroutine rhyme_chombo_output_init(this, logger)
+      module subroutine rhyme_chombo_output_init(this, units, logger)
          type(chombo_output_t), intent(inout) :: this
+         type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_chombo_output_init
+
+      module function rhyme_chombo_output_should_be_saved( &
+         outputs, iteration, time) result(be_saved)
+         class(chombo_output_t), intent(inout) :: outputs
+         integer, intent(in) :: iteration
+         real(kind=8), intent(in) :: time
+         logical :: be_saved
+      end function rhyme_chombo_output_should_be_saved
    end interface
 
 contains
