@@ -51,29 +51,180 @@ contains
          LOOP_K_END
       end do
 
+      if (shift(1) == -1) then
+         do uid = 1, NCMP
+            LOOP_K
+            LOOP_J
+            samr%levels(0)%boxes(1)%cells(dims(1) JDX KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(dims(1) - 1 JDX KDX, uid)
+            LOOP_J_END
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(1) == 1) then
+         do uid = 1, NCMP
+            LOOP_K
+            LOOP_J
+            samr%levels(0)%boxes(1)%cells(1 JDX KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(2 JDX KDX, uid)
+            LOOP_J_END
+            LOOP_K_END
+         end do
+      end if
+
 #if NDIM > 1
-      ! TODO
+      if (shift(2) == -1) then
+         do uid = 1, NCMP
+            LOOP_K
+            do i = 1, dims(1)
+               samr%levels(0)%boxes(1)%cells(i, dims(2) KDX, uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, dims(2) - 1 KDX, uid)
+            end do
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(2) == 1) then
+         do uid = 1, NCMP
+            LOOP_K
+            do i = 1, dims(1)
+               samr%levels(0)%boxes(1)%cells(i, 1 KDX, uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, 2 KDX, uid)
+            end do
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(1) == -1 .and. shift(2) == -1) then
+         do uid = 1, NCMP
+            LOOP_K
+            samr%levels(0)%boxes(1)%cells(dims(1), dims(2) KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(dims(1) - 1, dims(2) - 1 KDX, uid)
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(1) == -1 .and. shift(2) == 1) then
+         do uid = 1, NCMP
+            LOOP_K
+            samr%levels(0)%boxes(1)%cells(dims(1), 1 KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(dims(1) - 1, 2 KDX, uid)
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(1) == 1 .and. shift(2) == -1) then
+         do uid = 1, NCMP
+            LOOP_K
+            samr%levels(0)%boxes(1)%cells(1, dims(2) KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(2, dims(2) - 1 KDX, uid)
+            LOOP_K_END
+         end do
+      end if
+
+      if (shift(1) == 1 .and. shift(2) == 1) then
+         do uid = 1, NCMP
+            LOOP_K
+            samr%levels(0)%boxes(1)%cells(1, 1 KDX, uid) = &
+               samr%levels(0)%boxes(1)%cells(2, 2 KDX, uid)
+            LOOP_K_END
+         end do
+      end if
 #endif
 
 #if NDIM > 2
-      if (shift(1) == -1 .and. shift(2) == -1) then
-         do k = 1, dims(3)
-            samr%levels(0)%boxes(1)%cells(dims(1), dims(2), k, :) = &
-               samr%levels(0)%boxes(1)%cells(dims(1) - 1, dims(2) - 1, k, :)
+      if (shift(3) == -1) then
+         do uid = 1, NCMP
+         do j = 1, dims(2)
+         do i = 1, dims(1)
+            samr%levels(0)%boxes(1)%cells(i, j, dims(3), uid) = &
+               samr%levels(0)%boxes(1)%cells(i, j, dims(3) - 1, uid)
+         end do
+         end do
+         end do
+      end if
+
+      if (shift(3) == 1) then
+         do uid = 1, NCMP
+         do j = 1, dims(2)
+         do i = 1, dims(1)
+            samr%levels(0)%boxes(1)%cells(i, j, 1, uid) = &
+               samr%levels(0)%boxes(1)%cells(i, j, 2, uid)
+         end do
+         end do
          end do
       end if
 
       if (shift(1) == -1 .and. shift(3) == -1) then
-         do j = 1, dims(3)
-            samr%levels(0)%boxes(1)%cells(dims(1), j, dims(3), :) = &
-               samr%levels(0)%boxes(1)%cells(dims(1) - 1, j, dims(3) - 1, :)
+         do uid = 1, NCMP
+            do j = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(dims(1), j, dims(3), uid) = &
+                  samr%levels(0)%boxes(1)%cells(dims(1) - 1, j, dims(3) - 1, uid)
+            end do
+         end do
+      end if
+
+      if (shift(1) == -1 .and. shift(3) == 1) then
+         do uid = 1, NCMP
+            do j = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(dims(1), j, 1, uid) = &
+                  samr%levels(0)%boxes(1)%cells(dims(1) - 1, j, 2, uid)
+            end do
+         end do
+      end if
+
+      if (shift(1) == 1 .and. shift(3) == -1) then
+         do uid = 1, NCMP
+            do j = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(1, j, dims(3), uid) = &
+                  samr%levels(0)%boxes(1)%cells(2, j, dims(3) - 1, uid)
+            end do
+         end do
+      end if
+
+      if (shift(1) == 1 .and. shift(3) == 1) then
+         do uid = 1, NCMP
+            do j = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(1, j, 1, uid) = &
+                  samr%levels(0)%boxes(1)%cells(2, j, 2, uid)
+            end do
          end do
       end if
 
       if (shift(2) == -1 .and. shift(3) == -1) then
-         do i = 1, dims(3)
-            samr%levels(0)%boxes(1)%cells(i, dims(2), dims(3), :) = &
-               samr%levels(0)%boxes(1)%cells(i, dims(2) - 1, dims(3) - 1, :)
+         do uid = 1, NCMP
+            do i = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(i, dims(2), dims(3), uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, dims(2) - 1, dims(3) - 1, uid)
+            end do
+         end do
+      end if
+
+      if (shift(2) == -1 .and. shift(3) == 1) then
+         do uid = 1, NCMP
+            do i = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(i, dims(2), 1, uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, dims(2) - 1, 2, uid)
+            end do
+         end do
+      end if
+
+      if (shift(2) == 1 .and. shift(3) == -1) then
+         do uid = 1, NCMP
+            do i = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(i, 1, dims(3), uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, 2, dims(3) - 1, uid)
+            end do
+         end do
+      end if
+
+      if (shift(2) == 1 .and. shift(3) == 1) then
+         do uid = 1, NCMP
+            do i = 1, dims(3)
+               samr%levels(0)%boxes(1)%cells(i, 1, 1, uid) = &
+                  samr%levels(0)%boxes(1)%cells(i, 2, 2, uid)
+            end do
          end do
       end if
 #endif

@@ -48,8 +48,8 @@ contains
       shift_vec = nint(disp_vec)
       call logger%log('Shifting', '[px]', '=', shift_vec)
 
-      if (any(shift_vec > 0) .or. any(shift_vec < -1)) then
-         shift_vec = merge(shift_vec, 0, shift_vec <= 0)
+      if (any(shift_vec > 1) .or. any(shift_vec < -1)) then
+         shift_vec = merge(shift_vec, 1, shift_vec <= 1)
          shift_vec = merge(shift_vec, -1, shift_vec >= -1)
 
          call logger%warn('(implementation limitation!) New shifting ', '[px]', '=>', shift_vec)

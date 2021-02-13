@@ -12,7 +12,7 @@ contains
 
       be_saved = .false.
 
-      if (outputs%every > 0 .and. mod(outputs%every, iteration) == 0) then
+      if (outputs%every > 0 .and. mod(iteration, outputs%every) == 0) then
          be_saved = .true.
          return
       end if

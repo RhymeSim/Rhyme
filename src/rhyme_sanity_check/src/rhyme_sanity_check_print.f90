@@ -89,15 +89,15 @@ contains
          if (info%nbelow(2) > 0) then
             write (str1, *) trim(.toString.info%vbelow(2)), ' @ ', trim(.toString.info%cbelow(2, :))
             write (str2, *) trim(.toString.info%vbelow(1)), ' @ ', trim(.toString.info%cbelow(1, :))
-            call logger%warn('Number of cells below the limit', '', '=', [info%nbelow(2)])
-            call logger%warn('Min:', str1, '=PrevCheck=>', [str2])
+            call logger%log('# below', '', '=', [info%nbelow(2)])
+            call logger%log('Min:', str1, '=PrevCheck=>', [str2])
          end if
 
          if (info%nabove(2) > 0) then
             write (str1, *) trim(.toString.info%vabove(2)), ' @ ', trim(.toString.info%cabove(2, :))
             write (str2, *) trim(.toString.info%vabove(1)), ' @ ', trim(.toString.info%cabove(1, :))
-            call logger%warn('Number of cells above the limit', '', '=', [info%nabove(2)])
-            call logger%warn('Min:', str1, '=PrevCheck=>', [str2])
+            call logger%log('# above', '', '=', [info%nabove(2)])
+            call logger%log('Min:', str1, '=PrevCheck=>', [str2])
          end if
       end subroutine log_property
 
