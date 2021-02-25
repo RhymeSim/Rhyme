@@ -19,8 +19,8 @@ module rhyme_ideal_gas
          real(kind=8) :: cs
       end function rhyme_ideal_gas_speed_of_sound
 
-      pure module function rhyme_ideal_gas_pressure(gamma, kb_amu, u) result(p)
-         real(kind=8), intent(in) :: gamma, kb_amu, u(cid%rho:cid%e_tot)
+      pure module function rhyme_ideal_gas_pressure(gamma, u) result(p)
+         real(kind=8), intent(in) :: gamma, u(cid%rho:cid%e_tot)
          real(kind=8) :: p
       end function rhyme_ideal_gas_pressure
 
@@ -29,8 +29,8 @@ module rhyme_ideal_gas
          real(kind=8) :: sp_int_e
       end function rhyme_ideal_gas_specific_internal_energy
 
-      pure module subroutine rhyme_ideal_gas_flux(gamma, kb_amu, u, axis, f)
-         real(kind=8), intent(in) :: gamma, kb_amu, u(cid%rho:cid%e_tot)
+      pure module subroutine rhyme_ideal_gas_flux(gamma, u, axis, f)
+         real(kind=8), intent(in) :: gamma, u(cid%rho:cid%e_tot)
          integer, intent(in) :: axis
          real(kind=8), intent(out) :: f(cid%rho:cid%e_tot)
       end subroutine rhyme_ideal_gas_flux

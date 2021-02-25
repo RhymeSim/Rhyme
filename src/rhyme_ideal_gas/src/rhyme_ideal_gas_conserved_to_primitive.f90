@@ -14,6 +14,6 @@ contains
          w(cid%u:cid%u + NDIM - 1) = u(cid%u:cid%u + NDIM - 1)/u(cid%rho)
       end if
 
-      w(cid%p) = (u(cid%e_tot) - rhyme_hydro_base_specific_kinetic_energy(u))*(gamma - 1d0)
+      w(cid%p) = rhyme_ideal_gas_pressure(gamma, u)
    end subroutine rhyme_ideal_gas_conserved_to_primitive
 end submodule conserved_to_primitive_smod

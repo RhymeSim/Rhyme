@@ -1,9 +1,9 @@
 submodule(rhyme_ideal_gas) flux_smod
 contains
-   pure module subroutine rhyme_ideal_gas_flux(gamma, kb_amu, u, axis, f)
+   pure module subroutine rhyme_ideal_gas_flux(gamma, u, axis, f)
       implicit none
 
-      real(kind=8), intent(in) :: gamma, kb_amu, u(cid%rho:cid%e_tot)
+      real(kind=8), intent(in) :: gamma, u(cid%rho:cid%e_tot)
       integer, intent(in) :: axis
       real(kind=8), intent(out) :: f(cid%rho:cid%e_tot)
 
@@ -12,7 +12,7 @@ contains
       if (abs(u(cid%rho)) < tiny(0.d0)) then
          f(cid%rho:cid%e_tot) = 0.d0
       else
-         p = rhyme_ideal_gas_pressure(gamma, kb_amu, u)
+         p = rhyme_ideal_gas_pressure(gamma, u)
 
          f(cid%rho) = u(cid%rho_u + axis - 1)
 

@@ -13,7 +13,7 @@ logical function rhyme_ideal_gas_pressure_test() result(failed)
 
    u = hy_factory%generate_conserved()
 
-   p = rhyme_ideal_gas_pressure(hy_factory%g, hy_factory%kb_amu, u)
+   p = rhyme_ideal_gas_pressure(hy_factory%g, u)
 
    call ig_tester%expect(.notToBeNaN.p)
    call ig_tester%expect(p.toBe.hy_factory%p.within.15)
