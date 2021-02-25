@@ -97,7 +97,7 @@ contains
             write (str1, *) trim(.toString.info%vabove(2)), ' @ ', trim(.toString.info%cabove(2, :))
             write (str2, *) trim(.toString.info%vabove(1)), ' @ ', trim(.toString.info%cabove(1, :))
             call logger%log('# above', '', '=', [info%nabove(2)])
-            call logger%log('Min:', str1, '=PrevCheck=>', [str2])
+            call logger%log('Max:', str1, '=PrevCheck=>', [str2])
          end if
       end subroutine log_property
 

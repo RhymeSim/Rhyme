@@ -34,6 +34,42 @@ contains
       integer :: i JDX KDX
       real(kind=8) :: v
 
+      sc%rho_info%nbelow = 0
+      sc%rho_info%nabove = 0
+
+      sc%vx_info%nbelow = 0
+      sc%vx_info%nabove = 0
+
+      sc%vy_info%nbelow = 0
+      sc%vy_info%nabove = 0
+
+      sc%vz_info%nbelow = 0
+      sc%vz_info%nabove = 0
+
+      sc%rho_info%nbelow = 0
+      sc%rho_info%nabove = 0
+
+      sc%e_tot_info%nbelow = 0
+      sc%e_tot_info%nabove = 0
+
+      sc%temp_info%nbelow = 0
+      sc%temp_info%nabove = 0
+
+      sc%ntr_frac_0_info%nbelow = 0
+      sc%ntr_frac_0_info%nabove = 0
+
+      sc%ntr_frac_1_info%nbelow = 0
+      sc%ntr_frac_1_info%nabove = 0
+
+      sc%ntr_frac_2_info%nbelow = 0
+      sc%ntr_frac_2_info%nabove = 0
+
+      sc%abs_v_info%nbelow = 0
+      sc%abs_v_info%nabove = 0
+
+      sc%mach_info%nbelow = 0
+      sc%mach_info%nabove = 0
+
       LOOP_K
       LOOP_J
       do i = 1, samr%levels(0)%boxes(1)%dims(1)
