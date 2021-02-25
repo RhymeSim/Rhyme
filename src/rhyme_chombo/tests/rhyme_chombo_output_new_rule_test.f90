@@ -11,6 +11,10 @@ logical function rhyme_chombo_output_new_rule_test() result(failed)
 
    tester = .describe.'chombo output new rule'
 
+   call tester%expect(ch_output%every.toBe.-1.hint.'every')
+   call tester%expect(ch_output%restart_backup_every.toBe.-1.hint.'restart_backup_every')
+   call tester%expect(ch_output%restart_backups.toBe.-1.hint.'restart_backups')
+
    rule => ch_output%new_rule(chid%log)
    call tester%expect(ch_output%rules%type.toBe.chid%log.hint.'log')
    call tester%expect(rule%type.toBe.chid%log.hint.'log')

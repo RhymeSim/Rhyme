@@ -122,6 +122,7 @@ program rhyme
       if (outputs%should_be_saved(samr%levels(0)%iteration, samr%levels(0)%t)) then
          call logger%begin_section('save-chombo')
          call rhyme_chombo_write_samr(chombo, units, samr)
+         call outputs%clean_backups(chombo, logger)
          call logger%end_section(print_duration=.true.)  ! save-chombo
       end if
 

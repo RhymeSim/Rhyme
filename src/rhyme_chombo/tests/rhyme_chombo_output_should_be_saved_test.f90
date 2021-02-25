@@ -21,6 +21,7 @@ logical function rhyme_chombo_output_should_be_saved_test() result(failed)
    call rhyme_units_init(units, logger)
 
    outputs%every = 100
+   outputs%restart_backup_every = 17
    allocate (outputs%rules)
    outputs%rules%type = chid%log
    outputs%rules%range = [0.0001d0, 1d0]
@@ -41,6 +42,16 @@ logical function rhyme_chombo_output_should_be_saved_test() result(failed)
    call tester%expect( &
       rhyme_chombo_output_should_be_saved(outputs, 101, -1d0) .toBe..false. &
       .hint.'every false')
+
+   call tester%expect( &
+      rhyme_chombo_output_should_be_saved(outputs, 16, -1d0) .toBe..false. &
+      .hint.'restart_backup_every false')
+   call tester%expect( &
+      rhyme_chombo_output_should_be_saved(outputs, 17, -1d0) .toBe..true. &
+      .hint.'restart_backup_every true')
+   call tester%expect( &
+      rhyme_chombo_output_should_be_saved(outputs, 18, -1d0) .toBe..false. &
+      .hint.'restart_backup_every false')
 
    call tester%expect(outputs%saved(1) .toBe..false..hint.'time 1 first saved false')
    call tester%expect( &

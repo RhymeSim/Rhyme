@@ -32,7 +32,7 @@ logical function rhyme_initial_condition_load_headers_test() result(failed)
    ch%iteration = samr%levels(0)%iteration
    call rhyme_chombo_init(ch, samr, logger)
 
-   call rhyme_chombo_filename_generator(ch, filename)
+   call rhyme_chombo_filename_generator(ch%prefix, ch%nickname, ch%iteration, filename)
    call rhyme_chombo_write_samr(ch, units, samr)
 
    ic_read%type = icid%snapshot

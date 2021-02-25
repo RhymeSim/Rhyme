@@ -8,8 +8,8 @@ module rhyme_chombo
 
    type, private :: rhyme_chombo_indices_t
       integer :: unset = h5id%unset
-      character(len=8) :: boxes_headers(6) = [ &
-                          'lo_i', 'lo_j', 'lo_k', 'hi_i', 'hi_j', 'hi_k']
+      character(len=8) :: boxes_headers(6) = &
+                          ['lo_i', 'lo_j', 'lo_k', 'hi_i', 'hi_j', 'hi_k']
       integer :: log = 100, linear = 101
    end type rhyme_chombo_indices_t
 
@@ -36,12 +36,14 @@ module rhyme_chombo
 
    type chombo_output_t
       integer :: every = -1
+      integer :: restart_backup_every = -1, restart_backups(2) = -1
       real(kind=8), allocatable :: times(:)
       logical, allocatable :: saved(:)
       type(chombo_output_rule_t), pointer :: rules => null()
    contains
       procedure :: new_rule => rhyme_chombo_output_new_rule
       procedure :: should_be_saved => rhyme_chombo_output_should_be_saved
+      procedure :: clean_backups => rhyme_chombo_outpu_clean_backups
    end type chombo_output_t
 
    type, private :: chombo_workspace_t
@@ -52,8 +54,9 @@ module rhyme_chombo
    type(chombo_workspace_t), private :: chws
 
    interface
-      module subroutine rhyme_chombo_filename_generator(chombo, filename)
-         type(chombo_t), intent(in) :: chombo
+      module subroutine rhyme_chombo_filename_generator(prefix, nickname, iter, filename)
+         character(len=*), intent(in) :: prefix, nickname
+         integer, intent(in) :: iter
          character(len=1024), intent(out) :: filename
       end subroutine rhyme_chombo_filename_generator
 
@@ -104,6 +107,12 @@ module rhyme_chombo
          real(kind=8), intent(in) :: time
          logical :: be_saved
       end function rhyme_chombo_output_should_be_saved
+
+      module subroutine rhyme_chombo_outpu_clean_backups(this, chombo, logger)
+         class(chombo_output_t), intent(inout) :: this
+         type(chombo_t), intent(in) :: chombo
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_chombo_outpu_clean_backups
    end interface
 
 contains

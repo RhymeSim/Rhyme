@@ -7,7 +7,8 @@ contains
 
       character(len=1024) :: filename
 
-      call rhyme_chombo_filename_generator(chombo, filename)
+      call rhyme_chombo_filename_generator( &
+         chombo%prefix, chombo%nickname, chombo%iteration, filename)
       call rhyme_hdf5_util_create(chombo%file, filename)
 
       chombo%is_opened = .true.

@@ -36,7 +36,7 @@ logical function rhyme_chombo_write_level_data_test() result(failed)
    ! Crete chombo file
    ch%nickname = nickname
    ch%iteration = samr%levels(0)%iteration
-   call rhyme_chombo_filename_generator(ch, filename)
+   call rhyme_chombo_filename_generator(ch%prefix, ch%nickname, ch%iteration, filename)
 
    call rhyme_chombo_create_chombo(ch)
    call rhyme_chombo_write_headers(ch, units, samr)

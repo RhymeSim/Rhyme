@@ -30,6 +30,9 @@ contains
       character(len=*), intent(in) :: output_type
       type(chombo_output_t) :: ch_output
 
+      ch_output%every = chid%unset
+      ch_output%restart_backup_every = chid%unset
+
       if (output_type == 'log') then
          allocate (ch_output%rules)
          ch_output%rules%type = chid%log

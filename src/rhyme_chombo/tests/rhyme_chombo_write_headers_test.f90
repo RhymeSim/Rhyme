@@ -35,7 +35,7 @@ logical function rhyme_chombo_write_headers_test() result(failed)
 
    call rhyme_chombo_init(ch, samr, logger)
 
-   call rhyme_chombo_filename_generator(ch, filename)
+   call rhyme_chombo_filename_generator(ch%prefix, ch%nickname, ch%iteration, filename)
    call rhyme_chombo_create_chombo(ch)
 
    call rhyme_chombo_write_headers(ch, units, samr)
