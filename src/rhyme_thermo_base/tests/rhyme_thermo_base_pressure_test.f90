@@ -28,7 +28,7 @@ logical function rhyme_thermo_base_pressure_test() result(failed)
    call th_tester%expect(.notToBeNaN.rhyme_thermo_base_pressure(u))
    call th_tester%expect( &
       rhyme_thermo_base_pressure(u) .toBe.rhyme_ideal_gas_pressure( &
-      ig_gamma(thid%diatomic), units%kb%v/units%amu%v, u) .within.15)
+      ig_gamma(thid%diatomic), u) .within.15)
 
    call th_tester%expect(calc_p(u) .toBe.rhyme_thermo_base_pressure(u) .within.15)
 

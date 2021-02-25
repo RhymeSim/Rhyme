@@ -30,8 +30,7 @@ logical function rhyme_thermo_base_flux_test() result(failed)
    f = rhyme_thermo_base_flux(u, axis)
    call th_tester%expect(.notToBeNaN.f)
 
-   call rhyme_ideal_gas_flux( &
-      ig_gamma(thid%diatomic), units%kb%v/units%amu%v, u, axis, f_exp)
+   call rhyme_ideal_gas_flux(ig_gamma(thid%diatomic), u, axis, f_exp)
    call th_tester%expect(f.toBe.f_exp.within.15)
 
    f = calc_flux(u, axis)

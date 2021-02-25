@@ -40,7 +40,7 @@ logical function rhyme_thermo_base_conserved_to_primitive_test() result(failed)
 #endif
 
    p = (u(cid%e_tot) - .5d0*(sum(u(cid%rho_u:cid%rho_u + NDIM - 1)**2))/u(cid%rho)**2)*(ig_gamma(thid%monatomic) - 1d0)
-   call tester%expect(w(cid%p) .toBe.p.within.15.hint.'p')
+   call tester%expect(w(cid%p) .toBe.p.within.7.hint.'p')
 
    failed = tester%failed()
 end function rhyme_thermo_base_conserved_to_primitive_test
