@@ -23,6 +23,7 @@ contains
       case (drid%uniform_canvas)
          call logger%log('canvas', 'uniform, color', '=', draw%canvas)
          call rhyme_drawing_uniform_canvas(samr, draw%canvas)
+         call logger%log('Canvas has been painted successfully')
 
       case default
          call logger%err('Unknown canvas type!', 'type', '=', [draw%type])

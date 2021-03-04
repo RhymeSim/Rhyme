@@ -82,16 +82,20 @@ contains
                 /samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho)
             call update_info(i JDX KDX, v, sc%vx_range, sc%vx_info)
          end if
+#if NDIM > 1
          if (sc%properties(scid%vy)) then
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_v) &
                 /samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho)
             call update_info(i JDX KDX, v, sc%vy_range, sc%vy_info)
          end if
+#endif
+#if NDIM > 2
          if (sc%properties(scid%vz)) then
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_w) &
                 /samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho)
             call update_info(i JDX KDX, v, sc%vz_range, sc%vz_info)
          end if
+#endif
          if (sc%properties(scid%e_tot)) then
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%e_tot)
             call update_info(i JDX KDX, v, sc%e_tot_range, sc%e_tot_info)
@@ -104,14 +108,18 @@ contains
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%ntr_frac_0)
             call update_info(i JDX KDX, v, sc%ntr_frac_0_range, sc%ntr_frac_0_info)
          end if
+#if NSPE > 1
          if (sc%properties(scid%ntr_frac_1)) then
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%ntr_frac_1)
             call update_info(i JDX KDX, v, sc%ntr_frac_1_range, sc%ntr_frac_1_info)
          end if
+#endif
+#if NSPE > 2
          if (sc%properties(scid%ntr_frac_2)) then
             v = samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%ntr_frac_2)
             call update_info(i JDX KDX, v, sc%ntr_frac_2_range, sc%ntr_frac_2_info)
          end if
+#endif
          if (sc%properties(scid%abs_v)) then
             v = sqrt(sum(samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho_u:cid%rho_u + NDIM - 1)**2)) &
                 /samr%levels(0)%boxes(1)%cells(i JDX KDX, cid%rho)

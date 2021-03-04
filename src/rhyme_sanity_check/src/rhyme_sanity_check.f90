@@ -18,7 +18,7 @@ module rhyme_sanity_check
    type, private :: sanity_check_info_t
       integer :: nbelow(2) = 0, nabove(2) = 0
       real(kind=8) :: vbelow(2) = huge(0d0), vabove(2) = -huge(0d0)
-      integer :: cbelow(2, 3) = 0, cabove(2, 3) = 0
+      integer :: cbelow(2, NDIM) = 0, cabove(2, NDIM) = 0
    end type sanity_check_info_t
 
    type sanity_check_t

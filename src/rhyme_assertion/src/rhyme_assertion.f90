@@ -531,6 +531,57 @@ module rhyme_assertion
          type(test_t) :: test
       end function rhyme_assertion_to_be_array_2d_ll
 
+      pure module function rhyme_assertion_to_be_array_2d_scalar_ii(arr, scalar) result(test)
+         integer, intent(in) :: arr(:, :), scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_ii
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_ir(arr, scalar) result(test)
+         integer, intent(in) :: arr(:, :)
+         real(kind=4), intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_ir
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_ir8(arr, scalar) result(test)
+         integer, intent(in) :: arr(:, :)
+         real(kind=8), intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_ir8
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_ri(arr, scalar) result(test)
+         real(kind=4), intent(in) :: arr(:, :)
+         integer, intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_ri
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_rr(arr, scalar) result(test)
+         real(kind=4), intent(in) :: arr(:, :), scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_rr
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_rr8(arr, scalar) result(test)
+         real(kind=4), intent(in) :: arr(:, :)
+         real(kind=8), intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_rr8
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_r8i(arr, scalar) result(test)
+         real(kind=8), intent(in) :: arr(:, :)
+         integer, intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_r8i
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_r8r(arr, scalar) result(test)
+         real(kind=8), intent(in) :: arr(:, :)
+         real(kind=4), intent(in) :: scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_r8r
+
+      pure module function rhyme_assertion_to_be_array_2d_scalar_r8r8(arr, scalar) result(test)
+         real(kind=8), intent(in) :: arr(:, :), scalar
+         type(test_t) :: test
+      end function rhyme_assertion_to_be_array_2d_scalar_r8r8
+
       pure module function rhyme_assertion_to_be_array_3d_ii(arr1, arr2) result(test)
          integer, intent(in) :: arr1(:, :, :), arr2(:, :, :)
          type(test_t) :: test
@@ -706,6 +757,16 @@ module rhyme_assertion
       procedure rhyme_assertion_to_be_array_2d_r8r8
       procedure rhyme_assertion_to_be_array_2d_chch
       procedure rhyme_assertion_to_be_array_2d_ll
+
+      procedure rhyme_assertion_to_be_array_2d_scalar_ii
+      procedure rhyme_assertion_to_be_array_2d_scalar_ir
+      procedure rhyme_assertion_to_be_array_2d_scalar_ir8
+      procedure rhyme_assertion_to_be_array_2d_scalar_ri
+      procedure rhyme_assertion_to_be_array_2d_scalar_rr
+      procedure rhyme_assertion_to_be_array_2d_scalar_rr8
+      procedure rhyme_assertion_to_be_array_2d_scalar_r8i
+      procedure rhyme_assertion_to_be_array_2d_scalar_r8r
+      procedure rhyme_assertion_to_be_array_2d_scalar_r8r8
 
       procedure rhyme_assertion_to_be_array_3d_ii
       procedure rhyme_assertion_to_be_array_3d_ir

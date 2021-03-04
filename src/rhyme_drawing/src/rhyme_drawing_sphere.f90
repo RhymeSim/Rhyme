@@ -43,6 +43,26 @@ contains
       integer :: niterations
 
       call logger%begin_section('sphere')
+      call logger%log('start...')
+
+      call logger%log( &
+         'box x-length', &
+         '['//trim(.printchain.ic%box_lengths(1)%u)//']', &
+         '=', [ic%box_lengths(1)%v])
+
+#if NDIM > 1
+      call logger%log( &
+         'box y-length', &
+         '['//trim(.printchain.ic%box_lengths(2)%u)//']', &
+         '=', [ic%box_lengths(2)%v])
+#endif
+
+#if NDIM > 2
+      call logger%log( &
+         'box z-length', &
+         '['//trim(.printchain.ic%box_lengths(3)%u)//']', &
+         '=', [ic%box_lengths(3)%v])
+#endif
 
       do d = 1, NDIM
          box_lengths(d) = rhyme_nombre_get_value(ic%box_lengths(d) .to.shape%sphere%unit)
