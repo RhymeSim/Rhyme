@@ -39,3 +39,13 @@ Makefile
 cmake_install.cmake
 build
 debug
+
+# macos
+.DS_Store
+._.DS_Store
+
+# Iliev tests
+astronomy.sussex.ac.uk
+
+# Jupyter
+.ipynb_checkpoints/
