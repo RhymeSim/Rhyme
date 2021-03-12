@@ -11,7 +11,7 @@ logical function rhyme_irs_guess_p_star_test() result(failed)
    type(logger_t) :: logger
 
    type(rp_side_t) :: l, r
-   real(kind=8) :: p_star(5)
+   real(kind=8) :: p_star(6)
    real(kind=8), dimension(1 + NDIM + 1 + 1) :: rnd1, rnd2
    integer :: i, axis
 

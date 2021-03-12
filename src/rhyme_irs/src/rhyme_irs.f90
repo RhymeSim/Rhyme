@@ -52,7 +52,7 @@ module rhyme_irs
          type(rp_side_t), intent(in) :: l, r
          integer, intent(in) :: axis
          real(kind=8), intent(in) :: p_vacuum
-         real(kind=8) :: p_star(5)
+         real(kind=8) :: p_star(6)
       end function rhyme_irs_guess_p_star
 
       pure module function irs_w_k(s) result(u)

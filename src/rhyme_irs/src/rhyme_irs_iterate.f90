@@ -8,7 +8,7 @@ contains
       integer, intent(in) :: axis
 
       real(kind=8) :: ps_pl, ps_pr
-      real(kind=8) :: p_star_prev, guessed_p(5)
+      real(kind=8) :: p_star_prev, guessed_p(6)
 
       integer :: i, guess_id
 
@@ -35,6 +35,10 @@ contains
 
             if (2*abs(solution%star%p - p_star_prev) &
                 /(solution%star%p + p_star_prev) < irs%tolerance) exit
+
+            if (solution%star%p < 0d0) then
+               solution%star%p = abs(solution%star%p*irs%tolerance)
+            end if
 
             p_star_prev = solution%star%p
          end do

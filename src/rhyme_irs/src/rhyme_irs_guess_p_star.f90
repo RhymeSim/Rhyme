@@ -6,9 +6,38 @@ contains
       type(rp_side_t), intent(in) :: l, r
       integer, intent(in) :: axis
       real(kind=8), intent(in) :: p_vacuum
-      real(kind=8) :: p_star(5)
+      real(kind=8) :: p_star(6)
 
       real(kind=8) :: l_g, r_g
+
+      real(kind=8) :: q_user, cup, ppv, p_min, p_max, q_max, pq, um, ptl, ptr, gel, ger
+
+      q_user = 2d0
+
+      cup = 0.25*(l%rho + r%rho)*(l%cs + r%cs)
+      ppv = max(0.5*(l%p + r%p) + 0.5*(l%v(axis) - r%v(axis))*cup, 0d0)
+      p_min = min(l%p, r%p)
+      p_max = max(l%p, r%p)
+      q_max = p_max/p_min
+
+      if (q_max <= q_user .and. (p_min <= ppv .and. ppv <= p_max)) then
+         ! PVRS Riemann solver
+         p_star(1) = ppv
+      else
+         if (ppv <= p_min) then
+            ! Two-Rarefaction Riemann solver
+            pq = (l%p/r%p)**(gm1_2g)
+            um = (pq*l%v(axis)/l%cs + r%v(axis)/r%cs + (pq - 1.0)/gm1_2g)/(pq/l%cs + 1.0/r%cs)
+            ptl = 1.0 + gm1/2*(l%v(axis) - um)/l%cs
+            ptr = 1.0 + gm1/2*(um - r%v(axis))/r%cs
+            p_star(1) = 0.5*(l%p*ptl**(1d0/gm1_2g) + r%p*ptr**(1d0/gm1_2g))
+         else
+            ! Two-Shock Riemann solver
+            gel = sqrt(((2d0/(gp1))/l%rho)/(gm1_gp1*l%p + ppv))
+            ger = sqrt(((2d0/(gp1))/r%rho)/(gm1_gp1*r%p + ppv))
+            p_star(1) = (gel*l%p + ger*r%p - (r%v(axis) - l%v(axis)))/(gel + ger)
+         end if
+      end if
 
       ! Ramses guess
       p_star(1) = ( &
