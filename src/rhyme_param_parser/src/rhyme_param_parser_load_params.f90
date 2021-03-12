@@ -518,6 +518,8 @@ contains
          call config%read('chombo_output_rule'.at.4.occur.i, rule%noutputs, logger)
       end do
 
+      call config%read('chombo_output_final_time'.at.1, outputs%final_time, logger)
+
       call logger%end_section
    end subroutine load_params
 end submodule rhyme_param_parser_load_params_submodule

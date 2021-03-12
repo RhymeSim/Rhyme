@@ -362,6 +362,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(trim(chombo%nickname) .toBe."hydro-simulation")
 
    call tester%expect(outputs%every.toBe.100.hint.'Output every')
+   call tester%expect(outputs%final_time.toBe.1.23d4.hint.'Output final time')
    call tester%expect(outputs%restart_backup_every.toBe.17.hint.'Output every')
    call tester%expect(outputs%rules%type.toBe.chid%log.hint.'rule1 type')
    call tester%expect(outputs%rules%range.toBe. [1d-4, 1d0] .hint.'rule1 range')

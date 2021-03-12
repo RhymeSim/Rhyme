@@ -37,6 +37,7 @@ module rhyme_chombo
    type chombo_output_t
       integer :: every = -1
       integer :: restart_backup_every = -1, restart_backups(2) = -1
+      real(kind=8) :: final_time = huge(0d0)
       real(kind=8), allocatable :: times(:)
       logical, allocatable :: saved(:)
       type(chombo_output_rule_t), pointer :: rules => null()

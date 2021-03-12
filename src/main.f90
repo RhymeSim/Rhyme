@@ -103,7 +103,7 @@ program rhyme
    call logger%end_section  ! initial_report
 
    ! Main loop
-   do while (.true.)
+   main_loop: do while (.true.)
       call logger%begin_section(samr%levels(0)%iteration)
 
       samr%levels(0)%dt = rhyme_cfl_time_step(cfl%courant_number, samr)
@@ -136,9 +136,6 @@ program rhyme
       end do
       call logger%end_section(print_duration=.true.)  ! hydro
 
-      samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
-      samr%levels(0)%iteration = samr%levels(0)%iteration + 1
-
       if (mod(samr%levels(0)%iteration, report%every) == 0) then
          call logger%begin_section('report')
          call report%publish(samr, logger)
@@ -157,6 +154,25 @@ program rhyme
          call logger%end_section ! stabilizer
       end if
 
+      if (samr%levels(0)%t > outputs%final_time) then
+         call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
+         call logger%log('Simulation has succesfully reached its final time!')
+
+         if (.not. outputs%should_be_saved(samr%levels(0)%iteration - 1, samr%levels(0)%t)) then
+            call logger%log('Saving a snapshot, just in case!')
+            call logger%begin_section('save-chombo')
+            call rhyme_chombo_write_samr(chombo, units, samr)
+            call outputs%clean_backups(chombo, logger)
+            call logger%end_section(print_duration=.true.)  ! save-chombo
+         end if
+
+         exit main_loop
+      end if
+
+      call logger%log('Updating time and iteration')
+      samr%levels(0)%t = samr%levels(0)%t + samr%levels(0)%dt
+      samr%levels(0)%iteration = samr%levels(0)%iteration + 1
+
       call logger%end_section(print_duration=.true.)  ! samr%levels(0)%iteration
-   end do
+   end do main_loop
 end program rhyme
