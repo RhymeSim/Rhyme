@@ -46,6 +46,17 @@ debug
 
 # Iliev tests
 astronomy.sussex.ac.uk
+images
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Rhyme output
+output*
+*.err.txt
+*.log.txt
+*.log
+fort.999
+
+# VisIt
+visitlog.py
