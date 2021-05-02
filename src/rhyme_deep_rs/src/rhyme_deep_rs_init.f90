@@ -1,9 +1,10 @@
 submodule(rhyme_deep_rs) init_smod
 contains
-   module subroutine rhyme_deep_rs_init(drs, logger)
+   module subroutine rhyme_deep_rs_init(drs, units, logger)
       implicit none
 
       type(deep_rs_t), intent(inout) :: drs
+      type(units_t), intent(in) :: units
       type(logger_t), intent(inout) :: logger
 
       type(hdf5_util_t) :: h5
@@ -16,15 +17,6 @@ contains
 
       call rhyme_hdf5_util_read_group_attr(h5, "/", "n_layers", drs%n_layers)
       call logger%log('# of layers', '', '=', [drs%n_layers])
-
-      ! call rhyme_hdf5_util_read_group_attr(h5, "/", "d_norm", drs%d_norm)
-      ! call logger%log('Density normalization', '', ':', [drs%d_norm])
-      !
-      ! call rhyme_hdf5_util_read_group_attr(h5, "/", "p_norm", drs%p_norm)
-      ! call logger%log('Pressure normalization', '', ':', [drs%p_norm])
-      !
-      ! call rhyme_hdf5_util_read_group_attr(h5, "/", "v_norm", drs%v_norm)
-      ! call logger%log('Velocity normalization', '', ':', [drs%v_norm])
 
       call rhyme_hdf5_util_read_group_attr(h5, "/", "drho", drs%drho)
       call logger%log('Δρ', '', '=', [drs%drho])
@@ -69,6 +61,15 @@ contains
 
       call rhyme_hdf5_util_read_1d_dataset(h5, "/level_3/biases", drs%b3)
       call logger%log('3rd layer', '[biases]', '=', drs%b3(:5))
+
+      drs%rho_conv = real(rhyme_nombre_get_value((1.u. (kilogram/meter**3)) .to. (units%rho)))
+      call logger%log('density conversion', '', '=', [drs%rho_conv])
+
+      drs%p_conv = real(rhyme_nombre_get_value((1.u. (kilogram/meter**3*meter**2/second**2)) .to. (units%pressure)))
+      call logger%log('pressure conversion', '', '=', [drs%p_conv])
+
+      drs%v_conv = real(rhyme_nombre_get_value((1.u. (meter/second)) .to. (units%velocity)))
+      call logger%log('velocity conversion', '', '=', [drs%v_conv])
 
       call logger%end_section
    end subroutine rhyme_deep_rs_init
