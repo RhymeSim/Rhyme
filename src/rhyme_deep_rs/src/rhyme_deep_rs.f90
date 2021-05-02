@@ -1,15 +1,21 @@
 module rhyme_deep_rs
+   use rhyme_hdf5_util
    use rhyme_logger
 
    implicit none
 
    type, private :: indices_t
-      integer :: idx = 1
    end type indices_t
 
    type(indices_t), parameter :: drsid = indices_t()
 
    type deep_rs_t
+      real(kind=4), allocatable, dimension(:, :) :: w1, w2, w3
+      real(kind=4), allocatable, dimension(:) :: b1, b2, b3
+      real(kind=4) :: drho = 0e0, dp = 0e0, dv = 0e0
+      integer :: n_layers = 0
+      character(len=1024) :: path = "./v20210502.h5"
+      character(len=1024) :: d_norm = "", p_norm = "", v_norm = ""
    contains
       procedure :: rhyme_deep_rs_write_formatted
       generic :: write (formatted) => rhyme_deep_rs_write_formatted
