@@ -9,9 +9,9 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=f2008")
 endif()
 
-set(deps rhyme_units rhyme_samr rhyme_logger)
+set(deps rhyme_hdf5_util rhyme_units rhyme_samr rhyme_logger)
 
-set(internal_deps rhyme_hdf5_util)
+set(internal_deps)
 
 set(srcs
     src/rhyme_chombo_output_clean_backups.f90

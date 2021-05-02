@@ -32,7 +32,7 @@ set(srcs
     src/rhyme_hdf5_util_open.f90
     src/rhyme_hdf5_util.f90)
 
-set(rhyme_src_dir ../../..)
+set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
 
 find_package(HDF5 REQUIRED COMPONENTS Fortran)
