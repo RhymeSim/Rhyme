@@ -139,8 +139,17 @@ contains
       sc%vtotal_energy(1) = sc%vtotal_energy(2)
       sc%vtotal_energy(2) = rhyme_samr_calc_total_energy(samr)
 
+      ! Be ready to see one of those hacks! Crazy :(
+      if (sc%vtotal_energy(1) < tiny(0d0)) then
+         sc%vtotal_energy(1) = sc%vtotal_energy(2)
+      end if
+
       sc%vtotal_mass(1) = sc%vtotal_mass(2)
       sc%vtotal_mass(2) = rhyme_samr_calc_total_mass(samr)
+
+      if (sc%vtotal_mass(1) < tiny(0d0)) then
+         sc%vtotal_mass(1) = sc%vtotal_mass(2)
+      end if
 
    contains
       pure subroutine update_info(i JDX KDX, val, rng, info)

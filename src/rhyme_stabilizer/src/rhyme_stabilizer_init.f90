@@ -41,8 +41,13 @@ contains
       character(len=32) :: weight_str
       integer, dimension(NDIM) :: dims
       integer :: i JDX KDX
+      integer :: old_next_timestep
 
       call logger%begin_section('stabilizer')
+
+      old_next_timestep = st%next_timestep
+      st%next_timestep = st%next_timestep + samr%levels(0)%iteration
+      call logger%log('Update start_at, from', old_next_timestep, '=>', [st%next_timestep])
 
       if (st%enabled) then
          dims = samr%levels(0)%boxes(1)%dims
