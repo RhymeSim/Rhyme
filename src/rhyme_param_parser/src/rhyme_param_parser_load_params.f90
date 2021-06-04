@@ -343,11 +343,20 @@ contains
       ! Drawing
       call canvas_types%add('uniform', drid%uniform_canvas)
       call canvas_types%add('transparent', drid%transparent_canvas)
+      call canvas_types%add('density_power_law', drid%density_power_law)
 
       call config%read('canvas'.at.1, draw%type, logger, canvas_types)
-      if (draw%type .eq. drid%uniform_canvas) then
+      select case (draw%type)
+      case (drid%uniform_canvas)
          call config%read('canvas'.at.2.hint.'color', draw%canvas(1:NCMP), logger)
-      end if
+      case (drid%density_power_law)
+         call config%read('canvas'.at.2.hint.'center', draw%center(1:NDIM), logger)
+         call config%read('canvas'.at.2 + NDIM.hint.'r0', draw%r0, logger)
+         call config%read('canvas'.at.2 + NDIM + 1.hint.'r1', draw%r1, logger)
+         call config%read('canvas'.at.2 + NDIM + 2.hint.'power', draw%p, logger)
+         call config%read('canvas'.at.2 + NDIM + 3.hint.'rho0', draw%rho0, logger)
+         call config%read('canvas'.at.2 + NDIM + 4.hint.'color', draw%canvas(1:NCMP), logger)
+      end select
 
       ! Shapes
       call shape_types%add('cuboid', drid%cuboid)

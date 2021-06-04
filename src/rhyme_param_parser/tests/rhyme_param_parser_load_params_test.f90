@@ -213,18 +213,25 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(ie%table_density_unit_str.toBe.'m_H / cm^3'.hint.'IE table density unit')
 
    ! Drawing
-   call tester%expect(draw%type.toBe.drid%uniform_canvas)
-   call tester%expect(draw%canvas(cid%rho) .toBe..125d0)
-   call tester%expect(draw%canvas(cid%u:cid%u + NDIM - 1) .toBe.0d0)
-   call tester%expect(draw%canvas(cid%p) .toBe..1d0)
-   call tester%expect(draw%canvas(cid%temp) .toBe.1d4)
-   call tester%expect(draw%canvas(cid%ntr_frac_0) .toBe.1d-2)
+!    call tester%expect(draw%type.toBe.drid%uniform_canvas)
+   call tester%expect(draw%canvas(cid%rho) .toBe..125d0.hint.'canvas rho')
+   call tester%expect(draw%canvas(cid%u:cid%u + NDIM - 1) .toBe.0d0.hint.'canvas momenta')
+   call tester%expect(draw%canvas(cid%p) .toBe..1d0.hint.'canvas pressure')
+   call tester%expect(draw%canvas(cid%temp) .toBe.1d4.hint.'canvas temperature')
+   call tester%expect(draw%canvas(cid%ntr_frac_0) .toBe.1d-2.hint.'canvas fHI')
 #if NSPE > 1
-   call tester%expect(draw%canvas(cid%ntr_frac_1) .toBe.2d-3)
+   call tester%expect(draw%canvas(cid%ntr_frac_1) .toBe.2d-3.hint.'canvas fHeI')
 #endif
 #if NSPE > 2
-   call tester%expect(draw%canvas(cid%ntr_frac_2) .toBe.3d-4)
+   call tester%expect(draw%canvas(cid%ntr_frac_2) .toBe.3d-4.hint.'canvas fHeII')
 #endif
+
+   call tester%expect(draw%type.toBe.drid%density_power_law.hint.'canvas type')
+   call tester%expect(draw%center.toBe.1.23d4.hint.'canvas center')
+   call tester%expect(draw%r0.toBe.2.34d5.hint.'canvas r0')
+   call tester%expect(draw%r1.toBe.3.45d6.hint.'canvas r1')
+   call tester%expect(draw%p.toBe.-2d0.hint.'canvas power')
+   call tester%expect(draw%rho0.toBe.4.56d7.hint.'canvas rho_0')
 
    shape => draw%shapes
    call tester%expect(shape%type.toBe.drid%cuboid)
