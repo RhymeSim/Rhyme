@@ -52,6 +52,8 @@ contains
          draw%shapes%fill%modes(1) = drid%absolute
          draw%shapes%fill%colors(1:NCMP, 1) = color1
          draw%shapes%fill%colors(1:NCMP, 2) = color2
+      case ('blank')
+         draw%shapes => null()
       case default
          print *, 'Unknown factory_type!', factory_type
       end select

@@ -13,7 +13,7 @@ module rhyme_drawing
 
    type, private :: drawing_indices_t
       integer :: unset = -1, none = -2
-      integer :: uniform_canvas = 0, transparent_canvas = 1 ! Canvas modes
+      integer :: uniform_canvas = 0, transparent_canvas = 1, density_power_law = 2 ! Canvas modes
       integer :: uniform = 10 ! Filling type
       integer :: add = 30, absolute = 31 ! Modes
       integer :: sharp_cuboid = 19, cuboid = 20, sphere = 21
@@ -129,7 +129,8 @@ module rhyme_drawing
 
    type drawing_t
       integer :: type = drid%transparent_canvas
-      real(kind=8) :: canvas(NCMP)
+      real(kind=8) :: canvas(NCMP) = 0d0
+      real(kind=8) :: center(NDIM) = 0d0, rho0 = 0d0, r0 = 0d0, r1 = 0d0, p = 0d0  ! density_power_law canvas parameters
       type(shape_t), pointer :: shapes => null()
       type(perturbation_t), pointer :: perturbs => null()
    contains
@@ -152,6 +153,11 @@ module rhyme_drawing
          type(samr_t), intent(inout) :: samr
          real(kind=8), intent(in) :: bg_prim(NCMP)
       end subroutine rhyme_drawing_uniform_canvas
+
+      module subroutine rhyme_drawing_density_power_law_canvas(samr, c, rho0, r0, r1, power, bg_prim)
+         type(samr_t), intent(inout) :: samr
+         real(kind=8), intent(in) :: c(NDIM), rho0, r0, r1, power, bg_prim(NCMP)
+      end subroutine rhyme_drawing_density_power_law_canvas
 
       module subroutine rhyme_drawing_sharp_cuboid(samr, shape, logger)
          type(samr_t), intent(inout) :: samr

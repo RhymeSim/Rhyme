@@ -10,6 +10,7 @@ logical function rhyme_drawing_test() result(failed)
 
    call dr_tester%expect(drid%uniform_canvas.toBe.0)
    call dr_tester%expect(drid%transparent_canvas.toBe.1)
+   call dr_tester%expect(drid%density_power_law.toBe.2)
    call dr_tester%expect(drid%uniform.toBe.10)
    call dr_tester%expect(drid%cuboid.toBe.20)
    call dr_tester%expect(drid%sphere.toBe.21)

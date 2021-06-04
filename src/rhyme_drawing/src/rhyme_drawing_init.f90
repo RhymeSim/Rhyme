@@ -25,6 +25,15 @@ contains
          call rhyme_drawing_uniform_canvas(samr, draw%canvas)
          call logger%log('Canvas has been painted successfully')
 
+      case (drid%density_power_law)
+         call logger%log('canvas', '(density power law)', 'variables:', draw%canvas)
+         call logger%log('canvas', '(density power law)', 'center:', draw%center)
+         call logger%log('canvas', '(density power law)', 'rho0:', [draw%rho0])
+         call logger%log('canvas', '(density power law)', 'r0:', [draw%r0])
+         call logger%log('canvas', '(density power law)', 'characteristic radius:', [draw%r1])
+         call rhyme_drawing_density_power_law_canvas(samr, draw%center, draw%rho0, draw%r0, draw%r1, draw%p, draw%canvas)
+         call logger%log('Canvas has been painted successfully')
+
       case default
          call logger%err('Unknown canvas type!', 'type', '=', [draw%type])
 

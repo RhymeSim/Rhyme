@@ -31,6 +31,7 @@ set(srcs
     src/rhyme_drawing_sharp_cuboid.f90
     src/rhyme_drawing_uniform_cuboid.f90
     src/rhyme_drawing_uniform_canvas.f90
+    src/rhyme_drawing_density_power_law_canvas.f90
     src/rhyme_drawing_init.f90
     src/rhyme_drawing.f90)
 
