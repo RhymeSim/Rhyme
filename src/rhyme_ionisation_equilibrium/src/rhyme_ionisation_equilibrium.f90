@@ -26,6 +26,7 @@ module rhyme_ionisation_equilibrium
    end type species_t
 
    type ionisation_equilibrium_t
+      ! TODO: Add enabled variable here and check it in the init subroutine
       character(len=16) :: species_names(NSPE) = ''
       integer :: cases(NSPE) = ieid%unset
 

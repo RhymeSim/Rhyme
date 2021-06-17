@@ -15,7 +15,7 @@ set(internal_deps)
 
 set(srcs src/rhyme_riemann_problem.f90)
 
-set(rhyme_src_dir ../../..)
+set(rhyme_src_dir ..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
 
 # Configs
