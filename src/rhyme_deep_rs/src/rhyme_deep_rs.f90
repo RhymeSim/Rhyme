@@ -12,11 +12,11 @@ module rhyme_deep_rs
 
    type deep_rs_t
       real(kind=4), allocatable, dimension(:, :) :: w1, w2, w3
-      real(kind=4), allocatable, dimension(:) :: b1, b2, b3
+      real(kind=4), allocatable, dimension(:, :) :: b1, b2, b3
       real(kind=4) :: drho = 0e0, dp = 0e0, dv = 0e0
       real(kind=4) :: rho_conv = 0e0, p_conv = 0e0, v_conv = 0e0
       integer :: n_layers = 0
-      character(len=1024) :: path = "./v20210502.h5"
+      character(len=1024) :: path = "./v20210616.h5"
       character(len=1024) :: d_norm = "", p_norm = "", v_norm = ""
    contains
       procedure :: rhyme_deep_rs_write_formatted
@@ -29,6 +29,12 @@ module rhyme_deep_rs
          type(units_t), intent(in) :: units
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_deep_rs_init
+
+      pure module function rhyme_deep_rs_exec(drs, r1, p1, r2, p2, dv) result(p)
+         type(deep_rs_t), intent(in) :: drs
+         real(kind=8), intent(in) :: r1, p1, r2, p2, dv
+         real(kind=8) :: p
+      end function rhyme_deep_rs_exec
    end interface
 
 contains

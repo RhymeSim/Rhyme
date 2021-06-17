@@ -29,12 +29,23 @@ logical function rhyme_deep_rs_init_test() result(failed)
    call tester%expect(drs%dp.notToBe.0e0.hint.'dp')
    call tester%expect(drs%dv.notToBe.0e0.hint.'dv')
 
-   call tester%expect(drs%w1(1, :) .notToBe.0e0.hint.'w1')
-   call tester%expect(drs%b1.notToBe.0e0.hint.'b1')
-   call tester%expect(drs%w2(1, :) .notToBe.0e0.hint.'w2')
-   call tester%expect(drs%b2.notToBe.0e0.hint.'b2')
-   call tester%expect(drs%w3(1, :) .notToBe.0e0.hint.'w3')
-   call tester%expect(drs%b3.notToBe.0e0.hint.'b3')
+   call tester%expect(shape(drs%w1) .toBe. [5, 128] .hint.'w1 shape')
+   call tester%expect(reshape(drs%w1, [size(drs%w1)]) .notToBe.0e0.hint.'w1')
+
+   call tester%expect(shape(drs%b1) .toBe. [1, 128] .hint.'b1 shape')
+   call tester%expect(reshape(drs%b1, [size(drs%b1)]) .notToBe.0e0.hint.'b1')
+
+   call tester%expect(shape(drs%w2) .toBe. [128, 128] .hint.'w2 shape')
+   call tester%expect(reshape(drs%w2, [size(drs%w2)]) .notToBe.0e0.hint.'w2')
+
+   call tester%expect(shape(drs%b2) .toBe. [1, 128] .hint.'b2 shape')
+   call tester%expect(reshape(drs%b2, [size(drs%b2)]) .notToBe.0e0.hint.'b2')
+
+   call tester%expect(shape(drs%w3) .toBe. [128, 1] .hint.'w3 shape')
+   call tester%expect(reshape(drs%w3, [size(drs%w3)]) .notToBe.0e0.hint.'w3')
+
+   call tester%expect(shape(drs%b3) .toBe. [1, 1] .hint.'b3 shape')
+   call tester%expect(reshape(drs%b3, [size(drs%b3)]) .notToBe.0e0.hint.'b3')
 
    call tester%expect(drs%rho_conv.notToBe.0e0.hint.'rho conversion factor')
    call tester%expect(drs%p_conv.notToBe.0e0.hint.'pressure conversion factor')
