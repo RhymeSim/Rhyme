@@ -14,9 +14,8 @@ logical function rhyme_irs_nonlinear_wave_function_test() result(failed)
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
 
-   type(rp_side_t) :: state
-   type(rp_star_side_t) :: star, prev_star
-   real(kind=8) :: p, p_star = 3.45d2
+   real(kind=8) :: state_rho, state_p, state_cs
+   real(kind=8) :: p_star = 3.45d2, f, fprime, f_prev, fprime_prev
    integer :: i
 
    irs_tester = .describe."irs_nonlinear_wave_function"
@@ -30,26 +29,32 @@ logical function rhyme_irs_nonlinear_wave_function_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_irs_init(irs, logger)
+   call rhyme_irs_init(irs, thermo, logger)
 
-   state%rho = 1.23d3
+   state_rho = 1.23d3
+   state_cs = 1.23d1
 
-   call rhyme_irs_nonlinear_wave_function(state, p_star, prev_star)
+   call rhyme_irs_nonlinear_wave_function( &
+      state_rho, state_p, state_cs, p_star, f, fprime)
+
+   f_prev = f
+   fprime_prev = fprime
 
    do i = 1, 800
-      p = 2.34d0*p
+      ! p = 2.34d0*p
       call irs_tester%reset
 
-      call rhyme_irs_nonlinear_wave_function(state, p_star, star)
+      call rhyme_irs_nonlinear_wave_function( &
+         state_rho, state_p, state_cs, p_star, f, fprime)
 
-      call irs_tester%expect((star%fprime < 0.0) .toBe..false.)
-      call irs_tester%expect(prev_star%fprime.toBe.star%fprime)
-      call irs_tester%expect(star%f.toBe.prev_star%f)
+      call irs_tester%expect((fprime < 0.0) .toBe..false.)
+      call irs_tester%expect(fprime_prev.toBe.fprime.hint."f'prev == f'")
+      call irs_tester%expect(f.toBe.f_prev.hint."fprev == f")
 
       failed = irs_tester%failed()
       if (failed) return
 
-      prev_star%f = star%f
-      prev_star%fprime = star%fprime
+      f_prev = f
+      fprime_prev = fprime
    end do
 end function rhyme_irs_nonlinear_wave_function_test

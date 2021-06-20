@@ -1,5 +1,7 @@
 logical function rhyme_irs_guess_p_star_test() result(failed)
    use rhyme_irs_factory
+   use rhyme_units_factory
+   use rhyme_thermo_base_factory
    use rhyme_logger_factory
    use rhyme_assertion
 
@@ -8,9 +10,11 @@ logical function rhyme_irs_guess_p_star_test() result(failed)
    type(assertion_t) :: tester
 
    type(irs_t) :: irs
+   type(units_t) :: units
+   type(thermo_base_t) :: thermo
    type(logger_t) :: logger
 
-   type(rp_side_t) :: l, r
+   real(kind=8) :: l_rho, l_v(NDIM), l_p, l_cs, r_rho, r_v(NDIM), r_p, r_cs
    real(kind=8) :: p_star(6)
    real(kind=8), dimension(1 + NDIM + 1 + 1) :: rnd1, rnd2
    integer :: i, axis
@@ -18,27 +22,33 @@ logical function rhyme_irs_guess_p_star_test() result(failed)
    tester = .describe.'irs_guess_p_star'
 
    irs = irs_factory_generate('default')
+   units = units_factory_generate('SI')
    logger = logger_factory_generate('default')
 
-   call rhyme_irs_init(irs, logger)
+   call rhyme_nombre_init()
+   thermo = thermo_base_factory_generate('monatomic')
+   call rhyme_thermo_base_init(thermo, units, logger)
+
+   call rhyme_irs_init(irs, thermo, logger)
 
    do i = 1, 10
       call random_number(rnd1)
       call random_number(rnd2)
 
-      l%rho = rnd1(1)
-      l%v = rnd1(2:2 + NDIM - 1)
-      l%p = rnd1(2 + NDIM)
-      l%cs = rnd1(2 + NDIM + 1)
+      l_rho = rnd1(1)
+      l_v = rnd1(2:2 + NDIM - 1)
+      l_p = rnd1(2 + NDIM)
+      l_cs = rnd1(2 + NDIM + 1)
 
-      r%rho = rnd2(1)
-      r%v = rnd2(2:2 + NDIM - 1)
-      r%p = rnd2(2 + NDIM)
-      r%cs = rnd2(2 + NDIM + 1)
+      r_rho = rnd2(1)
+      r_v = rnd2(2:2 + NDIM - 1)
+      r_p = rnd2(2 + NDIM)
+      r_cs = rnd2(2 + NDIM + 1)
 
       do axis = 1, NDIM
-         p_star = rhyme_irs_guess_p_star(l, r, axis, irs%w_vacuum(cid%p))
-         call tester%expect(all((p_star - irs%w_vacuum(cid%p) + nearest(0d0, 1d0)) > 0d0) .toBe..true.)
+         p_star = rhyme_irs_guess_p_star( &
+                  l_rho, l_v, l_p, l_cs, r_rho, r_v, r_p, r_cs, axis)
+         call tester%expect(all((p_star + tiny(0d0)) > 0d0) .toBe..true.)
       end do
    end do
 

@@ -23,7 +23,7 @@ logical function rhyme_irs_init_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_irs_init(irs, logger)
+   call rhyme_irs_init(irs, thermo, logger)
 
    failed = tester%failed()
 end function rhyme_irs_init_test

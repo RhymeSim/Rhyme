@@ -1,5 +1,4 @@
 module rhyme_irs
-   use rhyme_riemann_problem
    use rhyme_units
    use rhyme_hydro_base
    use rhyme_thermo_base
@@ -16,115 +15,39 @@ module rhyme_irs
 
    type irs_t
       integer :: n_iteration = 100
-      real(kind=8), dimension(cid%rho:cid%p) :: w_vacuum = 0d0
       real(kind=8) :: tolerance = 1d-6
    end type irs_t
 
    interface
-      pure module subroutine rhyme_irs_solve(irs, l, r, dx, dt, axis, u)
+      pure module function rhyme_irs_exec( &
+         irs, l_rho, l_v, l_p, l_cs, r_rho, r_v, r_p, r_cs, axis) result(p_star)
          type(irs_t), intent(in) :: irs
-         real(kind=8), dimension(cid%rho:cid%e_tot), intent(in) :: l, r
-         real(kind=8), intent(in) :: dx, dt
+         real(kind=8), intent(in) :: &
+            l_rho, l_v(NDIM), l_p, l_cs, r_rho, r_v(NDIM), r_p, r_cs
          integer, intent(in) :: axis
-         real(kind=8), intent(inout) :: u(cid%rho:cid%e_tot)
-      end subroutine rhyme_irs_solve
+         real(kind=8) :: p_star
+      end function rhyme_irs_exec
 
-      pure module subroutine rhyme_irs_sampling(solution, axis, dx, dt, u)
-         type(riemann_problem_solution_t), intent(in) :: solution
-         integer, intent(in) :: axis
-         real(kind=8), intent(in) :: dx, dt
-         real(kind=8), intent(out) :: u(cid%rho:cid%e_tot)
-      end subroutine rhyme_irs_sampling
-
-      pure module subroutine rhyme_irs_iterate(irs, solution, axis)
-         type(irs_t), intent(in) :: irs
-         type(riemann_problem_solution_t), intent(inout) :: solution
-         integer, intent(in) :: axis
-      end subroutine rhyme_irs_iterate
-
-      pure module subroutine rhyme_irs_nonlinear_wave_function(state, p, star)
-         type(rp_side_t), intent(in) :: state
-         real(kind=8), intent(in) :: p
-         type(rp_star_side_t), intent(inout) :: star
+      pure module subroutine rhyme_irs_nonlinear_wave_function( &
+         state_rho, state_p, state_cs, p, f, fprime)
+         real(kind=8), intent(in) :: state_rho, state_p, state_cs, p
+         real(kind=8), intent(inout) :: f, fprime
       end subroutine rhyme_irs_nonlinear_wave_function
 
-      pure module function rhyme_irs_guess_p_star(l, r, axis, p_vacuum) result(p_star)
-         type(rp_side_t), intent(in) :: l, r
+      pure module function rhyme_irs_guess_p_star( &
+         l_rho, l_v, l_p, l_cs, r_rho, r_v, r_p, r_cs, axis) result(p_star)
+         real(kind=8), intent(in) :: l_rho, l_v(NDIM), l_p, l_cs, r_rho, r_v(NDIM), r_p, r_cs
          integer, intent(in) :: axis
-         real(kind=8), intent(in) :: p_vacuum
          real(kind=8) :: p_star(6)
       end function rhyme_irs_guess_p_star
 
-      pure module function irs_w_k(s) result(u)
-         type(rp_side_t), intent(in) :: s
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_k
+      module subroutine rhyme_irs_init(irs, thermo, logger)
+         implicit none
 
-      pure module function irs_w_starl_sho(s, axis) result(u)
-         type(riemann_problem_solution_t), intent(in) :: s
-         integer, intent(in) :: axis
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_starl_sho
+         type(irs_t), intent(inout) :: irs
+         type(thermo_base_t), intent(in) :: thermo
+         type(logger_t), intent(inout) :: logger
+      end subroutine rhyme_irs_init
 
-      pure module function irs_w_starr_sho(s, axis) result(u)
-         type(riemann_problem_solution_t), intent(in) :: s
-         integer, intent(in) :: axis
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_starr_sho
-
-      pure module function irs_w_kfan(s, dxdt, axis, is_right) result(u)
-         type(rp_side_t), intent(in) :: s
-         real(kind=8), intent(in) :: dxdt
-         integer, intent(in) :: axis
-         logical, intent(in) :: is_right
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_kfan
-
-      pure module function irs_w_starl_fan(s, axis) result(u)
-         type(riemann_problem_solution_t), intent(in) :: s
-         integer, intent(in) :: axis
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_starl_fan
-
-      pure module function irs_w_starr_fan(s, axis) result(u)
-         type(riemann_problem_solution_t), intent(in) :: s
-         integer, intent(in) :: axis
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_w_starr_fan
-
-      pure module function irs_rp_side_to_cons(s) result(u)
-         type(rp_side_t), intent(in) :: s
-         real(kind=8) :: u(cid%rho:cid%e_tot)
-      end function irs_rp_side_to_cons
    end interface
-
-contains
-   module subroutine rhyme_irs_init(irs, logger)
-      implicit none
-
-      type(irs_t), intent(inout) :: irs
-      type(logger_t), intent(inout) :: logger
-
-      real(kind=8) :: g
-
-      call logger%begin_section('irs')
-
-      g = get_gamma()
-
-      call logger%log('', 'vacuum_density', '=', [irs%w_vacuum(cid%rho)])
-      call logger%log('', 'vacuum_pressure', '=', [irs%w_vacuum(cid%p)])
-      call logger%log('', 'n_iteration', '=', [irs%n_iteration])
-      call logger%log('', 'tolerance', '=', [irs%tolerance])
-
-      call logger%log('Setting up ideal gas coefficients...')
-
-      gm1 = g - 1.d0
-      gp1 = g + 1.d0
-      gm1_gp1 = gm1/gp1
-      gm1_2g = gm1/(2.d0*g)
-      gp1_2g = gp1/(2.d0*g)
-      g_inv = 1.d0/g
-
-      call logger%end_section
-   end subroutine rhyme_irs_init
 end module rhyme_irs
