@@ -36,7 +36,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    type(uv_background_t) :: uvb
    type(ionisation_equilibrium_t) :: ie
    type(drawing_t) :: draw
-   type(irs_t) :: irs
+   type(riemann_problem_t) :: rp
    type(slope_limiter_t) :: sl
    type(muscl_hancock_t) :: mh
    type(chombo_t) :: chombo
@@ -56,7 +56,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
 
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, &
-      uvb, ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
+      uvb, ie, draw, rp, sl, mh, chombo, outputs, st, report, sc, logger)
 
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
@@ -352,10 +352,11 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(perturb%wgn%cut_percent.toBe.30.hint.'wgn cut (percent)')
 
    ! Iterative Riemann Solver
-   call tester%expect(irs%w_vacuum(cid%p) .toBe.1.23d0)
-   call tester%expect(irs%w_vacuum(cid%rho) .toBe.2.34d0)
-   call tester%expect(irs%tolerance.toBe.1d-6)
-   call tester%expect(irs%n_iteration.toBe.100)
+   call tester%expect(rp%solver.toBe.rpid%exact_rs.hint.'rp solver')
+   call tester%expect(rp%w_vacuum(cid%rho) .toBe.2.34d0.hint.'rp rho')
+   call tester%expect(rp%w_vacuum(cid%p) .toBe.1.23d0.hint.'rp p')
+   call tester%expect(rp%tolerance.toBe.1d-6.hint.'rp tolerance')
+   call tester%expect(rp%n_iteration.toBe.100.hint.'rp n_iteration')
 
    ! Slope Limiter
    call tester%expect(sl%type.toBe.slid%minmod.hint.'Slope limiter type')

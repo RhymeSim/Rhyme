@@ -2,7 +2,7 @@ submodule(rhyme_param_parser) rhyme_param_parser_load_params_submodule
 contains
    module subroutine load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
+      ie, draw, rp, sl, mh, chombo, outputs, st, report, sc, logger)
       implicit none
 
       character(len=1024), intent(in) :: param_file
@@ -15,7 +15,7 @@ contains
       type(uv_background_t), intent(inout) :: uvb
       type(ionisation_equilibrium_t), intent(inout) :: ie
       type(drawing_t), intent(inout) :: draw
-      type(irs_t), intent(inout) :: irs
+      type(riemann_problem_t), intent(inout) :: rp
       type(slope_limiter_t), intent(inout) :: sl
       type(muscl_hancock_t), intent(inout) :: mh
       type(chombo_t), intent(inout) :: chombo
@@ -35,6 +35,7 @@ contains
       type(config_switch_t) :: coord_types, perturb_domain_types
       type(config_switch_t) :: ionization_cases, uvb_models
       type(config_switch_t) :: limiter_types
+      type(config_switch_t) :: riemann_solver_types
       type(config_switch_t) :: solver_types
 
       type(shape_t), pointer :: shape
@@ -487,10 +488,18 @@ contains
       end do
 
       ! Iterative Riemann Solver
-      call config%read('vacuum_density'.at.1, irs%w_vacuum(cid%rho), logger)
-      call config%read('vacuum_pressure'.at.1, irs%w_vacuum(cid%p), logger)
-      call config%read('tolerance'.at.1, irs%tolerance, logger)
-      call config%read('n_iteration'.at.1, irs%n_iteration, logger)
+      call config%read('riemann_solver'.at.1, rp%solver, logger, riemann_solver_types)
+      call config%read('vacuum_density'.at.1, rp%w_vacuum(cid%rho), logger)
+      call config%read('vacuum_pressure'.at.1, rp%w_vacuum(cid%p), logger)
+      select case (rp%solver)
+      case (rpid%exact_rs)
+         call config%read('tolerance'.at.1, rp%tolerance, logger)
+         call config%read('n_iteration'.at.1, rp%n_iteration, logger)
+      case (rpid%deep_rs)
+         call config%read('deep_rs_model_path'.at.1, rp%path, logger)
+      case default
+         call logger%err('Unknown Rieamnn solver:', rp%solver, 'not in [ExactRS, DeepRS]')
+      end select
 
       ! Slope limiter
       call limiter_types%add('van_leer', slid%van_Leer)
@@ -500,6 +509,10 @@ contains
 
       call config%read('slope_limiter'.at.1, sl%type, logger, limiter_types)
       call config%read('slope_limiter_omega'.at.1, sl%w, logger)
+
+      ! Rimean Solvers
+      call riemann_solver_types%add('ExactRS', rpid%exact_rs)
+      call riemann_solver_types%add('DeepRS', rpid%deep_rs)
 
       ! MUSCL-Hancock solver
       call solver_types%add('memory_intensive', mhid%memory_intensive)

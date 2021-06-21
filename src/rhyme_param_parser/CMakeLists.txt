@@ -19,7 +19,7 @@ set(deps
     rhyme_uv_background
     rhyme_ionisation_equilibrium
     rhyme_drawing
-    rhyme_irs
+    rhyme_riemann_problem
     rhyme_slope_limiter
     rhyme_muscl_hancock
     rhyme_chombo
