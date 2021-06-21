@@ -1,7 +1,7 @@
 logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
    use rhyme_muscl_hancock_advection_factory
    use rhyme_units_factory
-   use rhyme_irs_factory
+   use rhyme_riemann_problem_factory
    use rhyme_slope_limiter_factory
    use rhyme_chombo_factory
    use rhyme_samr_bc_factory
@@ -27,7 +27,7 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
    type(mh_workspace_t) :: ws(NDIM)
    type(units_t) :: units
    type(thermo_base_t) :: thermo
-   type(irs_t) :: irs
+   type(riemann_problem_t) :: rp
    type(slope_limiter_t) :: sl
    type(chombo_t) :: ch(NDIM)
    type(samr_t) :: samr(NDIM)
@@ -45,14 +45,14 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
 
    units = units_factory_generate('SI')
    thermo = thermo_base_factory_generate('diatomic')
-   irs = irs_factory_generate('default')
+   rp = riemann_problem_factory_generate('default')
    sl = slope_limiter_factory_generate('vanLeer')
    logger = logger_factory_generate('default')
 
    call rhyme_units_init(units, logger)
 
    call rhyme_thermo_base_init(thermo, units, logger)
-   call rhyme_irs_init(irs, logger)
+   call rhyme_riemann_problem_init(rp, logger)
 
    dt = muscl_hancock_advection_factory_generate(BASE_GRID_ARRAY, samr, bc, cfl)
 
@@ -76,7 +76,7 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
             samr(d)%levels(0)%boxes(1), &
             samr(d)%levels(0)%dx, &
             samr(d)%levels(0)%dt, &
-            irs, sl, ws(d))
+            rp, sl, ws(d))
 
          samr(d)%levels(0)%iteration = samr(d)%levels(0)%iteration + 1
       end do

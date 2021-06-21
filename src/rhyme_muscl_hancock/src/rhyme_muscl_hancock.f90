@@ -2,7 +2,7 @@ module rhyme_muscl_hancock
    use rhyme_mh_workspace
    use rhyme_ideal_gas
    use rhyme_slope_limiter
-   use rhyme_irs
+   use rhyme_riemann_problem
    use rhyme_logger
 
    implicit none
@@ -27,29 +27,29 @@ module rhyme_muscl_hancock
       end subroutine rhyme_muscl_hancock_init
 
       module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
-         box, dx, dt, irs, sl, ws)
+         box, dx, dt, rp, sl, ws)
          type(samr_box_t), intent(inout) :: box
          real(kind=8), intent(in) :: dx(NDIM), dt
-         type(irs_t), intent(inout) :: irs
+         type(riemann_problem_t), intent(inout) :: rp
          type(slope_limiter_t), intent(in) :: sl
          type(mh_workspace_t), intent(inout) :: ws
       end subroutine rhyme_muscl_hancock_solve_cpu_intensive
 
       module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
-         box, dx, dt, irs, sl, ws)
+         box, dx, dt, rp, sl, ws)
          type(samr_box_t), intent(inout) :: box
          real(kind=8), intent(in) :: dx(NDIM), dt
-         type(irs_t), intent(inout) :: irs
+         type(riemann_problem_t), intent(inout) :: rp
          type(slope_limiter_t), intent(in) :: sl
          type(mh_workspace_t), intent(inout) :: ws
       end subroutine rhyme_muscl_hancock_solve_memory_intensive
 
       module subroutine rhyme_muscl_hancock_solve( &
-         mh, box, dx, dt, irs, sl, ws, logger)
+         mh, box, dx, dt, rp, sl, ws, logger)
          type(muscl_hancock_t), intent(inout) :: mh
          type(samr_box_t), intent(inout) :: box
          real(kind=8), intent(in) :: dx(NDIM), dt
-         type(irs_t), intent(inout) :: irs
+         type(riemann_problem_t), intent(inout) :: rp
          type(slope_limiter_t), intent(in) :: sl
          type(mh_workspace_t), intent(inout) :: ws
          type(logger_t), intent(inout) :: logger

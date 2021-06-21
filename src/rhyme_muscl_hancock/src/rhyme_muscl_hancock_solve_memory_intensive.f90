@@ -1,12 +1,12 @@
 submodule(rhyme_muscl_hancock) rhyme_mh_solve_memory_intensive_submodule
 contains
    module subroutine rhyme_muscl_hancock_solve_memory_intensive( &
-      box, dx, dt, irs, sl, ws)
+      box, dx, dt, rp, sl, ws)
       implicit none
 
       type(samr_box_t), intent(inout) :: box
       real(kind=8), intent(in) :: dx(NDIM), dt
-      type(irs_t), intent(inout) :: irs
+      type(riemann_problem_t), intent(inout) :: rp
       type(slope_limiter_t), intent(in) :: sl
       type(mh_workspace_t), intent(inout) :: ws
 
@@ -51,7 +51,7 @@ contains
 
       !$OMP PARALLEL DO &
       !$OMP& SHARED(box, ws) &
-      !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
+      !$OMP& FIRSTPRIVATE(dx, dt, rp, sl, l, b, lb, ub) &
       !$OMP& PRIVATE(delta)
       LOOP_K
       LOOP_J
@@ -102,13 +102,13 @@ contains
 
       !$OMP PARALLEL DO &
       !$OMP& SHARED(box, ws) &
-      !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub) &
+      !$OMP& FIRSTPRIVATE(dx, dt, rp, sl, l, b, lb, ub) &
       !$OMP& PRIVATE(evolved_state)
       LOOP_K
       LOOP_J
       do i = lb(1), ub(1)
-         call rhyme_irs_solve( &
-            irs, &
+         call rhyme_riemann_problem_solve( &
+            rp, &
             ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%x), &
             ws%levels(l)%boxes(b)%ul(i + 1 JDX KDX, cid%rho:cid%e_tot, samrid%x), &
             0.d0, dt, samrid%x, evolved_state)
@@ -116,8 +116,8 @@ contains
             calc_flux(evolved_state, samrid%x)
 
 #if NDIM > 1
-         call rhyme_irs_solve( &
-            irs, &
+         call rhyme_riemann_problem_solve( &
+            rp, &
             ws%levels(l)%boxes(b)%ur(i JDX KDX, cid%rho:cid%e_tot, samrid%y), &
             ws%levels(l)%boxes(b)%ul(i JDX + 1 KDX, cid%rho:cid%e_tot, samrid%y), &
             0.d0, dt, samrid%y, evolved_state)
@@ -126,8 +126,8 @@ contains
 #endif
 
 #if NDIM > 2
-         call rhyme_irs_solve( &
-            irs, &
+         call rhyme_riemann_problem_solve( &
+            rp, &
             ws%levels(l)%boxes(b)%ur(i, j KDX, cid%rho:cid%e_tot, samrid%z), &
             ws%levels(l)%boxes(b)%ul(i, j KDX + 1, cid%rho:cid%e_tot, samrid%z), &
             0.d0, dt, samrid%z, evolved_state)
@@ -144,7 +144,7 @@ contains
 
       !$OMP PARALLEL DO &
       !$OMP& SHARED(box, ws) &
-      !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b, lb, ub)
+      !$OMP& FIRSTPRIVATE(dx, dt, rp, sl, l, b, lb, ub)
       LOOP_K
       LOOP_J
       do i = 1, box%dims(1)

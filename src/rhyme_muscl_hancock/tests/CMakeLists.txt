@@ -9,7 +9,7 @@ set(factories
     rhyme_cfl
     rhyme_samr
     rhyme_samr_bc
-    rhyme_irs
+    rhyme_riemann_problem
     rhyme_slope_limiter
     rhyme_chombo
     rhyme_logger)

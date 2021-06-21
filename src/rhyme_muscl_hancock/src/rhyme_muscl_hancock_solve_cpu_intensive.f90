@@ -1,12 +1,12 @@
 submodule(rhyme_muscl_hancock) rhyme_mh_solve_cpu_intensive_submodule
 contains
    module subroutine rhyme_muscl_hancock_solve_cpu_intensive( &
-      box, dx, dt, irs, sl, ws)
+      box, dx, dt, rp, sl, ws)
       implicit none
 
       type(samr_box_t), intent(inout) :: box
       real(kind=8), intent(in) :: dx(NDIM), dt
-      type(irs_t), intent(inout) :: irs
+      type(riemann_problem_t), intent(inout) :: rp
       type(slope_limiter_t), intent(in) :: sl
       type(mh_workspace_t), intent(inout) :: ws
 
@@ -54,7 +54,7 @@ contains
 
       !$OMP PARALLEL DO &
       !$OMP& SHARED(box, ws) &
-      !$OMP& FIRSTPRIVATE(dx, dt, irs, sl, l, b) &
+      !$OMP& FIRSTPRIVATE(dx, dt, rp, sl, l, b) &
       !$OMP& PRIVATE(idx, axis, ub, delta, half_step_left, half_step_right, edge_state, flux, df)
       LOOP_K
       LOOP_J
@@ -116,8 +116,8 @@ contains
 
          do axis = samrid%x, samrid%x + NDIM - 1
             do idx = -1, 0
-               call rhyme_irs_solve( &
-                  irs, &
+               call rhyme_riemann_problem_solve( &
+                  rp, &
                   half_step_right(idx, cid%rho:cid%e_tot, axis), &
                   half_step_left(idx + 1, cid%rho:cid%e_tot, axis), &
                   0.d0, dt, axis, &
