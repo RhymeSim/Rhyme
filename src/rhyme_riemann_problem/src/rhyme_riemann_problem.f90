@@ -2,6 +2,8 @@ module rhyme_riemann_problem
    use rhyme_units
    use rhyme_hydro_base
    use rhyme_thermo_base
+   use rhyme_irs
+   ! use rhyme_deep_rs
    use rhyme_logger
 
    implicit none
@@ -13,8 +15,19 @@ module rhyme_riemann_problem
    real(kind=8), private :: gp1_2g = 0.d0
    real(kind=8), private :: g_inv = 0.d0
 
+   type, private :: riemann_problem_indices_t
+      integer :: exact_rs = 1, deep_rs = 2
+   end type riemann_problem_indices_t
+
+   type(riemann_problem_indices_t), parameter :: rpid = riemann_problem_indices_t()
+
    type riemann_problem_t
       real(kind=8), dimension(cid%rho:cid%p) :: w_vacuum = 0d0
+      real(kind=8) :: tolerance = 1d-8
+      integer :: n_iteration = 1000, solver = rpid%exact_rs
+      character(len=1024) :: path = ""
+      type(irs_t) :: irs = irs_t()
+      ! type(deep_rs_t) :: drs = deep_rs_t()
    end type riemann_problem_t
 
    type rp_shock_t
@@ -48,12 +61,14 @@ module rhyme_riemann_problem
    end type riemann_problem_solution_t
 
    interface
-      module subroutine rhyme_riemann_problem_init(rp, logger)
+      module subroutine rhyme_riemann_problem_init(rp, units, thermo, logger)
          type(riemann_problem_t), intent(inout) :: rp
+         type(units_t), intent(in) :: units
+         type(thermo_base_t), intent(in) :: thermo
          type(logger_t), intent(inout) :: logger
       end subroutine rhyme_riemann_problem_init
 
-      pure module subroutine rhyme_riemann_problem_solve(rp, l, r, dx, dt, axis, u)
+      module subroutine rhyme_riemann_problem_solve(rp, l, r, dx, dt, axis, u)
          type(riemann_problem_t), intent(in) :: rp
          real(kind=8), dimension(cid%rho:cid%e_tot), intent(in) :: l, r
          real(kind=8), intent(in) :: dx, dt
@@ -68,11 +83,11 @@ module rhyme_riemann_problem
          real(kind=8), intent(out) :: u(cid%rho:cid%e_tot)
       end subroutine rhyme_riemann_problem_sampling
 
-      pure module subroutine rhyme_riemann_problem_iterate(rp, solution, axis)
+      module subroutine rhyme_riemann_problem_star(rp, sol, axis)
          type(riemann_problem_t), intent(in) :: rp
-         type(riemann_problem_solution_t), intent(inout) :: solution
+         type(riemann_problem_solution_t), intent(inout) :: sol
          integer, intent(in) :: axis
-      end subroutine rhyme_riemann_problem_iterate
+      end subroutine rhyme_riemann_problem_star
 
       pure module function riemann_problem_w_k(s) result(u)
          type(rp_side_t), intent(in) :: s

@@ -27,7 +27,7 @@ logical function rhyme_riemann_problem_w_k_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    u_exp = hy_factory%generate_conserved()
 

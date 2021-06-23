@@ -12,8 +12,10 @@ contains
 
       if (factory_type == 'default') then
          rp = riemann_problem_t()
+         rp%irs%n_iteration = rp%n_iteration
+         rp%irs%tolerance = rp%tolerance
       else
-         print *, 'Unknonw Riemann Problem factory type!', factory_type
+         print *, 'Unknonw Riemann problem factory type!', factory_type
       end if
    end function riemann_problem_factory_generate
 end module rhyme_riemann_problem_factory

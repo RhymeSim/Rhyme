@@ -32,10 +32,10 @@ logical function rhyme_riemann_problem_sampling_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    call rhyme_riemann_problem_Sod_test(l, r, solution)
-   call rhyme_riemann_problem_iterate(rp, solution, axis)
+   call rhyme_riemann_problem_star(rp, solution, axis)
 
    open (unit=1, file="./sod_shock_tube_t_0_2_analytical.txt", action='read', form='formatted')
    do i = 1, 12

@@ -52,7 +52,7 @@ logical function rhyme_muscl_hancock_solve_cpu_intensive_test() result(failed)
    call rhyme_units_init(units, logger)
 
    call rhyme_thermo_base_init(thermo, units, logger)
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    dt = muscl_hancock_advection_factory_generate(BASE_GRID_ARRAY, samr, bc, cfl)
 

@@ -1,5 +1,6 @@
 logical function rhyme_riemann_problem_test() result(failed)
    use rhyme_riemann_problem
+   use rhyme_assertion
 
    implicit none
 
@@ -11,6 +12,8 @@ logical function rhyme_riemann_problem_test() result(failed)
 #define V_ARRAY [ 2.34d0, 4.56d0, 5.67d0 ]
 #endif
 
+   type(assertion_t) :: tester
+
    real(kind=8), parameter :: rho = 1.23d0
    real(kind=8), parameter :: u = 2.34d0
    real(kind=8), parameter :: v(NDIM) = V_ARRAY
@@ -20,7 +23,19 @@ logical function rhyme_riemann_problem_test() result(failed)
    real(kind=8), parameter :: speedH = 8.90d0
    real(kind=8), parameter :: speedT = 9.01d0
 
+   type(riemann_problem_t) :: rp
    type(riemann_problem_solution_t) :: solution
+
+   tester = .describe."riemann_problem"
+
+   call tester%expect(rpid%exact_rs.toBe.1.hint.'Exact RS id')
+   call tester%expect(rpid%deep_rs.toBe.2.hint.'Deep RS id')
+
+   call tester%expect(rp%w_vacuum.toBe.0d0.hint.'vacuum')
+   call tester%expect(rp%tolerance.toBe.1d-8.hint.'tolerance')
+   call tester%expect(rp%n_iteration.toBe.1000.hint.'n_iteration')
+   call tester%expect(rp%path.toBe."".hint.'path')
+   call tester%expect(rp%solver.toBe.rpid%exact_rs.hint.'solver')
 
    solution%star%u = u
    solution%star%p = p
@@ -55,5 +70,7 @@ logical function rhyme_riemann_problem_test() result(failed)
    solution%right%p = p
    solution%right%cs = cs
 
-   failed = abs(solution%star%left%fan%rho - rho) > epsilon(0.d0)
+   call tester%expect(solution%star%left%fan%rho.toBe.rho.hint.'rho')
+
+   failed = tester%failed()
 end function rhyme_riemann_problem_test

@@ -11,7 +11,7 @@ endif()
 
 set(deps rhyme_units rhyme_hydro_base rhyme_thermo_base rhyme_logger)
 
-set(internal_deps)
+set(internal_deps rhyme_irs)
 
 set(srcs
     src/rhyme_riemann_problem_rp_side_to_cons.f90
@@ -22,7 +22,7 @@ set(srcs
     src/rhyme_riemann_problem_w_starL_sho.f90
     src/rhyme_riemann_problem_w_k.f90
     src/rhyme_riemann_problem_sampling.f90
-    src/rhyme_riemann_problem_iterate.f90
+    src/rhyme_riemann_problem_star.f90
     src/rhyme_riemann_problem_solve.f90
     src/rhyme_riemann_problem_init.f90
     src/rhyme_riemann_problem.f90)

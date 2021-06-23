@@ -26,21 +26,21 @@ logical function rhyme_riemann_problem_solve_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    ! Non-vacuum cases
-   call riemann_problem_solve_test_cases(rhyme_riemann_problem_Sod_test, rp, tester)
-   call riemann_problem_solve_test_cases(rhyme_riemann_problem_123_test, rp, tester)
-   call riemann_problem_solve_test_cases(rhyme_riemann_problem_left_blast_wave_test, rp, tester)
-   call riemann_problem_solve_test_cases(rhyme_riemann_problem_right_blast_wave_test, rp, tester)
-   call riemann_problem_solve_test_cases(rhyme_riemann_problem_two_shocks_collision_test, rp, tester)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_Sod_test, rp, tester)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_123_test, rp, tester)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_left_blast_wave_test, rp, tester)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_right_blast_wave_test, rp, tester)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_two_shocks_collision_test, rp, tester)
 
    failed = tester%failed()
 
    ! TODO: vacuum cases
 end function rhyme_riemann_problem_solve_test
 
-subroutine riemann_problem_solve_test_cases(func, rp, tester)
+subroutine rhyme_rp_test_cases(func, rp, tester)
    use rhyme_riemann_problem_factory
    use rhyme_assertion
 
@@ -58,7 +58,7 @@ subroutine riemann_problem_solve_test_cases(func, rp, tester)
    axis = 1 ! x-axis
 
    call func(l, r, solution)
-   call rhyme_riemann_problem_iterate(rp, solution, axis)
+   call rhyme_riemann_problem_star(rp, solution, axis)
 
    ! Testing the right side of the solution
    dx = 1.d0
@@ -175,4 +175,4 @@ subroutine riemann_problem_solve_test_cases(func, rp, tester)
       call tester%expect(.notToBeNaN.u.hint.'inside_left_fan')
       call tester%expect(u.toBe.u_exp.hint.'inside_left_fan')
    end if
-end subroutine riemann_problem_solve_test_cases
+end subroutine rhyme_rp_test_cases

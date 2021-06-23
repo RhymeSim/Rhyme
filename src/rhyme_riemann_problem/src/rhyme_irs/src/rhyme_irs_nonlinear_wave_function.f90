@@ -1,6 +1,6 @@
 submodule(rhyme_irs) rhyme_irs_nonlinear_wave_function_submodule
 contains
-   pure module subroutine rhyme_irs_nonlinear_wave_function( &
+   module subroutine rhyme_irs_nonlinear_wave_function( &
       state_rho, state_p, state_cs, p, f, fprime)
       implicit none
 

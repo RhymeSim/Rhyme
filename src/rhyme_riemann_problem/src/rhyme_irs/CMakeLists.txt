@@ -17,7 +17,7 @@ set(srcs
     src/rhyme_irs_guess_p_star.f90 src/rhyme_irs_nonlinear_wave_function.f90
     src/rhyme_irs_exec.f90 src/rhyme_irs_init.f90 src/rhyme_irs.f90)
 
-set(rhyme_src_dir ..)
+set(rhyme_src_dir ../../..)
 include(${CMAKE_CURRENT_SOURCE_DIR}/${rhyme_src_dir}/../cmake/helper.cmake)
 
 # Configs

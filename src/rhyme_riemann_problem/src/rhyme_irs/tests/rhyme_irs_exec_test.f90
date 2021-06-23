@@ -15,7 +15,7 @@ logical function rhyme_irs_exec_test() result(failed)
    type(logger_t) :: logger
 
    integer :: iostat, i
-   real(kind=8) :: r_r, u_r, p_r, cs_r, r_l, u_l, p_l, cs_l
+   real(kind=8) :: r_r, u_r, p_r, cs_r, f_r, r_l, u_l, p_l, cs_l, f_l
    real(kind=8) :: p_star, exp_p_star
    real(kind=8) :: v_r(NDIM), v_l(NDIM)
 
@@ -52,7 +52,7 @@ logical function rhyme_irs_exec_test() result(failed)
       cs_l = sqrt(5./3.*p_l/r_l)
 
       p_star = rhyme_irs_exec( &
-               irs, r_l, v_l, p_l, cs_l, r_r, v_r, p_r, cs_r, 1)
+               irs, r_l, v_l, p_l, cs_l, f_l, r_r, v_r, p_r, cs_r, f_r, 1)
 
       call tester%expect(p_star.toBe.exp_p_star.within.6)
    end do

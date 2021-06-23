@@ -1,7 +1,7 @@
-logical function rhyme_riemann_problem_iterate_test() result(failed)
+logical function rhyme_riemann_problem_star_test() result(failed)
    use rhyme_riemann_problem_factory
-   use rhyme_units_factory
    use rhyme_riemann_problem_tests_factory
+   use rhyme_units_factory
    use rhyme_thermo_base_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -15,7 +15,7 @@ logical function rhyme_riemann_problem_iterate_test() result(failed)
    type(thermo_base_t) :: thermo
    type(logger_t) :: logger
 
-   tester = .describe."riemann_problem_iterate"
+   tester = .describe."riemann_problem_star"
 
    call rhyme_nombre_init
 
@@ -26,18 +26,18 @@ logical function rhyme_riemann_problem_iterate_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
-   call rhyme_riemann_problem_iterate_test_cases(rhyme_riemann_problem_Sod_test, "Sod", 5)
-   call rhyme_riemann_problem_iterate_test_cases(rhyme_riemann_problem_123_test, "123 test", 4)
-   call rhyme_riemann_problem_iterate_test_cases(rhyme_riemann_problem_left_blast_wave_test, "left blast wave", 5)
-   call rhyme_riemann_problem_iterate_test_cases(rhyme_riemann_problem_right_blast_wave_test, "right blast wave", 5)
-   call rhyme_riemann_problem_iterate_test_cases(rhyme_riemann_problem_two_shocks_collision_test, "two shock collision", 3)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_Sod_test, "Sod", 6)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_123_test, "123 test", 4)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_left_blast_wave_test, "left blast wave", 6)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_right_blast_wave_test, "right blast wave", 6)
+   call rhyme_rp_test_cases(rhyme_riemann_problem_two_shocks_collision_test, "two shock collision", 3)
 
    failed = tester%failed()
 
 contains
-   subroutine rhyme_riemann_problem_iterate_test_cases(func, test_name, sig_fig)
+   subroutine rhyme_rp_test_cases(func, test_name, sig_fig)
       implicit none
 
       external :: func
@@ -58,7 +58,7 @@ contains
       ex_p = expected_solution%star%p
       ex_u = expected_solution%star%u
 
-      call rhyme_riemann_problem_iterate(rp, solution, axis)
+      call rhyme_riemann_problem_star(rp, solution, axis)
 
       if (expected_solution%star%left%is_shock) then
          ex_left_rho = expected_solution%star%left%shock%rho
@@ -99,5 +99,5 @@ contains
       call tester%expect(.notToBeNaN.star_right_rho)
       call tester%expect(star_right_rho &
                          .toBe.ex_right_rho.within.sig_fig.hint.test_name//' rhor')
-   end subroutine rhyme_riemann_problem_iterate_test_cases
-end function rhyme_riemann_problem_iterate_test
+   end subroutine rhyme_rp_test_cases
+end function rhyme_riemann_problem_star_test

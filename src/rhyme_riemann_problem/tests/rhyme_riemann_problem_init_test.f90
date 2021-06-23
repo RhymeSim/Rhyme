@@ -23,7 +23,7 @@ logical function rhyme_riemann_problem_init_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    failed = tester%failed()
 end function rhyme_riemann_problem_init_test

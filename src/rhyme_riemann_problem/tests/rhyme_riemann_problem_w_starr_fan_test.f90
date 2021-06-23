@@ -30,7 +30,7 @@ logical function rhyme_riemann_problem_w_starr_fan_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    sol%star%right%fan%rho = hy_factory%rho
    sol%right%v = hy_factory%v

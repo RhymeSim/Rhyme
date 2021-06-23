@@ -1,6 +1,6 @@
 submodule(rhyme_riemann_problem) solve_submodule
 contains
-   pure module subroutine rhyme_riemann_problem_solve(rp, l, r, dx, dt, axis, u)
+   module subroutine rhyme_riemann_problem_solve(rp, l, r, dx, dt, axis, u)
       implicit none
 
       type(riemann_problem_t), intent(in) :: rp
@@ -97,7 +97,7 @@ contains
                end if
             end if
          else  ! Normal cases
-            call rhyme_riemann_problem_iterate(rp, sol, axis)
+            call rhyme_riemann_problem_star(rp, sol, axis)
             call rhyme_riemann_problem_sampling(sol, axis, dx, dt, u)
          end if
       end if

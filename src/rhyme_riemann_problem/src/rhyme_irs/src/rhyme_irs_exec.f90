@@ -1,17 +1,18 @@
 submodule(rhyme_irs) exec_submodule
 contains
-   pure module function rhyme_irs_exec( &
-      irs, l_rho, l_v, l_p, l_cs, r_rho, r_v, r_p, r_cs, axis) result(p_star)
+   module function rhyme_irs_exec( &
+      irs, l_rho, l_v, l_p, l_cs, l_f, r_rho, r_v, r_p, r_cs, r_f, axis) result(p_star)
       implicit none
 
       type(irs_t), intent(in) :: irs
       real(kind=8), intent(in) :: &
          l_rho, l_v(NDIM), l_p, l_cs, r_rho, r_v(NDIM), r_p, r_cs
+      real(kind=8), intent(inout) :: l_f, r_f
       integer, intent(in) :: axis
       real(kind=8) :: p_star
 
       real(kind=8) :: p_star_prev, guessed_p(6)
-      real(kind=8) :: l_f, l_fprime, r_f, r_fprime
+      real(kind=8) :: l_fprime, r_fprime
 
       integer :: i, guess_id
 
@@ -40,6 +41,6 @@ contains
          if (p_star > 0.d0) exit
       end do
 
-      if (p_star < 0.d0) p_star = tiny(0d0)
+      if (p_star < 0.d0) p_star = 0d0
    end function rhyme_irs_exec
 end submodule exec_submodule

@@ -30,7 +30,7 @@ logical function rhyme_riemann_problem_w_kfan_test() result(failed)
    thermo = thermo_base_factory_generate('diatomic')
    call rhyme_thermo_base_init(thermo, units, logger)
 
-   call rhyme_riemann_problem_init(rp, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
 
    g = get_gamma()
    gm1 = g - 1
