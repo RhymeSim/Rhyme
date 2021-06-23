@@ -49,6 +49,7 @@ set(deps
     rhyme_cfl
     rhyme_drawing
     rhyme_slope_limiter
+    rhyme_riemann_problem
     rhyme_irs
     rhyme_muscl_hancock
     rhyme_param_parser

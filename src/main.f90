@@ -11,7 +11,7 @@ program rhyme
    use rhyme_thermo_base
    use rhyme_drawing
    use rhyme_slope_limiter
-   use rhyme_irs
+   use rhyme_riemann_problem
    use rhyme_muscl_hancock
    use rhyme_param_parser
    use rhyme_chombo
@@ -32,7 +32,7 @@ program rhyme
    type(cfl_t) :: cfl
    type(thermo_base_t) :: thermo
    type(drawing_t) :: draw
-   type(irs_t) :: irs
+   type(riemann_problem_t) :: rp
    type(slope_limiter_t) :: sl
    type(muscl_hancock_t) :: mh
    type(mh_workspace_t) :: mhws
@@ -66,7 +66,7 @@ program rhyme
    ! Reading parameters and converting them to code units
    call load_params( &
       param_file, chemistry, units, ic, bc, cfl, thermo, uvb, &
-      ie, draw, irs, sl, mh, chombo, outputs, st, report, sc, logger)
+      ie, draw, rp, sl, mh, chombo, outputs, st, report, sc, logger)
 
    call logger%begin_section('init')
 
@@ -81,12 +81,12 @@ program rhyme
    call rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
    call rhyme_samr_bc_init(bc, thermo, samr, logger)
-   call rhyme_irs_init(irs, logger)
+   call rhyme_riemann_problem_init(rp, units, thermo, logger)
    call rhyme_muscl_hancock_init(mh, samr, mhws, logger)
    call rhyme_chombo_init(chombo, samr, logger)
    call rhyme_chombo_output_init(outputs, units, logger)
 
-   call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
+   call rhyme_drawing_init(draw, units, samr, ic, logger, ie, chemistry)
 
    call rhyme_cfl_init(cfl, thermo, samr, logger)
    call rhyme_sanity_check_init(sc, units, thermo, samr, logger)
@@ -131,7 +131,7 @@ program rhyme
          do b = 1, samr%levels(l)%nboxes
             call rhyme_muscl_hancock_solve( &
                mh, samr%levels(l)%boxes(b), &
-               samr%levels(l)%dx, samr%levels(l)%dt, irs, sl, mhws, logger)
+               samr%levels(l)%dx, samr%levels(l)%dt, rp, sl, mhws, logger)
          end do
       end do
       call logger%end_section(print_duration=.true.)  ! hydro
