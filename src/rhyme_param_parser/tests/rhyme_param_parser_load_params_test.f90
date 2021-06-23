@@ -232,6 +232,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(draw%r1.toBe.3.45d6.hint.'canvas r1')
    call tester%expect(draw%p.toBe.-2d0.hint.'canvas power')
    call tester%expect(draw%rho0.toBe.4.56d7.hint.'canvas rho_0')
+   call tester%expect(draw%update_pressure.toBe..true..hint.'canvas update pressure')
 
    shape => draw%shapes
    call tester%expect(shape%type.toBe.drid%cuboid)
@@ -355,8 +356,8 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    call tester%expect(rp%solver.toBe.rpid%exact_rs.hint.'rp solver')
    call tester%expect(rp%w_vacuum(cid%rho) .toBe.2.34d0.hint.'rp rho')
    call tester%expect(rp%w_vacuum(cid%p) .toBe.1.23d0.hint.'rp p')
-   call tester%expect(rp%tolerance.toBe.1d-6.hint.'rp tolerance')
-   call tester%expect(rp%n_iteration.toBe.100.hint.'rp n_iteration')
+   call tester%expect(rp%irs%tolerance.toBe.1d-6.hint.'rp tolerance')
+   call tester%expect(rp%irs%n_iteration.toBe.100.hint.'rp n_iteration')
 
    ! Slope Limiter
    call tester%expect(sl%type.toBe.slid%minmod.hint.'Slope limiter type')

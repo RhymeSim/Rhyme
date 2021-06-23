@@ -357,6 +357,7 @@ contains
          call config%read('canvas'.at.2 + NDIM + 2.hint.'power', draw%p, logger)
          call config%read('canvas'.at.2 + NDIM + 3.hint.'rho0', draw%rho0, logger)
          call config%read('canvas'.at.2 + NDIM + 4.hint.'color', draw%canvas(1:NCMP), logger)
+         call config%read('canvas_update_pressure'.at.1.hint.'update_pressure', draw%update_pressure, logger, on_off_switch)
       end select
 
       ! Shapes
@@ -493,10 +494,10 @@ contains
       call config%read('vacuum_pressure'.at.1, rp%w_vacuum(cid%p), logger)
       select case (rp%solver)
       case (rpid%exact_rs)
-         call config%read('tolerance'.at.1, rp%tolerance, logger)
-         call config%read('n_iteration'.at.1, rp%n_iteration, logger)
-      case (rpid%deep_rs)
-         call config%read('deep_rs_model_path'.at.1, rp%path, logger)
+         call config%read('tolerance'.at.1, rp%irs%tolerance, logger)
+         call config%read('n_iteration'.at.1, rp%irs%n_iteration, logger)
+         ! case (rpid%deep_rs)
+         ! call config%read('deep_rs_model_path'.at.1, rp%drs%path, logger)
       case default
          call logger%err('Unknown Rieamnn solver:', rp%solver, 'not in [ExactRS, DeepRS]')
       end select
