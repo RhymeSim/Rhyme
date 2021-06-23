@@ -1,14 +1,14 @@
 submodule(rhyme_drawing) init_smod
 contains
-   module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
+   module subroutine rhyme_drawing_init(draw, units, samr, ic, logger, ie, chemistry)
       implicit none
 
       type(drawing_t), intent(inout) :: draw
+      type(units_t), intent(in) :: units
       type(samr_t), intent(inout) :: samr
       type(initial_condition_t), intent(in) :: ic
       type(logger_t), intent(inout) :: logger
       type(ionisation_equilibrium_t), intent(in), optional :: ie
-      type(units_t), intent(in), optional :: units
       type(chemistry_t), intent(in), optional :: chemistry
 
       type(shape_t), pointer :: shape
@@ -30,8 +30,11 @@ contains
          call logger%log('canvas', '(density power law)', 'center:', draw%center)
          call logger%log('canvas', '(density power law)', 'rho0:', [draw%rho0])
          call logger%log('canvas', '(density power law)', 'r0:', [draw%r0])
+         call logger%log('canvas', '(density power law)', 'update pressure:', [draw%update_pressure])
          call logger%log('canvas', '(density power law)', 'characteristic radius:', [draw%r1])
-         call rhyme_drawing_density_power_law_canvas(samr, draw%center, draw%rho0, draw%r0, draw%r1, draw%p, draw%canvas)
+         call rhyme_drawing_density_power_law_canvas( &
+            samr, units, draw%center, draw%rho0, draw%r0, &
+            draw%r1, draw%p, draw%canvas, draw%update_pressure)
          call logger%log('Canvas has been painted successfully')
 
       case default
@@ -53,7 +56,7 @@ contains
          case (drid%sphere)
             shape%sphere%unit => .parse.shape%sphere%unit_str
 
-            if (present(ie) .and. present(units) .and. present(chemistry)) then
+            if (present(ie) .and. present(chemistry)) then
                call rhyme_drawing_sphere(samr, ic, shape, logger, ie, units, chemistry)
             else
                call rhyme_drawing_sphere(samr, ic, shape, logger)

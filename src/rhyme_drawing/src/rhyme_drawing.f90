@@ -131,6 +131,8 @@ module rhyme_drawing
       integer :: type = drid%transparent_canvas
       real(kind=8) :: canvas(NCMP) = 0d0
       real(kind=8) :: center(NDIM) = 0d0, rho0 = 0d0, r0 = 0d0, r1 = 0d0, p = 0d0  ! density_power_law canvas parameters
+      logical :: update_pressure = .false. ! density_power_law canvas parameters
+
       type(shape_t), pointer :: shapes => null()
       type(perturbation_t), pointer :: perturbs => null()
    contains
@@ -139,13 +141,13 @@ module rhyme_drawing
    end type drawing_t
 
    interface
-      module subroutine rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
+      module subroutine rhyme_drawing_init(draw, units, samr, ic, logger, ie, chemistry)
          type(drawing_t), intent(inout) :: draw
+         type(units_t), intent(in) :: units
          type(samr_t), intent(inout) :: samr
          type(initial_condition_t), intent(in) :: ic
          type(logger_t), intent(inout) :: logger
          type(ionisation_equilibrium_t), intent(in), optional :: ie
-         type(units_t), intent(in), optional :: units
          type(chemistry_t), intent(in), optional :: chemistry
       end subroutine rhyme_drawing_init
 
@@ -154,9 +156,11 @@ module rhyme_drawing
          real(kind=8), intent(in) :: bg_prim(NCMP)
       end subroutine rhyme_drawing_uniform_canvas
 
-      module subroutine rhyme_drawing_density_power_law_canvas(samr, c, rho0, r0, r1, power, bg_prim)
+      module subroutine rhyme_drawing_density_power_law_canvas(samr, units, c, rho0, r0, r1, power, bg_prim, update_p)
          type(samr_t), intent(inout) :: samr
+         type(units_t), intent(in) :: units
          real(kind=8), intent(in) :: c(NDIM), rho0, r0, r1, power, bg_prim(NCMP)
+         logical :: update_p
       end subroutine rhyme_drawing_density_power_law_canvas
 
       module subroutine rhyme_drawing_sharp_cuboid(samr, shape, logger)

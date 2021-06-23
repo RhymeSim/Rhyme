@@ -34,8 +34,13 @@ contains
       integer :: shift(NDIM), lb(NDIM), ub(NDIM)
       real(kind=8) :: color(cid%rho:NCMP)
 
+      call logger%begin_section('sharp_cuboid')
+
       call conv_prim_to_cons(shape%fill%colors(cid%rho:cid%p, 1), color(cid%rho:cid%e_tot))
+
       color(cid%e_tot + 1:NCMP) = shape%fill%colors(cid%p + 1:NCMP, 1)
+
+      call logger%log('color', '[conservative]', '=', color)
 
       do l = 0, samr%nlevels - 1
          do b = 1, samr%levels(l)%nboxes
@@ -61,5 +66,9 @@ contains
 
          end do
       end do
+
+      call logger%log('painted', product(ub - lb), 'cells')
+
+      call logger%end_section
    end subroutine rhyme_drawing_sharp_cuboid
 end submodule sharp_cuboid_smod

@@ -1,11 +1,13 @@
 ! TODO: convert units to physical units instead of pixels
 submodule(rhyme_drawing) density_power_law_canvas_smod
 contains
-   module subroutine rhyme_drawing_density_power_law_canvas(samr, c, rho0, r0, r1, power, bg_prim)
+   module subroutine rhyme_drawing_density_power_law_canvas(samr, units, c, rho0, r0, r1, power, bg_prim, update_p)
       implicit none
 
       type(samr_t), intent(inout) :: samr
+      type(units_t), intent(in) :: units
       real(kind=8), intent(in) :: c(NDIM), rho0, r0, r1, power, bg_prim(NCMP)
+      logical :: update_p
 
 #if NDIM == 1
 #define JDX
@@ -31,9 +33,10 @@ contains
 #endif
 
       integer :: l, b, i JDX KDX
-      real(kind=8) :: bg(cid%rho:cid%e_tot), rho
+      real(kind=8) :: bg_prim_this(cid%rho:cid%p), bg(cid%rho:cid%e_tot), rho
+      real(kind=8) :: kb_over_amu
 
-      call conv_prim_to_cons(bg_prim, bg)
+      kb_over_amu = units%kb%v/units%amu%v
 
       do l = 0, samr%nlevels - 1
          do b = 1, samr%levels(l)%nboxes
@@ -43,6 +46,17 @@ contains
             do i = 1, samr%levels(l)%boxes(b)%dims(1)
                rho = density_power_law([i JDX KDX], rho0, c, r0, r1, power)
                samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho) = rho
+
+               bg_prim_this(cid%rho) = rho
+               bg_prim_this(cid%rho + 1:cid%p) = bg_prim(cid%rho + 1:cid%p)
+
+               if (update_p .eqv. .true.) then
+                  ! TODO: Include mu in calculation
+                  bg_prim_this(cid%p) = rho*kb_over_amu*bg_prim(cid%temp)
+               end if
+
+               call conv_prim_to_cons(bg_prim_this, bg)
+
                samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%e_tot) = bg(cid%rho_u:cid%e_tot)
                samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) = bg_prim(cid%p + 1:NCMP)
             end do

@@ -53,7 +53,7 @@ logical function rhyme_drawing_init_test() result(failed)
    call rhyme_ionisation_equilibrium_init(ie, units, chemistry, logger)
    call rhyme_ionisation_equilibrium_update_table(ie, chemistry, uvb, ic%redshift, logger)
 
-   call rhyme_drawing_init(draw, samr, ic, logger, ie, units, chemistry)
+   call rhyme_drawing_init(draw, units, samr, ic, logger, ie, chemistry)
 
    failed = tester%failed()
 end function rhyme_drawing_init_test

@@ -1,6 +1,7 @@
 logical function rhyme_drawing_density_power_law_canvas_test() result(failed)
    use rhyme_drawing_factory
    use rhyme_units_factory
+   use rhyme_samr_factory
    use rhyme_thermo_base_factory
    use rhyme_logger_factory
    use rhyme_assertion
@@ -44,6 +45,7 @@ logical function rhyme_drawing_density_power_law_canvas_test() result(failed)
    tester = .describe."drawing_density_power_law"
 
    units = units_factory_generate('SI')
+   samr = samr_factory%generate()
    logger = logger_factory_generate('unicode-plotting')
    draw = drawing_factory_generate('blank')
 
@@ -62,9 +64,7 @@ logical function rhyme_drawing_density_power_law_canvas_test() result(failed)
    bg_prim(cid%temp) = 4.56d7
    bg_prim(cid%temp + 1:NCMP) = 5.67d0
 
-   call rhyme_drawing_density_power_law_canvas(samr, c, rho0, r0, r1, power, bg_prim)
-
-   call conv_prim_to_cons(bg_prim, bg)
+   call rhyme_drawing_density_power_law_canvas(samr, units, c, rho0, r0, r1, power, bg_prim, .true.)
 
    do l = 0, samr%nlevels - 1
       do b = 1, samr%levels(l)%nboxes
@@ -74,14 +74,19 @@ logical function rhyme_drawing_density_power_law_canvas_test() result(failed)
          do i = 1, samr%levels(l)%boxes(b)%dims(1)
             rho = density_power_law([i JDX KDX], rho0, c, r0, r1, power)
             call tester%expect( &
-               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho) .toBe.rho &
-               )
+               .notToBeNan.samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho))
             call tester%expect( &
-               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%e_tot) .toBe.bg(cid%rho_u:cid%e_tot) &
-               )
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho) .toBe.rho)
+
+            bg_prim(cid%p) = rho*units%kb%v/units%amu%v*bg_prim(cid%temp)
+            call conv_prim_to_cons(bg_prim, bg)
+
             call tester%expect( &
-               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) .toBe.bg_prim(cid%p + 1:NCMP) &
-               )
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%rho_u:cid%e_tot) &
+               .toBe.bg(cid%rho_u:cid%e_tot) .within.7)
+            call tester%expect( &
+               samr%levels(l)%boxes(b)%cells(i JDX KDX, cid%e_tot + 1:NCMP) &
+               .toBe.bg_prim(cid%p + 1:NCMP))
          end do
          LOOP_J_END
          LOOP_K_END
