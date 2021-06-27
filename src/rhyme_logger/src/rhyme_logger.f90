@@ -34,7 +34,7 @@ module rhyme_logger
       integer :: errfile_unit = logger_const%closed
       integer :: t(8)
       logical :: unicode_plotting = .false.
-      integer :: projection_axis = lgid%unset
+      integer :: projection_axis = lgid%unset, layer = 1
       integer :: colormap = lgid%unset
    contains
       procedure :: init => rhyme_logger_init

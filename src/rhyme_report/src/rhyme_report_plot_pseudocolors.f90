@@ -9,7 +9,7 @@ contains
 
       type(report_pseudocolor_t), pointer :: pntr
 
-      integer :: dims(NDIM)
+      integer :: dims(NDIM), layer
       real(kind=8) :: box_lengths(NDIM)
 
       if (.not. associated(report%pseudocolors)) return
@@ -36,15 +36,15 @@ contains
 #define BLY box_lengths(2)
 #define BLZ 1d0
 #elif NDIM ==3
-#define IDXX dims(1)/2
+#define IDXX layer
 #define IDXY 1:dims(1)
 #define IDXZ 1:dims(1)
 #define JDXX , 1:dims(2)
-#define JDXY , dims(2)/2
+#define JDXY , layer
 #define JDXZ , 1:dims(2)
 #define KDXX , 1:dims(3)
 #define KDXY , 1:dims(3)
-#define KDXZ , dims(3)/2
+#define KDXZ , layer
 #define RESX dims(1)
 #define RESY dims(2)
 #define RESZ dims(3)
@@ -54,6 +54,7 @@ contains
 #endif
 
       pntr => report%pseudocolors
+      layer = logger%layer
 
       do while (associated(pntr))
          call logger%log('pseudoplot '//trim(repid%labels(pntr%type)))

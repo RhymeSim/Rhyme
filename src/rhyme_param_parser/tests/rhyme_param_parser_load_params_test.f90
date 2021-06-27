@@ -61,6 +61,7 @@ logical function rhyme_param_parser_load_params_test() result(failed)
    ! Logging
    call tester%expect(logger%unicode_plotting.toBe..true..hint.'Logging unicode plotting')
    call tester%expect(logger%projection_axis.toBe.lgid%z.hint.'Logging projection axis')
+   call tester%expect(logger%layer.toBe.1.hint.'Logging pseudocolor layer')
    call tester%expect(logger%colormap.toBe.csid%viridis.hint.'Logging projection axis')
 
    ! Report

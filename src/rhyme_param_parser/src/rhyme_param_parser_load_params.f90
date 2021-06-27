@@ -86,6 +86,7 @@ contains
       ! Logging
       call config%read('unicode_plotting'.at.1, logger%unicode_plotting, logger, on_off_switch)
       call config%read('projection_axis'.at.1, logger%projection_axis, logger, axis_switch)
+      call config%read('pseudocolor_layer'.at.1, logger%layer, logger)
       call config%read('colormap'.at.1, logger%colormap, logger, colormap_switch)
 
       ! Report
