@@ -60,3 +60,6 @@ fort.999
 
 # VisIt
 visitlog.py
+
+# Tests
+tests/**/*.h5
