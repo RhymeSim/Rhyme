@@ -42,7 +42,7 @@ contains
       if (present(resolution)) then
          res = resolution
       else
-         res = [72, 60]
+         res = [128, 128]
       end if
 
       call logger%log('resolution', 'px', '=', res)

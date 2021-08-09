@@ -57,7 +57,7 @@ contains
          cs_scale = plid%linear
       end if
 
-      do i = 1, min(canvas%x, 72)
+      do i = 1, canvas%x
       do j = 1, canvas%y
          do k = -1, 0
             char_colors(k) = colorscheme%pallet(csid%unknown)

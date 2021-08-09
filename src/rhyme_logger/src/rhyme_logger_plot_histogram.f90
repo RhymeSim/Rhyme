@@ -35,7 +35,7 @@ contains
       if (present(resolution)) then
          res = resolution
       else
-         res = [80, 20]
+         res = [128, 128]
       end if
 
       if (present(nbins)) then

@@ -10,7 +10,7 @@ contains
       logical, intent(in), optional :: colored
 
       integer :: i, j, row_len, out, canvas_type
-      character(len=2048, kind=ucs4) :: row
+      character(len=4096, kind=ucs4) :: row
 
       if (present(output)) then
          out = output

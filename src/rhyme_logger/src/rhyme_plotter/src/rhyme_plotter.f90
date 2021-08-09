@@ -8,7 +8,7 @@ module rhyme_plotter
    integer, parameter, private :: canvas_border = 2
    integer, parameter, private :: max_nticks = 16
    integer, parameter, private :: max_nbins = 256
-   integer, parameter, private :: max_image_resolution = 128
+   integer, parameter, private :: max_image_resolution = 256
 
    integer, parameter :: ucs4 = selected_char_kind('ISO_10646')
 

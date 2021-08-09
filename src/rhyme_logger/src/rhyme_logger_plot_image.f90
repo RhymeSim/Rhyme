@@ -102,11 +102,11 @@ contains
       end if
 
       if (present(resolution)) then
-         factor_ratio = 72./resolution
-         res(1) = min(int(factor_ratio(1)*resolution(1)), 72)
+         factor_ratio = 128./resolution
+         res(1) = min(int(factor_ratio(1)*resolution(1)), 128)
          res(2) = max(int(factor_ratio(2)*resolution(2)), 1)
       else
-         res = [72, 72]
+         res = [128, 128]
       end if
 
       call canvas%init(res(1), res(2)/2)
