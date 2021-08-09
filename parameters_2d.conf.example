@@ -1,6 +1,7 @@
 # **Logging**
 unicode_plotting = enable
 projection_axis = z
+pseudocolor_layer = 1
 colormap = viridis
 
 
